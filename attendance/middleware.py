@@ -21,6 +21,7 @@ class AttendanceMiddleware(MiddlewareMixin):
         """
         Triggers the `trigger_function` on each request.
         """
+        return None
         self.trigger_function()
 
     def trigger_function(self):
