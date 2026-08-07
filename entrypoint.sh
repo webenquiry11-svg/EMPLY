@@ -34,18 +34,13 @@ set -x
 
 echo "PORT=$PORT"
 
-echo "Running migrations..."
-python manage.py migrate --noinput
+python manage.py check
 
-echo "Collecting static..."
-python manage.py collectstatic --noinput
-
-echo "Starting Gunicorn..."
+echo "Django check finished"
 
 exec gunicorn \
     --bind 0.0.0.0:${PORT:-10000} \
-    --workers 1 \
+    horilla.wsgi:application \
     --log-level debug \
     --access-logfile - \
-    --error-logfile - \
-    horilla.wsgi:application
+    --error-logfile -
