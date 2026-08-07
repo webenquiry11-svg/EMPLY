@@ -811,6 +811,12 @@ class AttendanceExportForm(forms.Form):
         for field in model_fields
         if hasattr(field, "verbose_name") and field.name not in excluded_fields
     ]
+    field_choices.extend(
+        [
+            ("approved_short_leave_summary", "Approved Short Leave"),
+            ("leave_information", "Leave Information"),
+        ]
+    )
 
     selected_fields = forms.MultipleChoiceField(
         choices=field_choices,
@@ -826,6 +832,7 @@ class AttendanceExportForm(forms.Form):
             "attendance_clock_out_date",
             "attendance_worked_hour",
             "attendance_validated",
+            "leave_information",
         ],
     )
 

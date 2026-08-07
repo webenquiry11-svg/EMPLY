@@ -232,8 +232,9 @@ def login_required(view_func):
             return redirect(redirect_url)
         try:
             func = view_func(request, *args, **kwargs)
+            return func
         except Exception as e:
-            logger.error(e)
+            logger.exception("Unhandled exception in view %s: %s", view_func.__name__, e)
             if (
                 "notifications_notification" in str(e)
                 and request.headers.get("X-Requested-With") != "XMLHttpRequest"
@@ -248,10 +249,9 @@ def login_required(view_func):
                 messages.warning(request, str(e))
                 return redirect(referer)
 
-            if DEBUG:
-                return render(request, "went_wrong.html")
-            return view_func(request, *args, **kwargs)
-        return func
+            # When an exception occurs, render a generic error page instead of re-calling the view.
+            # Avoid recursion that can lead to hanging requests.
+            return render(request, "went_wrong.html", status=500)
 
     return wrapped_view
 

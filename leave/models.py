@@ -166,6 +166,12 @@ class LeaveType(HorillaModel):
         max_length=30, choices=PAYMENT, default="unpaid", verbose_name=_("Is Paid")
     )
     count = models.FloatField(null=True, default=1)
+    leave_unit = models.CharField(
+        max_length=10,
+        choices=[("day", _("Day")), ("minute", _("Minute"))],
+        default="day",
+        verbose_name=_("Leave Unit"),
+    )
     period_in = models.CharField(max_length=30, choices=TIME_PERIOD, default="day")
     limit_leave = models.BooleanField(default=True, verbose_name=_("Limit Leave Days"))
     total_days = models.FloatField(null=True, default=1)
@@ -588,6 +594,57 @@ class AvailableLeave(HorillaModel):
         super().save(*args, **kwargs)
 
 
+class ShortLeaveBalance(HorillaModel):
+    employee_id = models.ForeignKey(
+        Employee,
+        on_delete=models.CASCADE,
+        related_name="short_leave_balances",
+        verbose_name=_("Employee"),
+    )
+    month = models.IntegerField(verbose_name=_("Month"))
+    year = models.IntegerField(verbose_name=_("Year"))
+    remaining_minutes = models.IntegerField(default=120, verbose_name=_("Remaining Minutes"))
+    assigned_date = models.DateField(
+        default=timezone.now, verbose_name=_("Assigned Date")
+    )
+
+    class Meta:
+        unique_together = ("employee_id", "month", "year")
+
+    def __str__(self):
+        return f"{self.employee_id} | {self.month}/{self.year} | {self.remaining_minutes} min"
+
+    def reserve_minutes(self, minutes):
+        """
+        Atomically reserve (deduct) minutes from this balance.
+        Raises ValueError if insufficient minutes.
+        """
+        minutes = int(minutes or 0)
+        if minutes <= 0:
+            return
+        from django.db import transaction
+        # Use select_for_update to avoid race conditions
+        with transaction.atomic():
+            obj = ShortLeaveBalance.objects.select_for_update().get(pk=self.pk)
+            if obj.remaining_minutes < minutes:
+                raise ValueError("Insufficient minutes to reserve")
+            obj.remaining_minutes = obj.remaining_minutes - minutes
+            obj.save(update_fields=["remaining_minutes"]) 
+
+    def release_minutes(self, minutes):
+        """
+        Atomically release (add back) minutes to this balance.
+        """
+        minutes = int(minutes or 0)
+        if minutes <= 0:
+            return
+        from django.db import transaction
+        with transaction.atomic():
+            obj = ShortLeaveBalance.objects.select_for_update().get(pk=self.pk)
+            obj.remaining_minutes = obj.remaining_minutes + minutes
+            obj.save(update_fields=["remaining_minutes"])
+
+
 def restrict_leaves(restri):
 
     restricted_dates = []
@@ -666,6 +723,15 @@ class LeaveRequest(HorillaModel):
     )
     requested_days = models.FloatField(
         blank=True, null=True, verbose_name=_("Requested Days")
+    )
+    requested_minutes = models.IntegerField(
+        blank=True, null=True, verbose_name=_("Requested Minutes")
+    )
+    approved_minutes = models.IntegerField(
+        default=0, verbose_name=_("Approved Minutes")
+    )
+    reserved_minutes = models.IntegerField(
+        default=0, verbose_name=_("Reserved Minutes")
     )
     leave_clashes_count = models.IntegerField(
         default=0, verbose_name=_("Leave Clashes Count")
@@ -853,71 +919,100 @@ class LeaveRequest(HorillaModel):
         return overlapping_requests
 
     def save(self, *args, **kwargs):
+        from django.db import transaction
 
-        self.requested_days = calculate_requested_days(
-            self.start_date,
-            self.end_date,
-            self.start_date_breakdown,
-            self.end_date_breakdown,
-        )
-        if (
-            self.leave_type_id.exclude_company_leave == "yes"
-            and self.leave_type_id.exclude_holiday == "yes"
-        ):
-            self.exclude_all_leaves()
-        else:
-            self.exclude_leaves()
+        with transaction.atomic():
+            is_new = not self.pk
+            self.end_date = self.end_date or self.start_date
+            if self.leave_type_id.leave_unit == "minute":
+                self.requested_days = 0
+                self.requested_minutes = self.requested_minutes or 0
+                self.start_date_breakdown = "full_day"
+                self.end_date_breakdown = "full_day"
 
-        if self.status in ["cancelled", "rejected"]:
-            self.leave_clashes_count = 0
-        else:
-            self.leave_clashes_count = self.count_leave_clashes()
-
-        super().save(*args, **kwargs)
-
-        self.update_leave_clashes_count()
-        work_info = EmployeeWorkInformation.objects.filter(employee_id=self.employee_id)
-        department_id = None
-        conditions = None
-        if work_info.exists():
-            department_id = self.employee_id.employee_work_info.department_id
-            emp_comp_id = self.employee_id.employee_work_info.company_id
-        requested_days = self.requested_days
-        applicable_condition = False
-        if department_id != None and emp_comp_id != None:
-            conditions = MultipleApprovalCondition.objects.filter(
-                department=department_id, company_id=emp_comp_id
-            ).order_by("condition_value")
-        if conditions != None:
-            for condition in conditions:
-                operator = condition.condition_operator
-                if operator == "range":
-                    start_value = float(condition.condition_start_value)
-                    end_value = float(condition.condition_end_value)
-                    if start_value <= requested_days <= end_value:
-                        applicable_condition = condition
-                        break
-                else:
-                    operator_func = operator_mapping.get(condition.condition_operator)
-                    condition_value = type(requested_days)(condition.condition_value)
-                    if operator_func(requested_days, condition_value):
-                        applicable_condition = condition
-                        break
-
-        if applicable_condition and self.status == "requested":
-            LeaveRequestConditionApproval.objects.filter(leave_request_id=self).delete()
-            sequence = 0
-            managers = applicable_condition.approval_managers()
-            for manager in managers:
-                if not isinstance(manager, Employee):
-                    manager = getattr(self.employee_id.employee_work_info, manager)
-                if manager:
-                    sequence += 1
-                    LeaveRequestConditionApproval.objects.create(
-                        sequence=sequence,
-                        leave_request_id=self,
-                        manager_id=manager,
+                if is_new and self.status == "requested" and self.requested_minutes > 0:
+                    balance, _ = ShortLeaveBalance.objects.get_or_create(
+                        employee_id=self.employee_id,
+                        month=self.start_date.month,
+                        year=self.start_date.year,
+                        defaults={
+                            "remaining_minutes": 120,
+                            "assigned_date": self.start_date,
+                        },
                     )
+                    balance.reserve_minutes(self.requested_minutes)
+                    self.reserved_minutes = self.requested_minutes
+            else:
+                self.requested_days = calculate_requested_days(
+                    self.start_date,
+                    self.end_date,
+                    self.start_date_breakdown,
+                    self.end_date_breakdown,
+                )
+                if (
+                    self.leave_type_id.exclude_company_leave == "yes"
+                    and self.leave_type_id.exclude_holiday == "yes"
+                ):
+                    self.exclude_all_leaves()
+                else:
+                    self.exclude_leaves()
+
+            if self.status in ["cancelled", "rejected"]:
+                self.leave_clashes_count = 0
+            else:
+                self.leave_clashes_count = self.count_leave_clashes()
+
+            super().save(*args, **kwargs)
+
+            self.update_leave_clashes_count()
+            work_info = EmployeeWorkInformation.objects.filter(
+                employee_id=self.employee_id
+            )
+            department_id = None
+            conditions = None
+            if work_info.exists():
+                department_id = self.employee_id.employee_work_info.department_id
+                emp_comp_id = self.employee_id.employee_work_info.company_id
+            requested_days = self.requested_days
+            applicable_condition = False
+            if department_id is not None and emp_comp_id is not None:
+                conditions = MultipleApprovalCondition.objects.filter(
+                    department=department_id, company_id=emp_comp_id
+                ).order_by("condition_value")
+            if conditions is not None:
+                for condition in conditions:
+                    operator = condition.condition_operator
+                    if operator == "range":
+                        start_value = float(condition.condition_start_value)
+                        end_value = float(condition.condition_end_value)
+                        if start_value <= requested_days <= end_value:
+                            applicable_condition = condition
+                            break
+                    else:
+                        operator_func = operator_mapping.get(
+                            condition.condition_operator
+                        )
+                        condition_value = type(requested_days)(condition.condition_value)
+                        if operator_func(requested_days, condition_value):
+                            applicable_condition = condition
+                            break
+
+            if applicable_condition and self.status == "requested" and is_new:
+                LeaveRequestConditionApproval.objects.filter(
+                    leave_request_id=self
+                ).delete()
+                sequence = 0
+                managers = applicable_condition.approval_managers()
+                for manager in managers:
+                    if not isinstance(manager, Employee):
+                        manager = getattr(self.employee_id.employee_work_info, manager)
+                    if manager:
+                        sequence += 1
+                        LeaveRequestConditionApproval.objects.create(
+                            sequence=sequence,
+                            leave_request_id=self,
+                            manager_id=manager,
+                        )
 
     def clean(self):
         cleaned_data = super().clean()
@@ -929,8 +1024,8 @@ class LeaveRequest(HorillaModel):
         restricted_leaves = RestrictLeave.objects.all()
         request = getattr(horilla_middlewares._thread_locals, "request", None)
 
-        # Check if leave type is assigned to employee
-        if not AvailableLeave.objects.filter(
+        # Check if leave type is assigned to employee for non-minute leave types.
+        if leave_type.leave_unit != "minute" and not AvailableLeave.objects.filter(
             employee_id=self.employee_id, leave_type_id=leave_type
         ).exists():
             raise ValidationError(
@@ -940,6 +1035,36 @@ class LeaveRequest(HorillaModel):
                     )
                 }
             )
+
+        if leave_type.leave_unit == "minute":
+            self.end_date = self.end_date or self.start_date
+            if not self.requested_minutes:
+                raise ValidationError(
+                    {"requested_minutes": _("Requested minutes are required for this leave type.")}
+                )
+            if self.requested_minutes < 30:
+                raise ValidationError(
+                    {"requested_minutes": _("Short leave cannot be less than 30 minutes.")}
+                )
+            if self.requested_minutes > 120:
+                raise ValidationError(
+                    {"requested_minutes": _("Short leave cannot be more than 120 minutes.")}
+                )
+            if self.requested_minutes % 15 != 0:
+                raise ValidationError(
+                    {"requested_minutes": _("Short leave must be in multiples of 15 minutes.")}
+                )
+            balance, created = ShortLeaveBalance.objects.get_or_create(
+                employee_id=self.employee_id,
+                month=self.start_date.month,
+                year=self.start_date.year,
+                defaults={"remaining_minutes": 120},
+            )
+            if self.requested_minutes > balance.remaining_minutes:
+                raise ValidationError(
+                    _("Does not have sufficient leave balance for the requested minutes.")
+                )
+            return cleaned_data
 
         # Date validations
         if self.start_date > self.end_date:
@@ -1154,6 +1279,21 @@ class LeaveRequest(HorillaModel):
 
     def delete(self, *args, **kwargs):
         if self.status == "requested":
+            # If the leave is a short leave, release the reserved minutes
+            if self.leave_type_id.leave_unit == "minute" and self.reserved_minutes > 0:
+                try:
+                    balance = ShortLeaveBalance.objects.get(
+                        employee_id=self.employee_id,
+                        month=self.start_date.month,
+                        year=self.start_date.year,
+                    )
+                    balance.release_minutes(self.reserved_minutes)
+                except ShortLeaveBalance.DoesNotExist:
+                    # Log an error if the balance record is not found, although this should not happen in a consistent system.
+                    logger.error(
+                        f"ShortLeaveBalance not found for employee {self.employee_id.id} for month {self.start_date.month}/{self.start_date.year} during leave request deletion."
+                    )
+
             super().delete(*args, **kwargs)
 
             # Update the leave clashes count for all relevant leave requests

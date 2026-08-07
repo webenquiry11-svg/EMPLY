@@ -285,7 +285,11 @@
                         </div>
 
                         <div class="oh-profile__info-container">
-                            <h1 class="oh-profile__info-name">{{ employee }}</h1>
+                            <h1 class="oh-profile__info-name">{{ employee }}
+                                {% if employee.is_suspended %}
+                                    <span class="oh-badge oh-badge--danger ms-2">{% trans "Suspended" %}</span>
+                                {% endif %}
+                            </h1>
                             <p class="oh-profile__info-designation">
                                 {{ employee.job_position_id }}
                             </p>

@@ -598,6 +598,16 @@ def login_user(request):
             )
             return redirect("login")
 
+        # Prevent suspended employees from logging in (credentials remain unchanged)
+        if getattr(employee, "is_suspended", False):
+            messages.warning(
+                request,
+                _(
+                    "Your account has been suspended. Please contact your administrator."
+                ),
+            )
+            return redirect("login")
+
         login(request, user)
 
         messages.success(request, _("Login successful."))
@@ -7565,3 +7575,4 @@ def protected_media(request, path):
         response["Content-Disposition"] = f'inline; filename="{filename}"'
 
     return response
+

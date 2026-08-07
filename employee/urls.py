@@ -130,6 +130,22 @@ urlpatterns = [
         views.employee_archive,
         name="employee-archive",
     ),
+    # Suspend / Unsuspend and Suspended Employees listing
+    path(
+        "employee-suspend/<int:emp_id>/",
+        views.employee_suspend,
+        name="employee-suspend",
+    ),
+    path(
+        "employee-unsuspend/<int:emp_id>/",
+        views.employee_unsuspend,
+        name="employee-unsuspend",
+    ),
+    path(
+        "suspended-employees/",
+        views.suspended_employees,
+        name="suspended-employees",
+    ),
     path(
         "replace-employee/<int:emp_id>/",
         views.replace_employee,

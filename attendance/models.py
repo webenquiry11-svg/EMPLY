@@ -22,6 +22,7 @@ from attendance.methods.utils import (
     attendance_date_validate,
     format_time,
     get_diff_dict,
+    shift_schedule_today,
     strtime_seconds,
     validate_hh_mm_ss_format,
     validate_time_format,
@@ -29,7 +30,7 @@ from attendance.methods.utils import (
 )
 from base.horilla_company_manager import HorillaCompanyManager
 from base.methods import is_company_leave, is_holiday
-from base.models import Company, EmployeeShift, EmployeeShiftDay, WorkType
+from base.models import Company, EmployeeShift, EmployeeShiftDay, TrackLateComeEarlyOut, WorkType
 from employee.models import Employee
 from horilla.methods import get_horilla_model_class
 from horilla.models import HorillaModel, upload_path
@@ -217,6 +218,9 @@ class Attendance(HorillaModel):
         max_length=18, null=True, choices=status, default="update_request"
     )
     is_holiday = models.BooleanField(default=False)
+    is_grace_late = models.BooleanField(default=False, verbose_name=_("Grace Late"))
+    grace_late_count_used = models.PositiveIntegerField(default=0, verbose_name=_("Grace Late Count Used"))
+    half_day_reason = models.CharField(max_length=100, null=True, blank=True, verbose_name=_("Half Day Reason"))
     requested_data = models.JSONField(null=True, editable=False)
     approved_by = models.ForeignKey(
         Employee,
@@ -272,8 +276,7 @@ class Attendance(HorillaModel):
         return schedule.is_night_shift
 
     def __str__(self) -> str:
-        return f"{self.employee_id.employee_first_name} \
-            {self.employee_id.employee_last_name} - {self.attendance_date}"
+        return f"{self.employee_id.employee_first_name} {self.employee_id.employee_last_name} - {self.attendance_date}"
 
     def activities(self):
         """
@@ -341,6 +344,61 @@ class Attendance(HorillaModel):
         pending_hours = format_time(pending_seconds)
         return pending_hours
 
+    @property
+    def approved_short_leave_summary(self):
+        """Return approved short leave information for this attendance row."""
+        if not apps.is_installed("leave") or not self.employee_id:
+            return ""
+
+        approved_short_leaves = self.employee_id.leaverequest_set.filter(
+            status="approved",
+            leave_type_id__leave_unit="minute",
+            start_date__lte=self.attendance_date,
+            end_date__gte=self.attendance_date,
+        )
+        total_minutes = sum(
+            (leave.approved_minutes or leave.requested_minutes or 0)
+            for leave in approved_short_leaves
+        )
+        if total_minutes <= 0:
+            return ""
+
+        leave_type_names = ", ".join(
+            sorted({leave.leave_type_id.name for leave in approved_short_leaves})
+        )
+        minute_label = "Min" if total_minutes == 1 else "Mins"
+        summary = f"Approved {leave_type_names} ({total_minutes} {minute_label})"
+        return summary
+
+    @property
+    def leave_information(self):
+        """Return approved leave information for this attendance row."""
+        if not apps.is_installed("leave") or not self.employee_id:
+            return ""
+
+        approved_leaves = self.employee_id.leaverequest_set.filter(
+            status="approved",
+            start_date__lte=self.attendance_date,
+            end_date__gte=self.attendance_date,
+        ).select_related("leave_type_id")
+
+        if not approved_leaves.exists():
+            return ""
+
+        leave_blocks = []
+        for leave in approved_leaves:
+            leave_type_name = leave.leave_type_id.name if leave.leave_type_id else "Leave"
+            block_lines = [leave_type_name]
+            if leave.leave_type_id and leave.leave_type_id.leave_unit == "minute":
+                duration = leave.approved_minutes if leave.approved_minutes else leave.requested_minutes or 0
+                minute_label = "Minute" if duration == 1 else "Minutes"
+                block_lines.append(f"Duration: {duration} {minute_label}")
+            if leave.description:
+                block_lines.append(f"Reason: {leave.description}")
+            leave_blocks.append('\n'.join(block_lines))
+
+        return '\n\n'.join(leave_blocks)
+
     def adjust_minimum_hour(self):
         """
         Set minimum_hour to 00:00 if the attendance date falls on a holiday or company leave.
@@ -385,17 +443,28 @@ class Attendance(HorillaModel):
                 self.attendance_overtime_approve = True
 
     def save(self, *args, **kwargs):
+        # Determine if this is a new record
+        is_new = self.pk is None
+        
+        # Always set the attendance day
+        if self.attendance_date:
+            self.attendance_day = EmployeeShiftDay.objects.get(
+                day=self.attendance_date.strftime("%A").lower()
+            )
+
+        # Process lateness only for new records with a check-in time
+        if is_new and self.attendance_clock_in and self.shift_id:
+            self.process_lateness()
+
         self.update_attendance_overtime()
-        self.attendance_day = EmployeeShiftDay.objects.get(
-            day=self.attendance_date.strftime("%A").lower()
-        )
+        
         prev_attendance_approved = False
         self.adjust_minimum_hour()
 
         # Handle overtime cutoff and auto-approval
         self.handle_overtime_conditions()
 
-        if self.pk is not None:
+        if not is_new:
             # Get the previous values of the boolean field
             prev_state = Attendance.objects.get(pk=self.pk)
             prev_attendance_approved = prev_state.attendance_overtime_approve
@@ -417,16 +486,88 @@ class Attendance(HorillaModel):
             month=self.attendance_date.strftime("%B").lower(),
             year=self.attendance_date.year,
         ).first()
-        total_ot_seconds = attendance_account.overtime_second
-        if approved and prev_attendance_approved is False:
-            self.approved_overtime_second = self.overtime_second
-            total_ot_seconds = total_ot_seconds + self.approved_overtime_second
-        elif not approved:
-            total_ot_seconds = total_ot_seconds - self.approved_overtime_second
-            self.approved_overtime_second = 0
-        attendance_account.overtime = format_time(total_ot_seconds)
-        attendance_account.save()
+        if attendance_account:
+            total_ot_seconds = attendance_account.overtime_second
+            if approved and prev_attendance_approved is False:
+                self.approved_overtime_second = self.overtime_second
+                total_ot_seconds = total_ot_seconds + self.approved_overtime_second
+            elif not approved:
+                total_ot_seconds = total_ot_seconds - self.approved_overtime_second
+                self.approved_overtime_second = 0
+            attendance_account.overtime = format_time(total_ot_seconds)
+            attendance_account.save()
         super().save(*args, **kwargs)
+
+    def process_lateness(self):
+        """
+        Processes late-coming, grace-late, and half-day logic.
+        This is called internally on the initial save of an attendance record.
+        """
+        tracking = TrackLateComeEarlyOut.objects.first()
+        if not (tracking and tracking.is_enable):
+            return
+
+        # 1. Get configuration and current time
+        now_sec = strtime_seconds(self.attendance_clock_in.strftime("%H:%M"))
+
+        grace_time_config = None
+        if self.shift_id and self.shift_id.grace_time_id and self.shift_id.grace_time_id.is_active and self.shift_id.grace_time_id.allowed_clock_in:
+            grace_time_config = self.shift_id.grace_time_id
+        else:
+            grace_time_config = GraceTime.objects.filter(is_default=True, is_active=True, allowed_clock_in=True).first()
+
+        # 2. Get shift schedule and define time thresholds
+        _min_hour, start_time, _end_time = shift_schedule_today(day=self.attendance_day, shift=self.shift_id)
+
+        normal_grace_end_sec = start_time
+        grace_late_end_sec = start_time
+
+        if grace_time_config:
+            normal_grace_end_sec += grace_time_config.allowed_time_in_secs
+            if hasattr(grace_time_config, 'grace_late_window_minutes'):
+                grace_late_end_sec = normal_grace_end_sec + (grace_time_config.grace_late_window_minutes * 60)
+            else:
+                grace_late_end_sec = normal_grace_end_sec
+
+        # 3. Decision Logic
+        if now_sec <= normal_grace_end_sec:
+            return  # On time, do nothing.
+
+        def late_come_create(attendance_instance):
+            AttendanceLateComeEarlyOut.objects.get_or_create(
+                type="late_come", attendance_id=attendance_instance,
+                defaults={'employee_id': attendance_instance.employee_id}
+            )
+
+        if grace_time_config and hasattr(grace_time_config, 'grace_late_window_minutes') and now_sec <= grace_late_end_sec:
+            today = self.attendance_date
+            grace_late_count_in_month = Attendance.objects.filter(
+                employee_id=self.employee_id,
+                attendance_date__year=today.year,
+                attendance_date__month=today.month,
+                is_grace_late=True
+            ).count()
+
+            if grace_late_count_in_month < getattr(grace_time_config, 'grace_late_limit', 2):
+                self.is_grace_late = True
+                self.grace_late_count_used = grace_late_count_in_month + 1
+            else:
+                self.half_day_reason = "Grace Late Limit Exceeded"
+                min_hour_sec = strtime_seconds(self.minimum_hour)
+                if min_hour_sec > 0:
+                    self.minimum_hour = format_time(min_hour_sec / 2)
+                late_come_create(self)
+            return
+
+        # This part handles being late beyond the grace window
+        if grace_time_config and now_sec > grace_late_end_sec:
+            self.half_day_reason = "Late Beyond Grace Window"
+            min_hour_sec = strtime_seconds(self.minimum_hour)
+            if min_hour_sec > 0:
+                self.minimum_hour = format_time(min_hour_sec / 2)
+
+        late_come_create(self)
+
 
     def serialize(self):
         """
@@ -809,8 +950,7 @@ class AttendanceLateComeEarlyOut(HorillaModel):
         ordering = ["-attendance_id__attendance_date"]
 
     def __str__(self) -> str:
-        return f"{self.attendance_id.employee_id.employee_first_name} \
-            {self.attendance_id.employee_id.employee_last_name} - {self.type}"
+        return f"{self.attendance_id.employee_id.employee_first_name} {self.attendance_id.employee_id.employee_last_name} - {self.type}"
 
 
 class AttendanceValidationCondition(HorillaModel):
@@ -867,6 +1007,12 @@ class GraceTime(HorillaModel):
         verbose_name=_("Allowed Clock-Out"),
     )
     is_default = models.BooleanField(default=False)
+    grace_late_window_minutes = models.PositiveIntegerField(
+        default=10, verbose_name=_("Grace Late Window (minutes)")
+    )
+    grace_late_limit = models.PositiveIntegerField(
+        default=2, verbose_name=_("Grace Late Limit (per month)")
+    )
 
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
     objects = HorillaCompanyManager()

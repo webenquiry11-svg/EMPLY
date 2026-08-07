@@ -41,77 +41,6 @@ from horilla.horilla_middlewares import _thread_locals
 from horilla.http import HorillaRedirect
 
 
-def late_come_create(attendance):
-    """
-    used to create late come report
-    args:
-        attendance : attendance object
-    """
-
-    if AttendanceLateComeEarlyOut.objects.filter(
-        type="late_come", attendance_id=attendance
-    ).exists():
-        late_come_obj = AttendanceLateComeEarlyOut.objects.filter(
-            type="late_come", attendance_id=attendance
-        ).first()
-    else:
-        late_come_obj = AttendanceLateComeEarlyOut()
-
-    late_come_obj.type = "late_come"
-    late_come_obj.attendance_id = attendance
-    late_come_obj.employee_id = attendance.employee_id
-    late_come_obj.save()
-    return late_come_obj
-
-
-def late_come(attendance, start_time, end_time, shift):
-    """
-    this method is used to mark the late check-in  attendance after the shift starts
-    args:
-        attendance : attendance obj
-        start_time : attendance day shift start time
-        end_time : attendance day shift end time
-
-    """
-    if not enable_late_come_early_out_tracking(None).get("tracking"):
-        return
-    request = getattr(_thread_locals, "request", None)
-    now_sec = strtime_seconds(attendance.attendance_clock_in.strftime("%H:%M"))
-    mid_day_sec = strtime_seconds("12:00")
-
-    # Checking gracetime allowance before creating late come
-    if shift and shift.grace_time_id:
-        # checking grace time in shift, it has the higher priority
-        if (
-            shift.grace_time_id.is_active == True
-            and shift.grace_time_id.allowed_clock_in == True
-        ):
-            # Setting allowance for the check in time
-            now_sec -= shift.grace_time_id.allowed_time_in_secs
-    # checking default grace time
-    elif GraceTime.objects.filter(is_default=True, is_active=True).exists():
-        grace_time = GraceTime.objects.filter(
-            is_default=True,
-            is_active=True,
-        ).first()
-        # Setting allowance for the check in time if grace allocate for clock in event
-        if grace_time.allowed_clock_in:
-            now_sec -= grace_time.allowed_time_in_secs
-    else:
-        pass
-    if start_time > end_time and start_time != end_time:
-        # night shift
-        if now_sec < mid_day_sec:
-            # Here  attendance or attendance activity for new day night shift
-            late_come_create(attendance)
-        elif now_sec > start_time:
-            # Here  attendance or attendance activity for previous day night shift
-            late_come_create(attendance)
-    elif start_time < now_sec:
-        late_come_create(attendance)
-    return True
-
-
 def clock_in_attendance_and_activity(
     employee,
     date_today,
@@ -161,28 +90,19 @@ def clock_in_attendance_and_activity(
         in_datetime=in_datetime,
     )
     # create attendance if not exist
-    attendance = Attendance.objects.filter(
-        employee_id=employee, attendance_date=attendance_date
+    attendance, created = Attendance.objects.get_or_create(
+        employee_id=employee, attendance_date=attendance_date,
+        defaults={
+            'shift_id': shift,
+            'work_type_id': employee.employee_work_info.work_type_id,
+            'attendance_day': day,
+            'attendance_clock_in': now,
+            'attendance_clock_in_date': date_today,
+            'minimum_hour': minimum_hour
+        }
     )
-    if not attendance.exists():
-        attendance = Attendance()
-        attendance.employee_id = employee
-        attendance.shift_id = shift
-        attendance.work_type_id = attendance.employee_id.employee_work_info.work_type_id
-        attendance.attendance_date = attendance_date
-        attendance.attendance_day = day
-        attendance.attendance_clock_in = now
-        attendance.attendance_clock_in_date = date_today
-        attendance.minimum_hour = minimum_hour
-        attendance.save()
-        # check here late come or not
 
-        attendance = Attendance.find(attendance.id)
-        late_come(
-            attendance=attendance, start_time=start_time, end_time=end_time, shift=shift
-        )
-    else:
-        attendance = attendance[0]
+    if not created:
         attendance.attendance_clock_out = None
         attendance.attendance_clock_out_date = None
         attendance.save()
@@ -395,13 +315,68 @@ def clock_out_attendance_and_activity(employee, date_today, now, out_datetime=No
         # Overtime calculation
         attendance.attendance_overtime = overtime_calculation(attendance)
 
-        # Validate the attendance as per the condition
-        attendance.attendance_validated = attendance_validate(attendance)
+        # Auto-validate attendance and skip the manual validation step
+        attendance.attendance_validated = True
         attendance.save()
 
         return attendance
 
     logger.error("No attendance clock in activity found that needs clocking out.")
+    return
+
+
+def late_come_create_obj(attendance):
+    """
+    Used to create late come report
+    args:
+        attendance : attendance obj
+    """
+    if AttendanceLateComeEarlyOut.objects.filter(
+        type="late_come", attendance_id=attendance
+    ).exists():
+        late_come_obj = AttendanceLateComeEarlyOut.objects.filter(
+            type="late_come", attendance_id=attendance
+        ).first()
+    else:
+        late_come_obj = AttendanceLateComeEarlyOut()
+    late_come_obj.type = "late_come"
+    late_come_obj.attendance_id = attendance
+    late_come_obj.employee_id = attendance.employee_id
+    late_come_obj.save()
+    return late_come_obj
+
+
+def late_come(attendance, start_time, end_time, shift):
+    """
+    This method is used to mark late coming attendance
+    """
+    if not enable_late_come_early_out_tracking(None).get("tracking"):
+        return
+
+    # attendance.attendance_clock_in is already a datetime.time object
+    clock_in_time = attendance.attendance_clock_in
+
+    now_sec = strtime_seconds(clock_in_time.strftime("%H:%M"))
+
+    grace_time_config = None
+    if shift and shift.grace_time_id and shift.grace_time_id.is_active and shift.grace_time_id.allowed_clock_in:
+        grace_time_config = shift.grace_time_id
+    else:
+        grace_time_config = GraceTime.objects.filter(is_default=True, is_active=True, allowed_clock_in=True).first()
+
+    normal_grace_end_sec = start_time
+    grace_late_end_sec = start_time
+
+    if grace_time_config:
+        normal_grace_end_sec += grace_time_config.allowed_time_in_secs
+        if hasattr(grace_time_config, 'grace_late_window_minutes'):
+            grace_late_end_sec = normal_grace_end_sec + (grace_time_config.grace_late_window_minutes * 60)
+        else:
+            grace_late_end_sec = normal_grace_end_sec
+
+    # If the clock-in time is beyond the grace_late_end_sec (or normal_grace_end_sec if no grace_late_window), it's considered late.
+    if now_sec > grace_late_end_sec:
+        late_come_create_obj(attendance)
     return
 
 

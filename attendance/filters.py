@@ -269,25 +269,25 @@ class AttendanceActivityFilter(FilterSet):
         lookup_expr="lte",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
-    in_from = django_filters.DateFilter(
+    in_from = django_filters.TimeFilter(
         field_name="clock_in",
         lookup_expr="gte",
-        widget=forms.DateInput(attrs={"type": "time"}),
+        widget=forms.TimeInput(attrs={"type": "time"}),
     )
-    out_from = django_filters.DateFilter(
+    out_from = django_filters.TimeFilter(
         field_name="clock_out",
         lookup_expr="gte",
-        widget=forms.DateInput(attrs={"type": "time"}),
+        widget=forms.TimeInput(attrs={"type": "time"}),
     )
-    in_till = django_filters.DateFilter(
+    in_till = django_filters.TimeFilter(
         field_name="clock_in",
         lookup_expr="lte",
-        widget=forms.DateInput(attrs={"type": "time"}),
+        widget=forms.TimeInput(attrs={"type": "time"}),
     )
-    out_till = django_filters.DateFilter(
+    out_till = django_filters.TimeFilter(
         field_name="clock_out",
         lookup_expr="lte",
-        widget=forms.DateInput(attrs={"type": "time"}),
+        widget=forms.TimeInput(attrs={"type": "time"}),
     )
     clock_in_date = django_filters.DateFilter(
         field_name="clock_in_date", widget=forms.DateInput(attrs={"type": "date"})

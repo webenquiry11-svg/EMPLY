@@ -124,6 +124,9 @@
                         >
                             {% trans "Out Date" %}
                         </div>
+                        <div data-cell-index="6" data-cell-title="{% trans 'Status' %}" class="oh-sticky-table__th">
+                            {% trans "Status" %}
+                        </div>
                         {% if perms.attendance.delete_attendanceactivity %}
                             <div class="oh-sticky-table__th oh-sticky-table__right" scope="col" style="width: 86px">
                                 {% trans "Actions" %}
@@ -171,26 +174,20 @@
                             <div data-cell-index="4" class="oh-sticky-table__td timeformat_changer">
                                 {{ activity.clock_out }}
                             </div>
-                            <div data-cell-index="5" class="oh-sticky-table__td dateformat_changer">
+                            <div data-cell-index="5" data-cell-title="{% trans 'Out Date' %}" class="oh-sticky-table__td dateformat_changer">
                                 {{ activity.clock_out_date }}
                             </div>
+                            <div data-cell-index="6" data-cell-title="{% trans 'Status' %}" class="oh-sticky-table__td">
+                                {% if activity.attendance.is_grace_late %}
+                                    <span class="oh-badge oh-badge--warning">{% trans "Grace Late" %}</span>
+                                {% endif %}
+                                {% if activity.attendance.half_day_reason %}
+                                    <span class="oh-badge oh-badge--danger">{{ activity.attendance.half_day_reason }}</span>
+                                {% endif %}
+                            </div>
                             {% if perms.attendance.delete_attendanceactivity %}
-                                <div class="oh-sticky-table__td oh-sticky-table__right">
-                                    <form
-                                        hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}"
-                                        hx-post="{% url 'attendance-activity-delete' activity.id  %}?{{pd}}"
-                                        onclick="event.stopPropagation()"
-                                        hx-target="#activity-table"
-                                    >
-                                        {% csrf_token %}
-                                        <button
-                                            type="submit"
-                                            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                                            title="{% trans 'Remove' %}"
-                                        >
-                                            <ion-icon name="trash-outline"></ion-icon>
-                                        </button>
-                                    </form>
+                                <div class="oh-sticky-table__th oh-sticky-table__right" scope="col" style="width: 86px">
+                                    {% trans "Actions" %}
                                 </div>
                             {% endif %}
                         </div>

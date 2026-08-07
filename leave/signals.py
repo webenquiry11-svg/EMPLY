@@ -29,6 +29,8 @@ if apps.is_installed("attendance"):
 
         period_dates = instance.requested_dates()
         if instance.status == "approved":
+            if instance.leave_type_id.leave_unit == "minute":
+                return
             for date in period_dates:
                 try:
                     work_entry = (
@@ -74,6 +76,8 @@ if apps.is_installed("attendance"):
                     print(e)
 
         else:
+            if instance.leave_type_id.leave_unit == "minute":
+                return
             for date in period_dates:
                 WorkRecords.objects.filter(
                     is_leave_record=True,

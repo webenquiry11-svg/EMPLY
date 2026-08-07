@@ -301,12 +301,16 @@ def attendance_import(request):
 
 @login_required
 def attendance_export(request):
-    resolver_match = request.resolver_match
-    if (
-        resolver_match
-        and resolver_match.url_name
-        and resolver_match.url_name == "attendance-info-export-form"
-    ):
+    """
+    Export attendance data to an Excel file.
+
+    This function generates a detailed attendance report based on the filters
+    provided in the request. It iterates through each employee and date in the
+    selected range, determines the attendance status (e.g., Present, Absent,
+    On Leave, Holiday), and includes all relevant details in the exported
+    Excel file.
+    """
+    if request.resolver_match and request.resolver_match.url_name == "attendance-info-export-form":
         return render(
             request,
             "attendance/attendance/export_filter.html",
@@ -315,13 +319,240 @@ def attendance_export(request):
                 "export_form": AttendanceExportForm(),
             },
         )
-    return export_data(
-        request=request,
-        model=Attendance,
-        filter_class=AttendanceFilters,
-        form_class=AttendanceExportForm,
-        file_name="Attendance_export",
-    )
+
+    from attendance.filters import AttendanceFilters
+    from attendance.forms import AttendanceExportForm
+    from employee.models import Employee
+    from leave.models import LeaveRequest
+    from base.models import Holidays, CompanyLeaves
+    import pandas as pd
+    from django.http import HttpResponse
+    import datetime
+    from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
+
+
+    # Get filters from request
+    filters = request.GET.copy()
+    
+    # Date range
+    start_date_str = filters.get("attendance_date__gte")
+    end_date_str = filters.get("attendance_date__lte")
+    
+    if not start_date_str or not end_date_str:
+        # Default to current month if no date range is provided
+        today = datetime.date.today()
+        start_date = today.replace(day=1)
+        next_month = start_date.replace(day=28) + datetime.timedelta(days=4)
+        end_date = next_month - datetime.timedelta(days=next_month.day)
+    else:
+        start_date = datetime.datetime.strptime(start_date_str, "%Y-%m-%d").date()
+        end_date = datetime.datetime.strptime(end_date_str, "%Y-%m-%d").date()
+    
+    date_range = [start_date + datetime.timedelta(days=x) for x in range((end_date - start_date).days + 1)]
+
+    # Employees
+    employee_ids = filters.getlist("employee_id")
+    if employee_ids:
+        employees = Employee.objects.filter(id__in=employee_ids).select_related('employee_work_info')
+    else:
+        employees = Employee.objects.filter(is_active=True).select_related('employee_work_info')
+
+    # Prepare data for export
+    report_data = []
+    headers = [
+        "Employee ID", "Employee Name", "Badge ID", "Department", "Job Position", "Company", "Shift", 
+        "Attendance Date", "Check In", "Check Out", "Worked Hours", "Overtime", 
+        "Late Coming", "Early Out", "Attendance Status", "Leave Status", "Leave Type", 
+        "Half Day", "Half Day Reason", "Grace Late", "Grace Late Count Used", "Grace Late Remaining",
+        "Short Leave", "Company Holiday", "Weekly Off", "Sunday", "Present", 
+        "Absent", "Missing Check In", "Missing Check Out"
+    ]
+    
+    # Pre-fetch all necessary data to reduce queries
+    attendances = Attendance.objects.filter(
+        employee_id__in=employees, 
+        attendance_date__range=(start_date, end_date)
+    ).select_related('employee_id', 'shift_id', 'work_type_id').prefetch_related('late_come_early_out')
+    
+    leaves = LeaveRequest.objects.filter(
+        employee_id__in=employees,
+        start_date__lte=end_date,
+        end_date__gte=start_date,
+        status='approved'
+    ).select_related('leave_type_id')
+
+    holidays = Holidays.objects.filter(start_date__lte=end_date, end_date__gte=start_date)
+    company_leaves_qs = CompanyLeaves.objects.all()
+    
+    # Create lookups for quick access
+    attendance_map = {(att.employee_id_id, att.attendance_date): att for att in attendances}
+    leave_map = defaultdict(list)
+    for leave in leaves:
+        for day in [leave.start_date + datetime.timedelta(n) for n in range((leave.end_date - leave.start_date).days + 1)]:
+            if start_date <= day <= end_date:
+                leave_map[(leave.employee_id_id, day)].append(leave)
+
+    holiday_map = {}
+    for holiday in holidays:
+         for day in [holiday.start_date + datetime.timedelta(n) for n in range((holiday.end_date - holiday.start_date).days + 1)]:
+            if start_date <= day <= end_date:
+                holiday_map[day] = holiday.name
+    
+    company_leave_dates = {}
+    for day in date_range:
+        day_of_week = str(day.weekday())
+        week_of_month = str((day.day - 1) // 7)
+        if company_leaves_qs.filter(based_on_week__isnull=True, based_on_week_day=day_of_week).exists():
+            company_leave_dates[day] = "Weekly Off"
+        elif company_leaves_qs.filter(based_on_week=week_of_month, based_on_week_day=day_of_week).exists():
+            company_leave_dates[day] = "Weekly Off"
+
+    for employee in employees:
+        work_info = employee.employee_work_info
+        for single_date in date_range:
+            row = {h: "" for h in headers}
+            
+            row["Employee ID"] = employee.id
+            row["Employee Name"] = employee.get_full_name()
+            row["Badge ID"] = employee.badge_id
+            if work_info:
+                row["Department"] = work_info.department_id.department if work_info.department_id else ''
+                row["Job Position"] = work_info.job_position_id.job_position if work_info.job_position_id else ''
+                row["Company"] = work_info.company_id.company if work_info.company_id else ''
+                row["Shift"] = work_info.shift_id.employee_shift if work_info.shift_id else ''
+            
+            row["Attendance Date"] = single_date
+
+            status = "Absent"
+            row["Absent"] = "Yes"
+            row["Present"] = "No"
+
+            if single_date in holiday_map:
+                status = "Company Holiday"
+                row["Company Holiday"] = "Yes"
+                row["Absent"] = "No"
+            elif single_date in company_leave_dates:
+                status = "Weekly Off"
+                row["Weekly Off"] = "Yes"
+                row["Absent"] = "No"
+                if single_date.weekday() == 6:
+                    status = "Sunday"
+                    row["Sunday"] = "Yes"
+            elif (employee.id, single_date) in leave_map:
+                employee_leaves = leave_map[(employee.id, single_date)]
+                status = "On Leave"
+                row["Leave Status"] = "On Leave"
+                row["Leave Type"] = ", ".join([l.leave_type_id.name for l in employee_leaves])
+                row["Absent"] = "No"
+
+                is_half_day_leave = any(l.start_date_breakdown != 'full_day' or l.end_date_breakdown != 'full_day' for l in employee_leaves)
+                is_short_leave = any(l.leave_type_id.leave_unit == 'minute' for l in employee_leaves)
+
+                if is_half_day_leave:
+                    row["Half Day"] = "Yes"
+                    row["Half Day Reason"] = "Half Day Leave"
+                    status = "Half Day"
+                if is_short_leave:
+                    row["Short Leave"] = "Yes"
+                    status = "Short Leave" if status == "On Leave" else f"{status} + Short Leave"
+            
+            attendance_record = attendance_map.get((employee.id, single_date))
+            if attendance_record:
+                if status == "Absent":
+                    status = "Present"
+                
+                row["Present"] = "Yes"
+                row["Absent"] = "No"
+                
+                row["Check In"] = attendance_record.attendance_clock_in if attendance_record.attendance_clock_in else ''
+                row["Check Out"] = attendance_record.attendance_clock_out if attendance_record.attendance_clock_out else ''
+                row["Worked Hours"] = attendance_record.attendance_worked_hour
+                row["Overtime"] = attendance_record.attendance_overtime
+                
+                if not attendance_record.attendance_clock_in:
+                    row["Missing Check In"] = "Yes"
+                if not attendance_record.attendance_clock_out:
+                    row["Missing Check Out"] = "Yes"
+
+                late_early = attendance_record.late_come_early_out.all()
+                if late_early.filter(type='late_come').exists():
+                    row["Late Coming"] = "Yes"
+                if late_early.filter(type='early_out').exists():
+                    row["Early Out"] = "Yes"
+                
+                # Grace Late and Half Day from attendance
+                row["Grace Late"] = "Yes" if attendance_record.is_grace_late else "No"
+                if attendance_record.half_day_reason:
+                    row["Half Day"] = "Yes"
+                    row["Half Day Reason"] = attendance_record.half_day_reason
+
+                # Grace Late Counts
+                current_date = attendance_record.attendance_date
+                month_start = current_date.replace(day=1)
+                month_end_day = calendar.monthrange(current_date.year, current_date.month)[1]
+                month_end_date = current_date.replace(day=month_end_day)
+
+                grace_lates_in_month_qs = Attendance.objects.filter(
+                    employee_id=employee.id,
+                    attendance_date__gte=month_start,
+                    attendance_date__lte=month_end_date,
+                    is_grace_late=True
+                )
+                
+                grace_late_count_used = grace_lates_in_month_qs.filter(attendance_date__lte=current_date).count()
+                row["Grace Late Count Used"] = grace_late_count_used
+
+                grace_time_config = None
+                if work_info and work_info.shift_id and work_info.shift_id.grace_time_id:
+                    grace_time_config = work_info.shift_id.grace_time_id
+                else:
+                    grace_time_config = GraceTime.objects.filter(is_default=True, is_active=True).first()
+
+                if grace_time_config and hasattr(grace_time_config, 'grace_late_limit'):
+                    limit = grace_time_config.grace_late_limit
+                    total_used_in_month = grace_lates_in_month_qs.count()
+                    row["Grace Late Remaining"] = max(0, limit - total_used_in_month)
+                else:
+                    row["Grace Late Remaining"] = 'N/A'
+
+
+            row["Attendance Status"] = status
+            report_data.append(row)
+
+    df = pd.DataFrame(report_data, columns=headers)
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename="attendance_report_{datetime.date.today()}.xlsx"'
+
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Attendance Report')
+        workbook = writer.book
+        worksheet = writer.sheets['Attendance Report']
+
+        header_font = Font(bold=True, color="FFFFFF")
+        header_fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
+        
+        for col_num, column_title in enumerate(df.columns, 1):
+            cell = worksheet.cell(row=1, column=col_num)
+            cell.font = header_font
+            cell.fill = header_fill
+            cell.alignment = Alignment(horizontal='center', vertical='center')
+            
+            column_width = max(df[column_title].astype(str).map(len).max(), len(column_title)) + 2
+            worksheet.column_dimensions[cell.column_letter].width = column_width
+
+        for row_num, row_data in enumerate(df.itertuples(index=False), 2):
+            for col_num, cell_value in enumerate(row_data, 1):
+                cell = worksheet.cell(row=row_num, column=col_num)
+                cell.alignment = Alignment(horizontal='left', vertical='center')
+                if isinstance(cell_value, datetime.date) and not isinstance(cell_value, datetime.datetime):
+                    cell.number_format = 'YYYY-MM-DD'
+                elif isinstance(cell_value, datetime.time):
+                    cell.number_format = 'HH:MM:SS'
+
+        worksheet.freeze_panes = 'A2'
+
+    return response
 
 
 @login_required
@@ -754,30 +985,71 @@ def attendance_activity_view(request):
     """
     This method will render a template to view all attendance activities
     """
+    from django.db.models import Q
+    from base.methods import paginator_qry
+    
     previous_data = request.GET.urlencode()
     filter_obj = AttendanceActivityFilter(request.GET)
     attendance_activities = filter_obj.qs
+    
     self_attendance_activities = attendance_activities.filter(
         employee_id__employee_user_id=request.user
     )
+    
+    # The permission should be for viewing attendance activity
     attendance_activities = filtersubordinates(
-        request, filter_obj.qs, "attendance.view_attendanceovertime"
+        request, attendance_activities, "attendance.view_attendanceactivity"
     )
-    attendance_activities = attendance_activities | self_attendance_activities
-    attendance_activities = attendance_activities.distinct()
+    
+    attendance_activities = (attendance_activities | self_attendance_activities).distinct()
     attendance_activities = attendance_activities.order_by("-pk")
-    activity_ids = json.dumps(
-        [instance.id for instance in paginator_qry(attendance_activities, None)]
-    )
+    
+    # Paginate the queryset FIRST for efficiency
+    page_obj = paginator_qry(attendance_activities, request.GET.get("page"))
+
+    # Now, get the pairs only for the current page's objects
+    activity_pairs = [
+        {'employee_id': act.employee_id_id, 'attendance_date': act.attendance_date} 
+        for act in page_obj.object_list
+    ]
+    
+    query = Q()
+    unique_pairs = { (p['employee_id'], p['attendance_date']) for p in activity_pairs }
+    for emp_id, att_date in unique_pairs:
+        query |= Q(employee_id=emp_id, attendance_date=att_date)
+    
+    if query:
+        attendances = Attendance.objects.filter(query).select_related(
+            'employee_id', 'shift_id', 'work_type_id'
+        ).prefetch_related('late_come_early_out')
+    else:
+        attendances = Attendance.objects.none()
+
+    attendance_map = {
+        (att.employee_id_id, att.attendance_date): att for att in attendances
+    }
+
+    # Manually annotate activities for the current page
+    annotated_activities_list = []
+    for activity in page_obj.object_list:
+        activity.attendance = attendance_map.get((activity.employee_id_id, activity.attendance_date))
+        annotated_activities_list.append(activity)
+        
+    # Replace the paginator's object list with the annotated one
+    page_obj.object_list = annotated_activities_list
+    
+    activity_ids = json.dumps([instance.id for instance in page_obj.object_list])
+
     if attendance_activities.exists():
         template = "attendance/attendance_activity/attendance_activity_view.html"
     else:
         template = "attendance/attendance_activity/activity_empty.html"
+    
     return render(
         request,
         template,
         {
-            "data": paginator_qry(attendance_activities, request.GET.get("page")),
+            "data": page_obj,
             "pd": previous_data,
             "f": filter_obj,
             "gp_fields": AttendanceActivityReGroup.fields,
@@ -1056,26 +1328,264 @@ def attendance_activity_import_excel(request):
 @login_required
 @permission_required("attendance.change_attendanceactivity")
 def attendance_activity_export(request):
-    if request.META.get("HTTP_HX_REQUEST") == "true":
-        export_form = AttendanceActivityExportForm()
-        context = {
-            "export_form": export_form,
-            "export": AttendanceActivityFilter(
-                queryset=AttendanceActivity.objects.all()
-            ),
-        }
-        return render(
-            request,
-            "attendance/attendance_activity/export_filter.html",
-            context=context,
-        )
-    return export_data(
-        request=request,
-        model=AttendanceActivity,
-        filter_class=AttendanceActivityFilter,
-        form_class=AttendanceActivityExportForm,
-        file_name="Attendance_activity",
-    )
+    """
+    Export Attendance Activity data to an Excel file with complete attendance status.
+    """
+    from employee.models import Employee
+    from leave.models import LeaveRequest
+    from base.models import Holidays, CompanyLeaves
+    import pandas as pd
+    from django.http import HttpResponse
+    import datetime
+    from collections import defaultdict
+    import json
+    from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
+
+    filters = request.GET.copy()
+    
+    activity_ids_json = filters.get("ids")
+    activity_ids = json.loads(activity_ids_json) if activity_ids_json else []
+
+    if activity_ids:
+        activities = AttendanceActivity.objects.filter(id__in=activity_ids)
+        employee_ids = activities.values_list('employee_id', flat=True).distinct()
+        employees = Employee.objects.filter(id__in=employee_ids).select_related('employee_work_info')
+        
+        dates = activities.values_list('attendance_date', flat=True).distinct()
+        if dates:
+            start_date = min(dates)
+            end_date = max(dates)
+        else:
+            today = datetime.date.today()
+            start_date = today.replace(day=1)
+            end_date = (start_date.replace(day=28) + datetime.timedelta(days=4)) - datetime.timedelta(days=(start_date.replace(day=28) + datetime.timedelta(days=4)).day)
+    else:
+        start_date_str = filters.get("attendance_date__gte")
+        end_date_str = filters.get("attendance_date__lte")
+        
+        if not start_date_str or not end_date_str:
+            today = datetime.date.today()
+            start_date = today.replace(day=1)
+            next_month = start_date.replace(day=28) + datetime.timedelta(days=4)
+            end_date = next_month - datetime.timedelta(days=next_month.day)
+        else:
+            start_date = datetime.datetime.strptime(start_date_str, "%Y-%m-%d").date()
+            end_date = datetime.datetime.strptime(end_date_str, "%Y-%m-%d").date()
+
+        employee_ids = filters.getlist("employee_id")
+        if employee_ids:
+            employees = Employee.objects.filter(id__in=employee_ids).select_related('employee_work_info')
+        else:
+            employees = Employee.objects.filter(is_active=True).select_related('employee_work_info')
+
+    date_range = [start_date + datetime.timedelta(days=x) for x in range((end_date - start_date).days + 1)]
+
+    report_data = []
+    headers = [
+        "Employee ID", "Employee Name", "Badge ID", "Department", "Job Position", "Company", "Shift", 
+        "Attendance Date", "Check In", "Check Out", "Worked Hours", "Overtime", 
+        "Late Coming", "Early Out", "Attendance Status", "Leave Status", "Leave Type", 
+        "Half Day", "Half Day Reason", "Grace Late", "Grace Late Count Used", "Grace Late Remaining",
+        "Short Leave", "Company Holiday", "Weekly Off", "Sunday", "Present", 
+        "Absent", "Missing Check In", "Missing Check Out"
+    ]
+    
+    attendances = Attendance.objects.filter(
+        employee_id__in=employees, 
+        attendance_date__range=(start_date, end_date)
+    ).select_related('employee_id', 'shift_id', 'work_type_id').prefetch_related('late_come_early_out')
+    
+    leaves = LeaveRequest.objects.filter(
+        employee_id__in=employees,
+        start_date__lte=end_date,
+        end_date__gte=start_date,
+        status='approved'
+    ).select_related('leave_type_id')
+
+    holidays = Holidays.objects.filter(start_date__lte=end_date, end_date__gte=start_date)
+    company_leaves_qs = CompanyLeaves.objects.all()
+
+    # Pre-fetch grace late data to avoid N+1 queries
+    grace_lates_qs = Attendance.objects.filter(
+        employee_id__in=employees,
+        attendance_date__range=(start_date, end_date),
+        is_grace_late=True
+    ).values('employee_id', 'attendance_date')
+
+    grace_late_by_employee_month = defaultdict(lambda: defaultdict(int))
+    for gl in grace_lates_qs:
+        grace_late_by_employee_month[gl['employee_id']][gl['attendance_date'].month] += 1
+    
+    grace_late_map = defaultdict(list)
+    for gl in grace_lates_qs:
+        grace_late_map[gl['employee_id']].append(gl['attendance_date'])
+
+    default_grace_time_config = GraceTime.objects.filter(is_default=True, is_active=True).first()
+    
+    attendance_map = {(att.employee_id_id, att.attendance_date): att for att in attendances}
+    leave_map = defaultdict(list)
+    for leave in leaves:
+        for day in [leave.start_date + datetime.timedelta(n) for n in range((leave.end_date - leave.start_date).days + 1)]:
+            if start_date <= day <= end_date:
+                leave_map[(leave.employee_id_id, day)].append(leave)
+
+    holiday_map = {}
+    for holiday in holidays:
+        for day in [holiday.start_date + datetime.timedelta(n) for n in range((holiday.end_date - holiday.start_date).days + 1)]:
+            if start_date <= day <= end_date:
+                holiday_map[day] = holiday.name
+    
+    company_leave_dates = {}
+    for day in date_range:
+        day_of_week = str(day.weekday())
+        week_of_month = str((day.day - 1) // 7)
+        if company_leaves_qs.filter(based_on_week__isnull=True, based_on_week_day=day_of_week).exists():
+            company_leave_dates[day] = "Weekly Off"
+        elif company_leaves_qs.filter(based_on_week=week_of_month, based_on_week_day=day_of_week).exists():
+            company_leave_dates[day] = "Weekly Off"
+
+    for employee in employees:
+        work_info = employee.employee_work_info
+        for single_date in date_range:
+            row = {h: "" for h in headers}
+            
+            row["Employee ID"] = employee.id
+            row["Employee Name"] = employee.get_full_name()
+            row["Badge ID"] = employee.badge_id
+            if work_info:
+                row["Department"] = work_info.department_id.department if work_info.department_id else ''
+                row["Job Position"] = work_info.job_position_id.job_position if work_info.job_position_id else ''
+                row["Company"] = work_info.company_id.company if work_info.company_id else ''
+                row["Shift"] = work_info.shift_id.employee_shift if work_info.shift_id else ''
+            
+            row["Attendance Date"] = single_date
+
+            status = "Absent"
+            row["Absent"] = "Yes"
+            row["Present"] = "No"
+
+            if single_date in holiday_map:
+                status = "Company Holiday"
+                row["Company Holiday"] = "Yes"
+                row["Absent"] = "No"
+            elif single_date in company_leave_dates:
+                status = "Weekly Off"
+                row["Weekly Off"] = "Yes"
+                row["Absent"] = "No"
+                if single_date.weekday() == 6:
+                    status = "Sunday"
+                    row["Sunday"] = "Yes"
+            elif (employee.id, single_date) in leave_map:
+                employee_leaves = leave_map[(employee.id, single_date)]
+                status = "On Leave"
+                row["Leave Status"] = "On Leave"
+                row["Leave Type"] = ", ".join([l.leave_type_id.name for l in employee_leaves])
+                row["Absent"] = "No"
+
+                is_half_day_leave = any(l.start_date_breakdown != 'full_day' or l.end_date_breakdown != 'full_day' for l in employee_leaves)
+                is_short_leave = any(l.leave_type_id.leave_unit == 'minute' for l in employee_leaves)
+
+                if is_half_day_leave:
+                    row["Half Day"] = "Yes"
+                    row["Half Day Reason"] = "Half Day Leave"
+                    status = "Half Day"
+                if is_short_leave:
+                    row["Short Leave"] = "Yes"
+                    status = "Short Leave" if status == "On Leave" else f"{status} + Short Leave"
+            
+            attendance_record = attendance_map.get((employee.id, single_date))
+            if attendance_record:
+                if status == "Absent":
+                    status = "Present"
+                
+                row["Present"] = "Yes"
+                row["Absent"] = "No"
+                
+                row["Check In"] = attendance_record.attendance_clock_in if attendance_record.attendance_clock_in else ''
+                row["Check Out"] = attendance_record.attendance_clock_out if attendance_record.attendance_clock_out else ''
+                row["Worked Hours"] = attendance_record.attendance_worked_hour
+                row["Overtime"] = attendance_record.attendance_overtime
+                
+                if not attendance_record.attendance_clock_in:
+                    row["Missing Check In"] = "Yes"
+                if not attendance_record.attendance_clock_out:
+                    row["Missing Check Out"] = "Yes"
+
+                late_early = attendance_record.late_come_early_out.all()
+                if late_early.filter(type='late_come').exists():
+                    row["Late Coming"] = "Yes"
+                if late_early.filter(type='early_out').exists():
+                    row["Early Out"] = "Yes"
+                
+                # Grace Late and Half Day from attendance
+                row["Grace Late"] = "Yes" if attendance_record.is_grace_late else "No"
+                if attendance_record.half_day_reason:
+                    row["Half Day"] = "Yes"
+                    row["Half Day Reason"] = attendance_record.half_day_reason
+
+                if attendance_record.is_grace_late:
+                    current_date = attendance_record.attendance_date
+                    
+                    # Optimized Grace Late Count Used
+                    grace_dates_for_employee = grace_late_map.get(employee.id, [])
+                    grace_late_count_used = len([
+                        d for d in grace_dates_for_employee 
+                        if d.month == current_date.month and d <= current_date
+                    ])
+                    row["Grace Late Count Used"] = grace_late_count_used
+
+                    # Optimized Grace Late Remaining
+                    grace_time_config = None
+                    if work_info and work_info.shift_id and work_info.shift_id.grace_time_id:
+                        grace_time_config = work_info.shift_id.grace_time_id
+                    else:
+                        grace_time_config = default_grace_time_config
+
+                    if grace_time_config and hasattr(grace_time_config, 'grace_late_limit'):
+                        limit = grace_time_config.grace_late_limit
+                        total_used_in_month = grace_late_by_employee_month.get(employee.id, {}).get(current_date.month, 0)
+                        row["Grace Late Remaining"] = max(0, limit - total_used_in_month)
+                    else:
+                        row["Grace Late Remaining"] = 'N/A'
+
+
+            row["Attendance Status"] = status
+            report_data.append(row)
+
+    df = pd.DataFrame(report_data, columns=headers)
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename="attendance_activity_report_{datetime.date.today()}.xlsx"'
+
+    with pd.ExcelWriter(response, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Attendance Activity Report')
+        workbook = writer.book
+        worksheet = writer.sheets['Attendance Activity Report']
+
+        header_font = Font(bold=True, color="FFFFFF")
+        header_fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
+        
+        for col_num, column_title in enumerate(df.columns, 1):
+            cell = worksheet.cell(row=1, column=col_num)
+            cell.font = header_font
+            cell.fill = header_fill
+            cell.alignment = Alignment(horizontal='center', vertical='center')
+            
+            column_width = max(df[column_title].astype(str).map(len).max(), len(column_title)) + 2
+            worksheet.column_dimensions[cell.column_letter].width = column_width
+
+        for row_num, row_data in enumerate(df.itertuples(index=False), 2):
+            for col_num, cell_value in enumerate(row_data, 1):
+                cell = worksheet.cell(row=row_num, column=col_num)
+                cell.alignment = Alignment(horizontal='left', vertical='center')
+                if isinstance(cell_value, datetime.date) and not isinstance(cell_value, datetime.datetime):
+                    cell.number_format = 'YYYY-MM-DD'
+                elif isinstance(cell_value, datetime.time):
+                    cell.number_format = 'HH:MM:SS'
+
+        worksheet.freeze_panes = 'A2'
+
+    return response
 
 
 @login_required

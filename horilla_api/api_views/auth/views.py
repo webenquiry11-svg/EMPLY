@@ -59,8 +59,15 @@ class LoginAPIView(APIView):
             password = request.data.get("password")
             user = authenticate(username=username, password=password)
             if user:
+                # Block suspended employees from obtaining tokens
+                try:
+                    employee = user.employee_get
+                    if getattr(employee, "is_suspended", False):
+                        return Response({"error": "Your account has been suspended. Please contact your administrator."}, status=403)
+                except Exception:
+                    employee = None
+
                 refresh = RefreshToken.for_user(user)
-                employee = user.employee_get
                 face_detection = False
                 face_detection_image = None
                 geo_fencing = False

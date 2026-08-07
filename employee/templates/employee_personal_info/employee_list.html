@@ -192,6 +192,11 @@
                             >
                                 {% trans "Date of Joining" %}
                             </div>
+                            {% if suspended_view %}
+                                <div class="oh-sticky-table__th" data-cell-index="13" data-cell-title='{% trans "Date Suspended" %}'>
+                                    {% trans "Date Suspended" %}
+                                </div>
+                            {% endif %}
                             <div class="oh-sticky-table__th oh-sticky-table__right" style="width: 313px">
                                 {% trans "Actions" %}
                             </div>
@@ -302,10 +307,18 @@
                                     style="color: inherit; text-decoration: none"
                                     class="oh-sticky-table__td dateformat_changer"
                                 >{{ emp.employee_work_info.date_joining }}</a>
-                                <div
-                                    style="color: inherit; text-decoration: none"
-                                    class="oh-sticky-table__td oh-sticky-table__right"
-                                >
+                                    {% if suspended_view %}
+                                        <a
+                                            data-cell-index="13"
+                                            href="{% url 'employee-view-individual' emp.id %}"
+                                            style="color: inherit; text-decoration: none"
+                                            class="oh-sticky-table__td dateformat_changer"
+                                        >{{ emp.suspended_at }}</a>
+                                    {% endif %}
+                                    <div
+                                        style="color: inherit; text-decoration: none"
+                                        class="oh-sticky-table__td oh-sticky-table__right"
+                                    >
                                     <div class="oh-btn-group">
                                         {% if "leave"|app_installed or "payroll"|app_installed or "attendance"|app_installed %}
                                             <button
@@ -340,6 +353,24 @@
                                                 class="oh-btn oh-btn--light-bkg w-100"
                                                 title="{% trans 'Edit' %}"
                                             ><ion-icon name="create-outline"></ion-icon></a>
+                                        {% endif %}
+
+                                        {% if perms.employee.change_employee and not emp.is_suspended %}
+                                            <form
+                                                hx-confirm="{% trans 'Do you want to suspend this employee?' %}"
+                                                hx-post="{% url 'employee-suspend' emp.id %}"
+                                                hx-target="#relatedModel"
+                                                style="width: 100%"
+                                            >
+                                                {% csrf_token %}
+                                                <button
+                                                    type="submit"
+                                                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                    title="{% trans 'Suspend' %}"
+                                                >
+                                                    <ion-icon name="ban-outline"></ion-icon>
+                                                </button>
+                                            </form>
                                         {% endif %}
                                         {% if perms.employee.delete_employee %}
                                             {% if emp.is_active %}

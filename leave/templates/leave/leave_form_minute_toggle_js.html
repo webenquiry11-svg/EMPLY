@@ -1,0 +1,21 @@
+<script>
+    (function () {
+        var minuteLeaveTypeIds = {{ minute_leave_type_ids|default:'[]'|safe }};
+        var formId = "#{{ form_id }}";
+
+        function toggleMinuteFields() {
+            var selectedLeaveType = $(formId + " [name='leave_type_id']").val();
+            var isMinuteLeave = minuteLeaveTypeIds.includes(Number(selectedLeaveType));
+
+            $("#id_requested_minutes_parent_div").toggle(isMinuteLeave);
+            $("#id_end_date_parent_div").toggle(!isMinuteLeave);
+            $("#id_start_date_breakdown_parent_div").toggle(!isMinuteLeave);
+            $("#id_end_date_breakdown_parent_div").toggle(!isMinuteLeave);
+        }
+
+        $(document).ready(function () {
+            $(formId + " [name='leave_type_id']").on("change", toggleMinuteFields);
+            toggleMinuteFields();
+        });
+    })();
+</script>

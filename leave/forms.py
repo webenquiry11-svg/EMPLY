@@ -42,6 +42,25 @@ CHOICES = [("yes", _("Yes")), ("no", _("No"))]
 LEAVE_MAX_LIMIT = 1e5
 
 
+def get_allocatable_leave_type_queryset():
+    return LeaveType.objects.exclude(leave_unit="minute")
+
+
+def get_employee_leave_type_queryset(employee):
+    if not employee:
+        return LeaveType.objects.none()
+
+    available_leaves = employee.available_leave.all()
+    assigned_leave_type_ids = set(
+        available_leaves.values_list("leave_type_id", flat=True)
+    )
+    minute_leave_type_ids = set(
+        LeaveType.objects.filter(leave_unit="minute").values_list("id", flat=True)
+    )
+    combined_ids = assigned_leave_type_ids | minute_leave_type_ids
+    return LeaveType.objects.filter(id__in=combined_ids).distinct()
+
+
 class ConditionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -265,6 +284,7 @@ class LeaveRequestCreationForm(BaseModelForm):
             "start_date_breakdown",
             "end_date",
             "end_date_breakdown",
+            "requested_minutes",
             "attachment",
             "description",
         ]
@@ -280,17 +300,13 @@ class LeaveRequestUpdationForm(BaseModelForm):
         leave_type = leave_request.leave_type_id
 
         if employee:
-            available_leaves = employee.available_leave.all()
-            assigned_leave_types = LeaveType.objects.filter(
-                id__in=available_leaves.values_list("leave_type_id", flat=True)
-            )
-
-            if leave_type and leave_type.id not in assigned_leave_types.values_list(
+            employee_leave_types = get_employee_leave_type_queryset(employee)
+            if leave_type and leave_type.id not in employee_leave_types.values_list(
                 "id", flat=True
             ):
-                assigned_leave_types |= LeaveType.objects.filter(id=leave_type.id)
+                employee_leave_types |= LeaveType.objects.filter(id=leave_type.id)
 
-            self.fields["leave_type_id"].queryset = assigned_leave_types
+            self.fields["leave_type_id"].queryset = employee_leave_types
 
         self.fields["leave_type_id"].widget.attrs.update(
             {
@@ -337,6 +353,7 @@ class LeaveRequestUpdationForm(BaseModelForm):
             "start_date_breakdown",
             "end_date",
             "end_date_breakdown",
+            "requested_minutes",
             "attachment",
             "description",
         ]
@@ -355,7 +372,7 @@ class AvailableLeaveForm(BaseModelForm):
     """
 
     leave_type_id = forms.ModelChoiceField(
-        queryset=LeaveType.objects.all(),
+        queryset=get_allocatable_leave_type_queryset(),
         widget=forms.SelectMultiple,
         empty_label=None,
     )
@@ -437,15 +454,10 @@ class UserLeaveRequestForm(BaseModelForm):
         super(UserLeaveRequestForm, self).__init__(*args, **kwargs)
         self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
         if employee:
-            available_leaves = employee.available_leave.all()
-            assigned_leave_types = LeaveType.objects.filter(
-                id__in=available_leaves.values_list("leave_type_id", flat=True)
+            self.fields["leave_type_id"].queryset = get_employee_leave_type_queryset(
+                employee
             )
-            self.fields["leave_type_id"].queryset = assigned_leave_types
         if leave_type:
-            self.fields["leave_type_id"].queryset = LeaveType.objects.filter(
-                id=leave_type["leave_type_id"].id
-            )
             self.fields["leave_type_id"].initial = leave_type["leave_type_id"].id
             self.fields["leave_type_id"].empty_label = None
 
@@ -470,6 +482,7 @@ class UserLeaveRequestForm(BaseModelForm):
             "start_date_breakdown",
             "end_date",
             "end_date_breakdown",
+            "requested_minutes",
             "attachment",
             "description",
         ]
@@ -562,11 +575,9 @@ class UserLeaveRequestCreationForm(BaseModelForm):
         super().__init__(*args, **kwargs)
         self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
         if employee:
-            available_leaves = employee.available_leave.all()
-            assigned_leave_types = LeaveType.objects.filter(
-                id__in=available_leaves.values_list("leave_type_id", flat=True)
+            self.fields["leave_type_id"].queryset = get_employee_leave_type_queryset(
+                employee
             )
-            self.fields["leave_type_id"].queryset = assigned_leave_types
         self.fields["leave_type_id"].widget.attrs.update(
             {
                 "hx-include": "#userLeaveForm",
@@ -591,6 +602,7 @@ class UserLeaveRequestCreationForm(BaseModelForm):
             "start_date_breakdown",
             "end_date",
             "end_date_breakdown",
+            "requested_minutes",
             "attachment",
             "description",
             "requested_days",
@@ -611,6 +623,10 @@ class LeaveAllocationRequestForm(BaseModelForm):
     Methods:
         - as_p: Render the form fields as HTML table rows with Bootstrap styling.
     """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["leave_type_id"].queryset = get_allocatable_leave_type_queryset()
 
     def as_p(self, *args, **kwargs):
         """
@@ -738,7 +754,8 @@ class AssignLeaveForm(HorillaForm):
         reload_queryset(self.fields)
         self.fields["employee_id"].widget.attrs.update(
             {"required": True, "id": uuid.uuid4()}
-        ),
+        )
+        self.fields["leave_type_id"].queryset = get_allocatable_leave_type_queryset()
         self.fields["leave_type_id"].label = _("Leave Type")
 
 

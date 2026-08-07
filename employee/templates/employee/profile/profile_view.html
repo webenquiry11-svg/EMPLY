@@ -52,7 +52,28 @@
                             {% endif %}
                         </div>
                         <div class="oh-profile__info-container">
-                            <h1 class="oh-profile__info-name">{{ employee }}</h1>
+                            <h1 class="oh-profile__info-name">{{ employee }}
+                                {% if employee.is_suspended %}
+                                    <span class="oh-badge oh-badge--danger ms-2">{% trans "Suspended" %}</span>
+                                    {% if perms.employee.change_employee %}
+                                        <form
+                                            action="{% url 'employee-unsuspend' employee.id %}"
+                                            method="post"
+                                            style="display: inline-block; margin-left: 8px"
+                                            onsubmit="event.stopPropagation();"
+                                        >
+                                            {% csrf_token %}
+                                            <button
+                                                type="submit"
+                                                class="oh-btn oh-btn--light-bkg oh-btn--small"
+                                                title="{% trans 'Unsuspend' %}"
+                                            >
+                                                {% trans "Unsuspend" %}
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                {% endif %}
+                            </h1>
                             <p class="oh-profile__info-designation">
                                 {{ employee.job_position_id }}
                             </p>

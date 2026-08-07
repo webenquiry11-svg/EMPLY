@@ -573,10 +573,10 @@ def document_request_create(request):
                 request.user.employee_get,
                 recipient=employees,
                 verb=f"{request.user.employee_get} requested a document.",
-                verb_ar=f"طلب {request.user.employee_get} مستنداً.",
+                verb_ar=f"Ø·Ù„Ø¨ {request.user.employee_get} Ù…Ø³ØªÙ†Ø¯Ø§Ù‹.",
                 verb_de=f"{request.user.employee_get} hat ein Dokument angefordert.",
-                verb_es=f"{request.user.employee_get} solicitó un documento.",
-                verb_fr=f"{request.user.employee_get} a demandé un document.",
+                verb_es=f"{request.user.employee_get} solicitÃ³ un documento.",
+                verb_fr=f"{request.user.employee_get} a demandÃ© un document.",
                 redirect=reverse("employee-profile"),
                 icon="chatbox-ellipses",
             )
@@ -809,10 +809,10 @@ def file_upload(request, id):
                     request.user.employee_get,
                     recipient=request.user.employee_get.get_reporting_manager().employee_user_id,
                     verb=f"{request.user.employee_get} uploaded a document",
-                    verb_ar=f"قام {request.user.employee_get} بتحميل مستند",
+                    verb_ar=f"Ù‚Ø§Ù… {request.user.employee_get} Ø¨ØªØ­Ù…ÙŠÙ„ Ù…Ø³ØªÙ†Ø¯",
                     verb_de=f"{request.user.employee_get} hat ein Dokument hochgeladen",
-                    verb_es=f"{request.user.employee_get} subió un documento",
-                    verb_fr=f"{request.user.employee_get} a téléchargé un document",
+                    verb_es=f"{request.user.employee_get} subiÃ³ un documento",
+                    verb_fr=f"{request.user.employee_get} a tÃ©lÃ©chargÃ© un document",
                     redirect=reverse(
                         "employee-view-individual",
                         kwargs={"obj_id": request.user.employee_get.id},
@@ -1124,7 +1124,7 @@ def employee_view(request):
     page_number = request.GET.get("page")
     error_message = request.session.pop("error_message", None)
 
-    queryset = Employee.objects.filter()
+    queryset = Employee.objects.filter(is_suspended=False)
     filter_obj = EmployeeFilter(request.GET, queryset=queryset).qs
     if request.GET.get("is_active") != "False":
         filter_obj = filter_obj.filter(is_active=True)
@@ -1558,10 +1558,10 @@ def employee_view_update(request, obj_id, **kwargs):
                         request.user.employee_get,
                         recipient=instance.employee_id.employee_user_id,
                         verb="Your work details has been updated.",
-                        verb_ar="تم تحديث تفاصيل عملك.",
+                        verb_ar="ØªÙ… ØªØ­Ø¯ÙŠØ« ØªÙØ§ØµÙŠÙ„ Ø¹Ù…Ù„Ùƒ.",
                         verb_de="Ihre Arbeitsdetails wurden aktualisiert.",
                         verb_es="Se han actualizado los detalles de su trabajo.",
-                        verb_fr="Vos informations professionnelles ont été mises à jour.",
+                        verb_fr="Vos informations professionnelles ont Ã©tÃ© mises Ã  jour.",
                         redirect=reverse("employee-profile"),
                         icon="briefcase",
                     )
@@ -1849,7 +1849,7 @@ def employee_filter_view(request):
     """
     previous_data = request.GET.urlencode()
     field = request.GET.get("field")
-    queryset = Employee.objects.filter()
+    queryset = Employee.objects.filter(is_suspended=False)
     selected_company = request.session.get("selected_company")
     employees = EmployeeFilter(request.GET, queryset=queryset).qs
     if request.GET.get("is_active") != "False":
@@ -2196,9 +2196,8 @@ def replace_employee(request, emp_id):
                     field_name == "reporting_manager_id"
                     and str(emp_id) != replace_emp_id
                 ):
-                    reporting_manager = EmployeeWorkInformation.objects.filter(
-                        reporting_manager_id=emp_id
-                    ).update(reporting_manager_id=replace_emp)
+                    EmployeeWorkInformation.objects.filter(reporting_manager_id=emp_id).update(reporting_manager_id=replace_emp)
+
                 elif (
                     apps.is_installed("recruitment")
                     and field_name == "recruitment_managers"
@@ -2270,6 +2269,97 @@ def replace_employee(request, emp_id):
         employee.save()
         messages.success(request, _("{} archived successfully").format(employee))
     return redirect(employee_view)
+
+
+# ----------------- Suspend / Unsuspend Feature -----------------
+@login_required
+@permission_required("employee.change_employee")
+@require_http_methods(["POST"])
+def employee_suspend(request, emp_id):
+    """Suspend an employee (set is_suspended=True, record suspended_at)."""
+    try:
+        employee = Employee.objects.get(id=emp_id)
+        if getattr(employee, "is_suspended", False):
+            messages.info(request, _("Employee is already suspended."))
+        else:
+            Employee.objects.filter(pk=employee.pk).update(
+                is_suspended=True,
+                suspended_at=timezone.now(),
+            )
+            messages.success(request, _(f"{employee} has been suspended."))
+    except Employee.DoesNotExist:
+        messages.error(request, _("Employee not found."))
+    key = "HTTP_HX_REQUEST"
+    if key not in request.META.keys():
+        return HorillaRedirect(request)
+    return HttpResponse("<script>$('#filterEmployee').click();</script>")
+
+
+@login_required
+@permission_required("employee.change_employee")
+@require_http_methods(["POST"])
+def employee_unsuspend(request, emp_id):
+    """Unsuspend an employee (set is_suspended=False)."""
+    try:
+        employee = Employee.objects.get(id=emp_id)
+        if not getattr(employee, "is_suspended", False):
+            messages.info(request, _("Employee is not suspended."))
+        else:
+            Employee.objects.filter(pk=employee.pk).update(
+                is_suspended=False,
+                suspended_at=None,
+            )
+            messages.success(request, _(f"{employee} has been unsuspended."))
+    except Employee.DoesNotExist:
+        messages.error(request, _("Employee not found."))
+    key = "HTTP_HX_REQUEST"
+    if key not in request.META.keys():
+        return HorillaRedirect(request)
+    return HttpResponse("<script>$('#filterEmployee').click();</script>")
+
+
+@login_required
+@permission_required("employee.change_employee")
+def suspended_employees(request):
+    """View listing of suspended employees reusing the main employee list implementation.
+
+    This returns the same template and context as employee_view but restricts the
+    base queryset to employees with is_suspended=True so that pagination, search,
+    filters, exports and bulk actions continue working exactly as the normal list.
+    """
+    view_type = request.GET.get("view")
+    previous_data = request.GET.urlencode()
+    page_number = request.GET.get("page")
+    error_message = request.session.pop("error_message", None)
+
+    # Base queryset limited to suspended employees only
+    queryset = Employee.objects.filter(is_suspended=True)
+    filter_obj = EmployeeFilter(request.GET, queryset=queryset).qs
+
+    update_fields = BulkUpdateFieldForm()
+    data_dict = parse_qs(previous_data)
+    get_key_instances(Employee, data_dict)
+    emp = Employee.objects.filter()
+
+    # Store the employees in the session (same behaviour as employee_view)
+    request.session["filtered_employees"] = [employee.id for employee in queryset]
+
+    return render(
+        request,
+        "employee_personal_info/employee_view.html",
+        {
+            "data": paginator_qry(filter_obj, page_number),
+            "pd": previous_data,
+            "f": EmployeeFilter(),
+            "update_fields_form": update_fields,
+            "view_type": view_type,
+            "filter_dict": data_dict,
+            "emp": emp,
+            "gp_fields": EmployeeReGroup.fields,
+            "error_message": error_message,
+            "suspended_view": True,
+        },
+    )
 
 
 @login_required

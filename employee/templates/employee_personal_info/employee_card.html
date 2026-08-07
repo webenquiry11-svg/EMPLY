@@ -86,6 +86,19 @@
                         <a href="{% url 'employee-view-update' emp.id %}" class="oh-dropdown__link">{% trans "Edit" %}</a>
                       </li>
                     {% endif %}
+                    {% if perms.employee.change_employee and not emp.is_suspended %}
+                      <li class="oh-dropdown__item">
+                        <form
+                          hx-confirm="{% trans 'Do you want to suspend this employee?' %}"
+                          hx-post="{% url 'employee-suspend' emp.id %}"
+                          hx-target="#relatedModel"
+                          style="display: inline"
+                        >
+                          {% csrf_token %}
+                          <button type="submit" class="oh-dropdown__link" style="border: none; background: transparent; padding: 0; width: 100%; text-align: left;">{% trans "Suspend" %}</button>
+                        </form>
+                      </li>
+                    {% endif %}
                     {% if profile_edit_enabled %}
                       {% if perms.employee.change_employee or request.user|check_manager:emp %}
                         <li class="oh-dropdown__item">

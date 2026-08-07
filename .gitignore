@@ -152,3 +152,21 @@ whoosh_index/
 
 #PyCharm
 .idea/
+
+# Database backups
+*.sql
+*.dump
+*.backup
+*.bak
+
+# OS files
+Thumbs.db
+.DS_Store
+# Test exports
+*.xlsx
+
+# Temporary scripts
+temp_*.py
+
+# Tracebacks
+*.txt

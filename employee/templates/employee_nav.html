@@ -219,6 +219,11 @@
                     </ul>
                 {% endif %}
                 {% if emp %}
+                    {% if perms.employee.change_employee %}
+                        <a href="{% url 'suspended-employees' %}" class="oh-btn ml-2">
+                            <ion-icon name="ban-outline" class="mr-1"></ion-icon>{% trans "Suspended Employees" %}
+                        </a>
+                    {% endif %}
                     <div class="oh-dropdown" x-data="{open: false}">
                         <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
                             <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
