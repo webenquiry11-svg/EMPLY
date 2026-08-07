@@ -23,4 +23,5 @@ RUN chmod +x /app/entrypoint.sh
 
 EXPOSE 8000
 
-CMD ["python3", "manage.py", "runserver"]
+# CMD ["python3", "manage.py", "runserver"]
+CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "horilla.wsgi:application"]
