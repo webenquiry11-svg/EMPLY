@@ -19,14 +19,9 @@ COPY --from=builder /install /usr/local
 
 COPY . .
 
-# RUN chmod +x /app/entrypoint.sh
-
-# # EXPOSE 8000
-# EXPOSE 10000
-# # CMD ["python3", "manage.py", "runserver"]
-# CMD ["sh", "-c", "gunicorn horilla.wsgi:application --bind 0.0.0.0:$PORT --log-level debug --access-logfile - --error-logfile -"]
 RUN chmod +x /app/entrypoint.sh
 
-EXPOSE 10000
+EXPOSE 8000
 
-CMD ["sh", "/app/entrypoint.sh"]
+# CMD ["python3", "manage.py", "runserver"]
+CMD ["gunicorn", "horilla.wsgi:application", "--bind", "0.0.0.0:8000"]
