@@ -11,12 +11,14 @@
 #!/bin/bash
 set -e
 
-echo "Neon PostgreSQL host is reachable."
+echo "Connecting to PostgreSQL..."
 
-echo "Starting Gunicorn on port ${PORT}..."
+python3 manage.py migrate --noinput
 
-exec gunicorn \
-  --bind 0.0.0.0:${PORT} \
-  --workers 1 \
-  --timeout 120 \
-  horilla.wsgi:application
+echo "Database migrations completed."
+
+python3 manage.py collectstatic --noinput
+
+echo "Starting Gunicorn..."
+
+exec gunicorn --bind 0.0.0.0:${PORT} horilla.wsgi:application
