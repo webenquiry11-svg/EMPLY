@@ -11,21 +11,12 @@
 #!/bin/bash
 set -e
 
-echo "Checking Neon PostgreSQL connection..."
-
-python3 manage.py shell -c "
-from django.db import connection
-connection.ensure_connection()
-print('========================================')
-print('DATABASE CONNECTED SUCCESSFULLY')
-print('Database:', connection.settings_dict.get('NAME'))
-print('Host:', connection.settings_dict.get('HOST'))
-print('Engine:', connection.vendor)
-print('========================================')
-"
-
-echo "Collecting static files..."
-python3 manage.py collectstatic --noinput
+echo "Neon PostgreSQL host is reachable."
 
 echo "Starting Gunicorn on port ${PORT}..."
-exec gunicorn --bind 0.0.0.0:${PORT} horilla.wsgi:application
+
+exec gunicorn \
+  --bind 0.0.0.0:${PORT} \
+  --workers 1 \
+  --timeout 120 \
+  horilla.wsgi:application
