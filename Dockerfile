@@ -23,5 +23,7 @@ RUN chmod +x /app/entrypoint.sh
 
 EXPOSE 8000
 
-CMD ["python3", "manage.py", "runserver"]
+# CMD ["python3", "manage.py", "runserver"]
 # CMD ["gunicorn", "horilla.wsgi:application", "--bind", "0.0.0.0:8000"]
+# Purane CMD ko replace karein
+ENTRYPOINT ["/app/entrypoint.sh"]
