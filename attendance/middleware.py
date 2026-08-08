@@ -11,17 +11,9 @@ from attendance.methods.utils import Request
 
 
 class AttendanceMiddleware(MiddlewareMixin):
-    """
-    This middleware checks for employees who haven't clocked out by the end of their
-    scheduled shift and automatically performs the clock-out action if the auto punch-out
-    is enabled for their shift. It processes this during each request.
-    """
 
     def process_request(self, request):
-        """
-        Triggers the `trigger_function` on each request.
-        """
-        self.trigger_function()
+        return None
 
     def trigger_function(self):
         """
@@ -61,7 +53,10 @@ class AttendanceMiddleware(MiddlewareMixin):
                         date += timedelta(days=1)
 
                     combined_datetime = timezone.make_aware(
-                        datetime.combine(date, shift_schedule.auto_punch_out_time)
+                        datetime.combine(
+                            date,
+                            shift_schedule.auto_punch_out_time
+                        )
                     )
                     current_time = timezone.now()
 
