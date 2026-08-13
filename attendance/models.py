@@ -28,6 +28,8 @@ from attendance.methods.utils import (
     validate_time_format,
     validate_time_in_minutes,
 )
+
+FULL_DAY_ABSENT_REASON = "Late check-in after grace limit exhausted"
 from base.horilla_company_manager import HorillaCompanyManager
 from base.methods import is_company_leave, is_holiday
 from base.models import Company, EmployeeShift, EmployeeShiftDay, TrackLateComeEarlyOut, WorkType
@@ -539,6 +541,35 @@ class Attendance(HorillaModel):
                 defaults={'employee_id': attendance_instance.employee_id}
             )
 
+        def leave_applied_before_shift():
+            if not apps.is_installed("leave") or not self.employee_id:
+                return False
+
+            approved_leaves = self.employee_id.leaverequest_set.filter(
+                status="approved",
+                start_date__lte=self.attendance_date,
+                end_date__gte=self.attendance_date,
+            )
+            if not approved_leaves.exists():
+                return False
+
+            shift_time = dt.time(hour=start_time // 3600, minute=(start_time % 3600) // 60)
+            shift_start_dt = datetime.combine(self.attendance_date, shift_time)
+            if timezone.is_naive(shift_start_dt):
+                shift_start_dt = timezone.make_aware(shift_start_dt, timezone.get_current_timezone())
+
+            for leave in approved_leaves:
+                leave_created_at = getattr(leave, "created_at", None)
+                if leave_created_at is None:
+                    continue
+                if timezone.is_naive(leave_created_at):
+                    leave_created_at = timezone.make_aware(
+                        leave_created_at, timezone.get_current_timezone()
+                    )
+                if leave_created_at <= shift_start_dt:
+                    return True
+            return False
+
         if grace_time_config and hasattr(grace_time_config, 'grace_late_window_minutes') and now_sec <= grace_late_end_sec:
             today = self.attendance_date
             grace_late_count_in_month = Attendance.objects.filter(
@@ -552,10 +583,8 @@ class Attendance(HorillaModel):
                 self.is_grace_late = True
                 self.grace_late_count_used = grace_late_count_in_month + 1
             else:
-                self.half_day_reason = "Grace Late Limit Exceeded"
-                min_hour_sec = strtime_seconds(self.minimum_hour)
-                if min_hour_sec > 0:
-                    self.minimum_hour = format_time(min_hour_sec / 2)
+                if not leave_applied_before_shift():
+                    self.half_day_reason = FULL_DAY_ABSENT_REASON
                 late_come_create(self)
             return
 

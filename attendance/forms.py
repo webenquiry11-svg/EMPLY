@@ -804,7 +804,6 @@ class AttendanceExportForm(forms.Form):
     they want to include in the export excel file as column. The fields are
     presented as a list of checkboxes, and the user can select multiple fields.
     """
-
     model_fields = Attendance._meta.get_fields()
     field_choices = [
         (field.name, field.verbose_name)
@@ -873,6 +872,41 @@ class LateComeEarlyOutExportForm(forms.Form):
     )
 
 
+# Source of truth for Activity Export Headers
+ATTENDANCE_ACTIVITY_EXPORT_COLUMNS = [
+    ("employee_id", "Employee ID"),
+    ("employee_name", "Employee Name"),
+    ("badge_id", "Badge ID"),
+    ("department", "Department"),
+    ("job_position", "Job Position"),
+    ("company", "Company"),
+    ("shift", "Shift"),
+    ("attendance_date", "Attendance Date"),
+    ("check_in", "Check In"),
+    ("check_out", "Check Out"),
+    ("worked_hours", "Worked Hours"),
+    ("overtime", "Overtime"),
+    ("late_coming", "Late Coming"),
+    ("early_out", "Early Out"),
+    ("attendance_status", "Attendance Status"),
+    ("leave_status", "Leave Status"),
+    ("leave_type", "Leave Type"),
+    ("half_day", "Half Day"),
+    ("half_day_reason", "Half Day Reason"),
+    ("grace_late", "Grace Late"),
+    ("grace_late_count_used", "Grace Late Count Used"),
+    ("grace_late_remaining", "Grace Late Remaining"),
+    ("short_leave", "Short Leave"),
+    ("company_holiday", "Company Holiday"),
+    ("weekly_off", "Weekly Off"),
+    ("sunday", "Sunday"),
+    ("present", "Present"),
+    ("absent", "Absent"),
+    ("missing_check_in", "Missing Check In"),
+    ("missing_check_out", "Missing Check Out"),
+]
+
+
 class AttendanceActivityExportForm(forms.Form):
     """
     This form allows users to choose specific fields from the `AttendanceActivity`
@@ -880,23 +914,18 @@ class AttendanceActivityExportForm(forms.Form):
     enabling users to select multiple fields.
     """
 
-    model_fields = AttendanceActivity._meta.get_fields()
-    field_choices = [
-        (field.name, field.verbose_name)
-        for field in model_fields
-        if hasattr(field, "verbose_name") and field.name not in excluded_fields
-    ]
     selected_fields = forms.MultipleChoiceField(
-        choices=field_choices,
+        choices=ATTENDANCE_ACTIVITY_EXPORT_COLUMNS,
         widget=forms.CheckboxSelectMultiple,
         initial=[
-            "employee_id",
+            "employee_name",
             "attendance_date",
-            "clock_in_date",
-            "clock_in",
-            "clock_out_date",
-            "clock_out",
+            "check_in",
+            "check_out",
+            "worked_hours",
+            "attendance_status",
         ],
+        required=False,
     )
 
 

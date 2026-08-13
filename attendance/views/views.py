@@ -68,6 +68,7 @@ from attendance.forms import (
     GraceTimeForm,
     LateComeEarlyOutExportForm,
     NewRequestForm,
+    ATTENDANCE_ACTIVITY_EXPORT_COLUMNS,
 )
 from attendance.methods.utils import (
     Request,
@@ -92,6 +93,7 @@ from attendance.models import (
     AttendanceRequestFile,
     AttendanceValidationCondition,
     BatchAttendance,
+    FULL_DAY_ABSENT_REASON,
     GraceTime,
     WorkRecords,
 )
@@ -458,12 +460,22 @@ def attendance_export(request):
             
             attendance_record = attendance_map.get((employee.id, single_date))
             if attendance_record:
-                if status == "Absent":
+                if attendance_record.half_day_reason == FULL_DAY_ABSENT_REASON:
+                    status = "Absent"
+                    row["Absent"] = "Yes"
+                    row["Present"] = "No"
+                    row["Leave Status"] = ""
+                    row["Leave Type"] = ""
+                    row["Short Leave"] = ""
+                    row["Half Day"] = ""
+                elif status == "Absent":
                     status = "Present"
-                
-                row["Present"] = "Yes"
-                row["Absent"] = "No"
-                
+                    row["Present"] = "Yes"
+                    row["Absent"] = "No"
+                else:
+                    row["Present"] = "Yes"
+                    row["Absent"] = "No"
+
                 row["Check In"] = attendance_record.attendance_clock_in if attendance_record.attendance_clock_in else ''
                 row["Check Out"] = attendance_record.attendance_clock_out if attendance_record.attendance_clock_out else ''
                 row["Worked Hours"] = attendance_record.attendance_worked_hour
@@ -483,8 +495,11 @@ def attendance_export(request):
                 # Grace Late and Half Day from attendance
                 row["Grace Late"] = "Yes" if attendance_record.is_grace_late else "No"
                 if attendance_record.half_day_reason:
-                    row["Half Day"] = "Yes"
-                    row["Half Day Reason"] = attendance_record.half_day_reason
+                    if attendance_record.half_day_reason == FULL_DAY_ABSENT_REASON:
+                        row["Half Day Reason"] = attendance_record.half_day_reason
+                    else:
+                        row["Half Day"] = "Yes"
+                        row["Half Day Reason"] = attendance_record.half_day_reason
 
                 # Grace Late Counts
                 current_date = attendance_record.attendance_date
@@ -1331,20 +1346,41 @@ def attendance_activity_export(request):
     """
     Export Attendance Activity data to an Excel file with complete attendance status.
     """
+    import datetime as datetime_module
+
+    from openpyxl.styles import Alignment, Font, PatternFill
     from employee.models import Employee
     from leave.models import LeaveRequest
     from base.models import Holidays, CompanyLeaves
-    import pandas as pd
-    from django.http import HttpResponse
-    import datetime
-    from collections import defaultdict
-    import json
-    from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
+
+    if request.META.get("HTTP_HX_REQUEST") == "true":
+        context = {
+            "export_form": AttendanceActivityExportForm(),
+            "export": AttendanceActivityFilter(
+                request.GET, queryset=AttendanceActivity.objects.all()
+            ),
+        }
+        return render(request, "attendance/attendance_activity/export_filter.html", context)
 
     filters = request.GET.copy()
     
     activity_ids_json = filters.get("ids")
-    activity_ids = json.loads(activity_ids_json) if activity_ids_json else []
+    try:
+        activity_ids = json.loads(activity_ids_json) if activity_ids_json else []
+    except (TypeError, ValueError):
+        return HttpResponseBadRequest("Invalid attendance activity IDs.")
+
+    export_form = AttendanceActivityExportForm(filters)
+    if not export_form.is_valid():
+        return HttpResponseBadRequest("Invalid export column selection.")
+
+    selected_fields = request.GET.getlist("selected_fields") or export_form.cleaned_data["selected_fields"] or [
+        key for key, _ in ATTENDANCE_ACTIVITY_EXPORT_COLUMNS
+    ]
+
+    # Map internal keys to display headers for the selected fields
+    field_mapping = {key: label for key, label in ATTENDANCE_ACTIVITY_EXPORT_COLUMNS}
+    export_keys = [key for key in selected_fields if key in field_mapping]
 
     if activity_ids:
         activities = AttendanceActivity.objects.filter(id__in=activity_ids)
@@ -1356,39 +1392,38 @@ def attendance_activity_export(request):
             start_date = min(dates)
             end_date = max(dates)
         else:
-            today = datetime.date.today()
+            today = datetime_module.date.today()
             start_date = today.replace(day=1)
-            end_date = (start_date.replace(day=28) + datetime.timedelta(days=4)) - datetime.timedelta(days=(start_date.replace(day=28) + datetime.timedelta(days=4)).day)
+            next_month = start_date.replace(day=28) + datetime_module.timedelta(days=4)
+            end_date = next_month - datetime_module.timedelta(days=next_month.day)
     else:
-        start_date_str = filters.get("attendance_date__gte")
-        end_date_str = filters.get("attendance_date__lte")
+        filtered_activities = AttendanceActivityFilter(
+            filters, queryset=AttendanceActivity.objects.all()
+        ).qs
+        employee_ids = filtered_activities.values_list("employee_id", flat=True).distinct()
+        employees = Employee.objects.filter(id__in=employee_ids).select_related(
+            "employee_work_info"
+        )
+
+        exact_date = filters.get("attendance_date")
+        start_date_str = exact_date or filters.get("attendance_date_from") or filters.get("attendance_date__gte")
+        end_date_str = exact_date or filters.get("attendance_date_till") or filters.get("attendance_date__lte")
         
         if not start_date_str or not end_date_str:
-            today = datetime.date.today()
+            today = datetime_module.date.today()
             start_date = today.replace(day=1)
-            next_month = start_date.replace(day=28) + datetime.timedelta(days=4)
-            end_date = next_month - datetime.timedelta(days=next_month.day)
+            next_month = start_date.replace(day=28) + datetime_module.timedelta(days=4)
+            end_date = next_month - datetime_module.timedelta(days=next_month.day)
         else:
-            start_date = datetime.datetime.strptime(start_date_str, "%Y-%m-%d").date()
-            end_date = datetime.datetime.strptime(end_date_str, "%Y-%m-%d").date()
+            try:
+                start_date = datetime_module.datetime.strptime(start_date_str, "%Y-%m-%d").date()
+                end_date = datetime_module.datetime.strptime(end_date_str, "%Y-%m-%d").date()
+            except ValueError:
+                return HttpResponseBadRequest("Invalid attendance date range.")
 
-        employee_ids = filters.getlist("employee_id")
-        if employee_ids:
-            employees = Employee.objects.filter(id__in=employee_ids).select_related('employee_work_info')
-        else:
-            employees = Employee.objects.filter(is_active=True).select_related('employee_work_info')
-
-    date_range = [start_date + datetime.timedelta(days=x) for x in range((end_date - start_date).days + 1)]
+    date_range = [start_date + datetime_module.timedelta(days=x) for x in range((end_date - start_date).days + 1)]
 
     report_data = []
-    headers = [
-        "Employee ID", "Employee Name", "Badge ID", "Department", "Job Position", "Company", "Shift", 
-        "Attendance Date", "Check In", "Check Out", "Worked Hours", "Overtime", 
-        "Late Coming", "Early Out", "Attendance Status", "Leave Status", "Leave Type", 
-        "Half Day", "Half Day Reason", "Grace Late", "Grace Late Count Used", "Grace Late Remaining",
-        "Short Leave", "Company Holiday", "Weekly Off", "Sunday", "Present", 
-        "Absent", "Missing Check In", "Missing Check Out"
-    ]
     
     attendances = Attendance.objects.filter(
         employee_id__in=employees, 
@@ -1425,13 +1460,13 @@ def attendance_activity_export(request):
     attendance_map = {(att.employee_id_id, att.attendance_date): att for att in attendances}
     leave_map = defaultdict(list)
     for leave in leaves:
-        for day in [leave.start_date + datetime.timedelta(n) for n in range((leave.end_date - leave.start_date).days + 1)]:
+        for day in [leave.start_date + datetime_module.timedelta(n) for n in range((leave.end_date - leave.start_date).days + 1)]:
             if start_date <= day <= end_date:
                 leave_map[(leave.employee_id_id, day)].append(leave)
 
     holiday_map = {}
     for holiday in holidays:
-        for day in [holiday.start_date + datetime.timedelta(n) for n in range((holiday.end_date - holiday.start_date).days + 1)]:
+        for day in [holiday.start_date + datetime_module.timedelta(n) for n in range((holiday.end_date - holiday.start_date).days + 1)]:
             if start_date <= day <= end_date:
                 holiday_map[day] = holiday.name
     
@@ -1447,50 +1482,72 @@ def attendance_activity_export(request):
     for employee in employees:
         work_info = employee.employee_work_info
         for single_date in date_range:
-            row = {h: "" for h in headers}
+            row_data = {key: "" for key in export_keys} # Initialize row with selected keys
             
-            row["Employee ID"] = employee.id
-            row["Employee Name"] = employee.get_full_name()
-            row["Badge ID"] = employee.badge_id
+            # Populate data based on export_keys
+            if "employee_id" in export_keys:
+                row_data["employee_id"] = employee.id
+            if "employee_name" in export_keys:
+                row_data["employee_name"] = employee.get_full_name()
+            if "badge_id" in export_keys:
+                row_data["badge_id"] = employee.badge_id
             if work_info:
-                row["Department"] = work_info.department_id.department if work_info.department_id else ''
-                row["Job Position"] = work_info.job_position_id.job_position if work_info.job_position_id else ''
-                row["Company"] = work_info.company_id.company if work_info.company_id else ''
-                row["Shift"] = work_info.shift_id.employee_shift if work_info.shift_id else ''
+                if "department" in export_keys:
+                    row_data["department"] = work_info.department_id.department if work_info.department_id else ''
+                if "job_position" in export_keys:
+                    row_data["job_position"] = work_info.job_position_id.job_position if work_info.job_position_id else ''
+                if "company" in export_keys:
+                    row_data["company"] = work_info.company_id.company if work_info.company_id else ''
+                if "shift" in export_keys:
+                    row_data["shift"] = work_info.shift_id.employee_shift if work_info.shift_id else ''
             
-            row["Attendance Date"] = single_date
+            if "attendance_date" in export_keys:
+                row_data["attendance_date"] = single_date
 
             status = "Absent"
-            row["Absent"] = "Yes"
-            row["Present"] = "No"
+            if "absent" in export_keys:
+                row_data["absent"] = "Yes"
+            if "present" in export_keys:
+                row_data["present"] = "No"
 
             if single_date in holiday_map:
                 status = "Company Holiday"
-                row["Company Holiday"] = "Yes"
-                row["Absent"] = "No"
+                if "company_holiday" in export_keys:
+                    row_data["company_holiday"] = "Yes"
+                if "absent" in export_keys:
+                    row_data["absent"] = "No"
             elif single_date in company_leave_dates:
                 status = "Weekly Off"
-                row["Weekly Off"] = "Yes"
-                row["Absent"] = "No"
+                if "weekly_off" in export_keys:
+                    row_data["weekly_off"] = "Yes"
+                if "absent" in export_keys:
+                    row_data["absent"] = "No"
                 if single_date.weekday() == 6:
                     status = "Sunday"
-                    row["Sunday"] = "Yes"
+                    if "sunday" in export_keys:
+                        row_data["sunday"] = "Yes"
             elif (employee.id, single_date) in leave_map:
                 employee_leaves = leave_map[(employee.id, single_date)]
                 status = "On Leave"
-                row["Leave Status"] = "On Leave"
-                row["Leave Type"] = ", ".join([l.leave_type_id.name for l in employee_leaves])
-                row["Absent"] = "No"
+                if "leave_status" in export_keys:
+                    row_data["leave_status"] = "On Leave"
+                if "leave_type" in export_keys:
+                    row_data["leave_type"] = ", ".join([l.leave_type_id.name for l in employee_leaves])
+                if "absent" in export_keys:
+                    row_data["absent"] = "No"
 
                 is_half_day_leave = any(l.start_date_breakdown != 'full_day' or l.end_date_breakdown != 'full_day' for l in employee_leaves)
                 is_short_leave = any(l.leave_type_id.leave_unit == 'minute' for l in employee_leaves)
 
                 if is_half_day_leave:
-                    row["Half Day"] = "Yes"
-                    row["Half Day Reason"] = "Half Day Leave"
+                    if "half_day" in export_keys:
+                        row_data["half_day"] = "Yes"
+                    if "half_day_reason" in export_keys:
+                        row_data["half_day_reason"] = "Half Day Leave"
                     status = "Half Day"
                 if is_short_leave:
-                    row["Short Leave"] = "Yes"
+                    if "short_leave" in export_keys:
+                        row_data["short_leave"] = "Yes"
                     status = "Short Leave" if status == "On Leave" else f"{status} + Short Leave"
             
             attendance_record = attendance_map.get((employee.id, single_date))
@@ -1498,64 +1555,80 @@ def attendance_activity_export(request):
                 if status == "Absent":
                     status = "Present"
                 
-                row["Present"] = "Yes"
-                row["Absent"] = "No"
+                if "present" in export_keys:
+                    row_data["present"] = "Yes"
+                if "absent" in export_keys:
+                    row_data["absent"] = "No"
                 
-                row["Check In"] = attendance_record.attendance_clock_in if attendance_record.attendance_clock_in else ''
-                row["Check Out"] = attendance_record.attendance_clock_out if attendance_record.attendance_clock_out else ''
-                row["Worked Hours"] = attendance_record.attendance_worked_hour
-                row["Overtime"] = attendance_record.attendance_overtime
+                if "check_in" in export_keys:
+                    row_data["check_in"] = attendance_record.attendance_clock_in if attendance_record.attendance_clock_in else ''
+                if "check_out" in export_keys:
+                    row_data["check_out"] = attendance_record.attendance_clock_out if attendance_record.attendance_clock_out else ''
+                if "worked_hours" in export_keys:
+                    row_data["worked_hours"] = attendance_record.attendance_worked_hour
+                if "overtime" in export_keys:
+                    row_data["overtime"] = attendance_record.attendance_overtime
                 
                 if not attendance_record.attendance_clock_in:
-                    row["Missing Check In"] = "Yes"
+                    if "missing_check_in" in export_keys:
+                        row_data["missing_check_in"] = "Yes"
                 if not attendance_record.attendance_clock_out:
-                    row["Missing Check Out"] = "Yes"
+                    if "missing_check_out" in export_keys:
+                        row_data["missing_check_out"] = "Yes"
 
                 late_early = attendance_record.late_come_early_out.all()
                 if late_early.filter(type='late_come').exists():
-                    row["Late Coming"] = "Yes"
+                    if "late_coming" in export_keys:
+                        row_data["late_coming"] = "Yes"
                 if late_early.filter(type='early_out').exists():
-                    row["Early Out"] = "Yes"
+                    if "early_out" in export_keys:
+                        row_data["early_out"] = "Yes"
                 
                 # Grace Late and Half Day from attendance
-                row["Grace Late"] = "Yes" if attendance_record.is_grace_late else "No"
+                if "grace_late" in export_keys:
+                    row_data["grace_late"] = "Yes" if attendance_record.is_grace_late else "No"
                 if attendance_record.half_day_reason:
-                    row["Half Day"] = "Yes"
-                    row["Half Day Reason"] = attendance_record.half_day_reason
+                    if "half_day" in export_keys:
+                        row_data["half_day"] = "Yes"
+                    if "half_day_reason" in export_keys:
+                        row_data["half_day_reason"] = attendance_record.half_day_reason
 
                 if attendance_record.is_grace_late:
                     current_date = attendance_record.attendance_date
                     
                     # Optimized Grace Late Count Used
-                    grace_dates_for_employee = grace_late_map.get(employee.id, [])
-                    grace_late_count_used = len([
-                        d for d in grace_dates_for_employee 
-                        if d.month == current_date.month and d <= current_date
-                    ])
-                    row["Grace Late Count Used"] = grace_late_count_used
+                    if "grace_late_count_used" in export_keys:
+                        grace_dates_for_employee = grace_late_map.get(employee.id, [])
+                        grace_late_count_used = len([
+                            d for d in grace_dates_for_employee 
+                            if d.month == current_date.month and d <= current_date
+                        ])
+                        row_data["grace_late_count_used"] = grace_late_count_used
 
                     # Optimized Grace Late Remaining
-                    grace_time_config = None
-                    if work_info and work_info.shift_id and work_info.shift_id.grace_time_id:
-                        grace_time_config = work_info.shift_id.grace_time_id
-                    else:
-                        grace_time_config = default_grace_time_config
+                    if "grace_late_remaining" in export_keys:
+                        grace_time_config = None
+                        if work_info and work_info.shift_id and work_info.shift_id.grace_time_id:
+                            grace_time_config = work_info.shift_id.grace_time_id
+                        else:
+                            grace_time_config = default_grace_time_config
 
-                    if grace_time_config and hasattr(grace_time_config, 'grace_late_limit'):
-                        limit = grace_time_config.grace_late_limit
-                        total_used_in_month = grace_late_by_employee_month.get(employee.id, {}).get(current_date.month, 0)
-                        row["Grace Late Remaining"] = max(0, limit - total_used_in_month)
-                    else:
-                        row["Grace Late Remaining"] = 'N/A'
+                        if grace_time_config and hasattr(grace_time_config, 'grace_late_limit'):
+                            limit = grace_time_config.grace_late_limit
+                            total_used_in_month = grace_late_by_employee_month.get(employee.id, {}).get(current_date.month, 0)
+                            row_data["grace_late_remaining"] = max(0, limit - total_used_in_month)
+                        else:
+                            row_data["grace_late_remaining"] = 'N/A'
 
+            if "attendance_status" in export_keys:
+                row_data["attendance_status"] = status
+            
+            report_data.append(row_data) # Append the filtered row
 
-            row["Attendance Status"] = status
-            report_data.append(row)
-
-    df = pd.DataFrame(report_data, columns=headers)
+    df = pd.DataFrame(report_data, columns=export_keys).rename(columns=field_mapping)
 
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = f'attachment; filename="attendance_activity_report_{datetime.date.today()}.xlsx"'
+    response['Content-Disposition'] = f'attachment; filename="attendance_activity_report_{datetime_module.date.today()}.xlsx"'
 
     with pd.ExcelWriter(response, engine='openpyxl') as writer:
         df.to_excel(writer, index=False, sheet_name='Attendance Activity Report')
@@ -1571,16 +1644,21 @@ def attendance_activity_export(request):
             cell.fill = header_fill
             cell.alignment = Alignment(horizontal='center', vertical='center')
             
-            column_width = max(df[column_title].astype(str).map(len).max(), len(column_title)) + 2
+            value_lengths = (
+                len(str(value))
+                for value in df[column_title]
+                if value is not None and not pd.isna(value)
+            )
+            column_width = max(max(value_lengths, default=0), len(str(column_title))) + 2
             worksheet.column_dimensions[cell.column_letter].width = column_width
 
         for row_num, row_data in enumerate(df.itertuples(index=False), 2):
             for col_num, cell_value in enumerate(row_data, 1):
                 cell = worksheet.cell(row=row_num, column=col_num)
                 cell.alignment = Alignment(horizontal='left', vertical='center')
-                if isinstance(cell_value, datetime.date) and not isinstance(cell_value, datetime.datetime):
+                if isinstance(cell_value, datetime_module.date) and not isinstance(cell_value, datetime_module.datetime):
                     cell.number_format = 'YYYY-MM-DD'
-                elif isinstance(cell_value, datetime.time):
+                elif isinstance(cell_value, datetime_module.time):
                     cell.number_format = 'HH:MM:SS'
 
         worksheet.freeze_panes = 'A2'
