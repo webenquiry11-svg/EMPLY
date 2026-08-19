@@ -1073,31 +1073,180 @@ template {
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
 :root {
-  --bs-blue: hsl(204, 70%, 53%);
-  --bs-indigo: #6610f2;
+ --bs-blue: hsl(204, 70%, 53%);
+ --bs-indigo: #6610f2;
   --bs-purple: #6f42c1;
   --bs-pink: #d63384;
   --bs-red: #dc3545;
-  --bs-orange: hsl(19, 85%, 63%);
-  --bs-yellow: hsl(40, 91%, 60%);
-  --bs-green: hsl(121, 47%, 61%);
-  --bs-teal: #20c997;
-  --bs-cyan: #0dcaf0;
+ --bs-orange: hsl(19, 85%, 63%);
+ --bs-yellow: hsl(40, 91%, 60%);
+ --bs-green: hsl(121, 47%, 61%);
+ --bs-teal: #20c997;
+ --bs-cyan: #0dcaf0;
   --bs-white: hsl(0, 0%, 100%);
-  --bs-gray: #6c757d;
-  --bs-gray-dark: #343a40;
-  --bs-primary: hsl(204, 70%, 53%);
-  --bs-secondary: #6c757d;
-  --bs-success: hsl(121, 47%, 61%);
-  --bs-info: #0dcaf0;
-  --bs-warning: hsl(40, 91%, 60%);
+ --bs-gray: #6c757d;
+ --bs-gray-dark: #343a40;
+ --bs-primary: hsl(204, 70%, 53%);
+ --bs-secondary: #6c757d;
+ --bs-success: hsl(121, 47%, 61%);
+ --bs-info: #0dcaf0;
+ --bs-warning: hsl(40, 91%, 60%);
   --bs-danger: #dc3545;
-  --bs-light: #f8f9fa;
-  --bs-dark: #212529;
+ --bs-light: #f8f9fa;
+ --bs-dark: #212529;
   --bs-font-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
+ --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
 }
+
+/* THEME OVERRIDES: Sidebar, Topbar, Dashboard - refreshed brand identity */
+
+/* Sidebar */
+#sidebar, .oh-sidebar {
+ background-color: #071642 !important;
+ color: #E6F0FF !important;
+}
+#sidebar .oh-sidebar__menu-link,
+#sidebar .oh-sidebar__company-title,
+#sidebar .oh-sidebar__company-link,
+#sidebar .oh-sidebar__submenu-link {
+ color: #E6F0FF !important;
+ opacity: 0.95;
+}
+#sidebar .oh-sidebar__menu-link--active,
+#sidebar .oh-sidebar__menu-link:hover {
+ background-color: #0B3D91 !important;
+ color: #FFFFFF !important;
+}
+#sidebar .oh-sidebar__menu-icon img {
+ filter: none !important;
+ opacity: 0.95;
+}
+
+/* Topbar */
+.oh-navbar {
+ background-color: #0B3D91 !important;
+ color: #FFFFFF !important;
+ border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.oh-navbar .oh-navbar__action-icons .oh-navbar__icon,
+.oh-navbar .oh-navbar__toggle-menu {
+ color: #FFFFFF !important;
+ opacity: 0.95;
+}
+
+/* Dashboard container */
+.oh-dashboard {
+ background-color: #F3F6FB !important;
+}
+.oh-dashboard .oh-card-dashboard {
+ background-color: #FFFFFF !important;
+ border: 1px solid rgba(11,61,145,0.06) !important;
+}
+.oh-dashboard .oh-card-dashboard__header {
+ border-top: 4px solid #14B8A6 !important;
+ background: linear-gradient(90deg, rgba(11,61,145,0.03), rgba(20,184,166,0.02)) !important;
+}
+.oh-dashboard .oh-card-dashboard--success .oh-card-dashboard__header {
+ border-top-color: #16A34A !important;
+}
+.oh-dashboard .oh-card-dashboard--warning .oh-card-dashboard__header {
+ border-top-color: #F59E0B !important;
+}
+.oh-dashboard .oh-card-dashboard--neutral .oh-card-dashboard__header {
+ border-top-color: #6B7280 !important;
+}
+
+/* Ensure sidebar submenu links contrast */
+#sidebar .oh-sidebar__submenu-link:hover {
+ color: #FFFFFF !important;
+}
+
+/* Active breadcrumb/title contrasts in navbar */
+.oh-navbar .oh-navbar__toggle-container a.oh-link__unstyled:hover {
+ opacity: 0.9;
+}
+
+/* GLOBAL SEMANTIC MAPPINGS: Map old color roles to new theme roles consistently */
+:root {
+ --oh-primary: var(--bs-primary);
+ --oh-secondary: #6b7280; /* slate */
+ --oh-accent: var(--bs-info);
+ --oh-success: var(--bs-success);
+ --oh-warning: var(--bs-warning);
+ --oh-danger: var(--bs-danger);
+ --oh-surface: var(--bs-white);
+ --oh-surface-muted: #f1f5f9; /* gentle surface for chips */
+ --oh-surface-alt: #F3F6FB; /* dashboard background */
+}
+
+/* Primary actions and links */
+a, .text-primary, .oh-link, .oh-link__unstyled {
+ color: var(--oh-primary) !important;
+}
+.btn-primary, .oh-btn--primary, .btn.btn-primary {
+ background-color: var(--oh-primary) !important;
+ border-color: var(--oh-primary) !important;
+ color: #ffffff !important;
+}
+
+/* Secondary text / muted */
+.text-muted, .oh-text-muted, .muted, .text-secondary {
+ color: var(--oh-secondary) !important;
+}
+
+/* Surface / cards / backgrounds */
+.bg-light, .oh-card-dashboard, .card, .panel, .oh-tracking-card, .tracking-card {
+ background-color: var(--oh-surface) !important;
+}
+
+/* Dashboard container surface (distinct) */
+.oh-dashboard {
+ background-color: var(--oh-surface-alt) !important;
+}
+
+/* Chip / small surfaces */
+.interviewer-chip, .badge, .oh-badge, .chip, .oh-pill {
+ background-color: var(--oh-surface-muted) !important;
+ color: var(--oh-secondary) !important;
+}
+
+/* Status colors */
+.status-completed { color: var(--oh-success) !important; }
+.status-expired { color: var(--oh-danger) !important; }
+.status-upcoming { color: var(--oh-warning) !important; }
+.status-today { color: var(--oh-accent) !important; }
+
+/* Table header and borders */
+.table thead th, .table thead tr {
+ background-color: rgba(11,61,145,0.04) !important;
+}
+.table, table {
+ border-color: rgba(11,61,145,0.06) !important;
+}
+
+/* Inputs and form focus */
+.form-control:focus, input:focus, textarea:focus {
+ border-color: var(--oh-primary) !important;
+ box-shadow: 0 0 0 0.15rem rgba(11,61,145,0.12) !important;
+}
+
+/* Ensure badges and pills use accent when active */
+.oh-badge--accent, .badge--accent {
+ background-color: var(--oh-accent) !important;
+ color: #fff !important;
+}
+
+/* Ensure sidebar submenu contrasts */
+#sidebar .oh-sidebar__submenu-link:hover {
+ color: #FFFFFF !important;
+}
+
+/* Preserve existing important interactions while aligning colors */
+.oh-navbar .oh-navbar__toggle-container a.oh-link__unstyled:hover {
+ opacity: 0.9;
+}
+
 
 *,
 *::before,
