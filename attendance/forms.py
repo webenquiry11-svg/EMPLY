@@ -889,6 +889,7 @@ ATTENDANCE_ACTIVITY_EXPORT_COLUMNS = [
     ("late_coming", "Late Coming"),
     ("early_out", "Early Out"),
     ("attendance_status", "Attendance Status"),
+    ("attendance_source", "Attendance Source"),
     ("leave_status", "Leave Status"),
     ("leave_type", "Leave Type"),
     ("half_day", "Half Day"),
@@ -924,6 +925,7 @@ class AttendanceActivityExportForm(forms.Form):
             "check_out",
             "worked_hours",
             "attendance_status",
+            "attendance_source",
         ],
         required=False,
     )

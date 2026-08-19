@@ -38,6 +38,22 @@
 
 <!-- start of request view  -->
 <div class="oh-wrapper" id="ticketContainer">
+		{% if request.user.is_superuser %}
+		<div class="oh-card mb-3">
+			<div class="oh-card__body" style="padding: 1rem 1.25rem;">
+				<form method="post" action="{% url 'support-ticket-resolver-update' %}">
+					{% csrf_token %}
+					<div class="d-flex flex-wrap align-items-end gap-3">
+						<div class="oh-input-group" style="min-width: 260px;">
+							<label class="oh-label">Support Ticket Resolver</label>
+							{{ support_resolver_form.resolver }}
+						</div>
+						<button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">Save Resolver</button>
+					</div>
+				</form>
+			</div>
+		</div>
+		{% endif %}
 		<!-- start of Quick filters  -->
 		<div class="d-flex flex-row-reverse mb-2">
 			<span

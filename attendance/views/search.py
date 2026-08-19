@@ -5,7 +5,8 @@ This is moduel is used to register end point related to the search filter functi
 """
 
 import json
-from datetime import datetime
+from collections import defaultdict
+from datetime import datetime, timedelta
 from urllib.parse import parse_qs
 
 from django.http import JsonResponse
@@ -218,13 +219,22 @@ def attendance_activity_search(request):
     from django.core.paginator import Paginator
     from django.db.models import Q
     from base.methods import get_pagination, paginator_qry
+    from base.models import CompanyLeaves, Holidays
+    from leave.models import LeaveRequest
     
     previous_data = request.GET.urlencode()
     field = request.GET.get("field")
     
     # Correctly filter AttendanceActivity objects
     filter_obj = AttendanceActivityFilter(request.GET)
-    attendance_activities = filter_obj.qs
+    attendance_activities = filter_obj.qs.select_related(
+        "employee_id",
+        "employee_id__employee_work_info",
+        "employee_id__employee_work_info__department_id",
+        "employee_id__employee_work_info__job_position_id",
+        "employee_id__employee_work_info__company_id",
+        "employee_id__employee_work_info__shift_id",
+    )
 
     self_attendance_activities = attendance_activities.filter(
         employee_id__employee_user_id=request.user
@@ -267,10 +277,20 @@ def attendance_activity_search(request):
         (att.employee_id_id, att.attendance_date): att for att in attendances
     }
 
-    # Manually annotate activities for the current page
     annotated_activities_list = []
     for activity in page_obj.object_list:
         activity.attendance = attendance_map.get((activity.employee_id_id, activity.attendance_date))
+        if activity.attendance:
+            activity.worked_hours = activity.attendance.attendance_worked_hour
+            activity.overtime = activity.attendance.attendance_overtime
+            late_come_types = {item.type for item in activity.attendance.late_come_early_out.all()}
+            activity.late_coming = "Yes" if "late_come" in late_come_types else "No"
+            activity.early_out = "Yes" if "early_out" in late_come_types else "No"
+        else:
+            activity.worked_hours = "-"
+            activity.overtime = "-"
+            activity.late_coming = "No"
+            activity.early_out = "No"
         annotated_activities_list.append(activity)
     
     # Replace the paginator's object list with the annotated one

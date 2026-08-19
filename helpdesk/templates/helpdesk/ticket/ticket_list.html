@@ -166,7 +166,13 @@
                                                 {{ ticket.get_raised_on }}
                                             </div>
                                             <div data-cell-index="5" class="oh-sticky-table__td">
-                                                {{ ticket.assigned_to.all|join:" , " }}
+                                                {% if ticket.is_support_ticket %}
+                                                    {% if current_support_resolver %}
+                                                        {{ current_support_resolver.get_full_name }}
+                                                    {% endif %}
+                                                {% else %}
+                                                    {{ ticket.assigned_to.all|join:" , " }}
+                                                {% endif %}
                                             </div>
                                             <div data-cell-index="6" class="oh-sticky-table__td">
                                                 {{ ticket.get_status_display }}
@@ -667,7 +673,13 @@
                                                 {{ ticket.get_raised_on }}
                                             </div>
                                             <div data-cell-index="15" class="oh-sticky-table__td">
-                                                {{ ticket.assigned_to.all|join:" , " }}
+                                                {% if ticket.is_support_ticket %}
+                                                    {% if current_support_resolver %}
+                                                        {{ current_support_resolver.get_full_name }}
+                                                    {% endif %}
+                                                {% else %}
+                                                    {{ ticket.assigned_to.all|join:" , " }}
+                                                {% endif %}
                                             </div>
                                             <div data-cell-index="16" class="oh-sticky-table__td">
                                                 {{ ticket.get_status_display }}
@@ -1271,7 +1283,13 @@
                                                 {{ ticket.get_raised_on }}
                                             </div>
                                             <div data-cell-index="25" class="oh-sticky-table__td">
-                                                {{ ticket.assigned_to.all|join:" , " }}
+                                                {% if ticket.is_support_ticket %}
+                                                    {% if current_support_resolver %}
+                                                        {{ current_support_resolver.get_full_name }}
+                                                    {% endif %}
+                                                {% else %}
+                                                    {{ ticket.assigned_to.all|join:" , " }}
+                                                {% endif %}
                                             </div>
                                             <div data-cell-index="26" class="oh-sticky-table__td">
                                                 {{ ticket.get_status_display }}

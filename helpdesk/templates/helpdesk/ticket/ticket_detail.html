@@ -153,6 +153,13 @@
                             </div>
                             <div class="oh-helpdesk__bubble-body">
                                 <p>{{ ticket.description|safe }}</p>
+                                {% if ticket.support_image %}
+                                    <div class="mt-2">
+                                        <a href="{{ ticket.support_image.url }}" target="_blank">
+                                            <img src="{{ ticket.support_image.url }}" alt="Ticket image" style="max-width: 320px; border-radius:8px; border:1px solid rgba(148,163,184,0.2);" />
+                                        </a>
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
 

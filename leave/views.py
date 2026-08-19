@@ -378,6 +378,7 @@ def multiple_approvals_check(id):
 
 
 @login_required
+@block_notice_period
 @hx_request_required
 @manager_can_enter("leave.add_leaverequest")
 def leave_request_creation(request, type_id=None, emp_id=None):
@@ -435,6 +436,28 @@ def leave_request_creation(request, type_id=None, emp_id=None):
         form.fields["leave_type_id"].queryset = assigned_leave_types
         form = choosesubordinates(request, form, "leave.add_leaverequest")
         
+        # Backend enforcement: block leave creation by the employee if they are on notice period
+        if employee and getattr(employee, "notice_period", False) and getattr(request.user, "employee_get", None) == employee:
+            error_message = _(
+                "You are currently serving your notice period and cannot apply for leave."
+            )
+            messages.error(request, error_message)
+            minute_leave_type_ids = list(
+                LeaveType.objects.filter(leave_unit="minute").values_list("id", flat=True)
+            )
+            return render(
+                request,
+                "leave/leave_request/leave_request_form.html",
+                {
+                    "form": form,
+                    "pd": previous_data,
+                    "hx_url": hx_url,
+                    "hx_target": hx_target,
+                    "minute_leave_type_ids": minute_leave_type_ids,
+                    "form_id": "leaveRequestCreateForm",
+                },
+            )
+
         if form.is_valid():
             try:
                 leave_request = form.save(commit=False)
@@ -531,6 +554,7 @@ def leave_request_creation(request, type_id=None, emp_id=None):
 
 
 @login_required
+@block_notice_period
 @manager_can_enter("leave.view_leaverequest")
 def leave_request_view(request):
     """
@@ -904,6 +928,12 @@ def leave_request_update(request, id):
             request.POST, request.FILES, instance=leave_request
         )
         form = choosesubordinates(request, form, "leave.add_leaverequest")
+
+        # Backend enforcement: block leave update by the employee if they are on notice period
+        if getattr(leave_request.employee_id, "notice_period", False) and getattr(request.user, "employee_get", None) == leave_request.employee_id:
+            messages.error(request, _("You are currently serving your notice period and cannot apply for leave."))
+            return HorillaRedirect(request)
+
         if form.is_valid():
             leave_request = form.save(commit=False)
             save = True
@@ -955,6 +985,10 @@ def leave_request_delete(request, id):
     previous_data = request.GET.urlencode()
     try:
         leave_request = LeaveRequest.objects.get(id=id)
+        # Backend enforcement: block leave delete by the employee if they are on notice period
+        if getattr(leave_request.employee_id, "notice_period", False) and getattr(request.user, "employee_get", None) == leave_request.employee_id:
+            messages.error(request, _("You are currently serving your notice period and cannot apply for leave."))
+            return HorillaRedirect(request)
         messages.success(request, _("Leave request deleted successfully.."))
         leave_request.delete()
     except (LeaveRequest.DoesNotExist, OverflowError, ValueError):
@@ -2055,6 +2089,7 @@ def get_job_positions(request):
 
 
 @login_required
+@block_notice_period
 @hx_request_required
 @permission_required("leave.add_restrictleave")
 def restrict_creation(request):
@@ -2092,6 +2127,7 @@ def restrict_creation(request):
 
 
 @login_required
+@block_notice_period
 def restrict_view(request):
     """
     function used to view restricted days.
@@ -2147,6 +2183,7 @@ def restrict_filter(request):
 
 
 @login_required
+@block_notice_period
 @hx_request_required
 @permission_required("leave.change_restrictleave")
 def restrict_update(request, id):
@@ -2181,6 +2218,7 @@ def restrict_update(request, id):
 
 
 @login_required
+@block_notice_period
 @hx_request_required
 @permission_required("leave.delete_restrictleave")
 def restrict_delete(request, id):
@@ -2270,6 +2308,7 @@ def restrict_day_select_filter(request):
 
 
 @login_required
+@block_notice_period
 @hx_request_required
 def user_leave_request(request, id):
     """
@@ -2433,6 +2472,7 @@ def user_leave_request(request, id):
 
 
 @login_required
+@block_notice_period
 @hx_request_required
 def user_request_update(request, id):
     """
@@ -2548,6 +2588,7 @@ def user_request_update(request, id):
 
 
 @login_required
+@block_notice_period
 @hx_request_required
 def user_request_delete(request, id):
     """
@@ -2577,6 +2618,7 @@ def user_request_delete(request, id):
 
 
 @login_required
+@block_notice_period
 @hx_request_required
 def user_leave_filter(request):
     """
@@ -2608,6 +2650,7 @@ def user_leave_filter(request):
 
 
 @login_required
+@block_notice_period
 def user_request_view(request):
     """
     function used to view user leave request.
@@ -2774,6 +2817,7 @@ def user_request_filter(request):
 
 
 @login_required
+@block_notice_period
 @hx_request_required
 def user_request_one(request, id):
     """
@@ -2897,6 +2941,7 @@ def dashboard(request):
 
 
 @login_required
+@block_notice_period
 def employee_dashboard(request):
     """
     function used to view Employee dashboard in the leave module.
@@ -3221,6 +3266,7 @@ def leave_over_period(request):
 
 
 @login_required
+@block_notice_period
 @hx_request_required
 def leave_request_create(request):
     """
@@ -3350,6 +3396,7 @@ def leave_request_create(request):
 
 
 @login_required
+@block_notice_period
 def leave_allocation_request_view(request):
     """
     function used to view leave allocation request.
@@ -3406,6 +3453,7 @@ def leave_allocation_request_view(request):
 
 
 @login_required
+@block_notice_period
 @hx_request_required
 def leave_allocation_request_single_view(request, req_id):
     """
@@ -3442,6 +3490,7 @@ def leave_allocation_request_single_view(request, req_id):
 
 
 @login_required
+@block_notice_period
 @hx_request_required
 def leave_allocation_request_create(request):
     """
@@ -4760,6 +4809,7 @@ if apps.is_installed("attendance"):
         return redirect(redirect_url, leave_id)
 
     @login_required
+    @block_notice_period
     @is_compensatory_leave_enabled()
     def view_compensatory_leave(request):
         """
@@ -4812,6 +4862,7 @@ if apps.is_installed("attendance"):
         )
 
     @login_required
+    @block_notice_period
     @is_compensatory_leave_enabled()
     @hx_request_required
     def filter_compensatory_leave(request):
@@ -4903,6 +4954,7 @@ if apps.is_installed("attendance"):
         return render(request, template, context=context)
 
     @login_required
+    @block_notice_period
     @is_compensatory_leave_enabled()
     @hx_request_required
     def create_compensatory_leave(request, comp_id=None):
@@ -4943,6 +4995,7 @@ if apps.is_installed("attendance"):
         return render(request, template, context)
 
     @login_required
+    @block_notice_period
     @is_compensatory_leave_enabled()
     @hx_request_required
     @owner_can_enter(
@@ -4967,6 +5020,7 @@ if apps.is_installed("attendance"):
             return HorillaRedirect(request)
 
     @login_required
+    @block_notice_period
     @is_compensatory_leave_enabled()
     @hx_request_required
     @manager_can_enter(perm="leave.change_compensatoryleaverequest")
@@ -5017,6 +5071,7 @@ if apps.is_installed("attendance"):
         return redirect(filter_compensatory_leave)
 
     @login_required
+    @block_notice_period
     @is_compensatory_leave_enabled()
     @hx_request_required
     @manager_can_enter(perm="leave.delete_compensatoryleaverequest")
@@ -5066,6 +5121,7 @@ if apps.is_installed("attendance"):
             return HorillaRedirect(request)
 
     @login_required
+    @block_notice_period
     @is_compensatory_leave_enabled()
     @hx_request_required
     def compensatory_leave_individual_view(request, comp_leave_id):
@@ -5098,6 +5154,7 @@ if apps.is_installed("attendance"):
         )
 
     @login_required
+    @block_notice_period
     @is_compensatory_leave_enabled()
     @hx_request_required
     def view_compensatory_leave_comment(request, comp_leave_id):
@@ -5134,6 +5191,7 @@ if apps.is_installed("attendance"):
         )
 
     @login_required
+    @block_notice_period
     @is_compensatory_leave_enabled()
     @hx_request_required
     def create_compensatory_leave_comment(request, comp_leave_id):

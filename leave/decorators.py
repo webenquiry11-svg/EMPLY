@@ -122,3 +122,55 @@ def is_compensatory_leave_enabled(func=None, *args, **kwargs):
         )
 
     return function
+
+
+def block_notice_period(view_func):
+    """Decorator to block access to certain leave views for employees on notice period.
+
+    Behavior:
+    - If the logged-in user has an Employee (request.user.employee_get) with
+      notice_period == True, and the user does NOT hold any leave.* permission
+      nor is superuser, then the view is blocked and a consistent notice message
+      is shown via handle_no_permission.
+    - Users with any leave.* permission or superusers bypass this check so that
+      admins/managers keep their existing access.
+
+    This decorator is intended to be added to employee self-service leave views
+    (creation, request lists, dashboard, allocation requests, compensatory
+    requests, etc.). Company Leaves and Holidays views should NOT be decorated
+    so they remain accessible.
+    """
+
+    message = _(
+        "You are currently on notice period. Leave access is restricted during your notice period."
+    )
+
+    def _wrapped_view(request, *args, **kwargs):
+        try:
+            user = request.user
+        except Exception:
+            # No user available; let auth decorators handle this
+            return view_func(request, *args, **kwargs)
+
+        emp = getattr(user, "employee_get", None)
+        if emp and getattr(emp, "notice_period", False):
+            # Allow superusers
+            if getattr(user, "is_superuser", False):
+                return view_func(request, *args, **kwargs)
+
+            # Allow users who hold any leave.* permission (managers/admins)
+            try:
+                perms = user.get_all_permissions()
+                for p in perms:
+                    if p.startswith("leave."):
+                        return view_func(request, *args, **kwargs)
+            except Exception:
+                # If permission inspection fails, fall through to block
+                pass
+
+            # Block access
+            return handle_no_permission(request, message=message)
+
+        return view_func(request, *args, **kwargs)
+
+    return _wrapped_view

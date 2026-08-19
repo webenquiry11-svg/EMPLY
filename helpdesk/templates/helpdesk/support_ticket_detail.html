@@ -1,0 +1,216 @@
+{% extends 'index.html' %}
+{% block content %}
+<style>
+  .support-ticket-detail .oh-card {
+    border: 1px solid rgba(148,163,184,0.2);
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.07);
+    overflow: hidden;
+  }
+  .support-ticket-detail .ticket-meta {
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(148,163,184,0.2);
+    border-radius: 12px;
+    background: #f8fafc;
+  }
+  .support-ticket-detail .ticket-complaint {
+    background: #f8fafc;
+    border: 1px solid rgba(148,163,184,0.2);
+    border-radius: 12px;
+    padding: 1rem;
+    color: #334155;
+  }
+  .support-ticket-detail .ticket-image {
+    display: inline-block;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(148,163,184,0.2);
+    max-width: 100%;
+  }
+  .support-ticket-detail .chat-box {
+    background: #f8fafc;
+    border: 1px solid rgba(148,163,184,0.2);
+    border-radius: 16px;
+    padding: 1rem;
+  }
+  .support-ticket-detail .chat-message {
+    max-width: 80%;
+    border-radius: 16px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(148,163,184,0.2);
+  }
+  .support-ticket-detail .chat-message--requester {
+    margin-left: auto;
+    background: #e0f2fe;
+    border-color: rgba(14,165,233,0.18);
+  }
+  .support-ticket-detail .chat-message--resolver {
+    margin-right: auto;
+    background: #ffffff;
+  }
+  .support-ticket-detail .chat-message img {
+    max-width: 220px;
+    border-radius: 10px;
+    margin-top: 0.5rem;
+    border: 1px solid rgba(148,163,184,0.2);
+  }
+</style>
+
+<div class="oh-wrapper support-ticket-detail" style="padding-top: 1.5rem;">
+  <div class="oh-card" style="margin: 0 auto; max-width: 1100px;">
+    <div class="oh-card__header d-flex justify-content-between align-items-center" style="padding: 1.25rem 1.5rem; border-bottom: 1px solid rgba(148,163,184,0.2);">
+      <div>
+        <h3 class="oh-card__title mb-1" style="margin: 0; font-size: 1.4rem; font-weight: 600;">{{ ticket.title }}</h3>
+        <small style="color: #64748b;">Support ticket</small>
+      </div>
+      <span class="ticket-status ticket-status--neutral" style="padding: 0.45rem 0.8rem;">{% if ticket.status == 'resolved' %}Issue Resolved{% else %}{{ ticket.get_status_display }}{% endif %}</span>
+    </div>
+
+    <div class="oh-card__body" style="padding: 1.5rem;">
+      <div class="row g-4">
+        <div class="col-lg-5">
+          <div class="ticket-meta mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <strong>Employee</strong>
+              <span>{{ ticket.employee_id.get_full_name }}</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <strong>Created</strong>
+              <span>{{ ticket.created_at|date:'Y-m-d H:i' }}</span>
+            </div>
+            {% if ticket.resolver %}
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <strong>Resolver</strong>
+                <span>{{ ticket.resolver.get_full_name }}</span>
+              </div>
+            {% endif %}
+            <div class="d-flex justify-content-between align-items-center">
+              <strong>Status</strong>
+              <span>{{ ticket.get_status_display }}</span>
+            </div>
+          </div>
+
+          <div class="ticket-complaint mb-3">
+            <div style="font-weight: 600; margin-bottom: 0.5rem;">Complaint</div>
+            <div>{{ ticket.get_support_complaint }}</div>
+          </div>
+
+          {% if ticket.support_image %}
+            <div class="mb-3">
+              <div style="font-weight: 600; margin-bottom: 0.5rem;">Attached Image</div>
+              <a href="{{ ticket.support_image.url }}" target="_blank" class="ticket-image">
+                <img src="{{ ticket.support_image.url }}" alt="Ticket image" style="display:block; width:100%; max-width:420px; height:auto;">
+              </a>
+            </div>
+          {% endif %}
+
+          {% if ticket.closed %}
+            <div class="oh-alert oh-alert--animated oh-alert--warning mb-3">This ticket/chat is closed.</div>
+          {% endif %}
+
+          {% if request.user.employee_get == ticket.employee_id and not ticket.closed and ticket.status != 'new' and ticket.status != 'accepted' and ticket.status != 'in_progress' %}
+            <a href="{% url 'support-ticket-close' ticket.id %}" class="oh-btn oh-btn--danger oh-btn--shadow mb-3">Close Ticket</a>
+          {% endif %}
+
+          {% if ticket.status == 'accepted' and not ticket.closed and request.user.employee_get == ticket.resolver %}
+            <form method="post" class="mb-3">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="resolve" />
+              <button type="submit" class="oh-btn oh-btn--success oh-btn--shadow">Resolve / End Conversation</button>
+            </form>
+          {% endif %}
+
+          {% if ticket.status == 'new' and request.user.is_superuser %}
+            <div class="d-flex flex-wrap gap-2 mb-3">
+              <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="accept" />
+                <button type="submit" class="oh-btn oh-btn--success oh-btn--shadow">Accept</button>
+              </form>
+              <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="reject" />
+                <button type="submit" class="oh-btn oh-btn--danger oh-btn--shadow">Reject</button>
+              </form>
+            </div>
+          {% elif ticket.status == 'new' and request.user.employee_get == ticket.resolver %}
+            <div class="d-flex flex-wrap gap-2 mb-3">
+              <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="accept" />
+                <button type="submit" class="oh-btn oh-btn--success oh-btn--shadow">Accept</button>
+              </form>
+              <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="reject" />
+                <button type="submit" class="oh-btn oh-btn--danger oh-btn--shadow">Reject</button>
+              </form>
+            </div>
+          {% endif %}
+
+          {% if ticket.status == 'accepted' or ticket.status == 'in_progress' %}
+            {% if not ticket.closed and request.user.is_superuser %}
+              <form method="post" class="mb-3">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="resolve" />
+                <button type="submit" class="oh-btn oh-btn--success oh-btn--shadow">Resolve / End Conversation</button>
+              </form>
+            {% elif not ticket.closed and request.user.employee_get == ticket.resolver %}
+              <form method="post" class="mb-3">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="resolve" />
+                <button type="submit" class="oh-btn oh-btn--success oh-btn--shadow">Resolve / End Conversation</button>
+              </form>
+            {% endif %}
+          {% endif %}
+        </div>
+
+        <div class="col-lg-7">
+          <div class="chat-box">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4 class="mb-0" style="font-size:1.1rem; font-weight:600;">Chat</h4>
+            </div>
+
+            {% if not ticket.closed %}
+              <form method="post" enctype="multipart/form-data" class="mb-4">
+                {% csrf_token %}
+                <div class="oh-input-group mb-2">
+                  <label class="oh-label" for="{{ message_form.text.id_for_label }}">Message</label>
+                  <textarea name="{{ message_form.text.name }}" id="{{ message_form.text.id_for_label }}" rows="3" class="oh-input w-100" placeholder="Type a message"></textarea>
+                </div>
+                <div class="oh-input-group mb-3">
+                  <label class="oh-label" for="{{ message_form.image.id_for_label }}">Attach Image</label>
+                  <input type="file" name="{{ message_form.image.name }}" id="{{ message_form.image.id_for_label }}" class="oh-input w-100" accept="image/*">
+                </div>
+                <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">Send</button>
+              </form>
+            {% endif %}
+
+            {% for message in messages %}
+              <div class="chat-message {% if message.employee_id == request.user.employee_get %}chat-message--requester{% else %}chat-message--resolver{% endif %}">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <strong>{{ message.employee_id.get_full_name }}</strong>
+                  <small style="color: #64748b;">{{ message.date|date:'Y-m-d H:i' }}</small>
+                </div>
+                {% if message.comment %}
+                  <div>{{ message.comment }}</div>
+                {% endif %}
+                {% for attachment in message.comment_attachment.all %}
+                  {% if attachment.file %}
+                    <a href="{{ attachment.file.url }}" target="_blank">
+                      <img src="{{ attachment.file.url }}" alt="Message attachment" />
+                    </a>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% empty %}
+              <p class="text-muted mb-0">No messages yet.</p>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -141,6 +141,15 @@ class Attendance(HorillaModel):
         validators=[attendance_date_validate],
         verbose_name=_("Attendance date"),
     )
+    attendance_source = models.CharField(
+        max_length=25,
+        choices=[
+            ("EMPLY Portal", _("EMPLY Portal")),
+            ("Biometric Machine", _("Biometric Machine")),
+        ],
+        default="EMPLY Portal",
+        verbose_name=_("Attendance Source"),
+    )
     shift_id = models.ForeignKey(
         EmployeeShift, on_delete=models.SET_NULL, null=True, verbose_name=_("Shift")
     )

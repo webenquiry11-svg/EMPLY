@@ -109,12 +109,23 @@ class Employee(models.Model):
     is_suspended = models.BooleanField(default=False)
     # Timestamp when the employee was suspended
     suspended_at = models.DateTimeField(null=True, blank=True)
+    # Indicates whether the employee is currently serving their notice period
+    notice_period = models.BooleanField(default=False)
     additional_info = models.JSONField(null=True, blank=True)
     is_from_onboarding = models.BooleanField(
         default=False, null=True, blank=True, editable=False
     )
     is_directly_converted = models.BooleanField(
         default=False, null=True, blank=True, editable=False
+    )
+    attendance_source = models.CharField(
+        max_length=25,
+        choices=[
+            ("emply_portal", trans("EMPLY Portal")),
+            ("biometric_machine", trans("Biometric Machine")),
+        ],
+        default="emply_portal",
+        verbose_name=_("Attendance Source"),
     )
     objects = HorillaCompanyManager(
         related_company_field="employee_work_info__company_id"
@@ -524,13 +535,19 @@ class Employee(models.Model):
         super().clean()
 
         file = self.employee_profile
-        if not file:
+        if not file or not getattr(file, "name", None):
             return
 
         try:
-            file.seek(0)
-            content = file.read()
+            if hasattr(file, "file"):
+                file.file.seek(0)
+                content = file.file.read()
+            else:
+                file.seek(0)
+                content = file.read()
         except Exception:
+            if getattr(file, "_committed", False):
+                return
             raise ValidationError({"employee_profile": "Unable to read uploaded file."})
 
         is_svg = False
@@ -544,8 +561,12 @@ class Employee(models.Model):
 
         if not is_svg:
             try:
-                file.seek(0)
-                Image.open(file).verify()
+                if hasattr(file, "file"):
+                    file.file.seek(0)
+                    Image.open(file.file).verify()
+                else:
+                    file.seek(0)
+                    Image.open(file).verify()
             except Exception:
                 raise ValidationError(
                     {"employee_profile": "Invalid image or SVG file."}

@@ -40,6 +40,23 @@ urlpatterns = [
         views.faq_delete,
         name="faq-delete",
     ),
+    path("support-ticket-create/", views.support_ticket_create, name="support-ticket-create"),
+    path("support-ticket-list/", views.support_ticket_list, name="support-ticket-list"),
+    path(
+        "support-ticket-resolver-update/",
+        views.support_ticket_resolver_update,
+        name="support-ticket-resolver-update",
+    ),
+    path(
+        "support-ticket-detail/<int:ticket_id>/",
+        views.support_ticket_detail,
+        name="support-ticket-detail",
+    ),
+    path(
+        "support-ticket-close/<int:ticket_id>/",
+        views.support_ticket_close,
+        name="support-ticket-close",
+    ),
     path("ticket-view/", views.ticket_view, name="ticket-view"),
     path("ticket-create", views.ticket_create, name="ticket-create"),
     path("ticket-update/<int:ticket_id>", views.ticket_update, name="ticket-update"),

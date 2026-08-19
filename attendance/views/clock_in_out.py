@@ -52,6 +52,7 @@ def clock_in_attendance_and_activity(
     start_time,
     end_time,
     in_datetime,
+    attendance_source,
 ):
     """
     This method is used to create attendance activity or attendance when an employee clocks-in
@@ -98,13 +99,15 @@ def clock_in_attendance_and_activity(
             'attendance_day': day,
             'attendance_clock_in': now,
             'attendance_clock_in_date': date_today,
-            'minimum_hour': minimum_hour
+            'minimum_hour': minimum_hour,
+            'attendance_source': attendance_source,
         }
     )
 
     if not created:
         attendance.attendance_clock_out = None
         attendance.attendance_clock_out_date = None
+        attendance.attendance_source = attendance.attendance_source or attendance_source
         attendance.save()
         # delete if the attendance marked the early out
         early_out_instance = attendance.late_come_early_out.filter(type="early_out")
@@ -169,6 +172,17 @@ def clock_in(request):
         if request.__dict__.get("datetime"):
             datetime_now = request.datetime
         if employee and work_info is not None:
+            if (
+                employee.attendance_source == "biometric_machine"
+                and not request.__dict__.get("datetime")
+            ):
+                messages.error(
+                    request,
+                    _(
+                        "This employee is configured for biometric attendance and cannot use portal check-in/check-out."
+                    ),
+                )
+                return HorillaRedirect(request)
             shift = work_info.shift_id
             date_today = date.today()
             if request.__dict__.get("date"):
@@ -201,6 +215,11 @@ def clock_in(request):
                     )
                     attendance_date = date_yesterday
                     day = day_yesterday
+            attendance_source = (
+                "Biometric Machine"
+                if request.__dict__.get("datetime")
+                else "EMPLY Portal"
+            )
             attendance = clock_in_attendance_and_activity(
                 employee=employee,
                 date_today=date_today,
@@ -212,6 +231,7 @@ def clock_in(request):
                 start_time=start_time_sec,
                 end_time=end_time_sec,
                 in_datetime=datetime_now,
+                attendance_source=attendance_source,
             )
             script = ""
             hidden_label = ""
@@ -492,6 +512,17 @@ def clock_out(request):
                 attendance.attendance_day = EmployeeShiftDay.objects.get(day=day_name)
                 attendance.save(update_fields=["attendance_day"])
             day = attendance.attendance_day
+        if (
+            employee.attendance_source == "biometric_machine"
+            and not request.__dict__.get("datetime")
+        ):
+            messages.error(
+                request,
+                _(
+                    "This employee is configured for biometric attendance and cannot use portal check-in/check-out."
+                ),
+            )
+            return HorillaRedirect(request)
         now = datetime.now().strftime("%H:%M")
         if request.__dict__.get("time"):
             now = request.time.strftime("%H:%M")

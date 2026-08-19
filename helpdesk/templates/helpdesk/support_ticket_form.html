@@ -1,0 +1,50 @@
+{% extends 'index.html' %}
+{% block content %}
+<div class="oh-wrapper">
+  <div class="oh-card" style="max-width: 820px; margin: 2rem auto; border-radius: 16px; box-shadow: 0 10px 30px rgba(17,24,39,0.07); border: 1px solid rgba(148,163,184,0.2);">
+    <div class="oh-card__header" style="padding: 1.25rem 1.5rem; border-bottom: 1px solid rgba(148,163,184,0.2);">
+      <h3 class="oh-card__title mb-0" style="font-size: 1.35rem; font-weight: 600; margin: 0;">Support Ticket</h3>
+    </div>
+    <div class="oh-card__body" style="padding: 1.5rem;">
+      {% if form.non_field_errors %}
+        <div class="oh-alert-container mb-3">
+          {% for error in form.non_field_errors %}
+            <div class="oh-alert oh-alert--animated oh-alert--danger">{{ error }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      <form method="post" enctype="multipart/form-data" class="oh-profile-section">
+        {% csrf_token %}
+
+        <div class="oh-input-group mb-3">
+          <label class="oh-label" for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+          <input type="text" name="{{ form.title.name }}" id="{{ form.title.id_for_label }}" value="{{ form.title.value|default:'' }}" class="oh-input w-100 {% if form.title.errors %}is-invalid{% endif %}" placeholder="Enter a clear ticket title" required>
+          {% if form.title.errors %}
+            <div class="invalid-feedback d-block" style="color:#d93025; font-size:0.8rem; margin-top:0.4rem;">{{ form.title.errors|join:', ' }}</div>
+          {% endif %}
+        </div>
+
+        <div class="oh-input-group mb-3">
+          <label class="oh-label" for="{{ form.complaint.id_for_label }}">{{ form.complaint.label }}</label>
+          <textarea name="{{ form.complaint.name }}" id="{{ form.complaint.id_for_label }}" rows="6" class="oh-input w-100 {% if form.complaint.errors %}is-invalid{% endif %}" placeholder="Describe the issue in detail" required>{{ form.complaint.value|default:'' }}</textarea>
+          {% if form.complaint.errors %}
+            <div class="invalid-feedback d-block" style="color:#d93025; font-size:0.8rem; margin-top:0.4rem;">{{ form.complaint.errors|join:', ' }}</div>
+          {% endif %}
+        </div>
+
+        <div class="oh-input-group mb-3">
+          <label class="oh-label" for="{{ form.support_image.id_for_label }}">{{ form.support_image.label }}</label>
+          <input type="file" name="{{ form.support_image.name }}" id="{{ form.support_image.id_for_label }}" class="oh-input w-100 {% if form.support_image.errors %}is-invalid{% endif %}" accept="image/*">
+          {% if form.support_image.errors %}
+            <div class="invalid-feedback d-block" style="color:#d93025; font-size:0.8rem; margin-top:0.4rem;">{{ form.support_image.errors|join:', ' }}</div>
+          {% endif %}
+        </div>
+
+        <div class="d-flex justify-content-end mt-4">
+          <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">Submit Ticket</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

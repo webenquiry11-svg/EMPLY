@@ -364,7 +364,7 @@ def attendance_export(request):
     headers = [
         "Employee ID", "Employee Name", "Badge ID", "Department", "Job Position", "Company", "Shift", 
         "Attendance Date", "Check In", "Check Out", "Worked Hours", "Overtime", 
-        "Late Coming", "Early Out", "Attendance Status", "Leave Status", "Leave Type", 
+        "Late Coming", "Early Out", "Attendance Status", "Attendance Source", "Leave Status", "Leave Type", 
         "Half Day", "Half Day Reason", "Grace Late", "Grace Late Count Used", "Grace Late Remaining",
         "Short Leave", "Company Holiday", "Weekly Off", "Sunday", "Present", 
         "Absent", "Missing Check In", "Missing Check Out"
@@ -532,6 +532,9 @@ def attendance_export(request):
 
 
             row["Attendance Status"] = status
+            row["Attendance Source"] = (
+                attendance_record.attendance_source if attendance_record else ""
+            )
             report_data.append(row)
 
     df = pd.DataFrame(report_data, columns=headers)
@@ -1622,7 +1625,11 @@ def attendance_activity_export(request):
 
             if "attendance_status" in export_keys:
                 row_data["attendance_status"] = status
-            
+            if "attendance_source" in export_keys:
+                row_data["attendance_source"] = (
+                    attendance_record.attendance_source if attendance_record else ""
+                )
+             
             report_data.append(row_data) # Append the filtered row
 
     df = pd.DataFrame(report_data, columns=export_keys).rename(columns=field_mapping)

@@ -1,0 +1,133 @@
+{% extends 'index.html' %}
+{% block content %}
+<style>
+  .support-ticket-list .oh-card {
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  }
+  .support-ticket-list .ticket-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 12px;
+    background: #fff;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    color: inherit;
+  }
+  .support-ticket-list .ticket-row:hover {
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    transform: translateY(-1px);
+    text-decoration: none;
+  }
+  .support-ticket-list .ticket-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 110px;
+    padding: 0.45rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    background: #eef2ff;
+    color: #4338ca;
+  }
+  .support-ticket-list .ticket-status--warning { background: #fff7ed; color: #c2410c; }
+  .support-ticket-list .ticket-status--success { background: #ecfdf5; color: #047857; }
+  .support-ticket-list .ticket-status--neutral { background: #f3f4f6; color: #374151; }
+</style>
+
+<div class="oh-wrapper support-ticket-list" style="padding-top: 1.5rem;">
+  <div class="oh-card" style="padding: 0; overflow: hidden;">
+    <div class="oh-card__header d-flex justify-content-between align-items-center" style="padding: 1.25rem 1.5rem; border-bottom: 1px solid rgba(148,163,184,0.2);">
+      <h3 class="oh-card__title mb-0" style="margin: 0; font-size: 1.4rem; font-weight: 600;">Support Tickets</h3>
+      {% if not is_superuser %}
+        <a href="{% url 'support-ticket-create' %}" class="oh-btn oh-btn--secondary oh-btn--shadow">Create Ticket</a>
+      {% endif %}
+    </div>
+    <div class="oh-card__body" style="padding: 1.5rem; background: #f8fafc;">
+      {% if is_superuser %}
+        <div class="mb-4">
+          <h4 class="mb-3" style="font-size: 1.05rem; font-weight: 600;">All Tickets</h4>
+          {% if tickets %}
+            <div class="d-flex flex-column gap-3">
+              {% for ticket in tickets %}
+                <a href="{% url 'support-ticket-detail' ticket.id %}" class="ticket-row">
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="font-weight: 600; margin-bottom: 0.35rem;">{{ ticket.title }}</div>
+                    <div style="color: #64748b; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ ticket.get_support_complaint|truncatechars:180 }}</div>
+                    <div style="color: #64748b; margin-top: 0.4rem; font-size: 0.8rem;">{{ ticket.created_at|date:'Y-m-d H:i' }} • {{ ticket.employee_id.get_full_name }}</div>
+                  </div>
+                  <span class="ticket-status ticket-status--neutral">{{ ticket.get_status_display }}</span>
+                </a>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="text-muted mb-0">No tickets found.</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <h4 class="mb-3" style="font-size: 1.05rem; font-weight: 600;">Active Tickets</h4>
+          {% if active_tickets %}
+            <div class="d-flex flex-column gap-3">
+              {% for ticket in active_tickets %}
+                <a href="{% url 'support-ticket-detail' ticket.id %}" class="ticket-row">
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="font-weight: 600; margin-bottom: 0.35rem;">{{ ticket.title }}</div>
+                    <div style="color: #64748b; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ ticket.get_support_complaint|truncatechars:180 }}</div>
+                    <small style="color: #64748b;">{{ ticket.created_at|date:'Y-m-d H:i' }} • {{ ticket.employee_id.get_full_name }}</small>
+                  </div>
+                  <span class="ticket-status ticket-status--warning">{{ ticket.get_status_display }}</span>
+                </a>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="text-muted mb-0">No active tickets.</p>
+          {% endif %}
+        </div>
+      {% else %}
+        {% if tickets %}
+          <div class="d-flex flex-column gap-3">
+            {% for ticket in tickets %}
+              <a href="{% url 'support-ticket-detail' ticket.id %}" class="ticket-row">
+                <div style="flex: 1; min-width: 0;">
+                  <div style="font-weight: 600; margin-bottom: 0.35rem;">{{ ticket.title }}</div>
+                  <div style="color: #64748b; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ ticket.get_support_complaint|truncatechars:180 }}</div>
+                  <div style="color: #64748b; margin-top: 0.4rem; font-size: 0.8rem;">{{ ticket.created_at|date:'Y-m-d H:i' }} • {{ ticket.employee_id.get_full_name }}</div>
+                </div>
+                <span class="ticket-status ticket-status--neutral">{{ ticket.get_status_display }}</span>
+              </a>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-muted mb-0">No support tickets found.</p>
+        {% endif %}
+
+        {% if has_resolver_assignment and assigned_tickets %}
+          <div class="mt-4">
+            <h4 class="mb-3" style="font-size: 1.05rem; font-weight: 600;">Assigned Tickets</h4>
+            <div class="d-flex flex-column gap-3">
+              {% for ticket in assigned_tickets %}
+                <a href="{% url 'support-ticket-detail' ticket.id %}" class="ticket-row">
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="font-weight: 600; margin-bottom: 0.35rem;">{{ ticket.title }}</div>
+                    <div style="color: #64748b; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ ticket.get_support_complaint|truncatechars:180 }}</div>
+                    <div style="color: #64748b; margin-top: 0.4rem; font-size: 0.8rem;">{{ ticket.created_at|date:'Y-m-d H:i' }} • {{ ticket.employee_id.get_full_name }}</div>
+                  </div>
+                  <span class="ticket-status ticket-status--success">{{ ticket.get_status_display }}</span>
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -124,8 +124,23 @@
                         >
                             {% trans "Out Date" %}
                         </div>
-                        <div data-cell-index="6" data-cell-title="{% trans 'Status' %}" class="oh-sticky-table__th">
+                        <div data-cell-index="6" data-cell-title="{% trans 'Worked Hours' %}" class="oh-sticky-table__th">
+                            {% trans "Worked Hours" %}
+                        </div>
+                        <div data-cell-index="7" data-cell-title="{% trans 'Overtime' %}" class="oh-sticky-table__th">
+                            {% trans "Overtime" %}
+                        </div>
+                        <div data-cell-index="8" data-cell-title="{% trans 'Late Coming' %}" class="oh-sticky-table__th">
+                            {% trans "Late Coming" %}
+                        </div>
+                        <div data-cell-index="9" data-cell-title="{% trans 'Early Out' %}" class="oh-sticky-table__th">
+                            {% trans "Early Out" %}
+                        </div>
+                        <div data-cell-index="10" data-cell-title="{% trans 'Status' %}" class="oh-sticky-table__th">
                             {% trans "Status" %}
+                        </div>
+                        <div data-cell-index="11" data-cell-title="{% trans 'Source' %}" class="oh-sticky-table__th">
+                            {% trans "Source" %}
                         </div>
                         {% if perms.attendance.delete_attendanceactivity %}
                             <div class="oh-sticky-table__th oh-sticky-table__right" scope="col" style="width: 86px">
@@ -177,13 +192,28 @@
                             <div data-cell-index="5" data-cell-title="{% trans 'Out Date' %}" class="oh-sticky-table__td dateformat_changer">
                                 {{ activity.clock_out_date }}
                             </div>
-                            <div data-cell-index="6" data-cell-title="{% trans 'Status' %}" class="oh-sticky-table__td">
+                            <div data-cell-index="6" data-cell-title="{% trans 'Worked Hours' %}" class="oh-sticky-table__td">
+                                {{ activity.worked_hours|default:"-" }}
+                            </div>
+                            <div data-cell-index="7" data-cell-title="{% trans 'Overtime' %}" class="oh-sticky-table__td">
+                                {{ activity.overtime|default:"-" }}
+                            </div>
+                            <div data-cell-index="8" data-cell-title="{% trans 'Late Coming' %}" class="oh-sticky-table__td">
+                                {{ activity.late_coming|default:"-" }}
+                            </div>
+                            <div data-cell-index="9" data-cell-title="{% trans 'Early Out' %}" class="oh-sticky-table__td">
+                                {{ activity.early_out|default:"-" }}
+                            </div>
+                            <div data-cell-index="10" data-cell-title="{% trans 'Status' %}" class="oh-sticky-table__td">
                                 {% if activity.attendance.is_grace_late %}
                                     <span class="oh-badge oh-badge--warning">{% trans "Grace Late" %}</span>
                                 {% endif %}
                                 {% if activity.attendance.half_day_reason %}
                                     <span class="oh-badge oh-badge--danger">{{ activity.attendance.half_day_reason }}</span>
                                 {% endif %}
+                            </div>
+                            <div data-cell-index="11" data-cell-title="{% trans 'Source' %}" class="oh-sticky-table__td">
+                                {{ activity.attendance.attendance_source|default:"-" }}
                             </div>
                             {% if perms.attendance.delete_attendanceactivity %}
                                 <div class="oh-sticky-table__th oh-sticky-table__right" scope="col" style="width: 86px">
@@ -270,40 +300,53 @@
     <!-- end of empty page -->
 {% endif %}
 <script>
-    $(document).ready(function () {
-        $('#selectAllActivity').show();
-        tickactivityCheckboxes();
-        $(".all-attendance-activity-row").change(function () {
-            var parentTable = $(this).closest(".oh-sticky-table");
-            var body = parentTable.find(".oh-sticky-table__tbody");
-            var parentCheckbox = parentTable.find(".all-attendance-activity");
-            parentCheckbox.prop(
-                "checked",
-                body.find(".all-attendance-activity-row:checked").length ===
-                body.find(".all-attendance-activity-row").length
-            );
-            addingActivityIds();
+const activityTableColumnKey = "attendance_activity_tab";
+const activityExportColumnIndexes = [
+    "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"
+];
+const storedActivityColumns = JSON.parse(localStorage.getItem(activityTableColumnKey) || "[]");
+const missingActivityColumns = activityExportColumnIndexes.filter(
+    (index) => !storedActivityColumns.includes(index)
+);
+if (missingActivityColumns.length) {
+    const mergedColumns = [...storedActivityColumns, ...missingActivityColumns];
+    localStorage.setItem(activityTableColumnKey, JSON.stringify(mergedColumns));
+}
+
+$(document).ready(function () {
+    $('#selectAllActivity').show();
+    tickactivityCheckboxes();
+    $(".all-attendance-activity-row").change(function () {
+        var parentTable = $(this).closest(".oh-sticky-table");
+        var body = parentTable.find(".oh-sticky-table__tbody");
+        var parentCheckbox = parentTable.find(".all-attendance-activity");
+        parentCheckbox.prop(
+            "checked",
+            body.find(".all-attendance-activity-row:checked").length ===
+            body.find(".all-attendance-activity-row").length
+        );
+        addingActivityIds();
         });
 
-        $(".all-attendance-activity").change(function () {
-            addingActivityIds();
+    $(".all-attendance-activity").change(function () {
+        addingActivityIds();
         });
 
-        $("#selectAllActivity").click(function () {
-            selectAllActivity();
-        });
-
-        $("#unselectAllActivity").click(function () {
-            unselectAllActivity();
-        });
+    $("#selectAllActivity").click(function () {
+        selectAllActivity();
     });
-    // toggle columns //
-    toggleColumns("attendance-activity-table", "AttendanceActivityCells");
-    localStorageAttendanceActivityCells = localStorage.getItem(
-        "attendance_activity_tab"
-    );
-    if (!localStorageAttendanceActivityCells) {
-        $("#AttendanceActivityCells").find("[type=checkbox]").prop("checked", true);
-    }
-    $("[type=checkbox]").change();
+
+    $("#unselectAllActivity").click(function () {
+        unselectAllActivity();
+    });
+});
+// toggle columns //
+toggleColumns("attendance-activity-table", "AttendanceActivityCells");
+localStorageAttendanceActivityCells = localStorage.getItem(
+    activityTableColumnKey
+);
+if (!localStorageAttendanceActivityCells) {
+    $("#AttendanceActivityCells").find("[type=checkbox]").prop("checked", true);
+}
+$("[type=checkbox]").change();
 </script>

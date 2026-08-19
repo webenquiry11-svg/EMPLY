@@ -5,6 +5,7 @@ from django import apps
 from django.db import models
 from django.db.models.signals import post_delete, post_save
 from django.forms import ValidationError
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
@@ -37,9 +38,13 @@ TICKET_TYPES = [
 
 TICKET_STATUS = [
     ("new", _("New")),
+    ("accepted", _("Accepted")),
+    ("rejected", _("Rejected")),
+    ("assigned", _("Assigned")),
     ("in_progress", _("In Progress")),
     ("on_hold", _("On Hold")),
     ("resolved", _("Resolved")),
+    ("closed", _("Closed")),
     ("canceled", _("Canceled")),
 ]
 
@@ -106,8 +111,32 @@ class Ticket(HorillaModel):
     )
     description = models.TextField(max_length=255)
     priority = models.CharField(choices=PRIORITY, max_length=100, default="low")
+    complaint = models.TextField(
+        max_length=1000,
+        null=True,
+        blank=True,
+        verbose_name=_("Complaint"),
+    )
+    support_image = models.ImageField(
+        upload_to=upload_path,
+        null=True,
+        blank=True,
+        verbose_name=_("Support Image"),
+    )
     created_date = models.DateField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     resolved_date = models.DateField(blank=True, null=True)
+    closed_at = models.DateTimeField(blank=True, null=True)
+    resolver = models.ForeignKey(
+        Employee,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="support_ticket_resolver",
+        verbose_name=_("Resolver"),
+    )
+    closed = models.BooleanField(default=False, verbose_name=_("Closed"))
+    is_support_ticket = models.BooleanField(default=False, verbose_name=_("Support Ticket"))
     assigning_type = models.CharField(
         choices=MANAGER_TYPES, max_length=100, verbose_name=_("Assigning Type")
     )
@@ -155,6 +184,38 @@ class Ticket(HorillaModel):
 
     def __str__(self):
         return self.title
+
+    def get_support_complaint(self):
+        return self.complaint or self.description or ""
+
+    def get_elapsed_time(self):
+        if not self.created_at:
+            return ""
+        delta = timezone.now() - self.created_at
+        total_seconds = max(int(delta.total_seconds()), 0)
+        if total_seconds < 60:
+            return f"{total_seconds}s ago"
+        minutes, seconds = divmod(total_seconds, 60)
+        if minutes < 60:
+            return f"{minutes}m ago"
+        hours, minutes = divmod(minutes, 60)
+        if hours < 24:
+            return f"{hours}h ago"
+        days, hours = divmod(hours, 24)
+        return f"{days}d ago"
+
+    def can_user_access(self, employee):
+        if not employee:
+            return False
+        if employee.employee_user_id and employee.employee_user_id.is_superuser:
+            return True
+        if employee == self.employee_id:
+            return True
+        if self.resolver and employee == self.resolver:
+            return True
+        if employee in self.assigned_to.all():
+            return True
+        return False
 
     def tracking(self):
         """
