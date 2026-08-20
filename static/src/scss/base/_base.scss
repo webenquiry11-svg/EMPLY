@@ -27,7 +27,7 @@ body{
  * Basic styles for links
  */
 a {
-  color: $brand-color;
+ color: #10b981;
   text-decoration: none;
   transition: all 0.4s ease-in-out;
 
@@ -36,7 +36,7 @@ a {
   }
 
   @include on-event {
-    color: $text-color;
+   color: #043927;
     text-decoration: underline;
     transition: all 0.4s ease-in-out;
   }

@@ -18,19 +18,19 @@ $code-font-stack: 'Courier New', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono',
 
 /// Copy text color
 /// @type Color
-$text-color: hsl(0, 0%, 11%) !default;
+$text-color: #111827 !default;
 
 /// Copy text color
 /// @type Color
-$background-color: hsl(0, 0%, 97.5%) !default;
+$background-color: #f9fafb !default;
 
 /// Main brand light color
 /// @type Color
-$brand-color-light: hsl(0, 0%, 20%) !default;
+$brand-color-light: #10b981 !default;
 
 /// Main brand color
 /// @type Color
-$brand-color: hsl(0, 0%, 13%) !default;
+$brand-color: #043927 !default;
 
 /// Main brand color dark
 /// @type Color
@@ -97,7 +97,7 @@ $table-text-color: hsl(0, 0%, 37%) !default;
 
 /// Light Text color
 /// @type Color
-$light-text-color: hsl(0, 0%, 45%)!default;
+$light-text-color: #6b7280 !default;
 
 /// Light button color
 /// @type Color

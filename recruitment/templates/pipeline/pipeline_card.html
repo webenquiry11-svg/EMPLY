@@ -5,7 +5,7 @@
 {% load recruitmentfilters horillafilters %}
 <style>
   .search-highlight{
-    background-color: rgba(255, 68, 0, 0.076);
+    background-color: rgba(21, 101, 163, 0.08);
   }
 </style>
 <style>
@@ -117,7 +117,7 @@
           onclick="window.location.href = `{% url 'candidate-view-individual' cand.id %}`"
         >
           <div class="oh-kanban__card-head align-items-baseline pb-0" {% if cand.is_offer_rejected %}
-          style="border-left: solid orangered;"
+                    style="border-left: solid #1565A3;"
           {% endif %}>
             <div class="oh-profile oh-profile--md align-items-baseline">
               <div class="oh-profile__avatar mr-2">
@@ -283,7 +283,7 @@
           </div>
           <div class="oh-kanban__card-footer"
           {% if cand.is_offer_rejected %}
-          style="border-left: solid orangered;"
+                    style="border-left: solid #1565A3;"
           {% endif %}
           >
             <span class="oh-kanban__card-footer-text oh-text--light"

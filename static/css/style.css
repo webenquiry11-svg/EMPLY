@@ -126,7 +126,7 @@ ion-icon {
 }
 
 .row-status--orange {
-    border-left: 4px solid orange;
+    border-left: 4px solid #1565A3;
     border-radius: 5px;
 }
 

@@ -1,4 +1,4 @@
-{% load static %} i18n %}
+{% load static i18n %}
 <form
     hx-post="{% url 'add-attachment-policy' %}?policy_id={{policy.id}}"
     hx-target="#attachmentContainer"
@@ -6,7 +6,7 @@
     method="post"
     hx-encoding="multipart/form-data"
 >
-    {% for attachment in policy.attachments.all %}
+    {% for attachment in attachments %}
         {% if perms.employee.delete_policymultiplefile %}
             <a href="{{ attachment.attachment.url }}" rel="noopener noreferrer" target="_blank"><span
                     class="oh-file-icon oh-file-icon--pdf"

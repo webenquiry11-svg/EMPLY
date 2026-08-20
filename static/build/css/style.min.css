@@ -1,4 +1,4 @@
-@charset "UTF-8";
+﻿@charset "UTF-8";
 /*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
 /* Document
    ========================================================================== */
@@ -593,7 +593,7 @@ template {
   border-radius: 0 0 0.25rem 0.25rem;
   text-align: center;
   background-color: #fff;
-  color: #333;
+  color: #10b981;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -857,7 +857,7 @@ template {
 }
 
 .oci-menu::before {
-  content: "≡";
+  content: "â‰¡";
   display: inline-block;
   width: 1rem;
   height: 1rem;
@@ -916,7 +916,7 @@ template {
 }
 
 .oci-plus-square::before {
-  content: "﹢";
+  content: "ï¹¢";
   display: inline-block;
   width: 16px;
   height: 16px;
@@ -928,7 +928,7 @@ template {
 }
 
 .oci-minus-square::before {
-  content: "﹣";
+  content: "ï¹£";
   display: inline-block;
   width: 16px;
   height: 16px;
@@ -940,7 +940,7 @@ template {
 }
 
 .oci-arrow-square-up::before {
-  content: "⬆";
+  content: "â¬†";
   display: inline-block;
   width: 1rem;
   height: 1rem;
@@ -952,7 +952,7 @@ template {
 }
 
 .oci-arrow-square-down::before {
-  content: "⬇";
+  content: "â¬‡";
   display: inline-block;
   width: 1rem;
   height: 1rem;
@@ -1623,7 +1623,7 @@ progress {
   color: #6c757d;
 }
 .blockquote-footer::before {
-  content: "— ";
+  content: "â€”Â ";
 }
 
 .container,
@@ -1704,7 +1704,7 @@ progress {
 
 .row-cols-3 > * {
   flex: 0 0 auto;
-  width: 33.3333333333%;
+  width: 33.04392710b9813%;
 }
 
 .row-cols-4 > * {
@@ -1740,7 +1740,7 @@ progress {
   }
   .row-cols-sm-3 > * {
     flex: 0 0 auto;
-    width: 33.3333333333%;
+    width: 33.04392710b9813%;
   }
   .row-cols-sm-4 > * {
     flex: 0 0 auto;
@@ -1773,7 +1773,7 @@ progress {
   }
   .row-cols-md-3 > * {
     flex: 0 0 auto;
-    width: 33.3333333333%;
+    width: 33.04392710b9813%;
   }
   .row-cols-md-4 > * {
     flex: 0 0 auto;
@@ -1806,7 +1806,7 @@ progress {
   }
   .row-cols-lg-3 > * {
     flex: 0 0 auto;
-    width: 33.3333333333%;
+    width: 33.04392710b9813%;
   }
   .row-cols-lg-4 > * {
     flex: 0 0 auto;
@@ -1839,7 +1839,7 @@ progress {
   }
   .row-cols-xl-3 > * {
     flex: 0 0 auto;
-    width: 33.3333333333%;
+    width: 33.04392710b9813%;
   }
   .row-cols-xl-4 > * {
     flex: 0 0 auto;
@@ -1872,7 +1872,7 @@ progress {
   }
   .row-cols-xxl-3 > * {
     flex: 0 0 auto;
-    width: 33.3333333333%;
+    width: 33.04392710b9813%;
   }
   .row-cols-xxl-4 > * {
     flex: 0 0 auto;
@@ -1894,7 +1894,7 @@ progress {
 
 .col-1 {
   flex: 0 0 auto;
-  width: 8.33333333%;
+  width: 8.04392733%;
 }
 
 .col-2 {
@@ -1909,7 +1909,7 @@ progress {
 
 .col-4 {
   flex: 0 0 auto;
-  width: 33.33333333%;
+  width: 33.04392733%;
 }
 
 .col-5 {
@@ -1924,7 +1924,7 @@ progress {
 
 .col-7 {
   flex: 0 0 auto;
-  width: 58.33333333%;
+  width: 58.04392733%;
 }
 
 .col-8 {
@@ -1939,7 +1939,7 @@ progress {
 
 .col-10 {
   flex: 0 0 auto;
-  width: 83.33333333%;
+  width: 83.04392733%;
 }
 
 .col-11 {
@@ -1953,7 +1953,7 @@ progress {
 }
 
 .offset-1 {
-  margin-left: 8.33333333%;
+  margin-left: 8.04392733%;
 }
 
 .offset-2 {
@@ -1965,7 +1965,7 @@ progress {
 }
 
 .offset-4 {
-  margin-left: 33.33333333%;
+  margin-left: 33.04392733%;
 }
 
 .offset-5 {
@@ -1977,7 +1977,7 @@ progress {
 }
 
 .offset-7 {
-  margin-left: 58.33333333%;
+  margin-left: 58.04392733%;
 }
 
 .offset-8 {
@@ -1989,7 +1989,7 @@ progress {
 }
 
 .offset-10 {
-  margin-left: 83.33333333%;
+  margin-left: 83.04392733%;
 }
 
 .offset-11 {
@@ -2063,7 +2063,7 @@ progress {
   }
   .col-sm-1 {
     flex: 0 0 auto;
-    width: 8.33333333%;
+    width: 8.04392733%;
   }
   .col-sm-2 {
     flex: 0 0 auto;
@@ -2075,7 +2075,7 @@ progress {
   }
   .col-sm-4 {
     flex: 0 0 auto;
-    width: 33.33333333%;
+    width: 33.04392733%;
   }
   .col-sm-5 {
     flex: 0 0 auto;
@@ -2087,7 +2087,7 @@ progress {
   }
   .col-sm-7 {
     flex: 0 0 auto;
-    width: 58.33333333%;
+    width: 58.04392733%;
   }
   .col-sm-8 {
     flex: 0 0 auto;
@@ -2099,7 +2099,7 @@ progress {
   }
   .col-sm-10 {
     flex: 0 0 auto;
-    width: 83.33333333%;
+    width: 83.04392733%;
   }
   .col-sm-11 {
     flex: 0 0 auto;
@@ -2113,7 +2113,7 @@ progress {
     margin-left: 0;
   }
   .offset-sm-1 {
-    margin-left: 8.33333333%;
+    margin-left: 8.04392733%;
   }
   .offset-sm-2 {
     margin-left: 16.66666667%;
@@ -2122,7 +2122,7 @@ progress {
     margin-left: 25%;
   }
   .offset-sm-4 {
-    margin-left: 33.33333333%;
+    margin-left: 33.04392733%;
   }
   .offset-sm-5 {
     margin-left: 41.66666667%;
@@ -2131,7 +2131,7 @@ progress {
     margin-left: 50%;
   }
   .offset-sm-7 {
-    margin-left: 58.33333333%;
+    margin-left: 58.04392733%;
   }
   .offset-sm-8 {
     margin-left: 66.66666667%;
@@ -2140,7 +2140,7 @@ progress {
     margin-left: 75%;
   }
   .offset-sm-10 {
-    margin-left: 83.33333333%;
+    margin-left: 83.04392733%;
   }
   .offset-sm-11 {
     margin-left: 91.66666667%;
@@ -2201,7 +2201,7 @@ progress {
   }
   .col-md-1 {
     flex: 0 0 auto;
-    width: 8.33333333%;
+    width: 8.04392733%;
   }
   .col-md-2 {
     flex: 0 0 auto;
@@ -2213,7 +2213,7 @@ progress {
   }
   .col-md-4 {
     flex: 0 0 auto;
-    width: 33.33333333%;
+    width: 33.04392733%;
   }
   .col-md-5 {
     flex: 0 0 auto;
@@ -2225,7 +2225,7 @@ progress {
   }
   .col-md-7 {
     flex: 0 0 auto;
-    width: 58.33333333%;
+    width: 58.04392733%;
   }
   .col-md-8 {
     flex: 0 0 auto;
@@ -2237,7 +2237,7 @@ progress {
   }
   .col-md-10 {
     flex: 0 0 auto;
-    width: 83.33333333%;
+    width: 83.04392733%;
   }
   .col-md-11 {
     flex: 0 0 auto;
@@ -2251,7 +2251,7 @@ progress {
     margin-left: 0;
   }
   .offset-md-1 {
-    margin-left: 8.33333333%;
+    margin-left: 8.04392733%;
   }
   .offset-md-2 {
     margin-left: 16.66666667%;
@@ -2260,7 +2260,7 @@ progress {
     margin-left: 25%;
   }
   .offset-md-4 {
-    margin-left: 33.33333333%;
+    margin-left: 33.04392733%;
   }
   .offset-md-5 {
     margin-left: 41.66666667%;
@@ -2269,7 +2269,7 @@ progress {
     margin-left: 50%;
   }
   .offset-md-7 {
-    margin-left: 58.33333333%;
+    margin-left: 58.04392733%;
   }
   .offset-md-8 {
     margin-left: 66.66666667%;
@@ -2278,7 +2278,7 @@ progress {
     margin-left: 75%;
   }
   .offset-md-10 {
-    margin-left: 83.33333333%;
+    margin-left: 83.04392733%;
   }
   .offset-md-11 {
     margin-left: 91.66666667%;
@@ -2339,7 +2339,7 @@ progress {
   }
   .col-lg-1 {
     flex: 0 0 auto;
-    width: 8.33333333%;
+    width: 8.04392733%;
   }
   .col-lg-2 {
     flex: 0 0 auto;
@@ -2351,7 +2351,7 @@ progress {
   }
   .col-lg-4 {
     flex: 0 0 auto;
-    width: 33.33333333%;
+    width: 33.04392733%;
   }
   .col-lg-5 {
     flex: 0 0 auto;
@@ -2363,7 +2363,7 @@ progress {
   }
   .col-lg-7 {
     flex: 0 0 auto;
-    width: 58.33333333%;
+    width: 58.04392733%;
   }
   .col-lg-8 {
     flex: 0 0 auto;
@@ -2375,7 +2375,7 @@ progress {
   }
   .col-lg-10 {
     flex: 0 0 auto;
-    width: 83.33333333%;
+    width: 83.04392733%;
   }
   .col-lg-11 {
     flex: 0 0 auto;
@@ -2389,7 +2389,7 @@ progress {
     margin-left: 0;
   }
   .offset-lg-1 {
-    margin-left: 8.33333333%;
+    margin-left: 8.04392733%;
   }
   .offset-lg-2 {
     margin-left: 16.66666667%;
@@ -2398,7 +2398,7 @@ progress {
     margin-left: 25%;
   }
   .offset-lg-4 {
-    margin-left: 33.33333333%;
+    margin-left: 33.04392733%;
   }
   .offset-lg-5 {
     margin-left: 41.66666667%;
@@ -2407,7 +2407,7 @@ progress {
     margin-left: 50%;
   }
   .offset-lg-7 {
-    margin-left: 58.33333333%;
+    margin-left: 58.04392733%;
   }
   .offset-lg-8 {
     margin-left: 66.66666667%;
@@ -2416,7 +2416,7 @@ progress {
     margin-left: 75%;
   }
   .offset-lg-10 {
-    margin-left: 83.33333333%;
+    margin-left: 83.04392733%;
   }
   .offset-lg-11 {
     margin-left: 91.66666667%;
@@ -2477,7 +2477,7 @@ progress {
   }
   .col-xl-1 {
     flex: 0 0 auto;
-    width: 8.33333333%;
+    width: 8.04392733%;
   }
   .col-xl-2 {
     flex: 0 0 auto;
@@ -2489,7 +2489,7 @@ progress {
   }
   .col-xl-4 {
     flex: 0 0 auto;
-    width: 33.33333333%;
+    width: 33.04392733%;
   }
   .col-xl-5 {
     flex: 0 0 auto;
@@ -2501,7 +2501,7 @@ progress {
   }
   .col-xl-7 {
     flex: 0 0 auto;
-    width: 58.33333333%;
+    width: 58.04392733%;
   }
   .col-xl-8 {
     flex: 0 0 auto;
@@ -2513,7 +2513,7 @@ progress {
   }
   .col-xl-10 {
     flex: 0 0 auto;
-    width: 83.33333333%;
+    width: 83.04392733%;
   }
   .col-xl-11 {
     flex: 0 0 auto;
@@ -2527,7 +2527,7 @@ progress {
     margin-left: 0;
   }
   .offset-xl-1 {
-    margin-left: 8.33333333%;
+    margin-left: 8.04392733%;
   }
   .offset-xl-2 {
     margin-left: 16.66666667%;
@@ -2536,7 +2536,7 @@ progress {
     margin-left: 25%;
   }
   .offset-xl-4 {
-    margin-left: 33.33333333%;
+    margin-left: 33.04392733%;
   }
   .offset-xl-5 {
     margin-left: 41.66666667%;
@@ -2545,7 +2545,7 @@ progress {
     margin-left: 50%;
   }
   .offset-xl-7 {
-    margin-left: 58.33333333%;
+    margin-left: 58.04392733%;
   }
   .offset-xl-8 {
     margin-left: 66.66666667%;
@@ -2554,7 +2554,7 @@ progress {
     margin-left: 75%;
   }
   .offset-xl-10 {
-    margin-left: 83.33333333%;
+    margin-left: 83.04392733%;
   }
   .offset-xl-11 {
     margin-left: 91.66666667%;
@@ -2615,7 +2615,7 @@ progress {
   }
   .col-xxl-1 {
     flex: 0 0 auto;
-    width: 8.33333333%;
+    width: 8.04392733%;
   }
   .col-xxl-2 {
     flex: 0 0 auto;
@@ -2627,7 +2627,7 @@ progress {
   }
   .col-xxl-4 {
     flex: 0 0 auto;
-    width: 33.33333333%;
+    width: 33.04392733%;
   }
   .col-xxl-5 {
     flex: 0 0 auto;
@@ -2639,7 +2639,7 @@ progress {
   }
   .col-xxl-7 {
     flex: 0 0 auto;
-    width: 58.33333333%;
+    width: 58.04392733%;
   }
   .col-xxl-8 {
     flex: 0 0 auto;
@@ -2651,7 +2651,7 @@ progress {
   }
   .col-xxl-10 {
     flex: 0 0 auto;
-    width: 83.33333333%;
+    width: 83.04392733%;
   }
   .col-xxl-11 {
     flex: 0 0 auto;
@@ -2665,7 +2665,7 @@ progress {
     margin-left: 0;
   }
   .offset-xxl-1 {
-    margin-left: 8.33333333%;
+    margin-left: 8.04392733%;
   }
   .offset-xxl-2 {
     margin-left: 16.66666667%;
@@ -2674,7 +2674,7 @@ progress {
     margin-left: 25%;
   }
   .offset-xxl-4 {
-    margin-left: 33.33333333%;
+    margin-left: 33.04392733%;
   }
   .offset-xxl-5 {
     margin-left: 41.66666667%;
@@ -2683,7 +2683,7 @@ progress {
     margin-left: 50%;
   }
   .offset-xxl-7 {
-    margin-left: 58.33333333%;
+    margin-left: 58.04392733%;
   }
   .offset-xxl-8 {
     margin-left: 66.66666667%;
@@ -2692,7 +2692,7 @@ progress {
     margin-left: 75%;
   }
   .offset-xxl-10 {
-    margin-left: 83.33333333%;
+    margin-left: 83.04392733%;
   }
   .offset-xxl-11 {
     margin-left: 91.66666667%;
@@ -9591,7 +9591,7 @@ select.oh-select--lg {
 }
 
 .oh-rate:not(:checked) > label:before {
-  content: "★ ";
+  content: "â˜… ";
 }
 
 .oh-rate > input:checked ~ label {
@@ -11842,7 +11842,7 @@ span.oh-activity-sidebar__a img {
   padding-left: 1.5rem;
 }
 .oh-timesheet .accordion .accordion-header::before {
-  content: "▶";
+  content: "â–¶";
   background-position: center;
   background-repeat: no-repeat;
   width: 26px;
@@ -11856,7 +11856,7 @@ span.oh-activity-sidebar__a img {
   left: 8px;
 }
 .oh-timesheet .accordion .accordion-header.active::before {
-  content: "▼";
+  content: "â–¼";
 }
 .oh-timesheet .table {
   width: 100%;
@@ -11927,7 +11927,7 @@ span.oh-activity-sidebar__a img {
 .pvtAxisContainer li span.pvtAttr {
   border-radius: 0 !important;
   flex: 1 1 auto;
-  background-color: #f9f9f9 !important;
+  background-color: #f9fafb !important;
   position: relative;
 }
 .pvtAxisContainer li span.pvtAttr .pvtTriangle {
@@ -12058,7 +12058,7 @@ span.oh-activity-sidebar__a img {
   border: 1px solid #ccc;
   font-size: 16px;
   background-color: #fdfdfd;
-  color: #333;
+  color: #10b981;
 }
 
 #pivot-container .pvtTable tr:nth-child(even) td {
@@ -13717,7 +13717,7 @@ div.ui-tooltip {
 }
 
 .members-container {
-  background-color: #f9f9f9;
+  background-color: #f9fafb;
   border: 1px solid #e7e7e7;
   padding: 8px;
   max-width: fit-content;
@@ -13730,7 +13730,7 @@ div.ui-tooltip {
 .members-container ul li {
   list-style: none;
   float: left;
-  border: 2px solid #f9f9f9;
+  border: 2px solid #f9fafb;
 }
 
 .members-container ul .li-last {
@@ -16626,3 +16626,4 @@ a.oh-profile-dropdown-link:hover {
 }
 
 /*# sourceMappingURL=style.min.css.map */
+
