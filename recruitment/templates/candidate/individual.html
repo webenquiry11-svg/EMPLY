@@ -1,4 +1,4 @@
-{% extends 'index.html' %}
+﻿{% extends 'index.html' %}
 {% load i18n %}
 {% load horillafilters %}
 {% load static %}
@@ -85,7 +85,7 @@
                     <a
                         href="{% url 'candidate-view-individual' next %}"
                         title='{% trans "Next Candidate" %}'
-                        style="color: hsl(8, 77%, 56%)"
+                        style="color: #01231a"
                         class="ms-1 me-3 fw-bold"
                     >
                         <ion-icon name="arrow-forward-circle-outline" style="font-size: 35px"></ion-icon>
@@ -100,7 +100,7 @@
                     <a
                         href="{% url 'candidate-view-individual' previous %}"
                         title="{% trans 'Previous Candidate' %}"
-                        style="color: hsl(8, 77%, 56%)"
+                        style="color: #01231a"
                         class="ms-1 me-2 fw-bold"
                     >
                         <ion-icon name="arrow-back-circle-outline" style="font-size: 35px"></ion-icon>
@@ -772,3 +772,4 @@
         }
     </script>
 {% endblock content %}
+

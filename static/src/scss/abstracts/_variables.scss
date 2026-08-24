@@ -1,4 +1,4 @@
-@use "sass:map";
+﻿@use "sass:map";
 // -----------------------------------------------------------------------------
 // This file contains all application-wide Sass variables.
 // -----------------------------------------------------------------------------
@@ -30,7 +30,7 @@ $brand-color-light: #10b981 !default;
 
 /// Main brand color
 /// @type Color
-$brand-color: #043927 !default;
+$brand-color: #064e3b !default;
 
 /// Main brand color dark
 /// @type Color
@@ -38,7 +38,7 @@ $brand-color-dark: hsl(0, 0%, 12%) !default;
 
 /// Sidebar color
 /// @type Color
-$sidebar-color: hsl(192, 15%, 94%) !default;
+$sidebar-color: #01231a !default;
 
 /// Brand color dark
 /// @type Color
@@ -59,7 +59,7 @@ $white-color: hsl(0, 0%, 100%) !default;
 
 /// Danger color
 /// @type Color
-$danger-color: hsl(1, 100%, 61%);
+$danger-color: #01231a;
 
 /// Danger dark color
 /// @type Color
@@ -77,11 +77,11 @@ $warning-color-dark: hsl(37, 90%, 47%);
 
 /// Border color
 /// @type Color
-$border-color: hsl(213, 22%, 84%) !default;
+$border-color: #e5e7eb !default;
 
 /// Border light color
 /// @type Color
-$border-light-color: hsl(213, 22%, 93%) !default;
+$border-light-color: #f3f4f6 !default;
 
 /// Button light color
 /// @type Color
@@ -164,11 +164,11 @@ $green: hsl(121, 47%, 61%) !default;
 
 /// Success
 /// @type Color
-$success-color: hsl(148, 71%, 44%) !default;
+$success-color: #10b981 !default;
 
 /// Success
 /// @type Color
-$success-color-dark: hsl(148, 70%, 40%) !default;
+$success-color-dark: #059669 !default;
 
 
 /// Alert Colors
@@ -205,13 +205,13 @@ $alert-color-hlt-info: hsl(225, 72%, 48%) !default;
 
 /// Success Bg
 /// @type Color
-$alert-color-bg-success: hsl(137, 78%, 93%) !default;
+$alert-color-bg-success: #ecfdf5 !default;
 /// Success border
 /// @type Color
-$alert-color-border-success: hsl(136, 51%, 84%) !default;
+$alert-color-border-success: #dff6ec !default;
 /// Success Hlt
 /// @type Color
-$alert-color-hlt-success: hwb(119 28% 36%) !default;
+$alert-color-hlt-success: #10b981 !default;
 
 /// Container's maximum width
 /// @type Length
@@ -220,7 +220,7 @@ $max-width: 1180px !default;
 /// OrgChart Colors
 /// @type Color
 
-$org-chart-primary: hsl(8, 77%, 56%);
+$org-chart-primary: #01231a;
 $org-chart-secondary:hsl(12, 17%, 29%);
 $org-chart-tertiary: hsl(12, 19%, 69%);
 $org-chart-quaternary: hsl(193, 100%, 39%);
@@ -252,3 +252,4 @@ $breakpoints: (
 /// @example scss - When using a CDN
 ///   $base-url: 'https://cdn.example.com/assets/';
 $base-url: '/assets/' !default;
+

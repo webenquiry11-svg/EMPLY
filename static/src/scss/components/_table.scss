@@ -1,4 +1,4 @@
-.oh-table {
+﻿.oh-table {
   width: 100%;
   font-size: 0.85rem;
   border-collapse: collapse;
@@ -525,8 +525,8 @@
 }
 
 .oh-hover-btn__small:hover {
-  background-color: hsl(8, 77%, 56%);
-  border: 1px solid hsl(8, 61%, 50%);
+  background-color: #01231a;
+  border: 1px solid #01231a;
   color: hsl(0, 0%, 100%);
   -webkit-transition: all 0.2s linear;
   transition: all 0.2s linear;
@@ -1219,7 +1219,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: hsl(8, 61%, 50%);
+      color: #01231a;
       object-fit: contain;
       position: absolute;
       left: 8px;
@@ -1389,7 +1389,7 @@
     :nth-child(1) {
       width: 100%;
       border-radius: 0 !important;
-      background-color: hsl(8, 77%, 56%);
+      background-color: #01231a;
       color: hsl(0, 0%, 100%);
       text-decoration: none;
       font-size: 0.9rem;
@@ -1487,3 +1487,5 @@
 .js-plotly-plot .plotlyjsicon {
   display: none !important;
 }
+
+

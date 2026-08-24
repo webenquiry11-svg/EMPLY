@@ -1,4 +1,4 @@
-.oh-survey__table-row {
+﻿.oh-survey__table-row {
     display: flex;
     border-bottom: 1px solid $border-light-color;
 
@@ -76,7 +76,7 @@
 }
 
 .oh-badge_count {
-    background-color: hsl(8, 77%, 56%);
+    background-color: #01231a;
     color: white;
     border-radius: 30px;
     min-width: 20px;
@@ -103,3 +103,4 @@
     border-radius: 30px;
 
 }
+

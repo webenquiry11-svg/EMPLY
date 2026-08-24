@@ -1,4 +1,4 @@
-{% load i18n %} {% load horillafilters %}
+﻿{% load i18n %} {% load horillafilters %}
 
 <div class="oh-profile-section ">
   {% if employee %}
@@ -58,7 +58,7 @@
             <input type="date" class="oh-input w-25" name="attendance_date__lte" value="{{ attendance_export.form.attendance_date__lte.value }}" required>
 
             <div class="mt-1">
-              <button class="ms-4 d-flex" style="color:white; background-color:hsl(8,77%,56%);border:none;height:40px;">
+              <button class="ms-4 d-flex" style="color:white; background-color:#01231a;border:none;height:40px;">
                 <ion-icon name="download-outline" style="font-size:17px;" class='me-1 mt-2'></ion-icon>
                 <p style="margin-top:10px;">{% trans "Export Data" %}</p>
               </button>
@@ -105,7 +105,7 @@
             <input type="date" class="oh-input w-25" name="to_date" value="{{ leave_export.form.to_date.value }}" required>
 
             <div class="mt-1">
-              <button class="ms-4 d-flex" style="color:white; background-color:hsl(8,77%,56%);border:none;height:40px;">
+              <button class="ms-4 d-flex" style="color:white; background-color:#01231a;border:none;height:40px;">
                 <ion-icon name="download-outline" style="font-size:17px;" class='me-1 mt-2'></ion-icon>
                 <p style="margin-top:10px;">{% trans "Export Data" %}</p>
               </button>
@@ -154,7 +154,7 @@
             <input type="date" class="oh-input w-25" name="end_date_till" value="{{ payroll_export.form.end_date_till.value }}" required>
 
             <div class="mt-1">
-              <button class="ms-4 d-flex" style="color:white; background-color:hsl(8,77%,56%);border:none;height:40px;">
+              <button class="ms-4 d-flex" style="color:white; background-color:#01231a;border:none;height:40px;">
                 <ion-icon name="download-outline" style="font-size:17px;" class='me-1 mt-2'></ion-icon>
                 <p style="margin-top:10px;">{% trans "Export Data" %}</p>
               </button>
@@ -164,3 +164,4 @@
     </form>
   {% endif %}
 </div>
+

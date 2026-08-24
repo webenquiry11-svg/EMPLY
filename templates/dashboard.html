@@ -1,4 +1,4 @@
-{% load static basefilters horillafilters employee_filter i18n %} {% load tz %} {% now "Y-m-d" as current_date %}
+﻿{% load static basefilters horillafilters employee_filter i18n %} {% load tz %} {% now "Y-m-d" as current_date %}
 {% load accessibility_filters %}
 <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
 
@@ -63,7 +63,7 @@
         display: block;
         margin-bottom: 10px;
         padding: 10px;
-        border: 1px solid hsl(8deg 77% 56% / 40%);
+        border: 1px solid #01231a;
         border-radius: 18px;
         margin-right: 10px;
         background-color: hsl(24.23deg 100% 58.24% / 52.94%);
@@ -507,7 +507,7 @@
         this.lightColor = 'hsl(hue,80%,light%)'.replace('hue', hue);
         this.alphaColor = 'hsla(hue,80%,50%,alp)'.replace('hue', hue);
 
-        {% comment %} this.color = 'hsl(8, 77%, 56%)'; // Base color
+        {% comment %} this.color = '#01231a'; // Base color
         this.lightAlphaColor = 'hsla(8, 77%, 56%, 0.5)'; // Semi-transparent
         this.lightColor = 'hsla(8, 77%, 56%, 0.8)'; // Slightly transparent
         this.alphaColor = 'hsla(8, 77%, 56%, 0.6)'; // Semi-transparent {% endcomment %}
@@ -815,3 +815,5 @@
     runDriver()
 </script>
 {% endif %}
+
+

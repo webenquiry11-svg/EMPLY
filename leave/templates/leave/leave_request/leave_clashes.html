@@ -36,21 +36,21 @@
                         {% if leave in clashed_due_to_department and leave in clashed_due_to_job_position %}
                             <div
                                 align="center"
-                                style="background-color: rgba(229, 79, 56, 0.13); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 102%"
+                                style="background-color: rgba(1, 35, 26, 0.13); border: 2px solid rgb(1, 35, 26); border-radius: 18px; padding: 10px; font-weight: bold; width: 102%"
                             >
                                 {% trans "Same Department & Job Position" %}
                             </div>
                         {% elif leave in clashed_due_to_department %}
                             <div
                                 align="center"
-                                style="background-color: rgb(229 56 226 / 13%); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 102%"
+                                style="background-color: rgb(229 56 226 / 13%); border: 2px solid rgb(1, 35, 26); border-radius: 18px; padding: 10px; font-weight: bold; width: 102%"
                             >
                                 {% trans "Same Department" %}
                             </div>
                         {% elif leave in clashed_due_to_job_position %}
                             <div
                                 align="center"
-                                style="background-color: rgb(56 89 229 / 13%); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 102%"
+                                style="background-color: rgb(56 89 229 / 13%); border: 2px solid rgb(1, 35, 26); border-radius: 18px; padding: 10px; font-weight: bold; width: 102%"
                             >
                                 {% trans "Same Job Position" %}
                             </div>

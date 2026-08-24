@@ -1,4 +1,4 @@
-{% load i18n %}{% load static %}
+﻿{% load i18n %}{% load static %}
 {% if templates %}
     <div class="oh-card">
         {% for grouper in templates %}
@@ -150,7 +150,7 @@
                                                                 onclick="return confirm('Do you want to delete this record?')"
                                                                 data-toggle="oh-modal-toggle"
                                                                 class="oh-btn oh-btn--light-bkg w-100 tex-danger"
-                                                                style="color: hsl(8, 77%, 56%)"
+                                                                style="color: #01231a"
                                                                 title="{% trans 'delete' %}"
                                                             >
                                                                 <ion-icon name="trash-outline"></ion-icon>
@@ -300,3 +300,4 @@
         <p class="oh-empty__subtitle">{% trans "No template groups have been established yet." %}</p>
     </div>
 {% endif %}
+
