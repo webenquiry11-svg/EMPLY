@@ -3,7 +3,7 @@
 {% if not announcements %}
     <div class="oh-empty h-100" style="padding-top: 50px">
         <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="{% trans 'Page not found. 404.' %}">
-        <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+        <h2 class="oh-empty__title">{% trans "No Records found." %}</h1>
         <p class="oh-empty__subtitle">{% trans "There are no announcements at the moment." %}</p>
     </div>
 {% else %}

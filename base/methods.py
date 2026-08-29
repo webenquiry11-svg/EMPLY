@@ -7,7 +7,7 @@ import re
 from datetime import date, datetime, time, timedelta
 from types import SimpleNamespace
 
-import pandas as pd
+import pandas as pd 
 import pdfkit
 from django.apps import apps
 from django.conf import settings

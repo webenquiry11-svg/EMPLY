@@ -110,6 +110,9 @@
                 </a>
             </li>
             {% for menues in sidebar %}
+                {% comment %} Hide entire Performance group from Employee users (visibility only) {% endcomment %}
+                {% if not request.user.employee_get or request.user.is_staff or menues.menu != "Performance" %}
+                {% if not request.user.is_staff and not request.user.is_superuser or menues.menu != "Project" and menues.menu != "Performance" %}
                 <li class="oh-sidebar__menu-item" x-data="{ isOpen: getOpenState('{{menues.app}}GenericNav') }">
                     <a class="oh-sidebar__menu-link" data-id="{{menues.app}}GenericNav"
                         x-on:click.prevent="isOpen = !isOpen; saveOpenState('{{menues.app}}GenericNav', isOpen)"
@@ -126,15 +129,76 @@
                         x-transition>
                         <ul class="oh-sidebar__submenu-items">
                             {% for submenu in menues.submenu %}
-                                <li class="oh-sidebar__submenu-item">
-                                    <a href="{{submenu.redirect}}" class="oh-sidebar__submenu-link">
-                                        {{submenu.menu}}
-                                    </a>
-                                </li>
+                                {% comment %} Hide specific submenu items for Employee users (visibility only) {% endcomment %}
+                                {% if not request.user.employee_get or request.user.is_staff or submenu.menu != "Hour Account" and submenu.menu != "Late Come Early Out" and submenu.menu != "Late Come/Early Out" and submenu.menu != "Late Come / Early Out" and submenu.menu != "Company Leaves" and submenu.menu != "Restrict Leaves" and submenu.menu != "Restricted Leaves" and submenu.menu != "FAQs" and submenu.menu != "FAQs Categories" and submenu.menu != "Extra Languages Options" %}
+                                    {% if request.user.is_staff or request.user.is_superuser %}
+                                        {% if menues.menu == "Recruitment" %}
+                                            {% if submenu.menu == "Open Jobs" or submenu.menu == "Stages" or submenu.menu == "Skill Zone" %}
+                                                {# hidden for Admin/SuperAdmin #}
+                                            {% else %}
+                                                <li class="oh-sidebar__submenu-item">
+                                                    <a href="{{submenu.redirect}}" class="oh-sidebar__submenu-link">
+                                                        {{submenu.menu}}
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                        {% elif menues.menu == "Attendance" %}
+                                            {% if submenu.menu == "Attendances" or submenu.menu == "Attendances" or submenu.menu == "Hour Account" or submenu.menu == "Late Come Early Out" or submenu.menu == "Late Come/Early Out" or submenu.menu == "Late Come / Early Out" %}
+                                            {% else %}
+                                                <li class="oh-sidebar__submenu-item">
+                                                    <a href="{{submenu.redirect}}" class="oh-sidebar__submenu-link">
+                                                        {{submenu.menu}}
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                        {% elif menues.menu == "Leave" %}
+                                            {% if submenu.menu == "Dashboard" or submenu.menu == "My Leave Requests" or submenu.menu == "My Leave Request" %}
+                                            {% else %}
+                                                <li class="oh-sidebar__submenu-item">
+                                                    <a href="{{submenu.redirect}}" class="oh-sidebar__submenu-link">
+                                                        {{submenu.menu}}
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                        {% elif menues.menu == "Payroll" %}
+                                            {% if submenu.menu == "Dashboard" or submenu.menu == "Federal Tax" %}
+                                            {% else %}
+                                                <li class="oh-sidebar__submenu-item">
+                                                    <a href="{{submenu.redirect}}" class="oh-sidebar__submenu-link">
+                                                        {{submenu.menu}}
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                        {% elif menues.menu == "Help Desk" %}
+                                            {% if submenu.menu == "FAQs" or submenu.menu == "FAQs Categories" %}
+                                            {% else %}
+                                                <li class="oh-sidebar__submenu-item">
+                                                    <a href="{{submenu.redirect}}" class="oh-sidebar__submenu-link">
+                                                        {{submenu.menu}}
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                        {% else %}
+                                            <li class="oh-sidebar__submenu-item">
+                                                <a href="{{submenu.redirect}}" class="oh-sidebar__submenu-link">
+                                                    {{submenu.menu}}
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                    {% else %}
+                                        <li class="oh-sidebar__submenu-item">
+                                            <a href="{{submenu.redirect}}" class="oh-sidebar__submenu-link">
+                                                {{submenu.menu}}
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                {% endif %}
                             {% endfor %}
                         </ul>
                     </div>
                 </li>
+                {% endif %}
+                {% endif %}
             {% endfor %}
 
             {% if request.user|config_perms %}

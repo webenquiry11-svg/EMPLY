@@ -25,6 +25,7 @@
                     {% trans "Validate Attendance" %}
                 </div>
             </li>
+            {% if not request.user.employee_get or request.user.is_staff %}
             <li class="oh-tabs__tab" data-target="#attendance_tab_2">
                 <div>
                     <img
@@ -35,6 +36,7 @@
                     {% trans "Hour Account" %}
                 </div>
             </li>
+            {% endif %}
         </ul>
         <div class="oh-tabs__contents" id="view-container">
             <div class="oh-tabs__content oh-tabs__content--active" id="attendance_tab_1">

@@ -139,6 +139,22 @@
                         {% endif %}
                         </a>
                     </div>
+                    <div class="oh-navbar__search oh-global-search">
+                        <div class="oh-global-search__box">
+                            <ion-icon name="search-outline" class="oh-global-search__icon"></ion-icon>
+                            <input
+                                id="globalSearchInput"
+                                type="search"
+                                class="oh-global-search__input"
+                                placeholder="Search employees, attendance, leave, etc..."
+                                aria-label="Global search"
+                                aria-controls="globalSearchResults"
+                                aria-expanded="false"
+                                autocomplete="off"
+                            >
+                        </div>
+                        <div id="globalSearchResults" class="oh-global-search__results" role="listbox" aria-live="polite" hidden></div>
+                    </div>
                     <div class="oh-navbar__systray">
                         {% if "attendance"|app_installed %}
                             <!-- Start of check in/out button in nav bar -->
@@ -244,6 +260,204 @@
     <script src="{% static '/base/time_settings.js' %}"></script>
     <script src="{% static '/base/date_formatting.js' %}"></script>
 
+    <style>
+        .oh-global-search {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-right: 12px;
+            min-width: 260px;
+            max-width: 420px;
+            flex: 1;
+        }
+
+        .oh-global-search__box {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            background: rgba(4, 57, 39, 0.04);
+            border: 1px solid rgba(4, 57, 39, 0.12);
+            border-radius: 999px;
+            min-height: 40px;
+            padding: 0 12px 0 14px;
+        }
+
+        .oh-global-search__icon {
+            font-size: 18px;
+            color: #667085;
+            margin-right: 8px;
+        }
+
+        .oh-global-search__input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 14px;
+            color: #1f2937;
+            padding: 8px 0;
+        }
+
+        .oh-global-search__input::placeholder {
+            color: #667085;
+        }
+
+        .oh-global-search__results {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            left: 0;
+            background: #fff;
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+            max-height: 420px;
+            overflow-y: auto;
+            z-index: 1200;
+        }
+
+        .oh-global-search__group {
+            padding: 10px 0 4px;
+        }
+
+        .oh-global-search__group-title {
+            padding: 0 14px 6px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #667085;
+        }
+
+        .oh-global-search__item {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: transparent;
+            border: 0;
+            padding: 8px 14px;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .oh-global-search__item:hover,
+        .oh-global-search__item:focus,
+        .oh-global-search__item[aria-selected="true"] {
+            background: rgba(4, 57, 39, 0.05);
+            outline: none;
+        }
+
+        .oh-global-search__item-title {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .oh-global-search__item-subtitle {
+            display: block;
+            font-size: 12px;
+            color: #6b7280;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .oh-global-search__match {
+            background: rgba(4, 57, 39, 0.12);
+            color: #0f172a;
+            border-radius: 4px;
+            padding: 0 2px;
+        }
+
+        .oh-global-search__loading,
+        .oh-global-search__error,
+        .oh-global-search__empty,
+        .oh-global-search__suggestion {
+            padding: 12px 14px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .oh-global-search__empty {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .oh-global-search__empty-icon {
+            font-size: 18px;
+            line-height: 1;
+            color: #667085;
+        }
+
+        .oh-global-search__empty-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .oh-global-search__empty-subtitle {
+            color: #667085;
+            line-height: 1.4;
+        }
+
+        .oh-global-search__suggestion {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-radius: 8px;
+            color: #374151;
+            text-decoration: none;
+        }
+
+        .oh-global-search__suggestion:hover,
+        .oh-global-search__suggestion:focus {
+            background: rgba(4, 57, 39, 0.05);
+            outline: none;
+        }
+
+        .oh-global-search__suggestion-icon {
+            width: 22px;
+            text-align: center;
+            color: #475467;
+        }
+
+        .oh-global-search__suggestion-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .oh-global-search__suggestion-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .oh-global-search__suggestion-meta {
+            font-size: 11px;
+            color: #667085;
+        }
+
+        @media (max-width: 768px) {
+            .oh-global-search {
+                min-width: 0;
+                width: 100%;
+                max-width: none;
+                margin-right: 8px;
+            }
+
+            .oh-navbar__wrapper {
+                gap: 8px;
+            }
+        }
+    </style>
+
     <script src="{% static 'build/js/pivottable.min.js' %}"></script>
     <script src="{% static 'build/js/pivottable_plot.min.js' %}"></script>
     <script src="{% static 'build/js/pivottable_ploty.min.js' %}"></script>
@@ -256,6 +470,352 @@
     <script src="{% static '/build/js/sweetAlert.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        const globalSearchEndpoint = "{% url 'global-search' %}";
+        const globalSearchInput = document.getElementById("globalSearchInput");
+        const globalSearchResults = document.getElementById("globalSearchResults");
+        let globalSearchTimer = null;
+        let globalSearchItems = [];
+        let globalSearchSelectedIndex = -1;
+        let activeGlobalSearchRequest = null;
+
+        const quickSearchSuggestions = [
+            { title: "Employees", subtitle: "Employee directory", url: "{% url 'employee-view' %}", icon: "👤" },
+            { title: "Attendance", subtitle: "Attendance records", url: "{% url 'attendance-view' %}", icon: "📅" },
+            { title: "Leave", subtitle: "Leave requests", url: "{% url 'request-view' %}", icon: "🏖" },
+            { title: "Departments", subtitle: "Department overview", url: "{% url 'department-view' %}", icon: "🏢" },
+            { title: "Recruitment", subtitle: "Job positions", url: "{% url 'job-position-view' %}", icon: "💼" },
+            { title: "Announcements", subtitle: "Company announcements", url: "{% url 'announcement-list' %}", icon: "📣" },
+        ];
+
+        function updateGlobalSearchState(expanded) {
+            if (globalSearchInput) {
+                globalSearchInput.setAttribute("aria-expanded", expanded ? "true" : "false");
+            }
+        }
+
+        function escapeRegExp(value) {
+            return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        }
+
+        function getHighlightedText(text, query) {
+            const safeText = String(text || "");
+            const safeQuery = String(query || "");
+            if (!safeQuery) {
+                return document.createTextNode(safeText);
+            }
+
+            const lowerText = safeText.toLowerCase();
+            const lowerQuery = safeQuery.toLowerCase();
+            const matchIndex = lowerText.indexOf(lowerQuery);
+            if (matchIndex === -1) {
+                return document.createTextNode(safeText);
+            }
+
+            const fragment = document.createDocumentFragment();
+            const queryLength = safeQuery.length;
+            if (matchIndex > 0) {
+                fragment.appendChild(document.createTextNode(safeText.slice(0, matchIndex)));
+            }
+
+            const mark = document.createElement("mark");
+            mark.className = "oh-global-search__match";
+            mark.textContent = safeText.slice(matchIndex, matchIndex + queryLength);
+            fragment.appendChild(mark);
+
+            if (matchIndex + queryLength < safeText.length) {
+                fragment.appendChild(document.createTextNode(safeText.slice(matchIndex + queryLength)));
+            }
+            return fragment;
+        }
+
+        function hideGlobalSearchResults() {
+            if (globalSearchResults) {
+                globalSearchResults.hidden = true;
+                globalSearchResults.innerHTML = "";
+                globalSearchItems = [];
+                globalSearchSelectedIndex = -1;
+            }
+            updateGlobalSearchState(false);
+        }
+
+        function renderQuickSearchSuggestions() {
+            if (!globalSearchResults) return;
+
+            globalSearchResults.innerHTML = "";
+            const group = document.createElement("div");
+            group.className = "oh-global-search__group";
+
+            const groupTitle = document.createElement("div");
+            groupTitle.className = "oh-global-search__group-title";
+            groupTitle.textContent = "Quick access";
+            group.appendChild(groupTitle);
+
+            quickSearchSuggestions.forEach((item) => {
+                const link = document.createElement("a");
+                link.href = item.url || "#";
+                link.className = "oh-global-search__suggestion";
+                link.setAttribute("role", "option");
+                link.setAttribute("tabindex", "0");
+                link.setAttribute("aria-selected", "false");
+
+                const icon = document.createElement("span");
+                icon.className = "oh-global-search__suggestion-icon";
+                icon.textContent = item.icon || "•";
+
+                const text = document.createElement("span");
+                text.className = "oh-global-search__suggestion-text";
+
+                const label = document.createElement("span");
+                label.className = "oh-global-search__suggestion-label";
+                label.textContent = item.title;
+
+                const meta = document.createElement("span");
+                meta.className = "oh-global-search__suggestion-meta";
+                meta.textContent = item.subtitle;
+
+                text.appendChild(label);
+                text.appendChild(meta);
+                link.appendChild(icon);
+                link.appendChild(text);
+                link.addEventListener("click", function () {
+                    hideGlobalSearchResults();
+                });
+                group.appendChild(link);
+                globalSearchItems.push(link);
+            });
+
+            globalSearchResults.appendChild(group);
+            globalSearchResults.hidden = false;
+            updateGlobalSearchState(true);
+            if (globalSearchItems.length) {
+                globalSearchSelectedIndex = 0;
+                highlightGlobalSearchSelection();
+            }
+        }
+
+        function renderLoadingState() {
+            if (!globalSearchResults) return;
+            globalSearchResults.innerHTML = "";
+            const loading = document.createElement("div");
+            loading.className = "oh-global-search__loading";
+            loading.textContent = "Searching...";
+            globalSearchResults.appendChild(loading);
+            globalSearchResults.hidden = false;
+            updateGlobalSearchState(true);
+            globalSearchItems = [];
+            globalSearchSelectedIndex = -1;
+        }
+
+        function renderErrorState() {
+            if (!globalSearchResults) return;
+            globalSearchResults.innerHTML = "";
+            const error = document.createElement("div");
+            error.className = "oh-global-search__error";
+            error.textContent = "Unable to search right now. Please try again.";
+            globalSearchResults.appendChild(error);
+            globalSearchResults.hidden = false;
+            updateGlobalSearchState(true);
+            globalSearchItems = [];
+            globalSearchSelectedIndex = -1;
+        }
+
+        function renderGlobalSearchResults(data) {
+            if (!globalSearchResults) return;
+
+            globalSearchResults.innerHTML = "";
+            const searchTerm = globalSearchInput ? globalSearchInput.value.trim() : "";
+            const results = data.results || [];
+
+            if (!results.length) {
+                const empty = document.createElement("div");
+                empty.className = "oh-global-search__empty";
+
+                const icon = document.createElement("div");
+                icon.className = "oh-global-search__empty-icon";
+                icon.textContent = "🔍";
+
+                const title = document.createElement("div");
+                title.className = "oh-global-search__empty-title";
+                title.textContent = "No results found";
+
+                const subtitle = document.createElement("div");
+                subtitle.className = "oh-global-search__empty-subtitle";
+                subtitle.textContent = "Try searching for an employee, department, job or HR record.";
+
+                empty.appendChild(icon);
+                empty.appendChild(title);
+                empty.appendChild(subtitle);
+                globalSearchResults.appendChild(empty);
+                globalSearchResults.hidden = false;
+                updateGlobalSearchState(true);
+                globalSearchItems = [];
+                globalSearchSelectedIndex = -1;
+                return;
+            }
+
+            globalSearchItems = [];
+            results.forEach((group) => {
+                const groupWrap = document.createElement("div");
+                groupWrap.className = "oh-global-search__group";
+
+                const groupTitle = document.createElement("div");
+                groupTitle.className = "oh-global-search__group-title";
+                groupTitle.textContent = group.group;
+                groupWrap.appendChild(groupTitle);
+
+                (group.items || []).forEach((item) => {
+                    const link = document.createElement("a");
+                    link.href = item.url || "#";
+                    link.className = "oh-global-search__item";
+                    link.setAttribute("role", "option");
+                    link.setAttribute("tabindex", "0");
+                    link.setAttribute("aria-selected", "false");
+                    if (item.module) {
+                        link.dataset.module = item.module;
+                    }
+                    if (item.id !== undefined && item.id !== null) {
+                        link.dataset.id = String(item.id);
+                    }
+
+                    const title = document.createElement("span");
+                    title.className = "oh-global-search__item-title";
+                    title.appendChild(getHighlightedText(item.title, searchTerm));
+
+                    const subtitle = document.createElement("span");
+                    subtitle.className = "oh-global-search__item-subtitle";
+                    subtitle.appendChild(getHighlightedText(item.subtitle || "", searchTerm));
+
+                    link.appendChild(title);
+                    link.appendChild(subtitle);
+                    link.addEventListener("click", function (event) {
+                        if (!item.url || item.url === "#") {
+                            event.preventDefault();
+                            return;
+                        }
+                        hideGlobalSearchResults();
+                    });
+                    groupWrap.appendChild(link);
+                    globalSearchItems.push(link);
+                });
+
+                globalSearchResults.appendChild(groupWrap);
+            });
+
+            globalSearchResults.hidden = false;
+            updateGlobalSearchState(true);
+            if (globalSearchItems.length) {
+                globalSearchSelectedIndex = 0;
+                highlightGlobalSearchSelection();
+            }
+        }
+
+        function highlightGlobalSearchSelection() {
+            globalSearchItems.forEach((item, index) => {
+                const selected = index === globalSearchSelectedIndex;
+                item.setAttribute("aria-selected", selected ? "true" : "false");
+                item.style.background = selected ? "rgba(4, 57, 39, 0.05)" : "transparent";
+            });
+        }
+
+        function fireGlobalSearch(term) {
+            const cleanTerm = (term || "").trim();
+            if (!cleanTerm) {
+                renderQuickSearchSuggestions();
+                return;
+            }
+
+            if (activeGlobalSearchRequest) {
+                activeGlobalSearchRequest.abort();
+            }
+
+            activeGlobalSearchRequest = new AbortController();
+            renderLoadingState();
+
+            fetch(`${globalSearchEndpoint}?q=${encodeURIComponent(cleanTerm)}`, {
+                signal: activeGlobalSearchRequest.signal
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    activeGlobalSearchRequest = null;
+                    renderGlobalSearchResults(data);
+                })
+                .catch((error) => {
+                    if (error && error.name === "AbortError") {
+                        return;
+                    }
+                    activeGlobalSearchRequest = null;
+                    renderErrorState();
+                });
+        }
+
+        if (globalSearchInput) {
+            globalSearchInput.addEventListener("input", function () {
+                const value = this.value.trim();
+                if (globalSearchTimer) clearTimeout(globalSearchTimer);
+
+                if (!value) {
+                    renderQuickSearchSuggestions();
+                    return;
+                }
+
+                globalSearchTimer = setTimeout(() => fireGlobalSearch(value), 300);
+            });
+
+            globalSearchInput.addEventListener("focus", function () {
+                if (this.value.trim()) {
+                    fireGlobalSearch(this.value.trim());
+                    return;
+                }
+                renderQuickSearchSuggestions();
+            });
+
+            globalSearchInput.addEventListener("keydown", function (event) {
+                const resultsVisible = !globalSearchResults.hidden;
+                if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+                    event.preventDefault();
+                    this.focus();
+                    if (!this.value.trim()) {
+                        renderQuickSearchSuggestions();
+                    }
+                }
+
+                if (event.key === "Escape") {
+                    hideGlobalSearchResults();
+                    this.blur();
+                    return;
+                }
+
+                if (!resultsVisible || !globalSearchItems.length) return;
+
+                if (event.key === "ArrowDown") {
+                    event.preventDefault();
+                    globalSearchSelectedIndex = (globalSearchSelectedIndex + 1) % globalSearchItems.length;
+                    highlightGlobalSearchSelection();
+                }
+
+                if (event.key === "ArrowUp") {
+                    event.preventDefault();
+                    globalSearchSelectedIndex =
+                        (globalSearchSelectedIndex - 1 + globalSearchItems.length) % globalSearchItems.length;
+                    highlightGlobalSearchSelection();
+                }
+
+                if (event.key === "Enter" && globalSearchSelectedIndex >= 0) {
+                    event.preventDefault();
+                    const selectedLink = globalSearchItems[globalSearchSelectedIndex];
+                    if (selectedLink && selectedLink.href !== "#") {
+                        window.location.href = selectedLink.href;
+                    }
+                }
+            });
+        }
+
+        document.addEventListener("click", function (event) {
+            if (!event.target.closest(".oh-global-search")) {
+                hideGlobalSearchResults();
+            }
+        });
+
         // Clear all query parameters from the URL
         function clearQueryParameters() {
             var urlWithoutQuery = window.location.origin + window.location.pathname;
