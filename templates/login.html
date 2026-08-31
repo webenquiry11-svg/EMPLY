@@ -154,58 +154,76 @@
                 .login-card{max-width:500px}
             }
 
-            /* Tablet -> Mobile breakpoint: dedicated single-column mobile layout */
+            /* Tablet -> Mobile: dedicated mobile-first layout (<=768px) */
             @media (max-width:768px){
-                /* Stack vertically */
-                .login-grid{grid-template-columns:1fr;gap:14px}
+                /* Single-column vertical flow optimized for phones */
+                .login-grid{display:block;gap:0}
 
-                /* Branding area becomes compact top section */
-                .promo{order:1;padding:22px 18px;border-radius:0;background:linear-gradient(180deg,#ffffff,#f7fdf7);align-items:center;text-align:center}
-                .promo-inner{max-width:520px;margin:0 auto;padding-top:6px}
-                .promo-logo{width:150px;height:auto;margin:8px auto 12px;display:block}
-                .promo-tag{margin-bottom:10px}
-                .promo-heading{font-size:clamp(20px,5.8vw,28px);line-height:1.06;margin:6px 0 10px}
-                .promo-heading .sub{display:block;color:var(--accent)}
-                .promo-sub{font-size:14px;margin-bottom:12px}
+                /* Top branding area - compact and centered */
+                .promo{position:relative;order:1;padding:24px 18px 12px;background:linear-gradient(180deg,#ffffff,#f7fdf7);border-radius:0;text-align:center;align-items:center;display:flex;flex-direction:column;justify-content:flex-start}
+                /* make branding occupy a modest portion of the viewport but allow scroll */
+                .promo{min-height:36vh}
+                .promo-inner{max-width:520px;margin:0 auto;padding:6px 6px 0}
 
-                /* feature row compact */
-                .features{justify-content:center;gap:12px;flex-wrap:wrap;margin-top:10px}
-                .feature-item{font-size:13px}
-                .feature-item svg{width:16px;height:16px}
+                /* logo: keep natural PNG, no added card/container */
+                .promo-logo{width:150px;height:auto;margin:6px auto 10px;display:block}
+                .promo-tag{font-size:12px;letter-spacing:1px;color:var(--muted);margin-bottom:8px}
 
-                /* decorative shapes simplified and constrained */
-                .promo::before{right:-80px;top:-60px;width:420px;height:420px;filter:blur(28px);}
-                .promo::after{right:8px;bottom:-30px;width:260px;height:260px;filter:blur(16px);}
-                .promo-waves{bottom:-6px;height:90px}
-                .promo-waves svg{width:120%;height:90px}
+                /* Heading responsive and compact */
+                .promo-heading{font-size:clamp(22px,6.2vw,28px);line-height:1.04;margin:6px 0 8px;font-weight:800;color:var(--deep)}
+                .promo-heading .sub{display:block;color:var(--accent);font-weight:700}
+                .promo-sub{font-size:14px;color:var(--muted);margin:8px 0 10px;max-width:86%;margin-left:auto;margin-right:auto}
 
-                /* Login card becomes mobile-first surface */
-                .card-wrap{order:2;padding:0 12px;display:flex;justify-content:center}
-                .login-card{max-width:100%;margin:0 8px;padding:20px;border-radius:20px;min-height:auto;box-shadow:0 12px 30px rgba(9,20,14,0.06)}
+                /* hide feature row on mobile to avoid clutter; keep optional compact highlights if needed */
+                .features{display:none}
+
+                /* subtle simplified decorative shapes that stay behind content */
+                .promo::before{content:'';position:absolute;right:-60px;top:-40px;width:360px;height:360px;background:radial-gradient(circle at 30% 30%, rgba(20,184,100,0.16), rgba(20,184,100,0.06) 45%, transparent 70%);border-radius:50%;filter:blur(28px);pointer-events:none;z-index:1}
+                .promo::after{content:'';position:absolute;left:-40px;bottom:-40px;width:220px;height:220px;background:radial-gradient(circle at 60% 60%, rgba(20,184,100,0.10), rgba(20,184,100,0.03) 45%, transparent 70%);border-radius:50%;filter:blur(18px);pointer-events:none;z-index:1}
+                .promo-waves{display:none}
+
+                /* Login card: mobile-first full-width surface */
+                .card-wrap{order:2;padding:0 12px 20px;display:flex;justify-content:center}
+                .login-card{width:calc(100% - 32px);margin:0 16px;padding:20px;border-radius:22px;background:var(--panel-bg);border:1px solid rgba(0,0,0,0.04);box-shadow:0 18px 36px rgba(8,18,12,0.06);min-height:auto;box-sizing:border-box}
                 .login-card-inner{height:auto}
 
-                /* Inputs and CTA suitable for touch */
-                .oh-input.auth-input{height:52px;border-radius:10px;font-size:15px}
-                .input-with-icon .input-icon{left:12px}
+                /* Login header */
+                .card-title{font-size:20px;margin-bottom:6px}
+                .card-sub{font-size:13px;color:var(--muted);margin-bottom:12px}
+
+                /* Touch-friendly inputs */
+                .oh-input.auth-input{height:52px;border-radius:12px;padding:12px 14px;font-size:15px;border:1px solid rgba(14,30,22,0.06);background:var(--panel-bg);transition:box-shadow .18s ease,border-color .18s ease}
+                .oh-input.auth-input::placeholder{color:#bfcfca}
+                .oh-input.auth-input:focus{outline:none;border-color:var(--accent);box-shadow:0 8px 24px rgba(20,184,100,0.06)}
+                .input-with-icon .input-icon{left:14px}
                 .input-with-icon input{padding-left:52px}
+
+                /* password toggle stays functional */
                 .oh-password-input-container .oh-btn{height:40px;width:40px}
-                .sign-btn{height:52px;border-radius:12px}
 
-                /* Remember / Forgot layout */
-                .card-row{display:flex;justify-content:space-between;align-items:center;gap:8px}
-                .oh-checkbox__label{font-size:14px}
+                /* Remember + Forgot row */
+                .card-row{display:flex;justify-content:space-between;align-items:center;margin:10px 0 14px;gap:8px}
+                .oh-checkbox__label{font-size:14px;color:var(--deep)}
+                .oh-link{font-size:14px}
 
-                /* Ensure page is scrollable and not clipped on mobile browser UI */
-                .login-hero{min-height:100dvh}
+                /* CTA */
+                .sign-btn{width:100%;height:52px;border-radius:12px;background:var(--deep);color:var(--panel-bg);font-weight:700;box-shadow:0 8px 20px rgba(8,50,34,0.08);display:flex;align-items:center;justify-content:center;gap:10px}
+                .sign-btn:hover{transform:translateY(-2px);filter:brightness(1.03)}
+
+                /* Footer spacing */
+                .card-footer{margin-top:14px;font-size:13px;color:var(--muted);text-align:center}
+
+                /* Ensure mobile view allows scrolling and is not clipped */
+                .login-hero{min-height:100dvh;padding-bottom:20px}
             }
 
-            /* Small phones: tighten spacing */
+            /* Small phones (<=390px) further adjustments */
             @media (max-width:390px){
-                .promo-logo{width:130px}
+                .promo{min-height:34vh;padding:18px 14px 8px}
+                .promo-logo{width:140px}
                 .promo-heading{font-size:clamp(18px,6.5vw,24px)}
                 .promo-sub{font-size:13px}
-                .features{gap:10px}
-                .login-card{padding:16px;border-radius:18px}
+                .login-card{padding:16px;border-radius:20px}
                 .oh-input.auth-input{height:48px}
                 .sign-btn{height:50px}
             }
