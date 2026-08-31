@@ -147,51 +147,70 @@
                 .login-card{max-width:500px}
             }
 
-            @media (max-width:980px){
+            @media (max-width:1024px){
                 .login-grid{grid-template-columns:52% 48%;gap:28px}
                 .promo{padding:56px 40px}
-                .promo-heading{font-size:36px}
-                .login-card{max-width:480px}
+                .promo-heading{font-size:38px}
+                .login-card{max-width:500px}
             }
 
-            /* Mobile: stack to single column - LEFT branding first, then card */
-            @media (max-width:900px){
-                .login-grid{grid-template-columns:1fr;gap:18px}
-                .promo{order:1;padding:28px;border-radius:12px}
-                .card-wrap{order:2;display:flex;justify-content:center}
+            /* Tablet -> Mobile breakpoint: dedicated single-column mobile layout */
+            @media (max-width:768px){
+                /* Stack vertically */
+                .login-grid{grid-template-columns:1fr;gap:14px}
 
-                .login-card{max-width:100%;min-height:auto;margin:0 16px;padding:28px;box-shadow:0 12px 30px rgba(12,18,14,0.06)}
+                /* Branding area becomes compact top section */
+                .promo{order:1;padding:22px 18px;border-radius:0;background:linear-gradient(180deg,#ffffff,#f7fdf7);align-items:center;text-align:center}
+                .promo-inner{max-width:520px;margin:0 auto;padding-top:6px}
+                .promo-logo{width:150px;height:auto;margin:8px auto 12px;display:block}
+                .promo-tag{margin-bottom:10px}
+                .promo-heading{font-size:clamp(20px,5.8vw,28px);line-height:1.06;margin:6px 0 10px}
+                .promo-heading .sub{display:block;color:var(--accent)}
+                .promo-sub{font-size:14px;margin-bottom:12px}
+
+                /* feature row compact */
+                .features{justify-content:center;gap:12px;flex-wrap:wrap;margin-top:10px}
+                .feature-item{font-size:13px}
+                .feature-item svg{width:16px;height:16px}
+
+                /* decorative shapes simplified and constrained */
+                .promo::before{right:-80px;top:-60px;width:420px;height:420px;filter:blur(28px);}
+                .promo::after{right:8px;bottom:-30px;width:260px;height:260px;filter:blur(16px);}
+                .promo-waves{bottom:-6px;height:90px}
+                .promo-waves svg{width:120%;height:90px}
+
+                /* Login card becomes mobile-first surface */
+                .card-wrap{order:2;padding:0 12px;display:flex;justify-content:center}
+                .login-card{max-width:100%;margin:0 8px;padding:20px;border-radius:20px;min-height:auto;box-shadow:0 12px 30px rgba(9,20,14,0.06)}
                 .login-card-inner{height:auto}
 
-                .promo-logo{width:140px;height:auto;margin-bottom:12px}
-                .promo-heading{font-size:28px;line-height:1.02;margin-bottom:10px}
-                .promo-sub{font-size:15px}
-
-                .promo-waves{bottom:-8px;height:100px}
-                .promo-waves svg{width:120%;height:100px}
-
-                .oh-input.auth-input{height:54px}
-                .card-row{flex-wrap:wrap;gap:10px}
-            }
-
-            @media (max-width:480px){
-                .login-hero{padding:20px}
-                .promo{padding:22px}
-                .promo-inner{padding-right:0}
-                .promo-logo{width:120px}
-                .promo-heading{font-size:22px}
-                .promo-sub{font-size:14px}
-
-                .login-card{margin:0 12px;padding:20px}
-                .card-title{font-size:22px}
-                .card-sub{font-size:13px;margin-bottom:12px}
-
-                .oh-input.auth-input{height:52px}
+                /* Inputs and CTA suitable for touch */
+                .oh-input.auth-input{height:52px;border-radius:10px;font-size:15px}
+                .input-with-icon .input-icon{left:12px}
+                .input-with-icon input{padding-left:52px}
                 .oh-password-input-container .oh-btn{height:40px;width:40px}
-                .promo-waves svg{width:140%;height:120px}
+                .sign-btn{height:52px;border-radius:12px}
+
+                /* Remember / Forgot layout */
+                .card-row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+                .oh-checkbox__label{font-size:14px}
+
+                /* Ensure page is scrollable and not clipped on mobile browser UI */
+                .login-hero{min-height:100dvh}
             }
 
-            /* Safety: prevent any horizontal overflow */
+            /* Small phones: tighten spacing */
+            @media (max-width:390px){
+                .promo-logo{width:130px}
+                .promo-heading{font-size:clamp(18px,6.5vw,24px)}
+                .promo-sub{font-size:13px}
+                .features{gap:10px}
+                .login-card{padding:16px;border-radius:18px}
+                .oh-input.auth-input{height:48px}
+                .sign-btn{height:50px}
+            }
+
+            /* Safety: prevent horizontal overflow */
             html,body,#main{overflow-x:hidden}
         </style>
     </head>
