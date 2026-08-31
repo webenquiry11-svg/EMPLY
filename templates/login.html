@@ -36,11 +36,15 @@
                 --deep:#083022;         /* deep/dark green for headings & primary button */
                 --muted:#6b746f;        /* muted text */
                 --soft-border:#E6EFE8;  /* light border for panels and inputs */
-                --card-radius:20px;
+                --card-radius:24px;
             }
 
             html,body,#main{height:100%;}
             body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;background:var(--page-bg);color:var(--deep);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+
+            /* micro-interactions */
+            @keyframes fadeUpSmall { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+            @media (prefers-reduced-motion: reduce) { .promo-inner, .login-card { animation: none !important; transition: none !important; } }
 
             .login-hero{display:flex;min-height:100vh;align-items:center;justify-content:center;padding:48px}
             .login-container{width:100%;max-width:1300px}
@@ -75,10 +79,32 @@
             .promo-waves svg path:nth-child(2){stroke:rgba(20,184,100,0.10)}
             .promo-waves svg path:nth-child(3){stroke:rgba(20,184,100,0.06)}
 
+            /* Feature highlights */
+            .features{display:flex;gap:18px;margin-top:14px}
+            .feature-item{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:14px}
+            .feature-item svg{width:18px;height:18px;flex:0 0 18px;fill:none;stroke:var(--accent);stroke-width:2}
+
+            /* animate branding and card */
+            .promo-inner{animation:fadeUpSmall .48s cubic-bezier(.2,.9,.2,1) both}
+            .login-card{background:var(--panel-bg);padding:40px 44px;border-radius:var(--card-radius);box-shadow:0 14px 40px rgba(9,20,14,0.06);border:1px solid var(--soft-border);width:100%;max-width:480px;min-height:460px;box-sizing:border-box;animation:fadeUpSmall .5s cubic-bezier(.2,.9,.2,1) .06s both}
+            .login-card-inner{display:flex;flex-direction:column;height:100%}
+
+            /* inputs polish */
+            .oh-input.auth-input{background:var(--panel-bg);border:1px solid var(--soft-border);padding:14px 14px;border-radius:12px;font-size:15px;color:var(--deep);height:56px;box-sizing:border-box;transition:box-shadow .18s ease,border-color .18s ease,transform .12s ease;width:100%;}
+            .oh-input.auth-input:focus{outline:none;box-shadow:0 8px 24px rgba(20,184,100,0.06);border-color:var(--accent)}
+            .input-with-icon .input-icon{left:14px}
+            .input-with-icon input{padding-left:56px}
+
+            /* login CTA */
+            .sign-btn{height:56px;border-radius:14px}
+
+            /* Respect reduced motion */
+            @media (prefers-reduced-motion: reduce){
+                .promo-inner,.login-card{animation:none}
+            }
+
             /* RIGHT CARD */
             .card-wrap{display:flex;align-items:center;justify-content:center}
-            .login-card{background:var(--panel-bg);padding:36px 40px;border-radius:var(--card-radius);box-shadow:0 8px 28px rgba(12,18,14,0.06);border:1px solid var(--soft-border);width:100%;max-width:520px;min-height:420px;box-sizing:border-box}
-            .login-card-inner{display:flex;flex-direction:column;height:100%}
 
             /* header */
             .card-title{font-size:28px;margin:0 0 6px;color:var(--deep);font-weight:800}
@@ -192,6 +218,13 @@
                                     <span class="sub">for Modern Workplaces</span>
                                 </h1>
                                 <p class="promo-sub">Streamline attendance, leave, payroll and performance — all in one place.</p>
+
+                                <!-- Feature highlights -->
+                                <div class="features" aria-hidden="true">
+                                    <div class="feature-item"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 6L9 17l-5-5" /></svg><span>Attendance</span></div>
+                                    <div class="feature-item"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 6L9 17l-5-5" /></svg><span>Leave Management</span></div>
+                                    <div class="feature-item"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 6L9 17l-5-5" /></svg><span>Payroll</span></div>
+                                </div>
                             </div>
 
                             <!-- subtle decorative waves (SVG) -->
