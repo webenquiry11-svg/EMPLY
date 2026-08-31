@@ -7446,6 +7446,18 @@ def holiday_info_export(request):
     )
 
 
+def holiday_queryset_unique_by_date(queryset):
+    """Return one holiday per start_date while preserving the latest record for a date."""
+    unique_holidays = []
+    seen_dates = set()
+    for holiday in queryset.order_by("start_date", "-id"):
+        if holiday.start_date in seen_dates:
+            continue
+        seen_dates.add(holiday.start_date)
+        unique_holidays.append(holiday)
+    return unique_holidays
+
+
 @login_required
 def holiday_view(request):
     """
@@ -7457,7 +7469,14 @@ def holiday_view(request):
     Returns:
     GET : return holiday view  template
     """
-    queryset = Holidays.objects.all()[::-1]
+    queryset = Holidays.objects.all()
+    filter_type = request.GET.get("filter_type", "all")
+    today = timezone.localdate()
+    if filter_type == "upcoming":
+        queryset = queryset.filter(start_date__gte=today)
+    elif filter_type == "past":
+        queryset = queryset.filter(start_date__lt=today)
+    queryset = holiday_queryset_unique_by_date(queryset)
     previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
@@ -7470,6 +7489,7 @@ def holiday_view(request):
             "holidays": page_obj,
             "form": holiday_filter.form,
             "pd": previous_data,
+            "filter_type": filter_type,
         },
     )
 
@@ -7487,18 +7507,30 @@ def holiday_filter(request):
     GET : return holiday view template
     """
     queryset = Holidays.objects.all()
+    filter_type = request.GET.get("filter_type", "all")
+    today = timezone.localdate()
+    if filter_type == "upcoming":
+        queryset = queryset.filter(start_date__gte=today)
+    elif filter_type == "past":
+        queryset = queryset.filter(start_date__lt=today)
     previous_data = request.GET.urlencode()
     holiday_filter = HolidayFilter(request.GET, queryset).qs
     if request.GET.get("sortby"):
         holiday_filter = sortby(request, holiday_filter, "sortby")
+    holiday_filter = holiday_queryset_unique_by_date(holiday_filter)
     page_number = request.GET.get("page")
-    page_obj = paginator_qry(holiday_filter[::-1], page_number)
+    page_obj = paginator_qry(holiday_filter, page_number)
     data_dict = parse_qs(previous_data)
     get_key_instances(Holidays, data_dict)
     return render(
         request,
         "holiday/holiday.html",
-        {"holidays": page_obj, "pd": previous_data, "filter_dict": data_dict},
+        {
+            "holidays": page_obj,
+            "pd": previous_data,
+            "filter_dict": data_dict,
+            "filter_type": filter_type,
+        },
     )
 
 
@@ -7583,10 +7615,12 @@ def holiday_select(request):
     page_number = request.GET.get("page")
 
     if page_number == "all":
-        employees = Holidays.objects.all()
+        employees = holiday_queryset_unique_by_date(Holidays.objects.all())
+    else:
+        employees = holiday_queryset_unique_by_date(Holidays.objects.all())
 
     employee_ids = [str(emp.id) for emp in employees]
-    total_count = employees.count()
+    total_count = len(employee_ids)
 
     context = {"employee_ids": employee_ids, "total_count": total_count}
 
@@ -7602,11 +7636,10 @@ def holiday_select_filter(request):
     if page_number == "all":
         employee_filter = HolidayFilter(filters, queryset=Holidays.objects.all())
 
-        # Get the filtered queryset
-        filtered_employees = employee_filter.qs
+        filtered_employees = holiday_queryset_unique_by_date(employee_filter.qs)
 
         employee_ids = [str(emp.id) for emp in filtered_employees]
-        total_count = filtered_employees.count()
+        total_count = len(employee_ids)
 
         context = {"employee_ids": employee_ids, "total_count": total_count}
 

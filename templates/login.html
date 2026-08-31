@@ -156,17 +156,20 @@
 
             /* Tablet -> Mobile: responsive scaling while preserving desktop design */
             @media (max-width:768px){
+                /* Ensure page uses full mobile viewport and content starts at top */
+                .login-hero{align-items:flex-start;justify-content:flex-start;padding:16px 12px;min-height:100dvh}
+
                 /* Keep two-column concept where possible, but allow columns to stack naturally */
                 .login-grid{grid-template-columns:1fr;gap:18px}
 
                 /* Branding section scales down but keeps same structure */
-                .promo{padding:28px 20px;border-radius:18px;background:linear-gradient(180deg,#ffffff,#f7fdf7);align-items:flex-start;text-align:left}
+                .promo{padding:16px;border-radius:18px;background:linear-gradient(180deg,#ffffff,#f7fdf7);align-items:flex-start;text-align:left}
                 .promo-inner{max-width:520px;margin:0 auto;padding:0}
-                .promo-logo{width:150px;height:auto;margin-bottom:12px;display:block}
-                .promo-tag{margin-bottom:8px}
-                .promo-heading{font-size:clamp(22px,4.6vw,34px);line-height:1.04;margin:6px 0 8px}
+                .promo-logo{width:140px;height:auto;margin-bottom:10px;display:block}
+                .promo-tag{margin-bottom:6px}
+                .promo-heading{font-size:clamp(20px,4.6vw,32px);line-height:1.04;margin:6px 0 8px}
                 .promo-heading .sub{display:block;color:var(--accent)}
-                .promo-sub{font-size:14px;margin-bottom:12px}
+                .promo-sub{font-size:14px;margin-bottom:10px}
 
                 /* feature row remains visible but compact */
                 .features{justify-content:flex-start;gap:12px;flex-wrap:wrap;margin-top:8px}
