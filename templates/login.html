@@ -47,11 +47,11 @@
             /* Two-column: left ~55% right ~45% */
             .login-grid{display:grid;grid-template-columns:55% 45%;gap:48px;align-items:center}
 
-            /* LEFT PROMO - subtle very light panel */
-            .promo{position:relative;padding:72px 64px;border-radius:18px;overflow:hidden;display:flex;align-items:center;background:linear-gradient(180deg,#fbfff9,#f3f9f4);border:1px solid rgba(22,110,60,0.04)}
+            /* LEFT PROMO - clean branding panel (not a boxed card) */
+            .promo{position:relative;padding:72px 64px;overflow:visible;display:flex;align-items:flex-start;background:linear-gradient(180deg,#ffffff,#f7fdf7);}
             .promo-inner{max-width:620px;position:relative;z-index:3}
-                        /* logo sizing - keep logo visually on top and add a subtle lift via soft shadow (do not alter logo white area) */
-                        .promo-logo{width:180px;height:auto;margin-bottom:18px;display:block;position:relative;z-index:4;box-shadow:0 10px 30px rgba(8,50,34,0.06)}
+            /* logo sizing - do NOT add a white box or shadow; place logo directly on the page */
+            .promo-logo{width:180px;height:auto;margin-bottom:18px;display:block;position:relative;z-index:3}
 
             .promo-tag{font-size:12px;letter-spacing:2px;color:var(--muted);margin-bottom:14px;text-transform:uppercase}
             .promo-tag .accent{color:var(--accent);font-weight:700}
@@ -60,18 +60,20 @@
             .promo-heading .sub{display:block;color:var(--accent)}
             .promo-sub{color:var(--muted);font-size:16px;max-width:560px;margin-bottom:20px;line-height:1.45}
 
-                        /* decorative layered green shapes for improved visibility (kept subtle and non-distracting)
-                           Position shapes to the right/top so they don't overlap logo at top-left */
-                        .promo::before{
-                            content:'';position:absolute;right:-160px;top:-80px;width:560px;height:560px;background:radial-gradient(circle at 20% 20%, rgba(20,184,100,0.14), rgba(20,184,100,0.06) 40%, transparent 65%);border-radius:48%;filter:blur(34px);pointer-events:none;z-index:1;opacity:1;transform:scale(1.02);
-                        }
-                        .promo::after{
-                            content:'';position:absolute;right:-40px;bottom:-60px;width:360px;height:360px;background:radial-gradient(circle at 60% 60%, rgba(20,184,100,0.10), rgba(20,184,100,0.04) 45%, transparent 70%);border-radius:48%;filter:blur(20px);pointer-events:none;z-index:1;
-                        }
+            /* decorative green branding shapes placed behind content so the logo appears integrated */
+            .promo::before{
+                content:'';position:absolute;right:-140px;top:-80px;width:520px;height:520px;background:radial-gradient(circle at 30% 30%, rgba(20,184,100,0.14), rgba(20,184,100,0.06) 40%, rgba(20,184,100,0.02) 60%, transparent 75%);border-radius:50%;filter:blur(34px);pointer-events:none;z-index:1;transform:scale(1);
+            }
+            .promo::after{
+                content:'';position:absolute;right:20px;bottom:-20px;width:320px;height:320px;background:radial-gradient(circle at 60% 60%, rgba(20,184,100,0.10), rgba(20,184,100,0.04) 45%, transparent 70%);border-radius:48%;filter:blur(20px);pointer-events:none;z-index:1;
+            }
 
-            /* subtle decorative waves (SVG) */
+            /* decorative flowing curves (SVG) — slightly stronger for visibility */
             .promo-waves{position:absolute;left:0;right:0;bottom:-8px;height:120px;pointer-events:none;overflow:visible}
             .promo-waves svg{display:block;width:100%;height:100%}
+            .promo-waves svg path:first-child{stroke:rgba(20,184,100,0.16)}
+            .promo-waves svg path:nth-child(2){stroke:rgba(20,184,100,0.10)}
+            .promo-waves svg path:nth-child(3){stroke:rgba(20,184,100,0.06)}
 
             /* RIGHT CARD */
             .card-wrap{display:flex;align-items:center;justify-content:center}
