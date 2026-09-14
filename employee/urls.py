@@ -210,6 +210,8 @@ urlpatterns = [
         views.dashboard_employee_department,
         name="dashboard-employee-department",
     ),
+    # Employee personal dashboard summary (hx fragment)
+    path("employee-dashboard-summary", views.employee_dashboard_summary, name="employee-dashboard-summary"),
     path("employee-widget-filter", views.widget_filter, name="employee-widget-filter"),
     path("note-tab/<int:emp_id>", views.note_tab, name="note-tab"),
     path("add-employee-note/<int:emp_id>/", views.add_note, name="add-employee-note"),

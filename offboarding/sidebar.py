@@ -2,7 +2,7 @@
 offboarding/sidebar.py
 """
 
-from django.urls import reverse
+from django.urls import NoReverseMatch, reverse
 from django.utils.translation import gettext_lazy as _
 
 from base.context_processors import resignation_request_enabled
@@ -10,6 +10,14 @@ from offboarding.templatetags.offboarding_filter import (
     any_manager,
     is_offboarding_employee,
 )
+
+
+def safe_reverse(name, *args, **kwargs):
+    try:
+        return reverse(name, *args, **kwargs)
+    except NoReverseMatch:
+        return "#"
+
 
 MENU = _("Offboarding")
 IMG_SRC = "images/ui/exit-outline.svg"
@@ -19,16 +27,16 @@ ACCESSIBILITY = "offboarding.sidebar.offboarding_accessibility"
 SUBMENUS = [
     {
         "menu": _("Dashboard"),
-        "redirect": reverse("offboarding-dashboard"),
+        "redirect": safe_reverse("offboarding-dashboard"),
         "accessibility": "offboarding.sidebar.dashboard_accessibility",
     },
     {
         "menu": _("Exit Process"),
-        "redirect": reverse("offboarding-pipeline"),
+        "redirect": safe_reverse("offboarding-pipeline"),
     },
     {
         "menu": _("Resignation Letters"),
-        "redirect": reverse("resignation-request-view"),
+        "redirect": safe_reverse("resignation-request-view"),
         "accessibility": "offboarding.sidebar.resignation_letter_accessibility",
     },
 ]

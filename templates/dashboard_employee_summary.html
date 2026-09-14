@@ -1,0 +1,1150 @@
+{% load i18n tz horillafilters accessibility_filters %}
+<style>
+    :root {
+        --bg-main: #0d140e;
+        --card-bg-dark: #161f18;
+        --card-bg-light: #f4f6f0;
+        --accent-green: #2d5a3f;
+        --accent-light-green: #d1e7dd;
+        --text-main: #ffffff;
+        --text-muted-dark: #8c9e90;
+        --text-main-light: #111812;
+        --text-muted-light: #667569;
+        --border-soft: rgba(255,255,255,0.08);
+        --warning-bg: #34281a;
+        --warning-text: #dfab66;
+    }
+
+    .employee-dashboard-shell {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        padding: 0.9rem 0 7rem;
+        background:
+            radial-gradient(circle at top left, rgba(45, 90, 63, 0.16), transparent 35%),
+            linear-gradient(180deg, #0d140e 0%, #0c120d 100%);
+        color: var(--text-main);
+        min-height: calc(100vh - 94px);
+    }
+
+    .employee-dashboard-shell .employee-dashboard-card {
+        position: relative;
+        height: 100%;
+        background: linear-gradient(180deg, rgba(22,31,24,0.96), rgba(16,22,18,0.98));
+        border: 1px solid var(--border-soft);
+        border-radius: 22px;
+        box-shadow: 0 12px 28px rgba(2, 8, 5, 0.2);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+        color: var(--text-main);
+        overflow: hidden;
+        padding: 1rem 1rem 1.1rem;
+        box-sizing: border-box;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-card::before {
+        content: "";
+        position: absolute;
+        inset: 0 auto auto 0;
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(90deg, rgba(45,90,63,0.7), transparent 40%, transparent 100%);
+        opacity: 0.9;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 30px rgba(1, 9, 5, 0.28);
+        border-color: rgba(255,255,255,0.12);
+    }
+
+    .employee-dashboard-shell .employee-dashboard-card .oh-card-dashboard__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.95rem;
+        padding: 0 0.25rem 0.8rem;
+        border-bottom: 1px solid var(--border-soft);
+    }
+
+    .employee-dashboard-shell .employee-dashboard-card .oh-card-dashboard__title {
+        font-size: 0.77rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-muted-dark);
+        font-weight: 700;
+        display: inline-block;
+        padding: 0 0.25rem;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-card .oh-card-dashboard__body {
+        padding: 0 0.25rem;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+
+    .employee-dashboard-hero {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.2rem;
+        padding: 1.5rem 1.6rem;
+        margin-bottom: 1.4rem;
+        border-radius: 28px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background:
+            radial-gradient(circle at top right, rgba(45,90,63,0.24), transparent 30%),
+            linear-gradient(135deg, rgba(22,31,24,0.98), rgba(15,20,17,0.94));
+        box-shadow: 0 18px 46px rgba(1, 9, 5, 0.22);
+        color: var(--text-main);
+        overflow: hidden;
+    }
+
+    .employee-dashboard-hero::after {
+        content: "";
+        position: absolute;
+        right: -40px;
+        top: -35px;
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        background: rgba(45, 90, 63, 0.16);
+        filter: blur(10px);
+    }
+
+    .employee-dashboard-hero__identity {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        min-width: 0;
+    }
+
+    .employee-dashboard-hero__avatar {
+        width: 72px;
+        height: 72px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--accent-green), #1a2b22);
+        border: 2px solid rgba(255,255,255,0.08);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-main);
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .employee-dashboard-hero__avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .employee-dashboard-hero__content {
+        min-width: 0;
+    }
+
+    .employee-dashboard-hero__greeting {
+        display:flex;
+        align-items:center;
+        gap:0.75rem;
+        font-weight:800;
+        font-size:1rem;
+        color: var(--text-main);
+    }
+
+    .employee-dashboard-hero__greeting .icon {
+        font-size:1.25rem;
+        display:inline-flex;
+        width:40px;
+        height:40px;
+        align-items:center;
+        justify-content:center;
+        border-radius:9px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .employee-dashboard-hero__greeting-sub {
+        font-size:0.84rem;
+        color: var(--text-muted-dark);
+        font-weight:700;
+        margin-top:0.08rem;
+    }
+
+    .employee-dashboard-hero__title {
+        margin: 0.7rem 0 0.2rem;
+        font-size: clamp(1.5rem, 2vw, 2.2rem);
+        line-height: 1.2;
+        color: var(--text-main);
+        font-weight: 800;
+    }
+
+    .employee-dashboard-hero__meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 0.9rem;
+        color: var(--text-muted-dark);
+        font-size: 0.92rem;
+        font-weight: 500;
+    }
+
+    .employee-dashboard-hero__meta span {
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .employee-dashboard-hero__meta span + span::before {
+        content: "•";
+        margin-right: 0.65rem;
+        color: rgba(255,255,255,0.32);
+    }
+
+    .employee-dashboard-hero__aside {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.9rem;
+        margin-left: auto;
+        flex-wrap: wrap;
+    }
+
+    .employee-dashboard-hero__status {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 148px;
+        padding: 0.8rem 1rem;
+        border-radius: 16px;
+        background: rgba(45, 90, 63, 0.16);
+        border: 1px solid rgba(255,255,255,0.06);
+        color: var(--accent-light-green);
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .employee-dashboard-hero__time-widget {
+        min-width: 176px;
+        padding: 0.7rem 0.9rem 0.8rem;
+        border-radius: 16px;
+        background: rgba(16, 24, 18, 0.72);
+        border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+        text-align: right;
+    }
+
+    .employee-dashboard-hero__time-widget-label {
+        font-size: 0.62rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: var(--text-muted-dark);
+        margin-bottom: 0.32rem;
+    }
+
+    .employee-dashboard-hero__time-widget-time {
+        font-size: clamp(1.15rem, 1.9vw, 1.9rem);
+        line-height: 1.1;
+        font-weight: 800;
+        color: var(--text-main);
+        letter-spacing: -0.03em;
+    }
+
+    .employee-dashboard-hero__time-widget-date {
+        margin-top: 0.2rem;
+        font-size: 0.72rem;
+        line-height: 1.4;
+        color: var(--text-muted-dark);
+        font-weight: 600;
+    }
+
+    .employee-dashboard-summary-row {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .employee-dashboard-summary-row > .employee-dashboard-card {
+        grid-column: span 3;
+    }
+
+    .employee-dashboard-summary-row > .employee-dashboard-card--wide {
+        grid-column: span 6;
+    }
+
+    .employee-dashboard-summary-row > .employee-dashboard-card--full {
+        grid-column: span 12;
+    }
+
+    .leave-balance-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+        margin-top: 1rem;
+        padding-top: 0.7rem;
+        border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .leave-balance-item {
+        display: grid;
+        grid-template-columns: minmax(90px, 1fr) minmax(120px, 1.2fr) auto;
+        gap: 0.7rem;
+        align-items: center;
+    }
+
+    .leave-balance-item__name {
+        font-size: 0.8rem;
+        color: var(--text-main);
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .leave-balance-item__meta {
+        font-size: 0.72rem;
+        color: var(--text-muted-dark);
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .leave-balance-item__bar {
+        width: 100%;
+        height: 8px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.04);
+        overflow: hidden;
+    }
+
+    .leave-balance-item__fill {
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--accent-green), #6fa98d);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.14);
+    }
+
+    .work-hours-chart {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 0.7rem;
+        align-items: end;
+        min-height: 150px;
+        margin-top: 1rem;
+        padding-top: 0.7rem;
+        border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .work-hours-day {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: end;
+        height: 150px;
+        gap: 0.35rem;
+    }
+
+    .work-hours-day__bar-wrap {
+        width: 100%;
+        height: 92px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding: 0.32rem 0.15rem 0;
+        border-radius: 12px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.015));
+        border: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .work-hours-day__bar {
+        width: 100%;
+        max-width: 30px;
+        min-height: 6px;
+        border-radius: 9px 9px 4px 4px;
+        background: linear-gradient(180deg, #79af96, var(--accent-green));
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+    }
+
+    .work-hours-day__label {
+        font-size: 0.68rem;
+        color: var(--text-muted-dark);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    .work-hours-day__value {
+        font-size: 0.72rem;
+        color: var(--text-main);
+        font-weight: 600;
+        line-height: 1.2;
+    }
+
+    .employee-dashboard-attendance {
+        margin-top: 1rem;
+    }
+
+    .employee-dashboard-attendance__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .employee-dashboard-attendance__legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.7rem;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    .attendance-legend-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-size: 0.72rem;
+        color: var(--text-muted-dark);
+    }
+
+    .attendance-legend-swatch {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    .attendance-legend-swatch.present { background: #3a8e63; }
+    .attendance-legend-swatch.late { background: #ce9e5c; }
+    .attendance-legend-swatch.absent { background: rgba(255,255,255,0.18); }
+    .attendance-legend-swatch.leave { background: #7ea7ed; }
+    .attendance-legend-swatch.holiday { background: #d1e7dd; }
+
+    .employee-dashboard-attendance__grid {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 0.55rem;
+    }
+
+    .employee-dashboard-attendance__weekday {
+        font-size: 0.7rem;
+        color: var(--text-muted-dark);
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        text-align: center;
+        padding-bottom: 0.2rem;
+    }
+
+    .attendance-day {
+        min-height: 70px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.06);
+        background: rgba(255,255,255,0.02);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-main);
+        transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+        cursor: default;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+    }
+
+    .attendance-day:hover {
+        transform: translateY(-1px);
+        border-color: rgba(255,255,255,0.12);
+        box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+    }
+
+    .attendance-day.day--present { background: rgba(58, 142, 99, 0.12); border-color: rgba(58, 142, 99, 0.25); }
+    .attendance-day.day--late { background: rgba(206, 158, 92, 0.12); border-color: rgba(206, 158, 92, 0.26); }
+    .attendance-day.day--leave { background: rgba(126, 167, 237, 0.12); border-color: rgba(126, 167, 237, 0.24); }
+    .attendance-day.day--holiday { background: rgba(209, 231, 221, 0.12); border-color: rgba(209, 231, 221, 0.22); }
+    .attendance-day.day--absent { background: rgba(184, 71, 71, 0.08); border-color: rgba(184, 71, 71, 0.18); }
+    .attendance-day.day--weekend { background: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.04); color: var(--text-muted-dark); }
+    .attendance-day.day--pending { background: rgba(255,255,255,0.015); border-color: rgba(255,255,255,0.04); color: var(--text-muted-dark); }
+    .attendance-day.day--empty { background: transparent; border: 1px solid transparent; }
+
+    .employee-dashboard-lower-grid {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .employee-dashboard-lower-grid > .employee-dashboard-card {
+        grid-column: span 6;
+    }
+
+    .employee-dashboard-card .metric-value {
+        font-size: clamp(1.6rem, 2vw, 2.25rem);
+        font-weight: 800;
+        line-height: 1.1;
+        color: var(--text-main);
+        letter-spacing: -0.03em;
+    }
+
+    .employee-dashboard-card .oh-card-dashboard__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        padding: 0 0.25rem 0.8rem;
+    }
+
+    .employee-dashboard-card .metric-label {
+        margin-top: 0.5rem;
+        color: var(--text-muted-dark);
+        font-size: 0.8rem;
+        font-weight: 600;
+        line-height: 1.4;
+    }
+
+    .employee-dashboard-card .metric-subtitle {
+        margin-top: 0.7rem;
+        color: var(--text-muted-dark);
+        font-size: 0.82rem;
+        line-height: 1.6;
+    }
+
+    .employee-dashboard-card .leave-percent {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--accent-light-green);
+        margin-left: auto;
+    }
+
+    .employee-dashboard-card .metric-subtitle strong {
+        color: var(--accent-light-green);
+    }
+
+    .employee-dashboard-card .progress {
+        height: 8px;
+        margin-top: 0.9rem;
+        border-radius: 999px;
+        overflow: hidden;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .employee-dashboard-card .progress-bar {
+        background: linear-gradient(90deg, var(--accent-green), #6dad8d);
+        border-radius: 999px;
+    }
+
+    .employee-dashboard-card .action-stack {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.7rem;
+        margin-top: 0.9rem;
+        width: 100%;
+    }
+
+    .employee-dashboard-card .action-stack .oh-btn {
+        width: 100%;
+        min-width: 0;
+        justify-content: center;
+        border-radius: 12px;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        box-shadow: none;
+        padding: 0.8rem 1rem;
+        background: var(--accent-green);
+        border: 1px solid rgba(255,255,255,0.08);
+        color: var(--text-main);
+    }
+
+    .employee-dashboard-card .action-stack .oh-btn:hover {
+        background: #375d49;
+        color: var(--text-main);
+    }
+
+    .employee-dashboard-card .empty-state {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-height: 130px;
+        color: var(--text-muted-dark);
+        font-size: 0.92rem;
+        line-height: 1.6;
+    }
+
+    .employee-dashboard-htmx {
+        min-height: 160px;
+    }
+
+    .employee-dashboard-htmx .oh-empty {
+        min-height: 120px;
+        padding: 1rem 0.5rem;
+        border-radius: 18px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.06);
+        color: var(--accent-light-green);
+    }
+
+    .employee-dashboard-htmx .oh-empty__title {
+        font-size: 1rem;
+        color: var(--text-main);
+    }
+
+    .employee-dashboard-htmx .oh-empty__subtitle {
+        font-size: 0.8rem;
+        color: var(--text-muted-dark);
+    }
+
+    .employee-dashboard-htmx .oh-dashboard__events {
+        width: 100%;
+    }
+
+    .employee-dashboard-htmx .oh-dashboard__event {
+        border-radius: 16px;
+        background: rgba(255,255,255,0.02) !important;
+        border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: none;
+        color: var(--text-main);
+    }
+
+    .employee-dashboard-htmx .oh-sticky-table__tbody {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .employee-dashboard-htmx .oh-sticky-table__tr {
+        background: rgba(255,255,255,0.02);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        padding: 0.55rem 0.7rem;
+    }
+
+    .leave-balance-wrap {
+        display:flex;
+        align-items:center;
+        gap:1rem;
+        width: 100%;
+    }
+
+    .leave-balance-left {
+        flex:0 0 84px;
+    }
+
+    .leave-balance-right {
+        flex:1 1 auto;
+        min-width: 0;
+    }
+
+    .leave-circle {
+        width:72px;
+        height:72px;
+        border-radius:50%;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        background: linear-gradient(135deg, rgba(45,90,63,0.28), rgba(209,231,221,0.08));
+        border:3px solid rgba(255,255,255,0.08);
+        font-weight:800;
+        color: var(--accent-light-green);
+    }
+
+    .leave-progress {
+        height:10px;
+        border-radius:999px;
+        background: rgba(255,255,255,0.06);
+        overflow:hidden;
+        margin-top:0.6rem;
+        border: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .leave-progress .bar {
+        height:100%;
+        background: linear-gradient(90deg, var(--accent-green), #73b28f);
+        width:0%;
+        transition:width 0.6s ease;
+    }
+
+    .leave-stats {
+        display:flex;
+        align-items:center;
+        flex-wrap: wrap;
+        gap:0.75rem 1rem;
+        margin-top:0.6rem;
+        color: var(--text-muted-dark);
+        line-height: 1.4;
+    }
+
+    .birthday-slider,
+    .birthday-card {
+        background: linear-gradient(180deg, rgba(22,31,24,0.95), rgba(14,18,15,0.96));
+        border:1px solid rgba(255,255,255,0.08);
+        color: var(--text-main);
+    }
+
+    .birthday-card__badge {
+        background: rgba(45,90,63,0.18);
+        color: var(--accent-light-green);
+    }
+
+    .birthday-card__name {
+        color: var(--text-main);
+    }
+
+    .birthday-card__meta {
+        color: var(--text-muted-dark);
+    }
+
+    .employee-dashboard-hero.greeting--morning {
+        background: linear-gradient(90deg, rgba(45,90,63,0.25), rgba(22,31,24,0.96));
+        color: var(--text-main);
+    }
+
+    .employee-dashboard-hero.greeting--afternoon {
+        background: linear-gradient(90deg, rgba(45,90,63,0.18), rgba(22,31,24,0.96));
+        color: var(--text-main);
+    }
+
+    .employee-dashboard-hero.greeting--evening {
+        background: linear-gradient(90deg, rgba(45,90,63,0.22), rgba(22,31,24,0.96));
+        color: var(--text-main);
+    }
+
+    .employee-dashboard-hero.greeting--night {
+        background: linear-gradient(90deg, rgba(45,90,63,0.22), rgba(9,12,10,0.96));
+        color: var(--text-main);
+    }
+
+    .employee-dashboard-card .action-stack .oh-btn--secondary {
+        background: rgba(255,255,255,0.03);
+        color: var(--accent-light-green);
+    }
+
+    .employee-dashboard-card .action-stack .oh-btn--secondary:hover {
+        background: rgba(255,255,255,0.06);
+    }
+
+    @media (max-width: 1100px) {
+        .employee-dashboard-summary-row > .employee-dashboard-card {
+            grid-column: span 4;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .employee-dashboard-summary-row > .employee-dashboard-card,
+        .employee-dashboard-summary-row > .employee-dashboard-card--wide {
+            grid-column: span 6;
+        }
+    }
+
+    @media (max-width: 800px) {
+        .employee-dashboard-summary-row > .employee-dashboard-card {
+            grid-column: span 6;
+        }
+        .employee-dashboard-attendance__grid {
+            gap: 0.45rem;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .employee-dashboard-hero {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .employee-dashboard-hero__status {
+            width: 100%;
+        }
+
+        .employee-dashboard-summary-row,
+        .employee-dashboard-lower-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .employee-dashboard-summary-row > .employee-dashboard-card,
+        .employee-dashboard-summary-row > .employee-dashboard-card--wide,
+        .employee-dashboard-lower-grid > .employee-dashboard-card {
+            grid-column: span 1;
+        }
+    }
+
+    @media (max-width: 540px) {
+        .employee-dashboard-summary-row,
+        .employee-dashboard-lower-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .employee-dashboard-summary-row > .employee-dashboard-card {
+            grid-column: span 1;
+        }
+    }
+</style>
+
+<div class="employee-dashboard-shell">
+    <div class="employee-dashboard-hero greeting--{% if now.hour < 13 %}morning{% elif now.hour < 17 %}afternoon{% elif now.hour < 21 %}evening{% else %}night{% endif %}">
+        <style>
+            /* Time-aware greeting variants */
+            .employee-dashboard-hero.greeting--morning,
+            .employee-dashboard-hero.greeting--afternoon,
+            .employee-dashboard-hero.greeting--evening,
+            .employee-dashboard-hero.greeting--night {
+                background: var(--card-bg-dark);
+                border: 1px solid rgba(255,255,255,0.08);
+                color: var(--text-main);
+                border-radius: 28px;
+                box-shadow: 0 18px 36px rgba(1, 9, 5, 0.18);
+            }
+
+            /* When the hero uses a light card surface, ensure all hero text uses the light-surface tokens */
+            .employee-dashboard-hero.greeting--morning .employee-dashboard-hero__greeting,
+            .employee-dashboard-hero.greeting--afternoon .employee-dashboard-hero__greeting,
+            .employee-dashboard-hero.greeting--evening .employee-dashboard-hero__greeting,
+            .employee-dashboard-hero.greeting--night .employee-dashboard-hero__greeting {
+                color: var(--text-main) !important;
+            }
+
+            .employee-dashboard-hero__greeting {
+                display:flex;
+                align-items:center;
+                gap:0.75rem;
+                font-weight:800;
+                font-size:1rem;
+                color: var(--text-main);
+            }
+            .employee-dashboard-hero__greeting-text { color: var(--text-main); font-size: 1.05rem; font-weight:700; }
+            .employee-dashboard-hero__greeting .icon {
+                font-size:1.25rem;
+                display:inline-flex;
+                width:40px;
+                height:40px;
+                align-items:center;
+                justify-content:center;
+                border-radius:12px;
+                background: rgba(45, 90, 63, 0.12);
+                color: var(--accent-light-green);
+                border: 1px solid rgba(45, 90, 63, 0.08);
+            }
+
+            /* Ensure title and meta switch to dark-surface text when hero is light */
+            .employee-dashboard-hero.greeting--morning .employee-dashboard-hero__title,
+            .employee-dashboard-hero.greeting--afternoon .employee-dashboard-hero__title,
+            .employee-dashboard-hero.greeting--evening .employee-dashboard-hero__title,
+            .employee-dashboard-hero.greeting--night .employee-dashboard-hero__title {
+                color: var(--text-main) !important;
+            }
+
+            .employee-dashboard-hero.greeting--morning .employee-dashboard-hero__meta,
+            .employee-dashboard-hero.greeting--afternoon .employee-dashboard-hero__meta,
+            .employee-dashboard-hero.greeting--evening .employee-dashboard-hero__meta,
+            .employee-dashboard-hero.greeting--night .employee-dashboard-hero__meta,
+            .employee-dashboard-hero.greeting--morning .employee-dashboard-hero__greeting-sub,
+            .employee-dashboard-hero.greeting--afternoon .employee-dashboard-hero__greeting-sub,
+            .employee-dashboard-hero.greeting--evening .employee-dashboard-hero__greeting-sub,
+            .employee-dashboard-hero.greeting--night .employee-dashboard-hero__greeting-sub {
+                color: var(--text-muted-dark) !important;
+                opacity: 1 !important;
+            }
+            .employee-dashboard-hero__greeting-sub {
+                font-size:0.84rem;
+                color: var(--text-muted-dark);
+                font-weight:700;
+                margin-top:0.08rem;
+            }
+            .employee-dashboard-hero__meta {
+                color: var(--text-main-light);
+                opacity: 0.85;
+            }
+            .employee-dashboard-hero__title {
+                color: var(--text-main-light);
+                margin: 0.7rem 0 0.2rem;
+                font-size: clamp(1.65rem, 2vw, 2.2rem);
+                font-weight: 800;
+            }
+
+            /* Apply button - make it match provided dark green style */
+            .oh-btn--apply { background: #07261b; color: #fff; border: none; box-shadow: 0 8px 14px rgba(5,21,18,0.25); padding: 0.68rem 1.05rem; border-radius: 6px; font-weight:800; display:inline-block; min-width:160px; font-size:1rem }
+            .oh-btn--apply:hover { filter: brightness(1.05); }
+
+            /* Responsive behavior for small screens */
+            @media (max-width:760px) {
+                .oh-btn--apply { display:block; width:100%; padding: 0.7rem 0.9rem; min-width:0; font-size:0.98rem; border-radius:10px; }
+                .employee-dashboard-card .action-stack { flex-direction: column; }
+                .employee-dashboard-hero { padding:0.75rem; gap:0.6rem }
+                .employee-dashboard-hero__avatar { width:56px; height:56px }
+                .employee-dashboard-hero__title { font-size:1rem }
+            }
+
+            /* Phone-specific adjustments (very small screens like 360-420px) */
+            @media (max-width:420px) {
+                .oh-btn--apply { display:block; width:100%; padding: 0.9rem 1rem; min-width:0; font-size:1.02rem; border-radius:12px; }
+                .employee-dashboard-card .action-stack { flex-direction: column; gap:0.5rem }
+
+                /* Hero stacks vertically and uses tighter spacing */
+                .employee-dashboard-hero { flex-direction:column; align-items:flex-start; padding:0.6rem; gap:0.5rem; border-radius:12px }
+                .employee-dashboard-hero__identity { width:100%; display:flex; gap:0.75rem; align-items:center }
+                .employee-dashboard-hero__avatar { width:48px; height:48px; flex-shrink:0 }
+                .employee-dashboard-hero__greeting { font-size:0.95rem }
+                .employee-dashboard-hero__greeting .icon { width:34px; height:34px; font-size:1.05rem }
+                .employee-dashboard-hero__title { font-size:1rem; margin-top:0.15rem }
+                .employee-dashboard-hero__meta { font-size:0.9rem }
+
+                /* Make summary cards more compact */
+                .employee-dashboard-summary-row { gap:0.6rem }
+                .employee-dashboard-card { padding:0.8rem }
+                .employee-dashboard-card .metric-value { font-size:1.2rem }
+
+                /* Leave balance stacks vertically for narrow screens */
+                .leave-balance-wrap { flex-direction:column; align-items:flex-start }
+                .leave-balance-left { flex:0 0 auto }
+                .leave-circle { width:56px; height:56px; font-size:1rem }
+                .leave-progress { width:100%; margin-top:0.5rem }
+                .leave-stats { flex-direction:row; gap:0.6rem; font-size:0.86rem }
+
+                /* Birthday carousel smaller */
+                .birthday-slider { padding:0.6rem }
+                .birthday-card { padding:0.7rem; grid-template-columns: 66px 1fr; border-radius:12px }
+                .birthday-card__avatar { width:66px; height:66px }
+                .birthday-dots { margin-top:0.6rem }
+
+                /* Ensure bottom FAB doesn't overlap content too much (if present) */
+                .employee-dashboard-shell { padding-bottom:1.6rem }
+            }
+
+            @media (min-width:1200px) {
+                .oh-btn--apply { padding:0.84rem 1.2rem; font-size:1.05rem }
+            }
+
+            @media (max-width:640px){ .employee-dashboard-hero__greeting .icon{ width:34px; height:34px } .employee-dashboard-hero__title{ font-size:1.05rem } }
+        </style>
+
+        <div class="employee-dashboard-hero__identity">
+            <div class="employee-dashboard-hero__avatar">
+                {% if request.user.employee_get.get_avatar %}
+                    <img src="{{ request.user.employee_get.get_avatar }}" alt="{{ request.user.employee_get.get_full_name }}" />
+                {% else %}
+                    {{ request.user.employee_get.get_full_name|default:request.user.username|slice:":1" }}
+                {% endif %}
+            </div>
+            <div class="employee-dashboard-hero__content">
+                <div class="employee-dashboard-hero__greeting">
+                    <span class="icon">{% if now.hour < 13 %}☀️{% elif now.hour < 17 %}🌤️{% elif now.hour < 21 %}🌇{% else %}🌙{% endif %}</span>
+                    <div>
+                        <div class="employee-dashboard-hero__greeting-text">
+                            {% if now.hour < 13 %}{% trans "Good morning" %}
+                            {% elif now.hour < 17 %}{% trans "Good afternoon" %}
+                            {% elif now.hour < 21 %}{% trans "Good evening" %}
+                            {% else %}{% trans "Good night" %}
+                            {% endif %}
+                        </div>
+                        <div class="employee-dashboard-hero__greeting-sub">
+                            {% if now.hour < 13 %}Subah{% elif now.hour < 17 %}Dopahar{% elif now.hour < 21 %}Shaam{% else %}Raat{% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="employee-dashboard-hero__title">{{ request.user.employee_get.get_full_name|default:request.user.username }}</h2>
+                <div class="employee-dashboard-hero__meta">
+                    {% with employee=request.user.employee_get %}
+                        {% if employee.get_job_position %}<span>{{ employee.get_job_position }}</span>{% endif %}
+                        {% if employee.get_department %}<span>{{ employee.get_department }}</span>{% endif %}
+                        {% if employee.email %}<span>{{ employee.email }}</span>{% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+        <div class="employee-dashboard-hero__aside">
+            {% if attendance_status %}
+                <div class="employee-dashboard-hero__status">{{ attendance_status }}</div>
+            {% endif %}
+            <div class="employee-dashboard-hero__time-widget" aria-live="polite">
+                <div class="employee-dashboard-hero__time-widget-label">India / IST</div>
+                <div class="employee-dashboard-hero__time-widget-time" id="indiaTimeWidgetTime">--:-- --</div>
+                <div class="employee-dashboard-hero__time-widget-date" id="indiaTimeWidgetDate">--</div>
+            </div>
+        </div>
+    </div>
+
+<script>
+(function(){
+    function setGreetingByLocalTime(){
+        var hr = new Date().getHours();
+        var period = 'morning';
+        if(hr >= 21) period = 'night';
+        else if(hr >= 17) period = 'evening';
+        else if(hr >= 13) period = 'afternoon';
+        else period = 'morning';
+
+        var hero = document.querySelector('.employee-dashboard-hero');
+        if(!hero) return;
+        hero.classList.remove('greeting--morning','greeting--afternoon','greeting--evening','greeting--night');
+        hero.classList.add('greeting--'+period);
+
+        var iconEl = hero.querySelector('.employee-dashboard-hero__greeting .icon');
+        var textEl = hero.querySelector('.employee-dashboard-hero__greeting-text');
+        var subEl = hero.querySelector('.employee-dashboard-hero__greeting-sub');
+        if(!textEl || !iconEl || !subEl) return;
+        if(period === 'morning') { iconEl.textContent = '☀️'; textEl.textContent = 'Good morning'; subEl.textContent = 'Subah'; }
+        else if(period === 'afternoon') { iconEl.textContent = '🌤️'; textEl.textContent = 'Good afternoon'; subEl.textContent = 'Dopahar'; }
+        else if(period === 'evening') { iconEl.textContent = '🌇'; textEl.textContent = 'Good evening'; subEl.textContent = 'Shaam'; }
+        else { iconEl.textContent = '🌙'; textEl.textContent = 'Good night'; subEl.textContent = 'Raat'; }
+    }
+
+    function updateIndiaTime(){
+        var timeEl = document.getElementById('indiaTimeWidgetTime');
+        var dateEl = document.getElementById('indiaTimeWidgetDate');
+        if(!timeEl || !dateEl) return;
+
+        var now = new Date();
+        var timeOptions = { timeZone: 'Asia/Kolkata', hour: 'numeric', minute: '2-digit', hour12: true };
+        var dateOptions = { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric' };
+        timeEl.textContent = new Intl.DateTimeFormat('en-US', timeOptions).format(now);
+        dateEl.textContent = new Intl.DateTimeFormat('en-GB', dateOptions).format(now);
+    }
+
+    document.addEventListener('DOMContentLoaded', function(){
+        setGreetingByLocalTime();
+        updateIndiaTime();
+    });
+    document.addEventListener('visibilitychange', function(){ if(!document.hidden) { setGreetingByLocalTime(); updateIndiaTime(); } });
+    setInterval(updateIndiaTime, 1000);
+})();
+</script>
+
+    <div class="employee-dashboard-summary-row">
+        {% if "leave"|app_installed %}
+            <div class="employee-dashboard-card employee-dashboard-card--wide">
+                <div class="oh-card-dashboard__header">
+                    <span class="oh-card-dashboard__title">{% trans "Leave Balance" %}</span>
+                </div>
+                <div class="oh-card-dashboard__body">
+                    {% if leave_available and leave_rows %}
+                        <div class="leave-balance-wrap">
+                            <div class="leave-balance-left">
+                                <div class="leave-circle">{{ leave_remaining }}</div>
+                                <div class="metric-label text-center">{% trans "available days" %}</div>
+                            </div>
+                            <div class="leave-balance-right">
+                                <div style="display:flex;justify-content:space-between;align-items:center">
+                                    <div class="metric-label">{% trans "Available days" %} <strong>{{ leave_remaining }}</strong> / {{ leave_allocated }}</div>
+                                    <div class="leave-percent">{% trans "Available" %}: {{ leave_percent }}%</div>
+                                </div>
+                                <div class="leave-progress"><div class="bar" style="width: {{ leave_percent }}%;"></div></div>
+                                <div class="leave-stats">
+                                    <div><strong>{{ leave_used }}</strong> {% trans "approved used" %}</div>
+                                    <div><strong>{{ pending_leaves }}</strong> {% trans "pending requests" %}</div>
+                                </div>
+                                <div class="leave-balance-list">
+                                    {% for row in leave_rows %}
+                                        <div class="leave-balance-item">
+                                            <div class="leave-balance-item__name">{{ row.name }}</div>
+                                            <div class="leave-balance-item__bar"><div class="leave-balance-item__fill" style="width: {{ row.percent }}%;"></div></div>
+                                            <div class="leave-balance-item__meta">{% trans "Available" %}: {{ row.remaining }} · {% trans "Total" %}: {{ row.total }} · {% trans "Used" %}: {{ row.taken }}</div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <div class="metric-value" style="font-size:1.5rem;">0</div>
+                            <div class="metric-label">{% trans "No leave balance available yet." %}</div>
+                            <div class="metric-subtitle">
+                                <strong>0</strong> {% trans "used" %} · <strong>0</strong> {% trans "pending" %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+        {% if "attendance"|app_installed %}
+            <div class="employee-dashboard-card employee-dashboard-card--wide">
+                <div class="oh-card-dashboard__header">
+                    <span class="oh-card-dashboard__title">{% trans "Work Hours This Week" %}</span>
+                </div>
+                <div class="oh-card-dashboard__body">
+                    <div class="metric-value">{{ week_hours }}</div>
+                    <div class="metric-label">{% trans "Worked this week" %}</div>
+                    <div class="work-hours-chart">
+                        {% for day in work_week_data %}
+                            <div class="work-hours-day">
+                                <div class="work-hours-day__bar-wrap">
+                                    <div class="work-hours-day__bar" style="height: {{ day.bar_percent }}%;"></div>
+                                </div>
+                                <div class="work-hours-day__value">{{ day.hours_text }}</div>
+                                <div class="work-hours-day__label">{{ day.label }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="employee-dashboard-card employee-dashboard-card--full employee-dashboard-attendance">
+        <div class="oh-card-dashboard__header">
+            <span class="oh-card-dashboard__title">{% trans "My Attendance" %}</span>
+        </div>
+        <div class="oh-card-dashboard__body">
+            <div class="employee-dashboard-attendance__header">
+                <div class="metric-label" style="margin-top:0; font-size: 0.82rem;">{{ attendance_month_label }}</div>
+                <div class="employee-dashboard-attendance__legend">
+                    {% for legend in attendance_legend %}
+                        <span class="attendance-legend-item">
+                            <span class="attendance-legend-swatch {{ legend.class }}"></span>
+                            {{ legend.label }}
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="employee-dashboard-attendance__grid">
+                <div class="employee-dashboard-attendance__weekday">Mon</div>
+                <div class="employee-dashboard-attendance__weekday">Tue</div>
+                <div class="employee-dashboard-attendance__weekday">Wed</div>
+                <div class="employee-dashboard-attendance__weekday">Thu</div>
+                <div class="employee-dashboard-attendance__weekday">Fri</div>
+                <div class="employee-dashboard-attendance__weekday">Sat</div>
+                <div class="employee-dashboard-attendance__weekday">Sun</div>
+                {% for week in attendance_month %}
+                    {% for day in week %}
+                        {% if day.day %}
+                            <div class="attendance-day {{ day.status_class }}" title="{{ day.title }}">
+                                {{ day.day }}
+                            </div>
+                        {% else %}
+                            <div class="attendance-day day--empty" aria-hidden="true"></div>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="employee-dashboard-lower-grid">
+        {% if 'birthday_view'|feature_is_accessible:request or perms.employee.view_employee %}
+            <div class="employee-dashboard-card">
+                <div class="oh-card-dashboard__header">
+                    <span class="oh-card-dashboard__title">{% trans "Birthdays" %}</span>
+                </div>
+                <div class="oh-card-dashboard__body employee-dashboard-htmx" hx-get="{% url 'get-birthday' %}" hx-trigger="load" hx-swap="innerHTML"></div>
+            </div>
+        {% endif %}
+
+        <div class="employee-dashboard-card">
+            <div class="oh-card-dashboard__header">
+                <span class="oh-card-dashboard__title">{% trans "Announcements" %}</span>
+            </div>
+            <div class="oh-card-dashboard__body employee-dashboard-htmx" hx-get="{% url 'announcement-list' %}" hx-trigger="load" hx-swap="innerHTML"></div>
+        </div>
+    </div>
+</div>

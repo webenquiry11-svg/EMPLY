@@ -3,7 +3,7 @@ project/sidebar.py
 """
 
 from django.contrib.auth.context_processors import PermWrapper
-from django.urls import reverse
+from django.urls import NoReverseMatch, reverse
 from django.utils.translation import gettext_lazy as trans
 
 from base.templatetags.basefilters import is_reportingmanager
@@ -16,6 +16,14 @@ from project.methods import (
     has_subordinates,
 )
 
+
+def safe_reverse(name, *args, **kwargs):
+    try:
+        return reverse(name, *args, **kwargs)
+    except NoReverseMatch:
+        return "#"
+
+
 MENU = trans("Project")
 IMG_SRC = "images/ui/project.png"
 ACCESSIBILITY = "project.sidebar.menu_accessibilty"
@@ -23,22 +31,22 @@ ACCESSIBILITY = "project.sidebar.menu_accessibilty"
 SUBMENUS = [
     {
         "menu": trans("Dashboard"),
-        "redirect": reverse("project-dashboard-view"),
+        "redirect": safe_reverse("project-dashboard-view"),
         "accessibility": "project.sidebar.dashboard_accessibility",
     },
     {
         "menu": trans("Projects"),
-        "redirect": reverse("project-view"),
+        "redirect": safe_reverse("project-view"),
         "accessibility": "project.sidebar.project_accessibility",
     },
     {
         "menu": trans("Tasks"),
-        "redirect": reverse("task-all"),
+        "redirect": safe_reverse("task-all"),
         "accessibility": "project.sidebar.task_accessibility",
     },
     {
         "menu": trans("Timesheet"),
-        "redirect": reverse("view-time-sheet"),
+        "redirect": safe_reverse("view-time-sheet"),
         "accessibility": "project.sidebar.timesheet_accessibility",
     },
 ]

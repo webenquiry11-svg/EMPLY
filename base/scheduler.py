@@ -1,11 +1,25 @@
 import calendar
+import os
 import sys
 from datetime import date, datetime, timedelta
 
 from apscheduler.schedulers.background import BackgroundScheduler
+from django.conf import settings
+from django.db import close_old_connections
 from django.urls import reverse
 
 from notifications.signals import notify
+
+
+def _database_job(job):
+    def run(*args, **kwargs):
+        close_old_connections()
+        try:
+            return job(*args, **kwargs)
+        finally:
+            close_old_connections()
+
+    return run
 
 
 def update_rotating_work_type_assign(rotating_work_type, new_date):
@@ -225,7 +239,8 @@ def rotate_shift():
     rotating_shifts = RotatingShiftAssign.objects.filter(is_active=True)
     today = datetime.now().date()
     r_shifts = rotating_shifts.filter(start_date__lte=today)
-    rotating_shifts_modified = None
+    # When no active rotation has started yet, there is nothing to process.
+    rotating_shifts_modified = rotating_shifts.none()
     for r_shift in r_shifts:
         emp_shift = rotating_shifts.filter(
             employee_id=r_shift.employee_id, start_date__lte=today
@@ -435,7 +450,10 @@ def recurring_holiday():
         recurring_holiday.save()
 
 
-if not any(
+if (
+    not settings.DEBUG
+    or os.environ.get("RUN_MAIN") == "true"
+) and not any(
     cmd in sys.argv
     for cmd in ["makemigrations", "migrate", "compilemessages", "flush", "shell"]
 ):
@@ -443,13 +461,13 @@ if not any(
 
     # Add jobs with next_run_time set to the end of the previous job
     try:
-        scheduler.add_job(rotate_shift, "interval", hours=4, id="job1")
+        scheduler.add_job(_database_job(rotate_shift), "interval", hours=4, id="job1")
     except:
         pass
 
     try:
         scheduler.add_job(
-            rotate_work_type,
+            _database_job(rotate_work_type),
             "interval",
             hours=4,
             id="job2",
@@ -459,7 +477,7 @@ if not any(
 
     try:
         scheduler.add_job(
-            undo_shift,
+            _database_job(undo_shift),
             "interval",
             hours=4,
             id="job3",
@@ -469,7 +487,7 @@ if not any(
 
     try:
         scheduler.add_job(
-            switch_shift,
+            _database_job(switch_shift),
             "interval",
             hours=4,
             id="job4",
@@ -479,7 +497,7 @@ if not any(
 
     try:
         scheduler.add_job(
-            undo_work_type,
+            _database_job(undo_work_type),
             "interval",
             hours=4,
             id="job6",
@@ -489,7 +507,7 @@ if not any(
 
     try:
         scheduler.add_job(
-            switch_work_type,
+            _database_job(switch_work_type),
             "interval",
             hours=4,
             id="job5",
@@ -497,5 +515,5 @@ if not any(
     except:
         pass
 
-    scheduler.add_job(recurring_holiday, "interval", hours=4)
+    scheduler.add_job(_database_job(recurring_holiday), "interval", hours=4)
     scheduler.start()

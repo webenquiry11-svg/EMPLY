@@ -13,6 +13,7 @@ from datetime import date, datetime, timedelta
 from django.contrib import messages
 from django.db.models import Q
 from django.http import HttpResponse
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from attendance.methods.utils import (
@@ -97,7 +98,7 @@ def clock_in_attendance_and_activity(
             'shift_id': shift,
             'work_type_id': employee.employee_work_info.work_type_id,
             'attendance_day': day,
-            'attendance_clock_in': now,
+            'attendance_clock_in': in_datetime.time(),
             'attendance_clock_in_date': date_today,
             'minimum_hour': minimum_hour,
             'attendance_source': attendance_source,
@@ -168,9 +169,11 @@ def clock_in(request):
                 return HttpResponse(_("You cannot mark attendance from this network"))
 
         employee, work_info = employee_exists(request)
-        datetime_now = datetime.now()
+        datetime_now = timezone.now()
         if request.__dict__.get("datetime"):
             datetime_now = request.datetime
+            if timezone.is_naive(datetime_now):
+                datetime_now = timezone.make_aware(datetime_now)
         if employee and work_info is not None:
             if (
                 employee.attendance_source == "biometric_machine"
@@ -491,9 +494,11 @@ def clock_out(request):
         and attendance_general_settings.enable_check_in
         or request.__dict__.get("datetime")
     ):
-        datetime_now = datetime.now()
+        datetime_now = timezone.now()
         if request.__dict__.get("datetime"):
             datetime_now = request.datetime
+            if timezone.is_naive(datetime_now):
+                datetime_now = timezone.make_aware(datetime_now)
         employee, work_info = employee_exists(request)
         shift = work_info.shift_id
         date_today = date.today()

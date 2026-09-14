@@ -608,84 +608,89 @@
  * only affect the Employee Dashboard UI and do not change logic.
  * =========================*/
 .employee-panel-dashboard {
-  .ep-metrics {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1rem;
-    align-items: stretch;
-  }
+   --ep-bg: #0d140e;
+   --ep-surface: #161f18;
+   --ep-surface-strong: #1b2a1e;
+   --ep-surface-soft: #f4f6f0;
+   --ep-primary: #2d5a3f;
+   --ep-primary-strong: #1d3c2d;
+   --ep-green-soft: #d1e7dd;
+   --ep-border: rgba(209, 231, 221, 0.14);
+   --ep-text: #f4f6f0;
+   --ep-muted: #a7b7aa;
+   --ep-shadow: rgba(1, 9, 5, 0.42);
 
-  .ep-metric-card {
-    background-color: $white;
-    border-radius: 0.6rem;
-    padding: 1rem 1.25rem;
-    box-shadow: 0 6px 18px rgba(20,20,30,0.04);
-    border: 1px solid rgba(16,24,40,0.04);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: transform 0.18s ease, box-shadow 0.18s ease;
+   background: radial-gradient(circle at top, rgba(45, 90, 63, 0.2), transparent 42%), var(--ep-bg);
+   color: var(--ep-text);
+   border-radius: 1.5rem;
+   padding: 1.125rem 1rem 1.75rem;
+   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 
-    &:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 10px 30px rgba(16,24,40,0.06);
+  .ep-header {
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:1rem;
+      margin-bottom:1rem;
+ 
+      .ep-title { font-size:1.35rem; font-weight:700; color:var(--ep-text); margin:0; }
+      .ep-subtitle { font-size:0.95rem; color:var(--ep-muted); margin-top:0.25rem; }
     }
-
-    &__top {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
+ 
+    .ep-kpi-row {
+      display:flex;
+      gap:1rem;
+      flex-wrap:wrap;
+      align-items:stretch;
     }
-
-    &__icon {
+ 
+    .ep-kpi {
+      background: linear-gradient(180deg, rgba(22,31,24,0.98), rgba(19,28,22,0.96));
+      border-radius: 1.125rem;
       display:flex;
       align-items:center;
-      justify-content:center;
-      width:44px;
-      height:44px;
-      border-radius:10px;
-      background: rgba($primary-color,0.06);
-      font-size:1.15rem;
-      color: $primary-color;
+      min-width: 220px;
+      padding: 0.75rem 1rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+      border-left: 6px solid var(--ep-primary);
+      border: 1px solid var(--ep-border);
+      transition: transform .16s ease, box-shadow .16s ease;
+      flex:1 1 220px;
+ 
+      &:hover { transform: translateY(-6px); box-shadow: 0 18px 40px rgba(0,0,0,0.22); }
+ 
+      &__left { width:56px; height:56px; display:flex; align-items:center; justify-content:center; border-radius:0.875rem; font-size:1.35rem; margin-right:0.9rem; background:rgba(209,231,221,0.12); color:var(--ep-green-soft); flex-shrink:0; border:1px solid rgba(209,231,221,0.08); }
+ 
+      &__body { display:flex; flex-direction:column; }
+      &__label { font-size:0.85rem; color:var(--ep-muted); font-weight:700; }
+      &__value { font-size:2.4rem; font-weight:800; color:var(--ep-text); margin-top:0.15rem; }
+      &__meta { font-size:0.85rem; color:var(--ep-muted); margin-top:0.25rem; }
+ 
+      &--accent-success { border-left-color: #3a7652; .ep-kpi__left { background: rgba(58,118,82,0.12); color:var(--ep-green-soft); } }
+      &--accent-danger { border-left-color: #6a7d6c; .ep-kpi__left { background: rgba(106,125,108,0.12); color:var(--ep-green-soft); } }
+      &--accent-neutral { border-left-color: #92a69a; .ep-kpi__left { background: rgba(146,166,154,0.12); color:var(--ep-green-soft); } }
     }
-
-    &__title {
-      font-weight: 600;
-      color: $text-dark-color;
-      font-size: 0.95rem;
-    }
-
-    &__main {
-      margin-top: 0.7rem;
-      display:flex;
-      flex-direction:column;
-      gap:0.25rem;
-    }
-
-    &__count {
-      font-size: 2.35rem;
-      font-weight: 700;
-      color: $text-dark-color;
-      line-height: 1;
-    }
-
-    &__sub {
-      font-size: 0.85rem;
-      color: $light-text-color;
-    }
-
-    &--success { .ep-metric-card__icon { color: $success-color-dark; background: rgba($success-color-dark,0.06); } }
-    &--danger  { .ep-metric-card__icon { color: $danger-color-dark;  background: rgba($danger-color-dark,0.06); } }
-    &--neutral { .ep-metric-card__icon { color: $placeholder-color;  background: rgba($placeholder-color,0.06); } }
-  }
-
+ 
   /* Charts: slightly lift and consistent paddings */
   .ep-chart-card {
-    background: transparent;
+    background: linear-gradient(180deg, rgba(22,31,24,0.98), rgba(18,25,21,0.96));
+    border-radius: 1.125rem;
+    padding: 0.75rem;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+    border: 1px solid var(--ep-border);
+ 
     .oh-card-dashboard__body { padding: 0; }
-    .ep-chart-card__body { padding: 0.5rem 0; }
+    .ep-chart-card__body { padding: 0.6rem 0; }
+ 
+    &__header-large { display:flex; align-items:center; justify-content:space-between; }
+    .ep-chart-card__title-wrap { display:flex; flex-direction:column; }
+    .ep-chart-card__meta { font-size:0.85rem; color:var(--ep-muted); margin-top:0.25rem; }
+ 
+    &--large { padding: 1rem; }
+    .ep-chart-card__body--large { min-height: 320px; display:flex; align-items:center; }
+    .ep-chart-card__body--small { min-height: 220px; display:flex; align-items:center; }
   }
-
+ 
   /* Birthdays cards in right column */
   .employee-birthdays {
     .employee-birthdays__list {
@@ -693,34 +698,35 @@
       flex-direction:column;
       gap:0.6rem;
     }
-
+ 
     .employee-birthday-card {
-      background: $white;
-      border-radius: 0.6rem;
+      background: linear-gradient(180deg, rgba(22,31,24,0.98), rgba(18,25,21,0.98));
+      border-radius: 1rem;
       padding: 0.8rem;
       display:flex;
       gap:0.75rem;
       align-items:center;
-      box-shadow: 0 6px 18px rgba(20,20,30,0.03);
-      border: 1px solid rgba(16,24,40,0.04);
-
+      box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+      border: 1px solid var(--ep-border);
+ 
       &__avatar {
         width:48px;
         height:48px;
         border-radius:50%;
         overflow:hidden;
         flex-shrink:0;
+        border: 1px solid rgba(209,231,221,0.08);
       }
-
+ 
       &__image { width:100%; height:100%; object-fit:cover; }
-
+ 
       &__info { display:flex; flex-direction:column; }
-      &__label { font-size:0.75rem; color:$light-text-color; font-weight:600; }
-      &__name { font-size:1rem; font-weight:700; color:$text-dark-color; }
-      &__date { font-size:0.85rem; color:$light-text-color; }
+      &__label { font-size:0.75rem; color:var(--ep-muted); font-weight:600; }
+      &__name { font-size:1rem; font-weight:700; color:var(--ep-text); }
+      &__date { font-size:0.85rem; color:var(--ep-muted); }
     }
   }
-
+ 
   /* Small tweak for onboard card to match new style */
   .ep-onboard {
     .oh-card-dashboard__header { padding-bottom:0.75rem; }

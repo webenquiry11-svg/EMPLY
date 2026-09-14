@@ -1,0 +1,74 @@
+{% load i18n basefilters horillafilters %}
+{% comment %}Render only hidden submenu blocks for employee bottom nav flyouts. This mirrors the "oh-hidden-submenus" block from sidebar.html but avoids rendering the full sidebar layout for employees.{% endcomment %}
+<div class="oh-hidden-submenus" style="display:none;">
+    {% for menues in sidebar %}
+        <div class="oh-hidden-submenu" id="hidden-{{menues.app}}GenericNav">
+            <h4>{{ menues.menu }}</h4>
+            <ul>
+                {% for submenu in menues.submenu %}
+                    {% if not request.user.employee_get or request.user.is_staff or submenu.menu != "Hour Account" and submenu.menu != "Late Come Early Out" and submenu.menu != "Late Come/Early Out" and submenu.menu != "Late Come / Early Out" and submenu.menu != "Company Leaves" and submenu.menu != "Restrict Leaves" and submenu.menu != "Restricted Leaves" and submenu.menu != "FAQs" and submenu.menu != "FAQs Categories" and submenu.menu != "Extra Languages Options" %}
+                        {% if request.user.is_staff or request.user.is_superuser %}
+                            {% if menues.menu == "Recruitment" %}
+                                {% if submenu.menu == "Open Jobs" or submenu.menu == "Stages" or submenu.menu == "Skill Zone" %}
+                                    {# hidden for Admin/SuperAdmin #}
+                                {% else %}
+                                    <li><a href="{{submenu.redirect}}">{{submenu.menu}}</a></li>
+                                {% endif %}
+                            {% elif menues.menu == "Attendance" %}
+                                {% if submenu.menu == "Attendances" or submenu.menu == "Attendances" or submenu.menu == "Hour Account" or submenu.menu == "Late Come Early Out" or submenu.menu == "Late Come/Early Out" or submenu.menu == "Late Come / Early Out" %}
+                                {% else %}
+                                    <li><a href="{{submenu.redirect}}">{{submenu.menu}}</a></li>
+                                {% endif %}
+                            {% elif menues.menu == "Leave" %}
+                                {% if submenu.menu == "Dashboard" or submenu.menu == "My Leave Requests" or submenu.menu == "My Leave Request" %}
+                                {% else %}
+                                    <li><a href="{{submenu.redirect}}">{{submenu.menu}}</a></li>
+                                {% endif %}
+                            {% elif menues.menu == "Payroll" %}
+                                {% if submenu.menu == "Dashboard" or submenu.menu == "Federal Tax" %}
+                                {% else %}
+                                    <li><a href="{{submenu.redirect}}">{{submenu.menu}}</a></li>
+                                {% endif %}
+                            {% elif menues.menu == "Help Desk" %}
+                                {% if submenu.menu == "FAQs" or submenu.menu == "FAQs Categories" %}
+                                {% else %}
+                                    <li><a href="{{submenu.redirect}}">{{submenu.menu}}</a></li>
+                                {% endif %}
+                            {% else %}
+                                <li><a href="{{submenu.redirect}}">{{submenu.menu}}</a></li>
+                            {% endif %}
+                        {% else %}
+                            <li><a href="{{submenu.redirect}}">{{submenu.menu}}</a></li>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+
+    {% if request.user|config_perms %}
+        <div class="oh-hidden-submenu" id="hidden-configNav">
+            <h4>{% trans "Configuration" %}</h4>
+            <ul>
+                {% if "leave"|app_installed and perms.base.view_multipleapprovalcondition %}
+                    <li><a href="{% url 'multiple-approval-condition' %}">{% trans "Multiple Approvals" %}</a></li>
+                {% endif %}
+                {% if perms.base.view_horillamailtemplate %}
+                    <li><a href="{% url 'view-mail-templates' %}">{% trans "Mail Templates" %}</a></li>
+                {% endif %}
+                {% if "horilla_automations"|app_installed and perms.horilla_automations.view_mailautomation %}
+                    <li><a href="{% url 'mail-automations' %}">{% trans "Mail Automations" %}</a></li>
+                {% endif %}
+                {% if perms.base.add_holidays %}
+                    <li><a href="{% url 'holiday-view' %}">{% trans "Holidays" %}</a></li>
+                {% endif %}
+                {% if perms.base.view_companyleaves %}
+                    <li><a href="{% url 'company-leave-view' %}">{% trans "Company Leaves" %}</a></li>
+                {% endif %}
+                {% if "leave"|app_installed %}
+                    <li><a href="{% url 'restrict-view' %}">{% trans "Restrict Leaves" %}</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    {% endif %}
+</div>

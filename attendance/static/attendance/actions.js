@@ -30,6 +30,20 @@ var deleteMessages = {
     uk: "Ви дійсно хочете видалити всі вибрані відвідування?",
     fr: "Voulez-vous vraiment supprimer toutes les présences sélectionnées?",
 };
+window.toggleHighlight = window.toggleHighlight || function toggleHighlight(ids) {
+    if (typeof $ === 'undefined') return;
+    var selectedIds = Array.isArray(ids) ? ids : ids ? [ids] : [];
+    $.each(selectedIds, function (_, id) {
+        if (!id) return;
+        const $target = $(`#${id}`);
+        const $row = $target.closest('.oh-sticky-table__tr, tr');
+        if (!$row.length) return;
+        $row.removeClass('highlight-selected');
+        if ($target.is(':checked')) {
+            $row.addClass('highlight-selected');
+        }
+    });
+};
 var noRowValidateMessages = {
     ar: "لم يتم تحديد أي صفوف من فحص الحضور.",
     de: "Im Feld „Anwesenheit validieren“ sind keine Zeilen ausgewählt.",

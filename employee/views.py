@@ -3810,3 +3810,280 @@ def employee_tag_update(request, tag_id):
         "base/employee_tag/employee_tag_form.html",
         {"form": form, "tag_id": tag_id},
     )
+
+
+@login_required
+@hx_request_required
+def employee_dashboard_summary(request):
+    """
+    HX fragment that renders a compact personal employee dashboard summary.
+    Uses existing Attendance and Leave models when the apps are installed.
+    """
+    employee = getattr(request.user, "employee_get", None)
+    context = {
+        "attendance": None,
+        "attendance_display_time": None,
+        "attendance_status": None,
+        "expected_checkout": None,
+        "worked_today": None,
+        "week_hours": "00:00",
+        "leave_available": False,
+        "leave_allocated": 0,
+        "leave_remaining": 0,
+        "leave_used": 0,
+        "leave_percent": 0,
+        "pending_leaves": 0,
+        "leave_app": False,
+        "work_week_data": [],
+        "leave_rows": [],
+        "attendance_month": [],
+        "attendance_month_label": "",
+        "attendance_legend": [
+            {"label": "Present", "class": "present"},
+            {"label": "Late", "class": "late"},
+            {"label": "Absent", "class": "absent"},
+            {"label": "Leave", "class": "leave"},
+            {"label": "Holiday", "class": "holiday"},
+        ],
+        "now": timezone.now(),
+    }
+
+    from django.apps import apps
+    from datetime import date
+
+    # Attendance data (per-employee)
+    if employee and apps.is_installed("attendance"):
+        try:
+            from attendance.models import Attendance
+            from attendance.methods.utils import strtime_seconds, format_time, get_week_start_end_dates
+
+            today = date.today()
+            attendance = (
+                Attendance.objects.filter(employee_id=employee, attendance_date=today)
+                .order_by("-id")
+                .first()
+            )
+            if attendance:
+                context["attendance"] = attendance
+                if getattr(attendance, "attendance_clock_in", None):
+                    try:
+                        context["attendance_display_time"] = attendance.attendance_clock_in.strftime("%I:%M %p")
+                    except Exception:
+                        context["attendance_display_time"] = str(attendance.attendance_clock_in)
+                else:
+                    context["attendance_display_time"] = None
+
+                if getattr(attendance, "attendance_clock_out", None):
+                    try:
+                        context["expected_checkout"] = attendance.attendance_clock_out.strftime("%I:%M %p")
+                    except Exception:
+                        context["expected_checkout"] = str(attendance.attendance_clock_out)
+
+                worked = getattr(attendance, "attendance_worked_hour", None)
+                if worked:
+                    context["worked_today"] = worked
+
+                if getattr(attendance, "attendance_clock_in", None) and not getattr(attendance, "attendance_clock_out", None):
+                    context["attendance_status"] = _("Checked in")
+                elif getattr(attendance, "attendance_clock_in", None) and getattr(attendance, "attendance_clock_out", None):
+                    context["attendance_status"] = _("Checked out")
+                else:
+                    context["attendance_status"] = _("Not checked in")
+
+            try:
+                start, end = get_week_start_end_dates(date.today())
+            except Exception:
+                start = today - timedelta(days=today.weekday())
+                end = today
+
+            records = Attendance.objects.filter(
+                employee_id=employee,
+                attendance_date__gte=start,
+                attendance_date__lte=end,
+            )
+            total_seconds = 0
+            week_rows = []
+            max_day_seconds = 0
+            for offset in range(7):
+                day = start + timedelta(days=offset)
+                record = records.filter(attendance_date=day).order_by("-id").first()
+                seconds = 0
+                if record and getattr(record, "attendance_worked_hour", None):
+                    try:
+                        seconds = strtime_seconds(record.attendance_worked_hour)
+                        total_seconds += seconds
+                    except Exception:
+                        pass
+                if seconds > max_day_seconds:
+                    max_day_seconds = seconds
+                week_rows.append(
+                    {
+                        "label": day.strftime("%a")[:3],
+                        "day": day.day,
+                        "hours": seconds,
+                        "hours_text": f"{int(seconds // 3600)}h {int((seconds % 3600) // 60)}m" if seconds else "0h",
+                    }
+                )
+            for row in week_rows:
+                pct = 0
+                if max_day_seconds > 0:
+                    pct = min(100, max(8, round((row["hours"] / max_day_seconds) * 100)))
+                row["bar_percent"] = pct
+            context["work_week_data"] = week_rows
+            try:
+                context["week_hours"] = format_time(total_seconds)
+            except Exception:
+                context["week_hours"] = "00:00"
+
+            month_year = today.month
+            month_name = today.strftime("%B %Y")
+            context["attendance_month_label"] = month_name
+            attendance_map = {}
+            for rec in Attendance.objects.filter(
+                employee_id=employee,
+                attendance_date__year=today.year,
+                attendance_date__month=today.month,
+            ):
+                attendance_map[rec.attendance_date] = rec
+
+            holiday_map = {}
+            if apps.is_installed("base"):
+                from base.models import Holidays
+                for holiday in Holidays.objects.filter(
+                    start_date__year=today.year,
+                    start_date__month=today.month,
+                ):
+                    curr = holiday.start_date
+                    end = holiday.end_date or holiday.start_date
+                    while curr <= end:
+                        holiday_map[curr] = holiday
+                        curr += timedelta(days=1)
+
+            leave_map = {}
+            if apps.is_installed("leave"):
+                from leave.models import LeaveRequest
+                for leave_req in LeaveRequest.objects.filter(
+                    employee_id=employee,
+                    status="approved",
+                    start_date__year=today.year,
+                    start_date__month=today.month,
+                ):
+                    end_date = leave_req.end_date or leave_req.start_date
+                    curr = leave_req.start_date
+                    while curr <= end_date:
+                        leave_map[curr] = leave_req
+                        curr += timedelta(days=1)
+
+            month_days = []
+            for week in calendar.Calendar().monthdayscalendar(today.year, today.month):
+                week_cells = []
+                for day_number in week:
+                    if day_number == 0:
+                        week_cells.append({"day": None, "status": "empty", "title": ""})
+                        continue
+                    day_date = date(today.year, today.month, day_number)
+                    attendance_obj = attendance_map.get(day_date)
+                    holiday_obj = holiday_map.get(day_date)
+                    leave_obj = leave_map.get(day_date)
+                    status = "no_record"
+                    status_class = "day--empty"
+                    title_parts = [f"Date: {day_date.strftime('%d %b %Y')}"]
+                    if holiday_obj:
+                        status = "Holiday"
+                        status_class = "day--holiday"
+                        title_parts.append(f"Holiday: {holiday_obj.name}")
+                    elif leave_obj:
+                        status = "Leave"
+                        status_class = "day--leave"
+                        title_parts.append(f"Leave Type: {leave_obj.leave_type_id.name}")
+                    elif attendance_obj:
+                        if getattr(attendance_obj, "is_grace_late", False):
+                            status = "Late"
+                            status_class = "day--late"
+                        elif getattr(attendance_obj, "attendance_clock_in", None) or getattr(attendance_obj, "attendance_clock_out", None) or getattr(attendance_obj, "attendance_worked_hour", None):
+                            status = "Present"
+                            status_class = "day--present"
+                        else:
+                            status = "Absent"
+                            status_class = "day--absent"
+                        title_parts.append(f"Status: {status}")
+                        if getattr(attendance_obj, "attendance_clock_in", None):
+                            title_parts.append(f"Check In: {attendance_obj.attendance_clock_in.strftime('%I:%M %p')}")
+                        if getattr(attendance_obj, "attendance_clock_out", None):
+                            title_parts.append(f"Check Out: {attendance_obj.attendance_clock_out.strftime('%I:%M %p')}")
+                        if getattr(attendance_obj, "attendance_worked_hour", None):
+                            title_parts.append(f"Worked: {attendance_obj.attendance_worked_hour}")
+                    else:
+                        if day_date.weekday() >= 5:
+                            status = "Weekend"
+                            status_class = "day--weekend"
+                            title_parts.append("Status: Weekend")
+                        elif day_date > today:
+                            status = "Pending"
+                            status_class = "day--pending"
+                            title_parts.append("Status: No record")
+                        else:
+                            status = "Absent"
+                            status_class = "day--absent"
+                            title_parts.append("Status: Absent")
+                    title_parts.insert(1, f"Status: {status}")
+                    week_cells.append({
+                        "day": day_number,
+                        "status": status,
+                        "status_class": status_class,
+                        "title": " | ".join(title_parts),
+                    })
+                month_days.append(week_cells)
+            context["attendance_month"] = month_days
+        except Exception:
+            pass
+
+    # Leave data
+    if employee and apps.is_installed("leave"):
+        try:
+            from leave.models import LeaveGeneralSetting, LeaveRequest
+
+            avail_qs = employee.available_leave.all().select_related("leave_type_id")
+            leave_settings = LeaveGeneralSetting.objects.first()
+            if not (leave_settings and leave_settings.compensatory_leave):
+                avail_qs = avail_qs.exclude(
+                    leave_type_id__is_compensatory_leave=True
+                )
+            leave_rows = []
+            if avail_qs.exists():
+                context["leave_available"] = True
+                total_alloc = 0
+                total_remaining = 0
+                total_used = 0
+                for available in avail_qs.order_by("leave_type_id__name"):
+                    total = float(available.total_leave_days or 0)
+                    remaining = float(available.available_days or 0)
+                    used = float(available.leave_taken() or 0)
+                    total_alloc += total
+                    total_remaining += remaining
+                    total_used += used
+                    percent = 0 if total == 0 else int(min(100, max(0, (remaining / total) * 100)))
+                    leave_rows.append(
+                        {
+                            "name": getattr(available.leave_type_id, "name", "Leave"),
+                            "remaining": remaining,
+                            "used": used,
+                            "taken": used,
+                            "total": total,
+                            "carryforward": float(available.carryforward_days or 0),
+                            "percent": percent,
+                        }
+                    )
+                context["leave_allocated"] = int(total_alloc)
+                context["leave_remaining"] = int(total_remaining)
+                context["leave_used"] = int(total_used)
+                context["leave_percent"] = 0 if total_alloc == 0 else int((total_remaining / total_alloc) * 100)
+            context["leave_rows"] = leave_rows
+            context["pending_leaves"] = LeaveRequest.objects.filter(
+                employee_id=employee, status="requested"
+            ).count()
+            context["leave_app"] = True
+        except Exception:
+            pass
+
+    return render(request, "dashboard_employee_summary.html", context)

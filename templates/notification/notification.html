@@ -53,52 +53,6 @@
     </div>
 </div>
 
-<script>
-    var staticUrl = $("#statiUrl").attr("data-url");
-    var notification_sound = {{request.user.employee_get.notification_sound.sound_enabled|yesno:"true,false"}};
-    function fill_notification_badge(data) {
-        var badges = document.getElementsByClassName(notify_badge_class);
-        let previousUnreadCount = parseInt(localStorage.getItem('previousUnreadCount')) || 0;
-        if (notification_sound) {
-            if (
-                previousUnreadCount !== null &&
-                previousUnreadCount < data.unread_count
-            ) {
-                const audio = new Audio(
-                    `${staticUrl}static/audio/notification-sound.wav`
-                );
-                audio.play();
-            }
-        }
+<div id="notificationConfig" data-notification-sound="{{ request.user.employee_get.notification_sound.sound_enabled|yesno:'true,false'|default:'false' }}" style="display:none"></div>
 
-        if (badges) {
-            for (var i = 0; i < badges.length; i++) {
-                badges[i].innerHTML = data.unread_count;
-            }
-        }
-        localStorage.setItem('previousUnreadCount', data.unread_count);
-    }
-</script>
-<script
-    src="{% static 'notifications/notify.js' %}"
-    type="text/javascript"
-></script>
-{% register_notify_callbacks callbacks='fill_notification_list,fill_notification_badge' %}
-<script>
-    function markAsRead(notificationId) {
-        fetch("/notifications/mark-as-read/" + notificationId + "/").then(
-            (response) => {
-                if (response.ok) {
-                    // Reload the page to update the notifications
-                    location.reload();
-                } else {
-                    console.error("Failed to mark notification as read");
-                }
-            }
-        );
-    }
-
-    $("#viewallnotification").click(function () {
-        $("#showallnotificationbtn").toggle();
-    });
-</script>
+<script src="{% static 'notifications/notify.js' %}" type="text/javascript"></script>

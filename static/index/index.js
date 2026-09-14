@@ -57,6 +57,19 @@ function togglePublicComments() {
     }
 }
 
+window.toggleHighlight = window.toggleHighlight || function toggleHighlight(ids) {
+    if (typeof $ === 'undefined') return;
+    $.each(ids || [], function (_, id) {
+        const $target = $(`#${id}`);
+        const $row = $target.closest('.oh-sticky-table__tr, tr');
+        if (!$row.length) return;
+        $row.removeClass('highlight-selected');
+        if ($target.is(':checked')) {
+            $row.addClass('highlight-selected');
+        }
+    });
+};
+
 function attendanceDateChange(selectElement) {
     var selectedDate = selectElement.val();
     let parentForm = selectElement.parents().closest("form");

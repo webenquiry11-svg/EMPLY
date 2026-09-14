@@ -5,6 +5,16 @@
 <div id="mainNav"></div>
 <!-- End of Navigation -->
 <style>
+    #dashboard {
+        background: #0d140e;
+        border-radius: 0;
+        padding-bottom: 3.5rem;
+    }
+
+    #dashboard .oh-dashboard__cards {
+        background: transparent;
+    }
+
     .oh-card-dashboard--moveable {
         padding: 0 10px 20px 10px;
     }
@@ -111,7 +121,7 @@
     }
 </style>
 
-<div class="oh-wrapper">
+<div class="oh-wrapper" style="max-width: none; width: 100%; margin: 0; background: #0d140e;">
 
     <!-- back button -->
     <div class="d-none mt-5" id="back_button" style="width: 10%">
@@ -120,133 +130,147 @@
                 aria-label="arrow-back-outline"></ion-icon>{% trans "Back" %}</a>
     </div>
     <!-- end of back button -->
-    <div class="oh-dashboard row" id="dashboard" style="padding-bottom: 3.5rem;">
+    <div class="oh-dashboard row" id="dashboard" style="padding-bottom: 3.5rem; width: 100%; max-width: none; margin: 0; background: #0d140e;">
 
-
-        <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
-            <div class="oh-dashboard__cards row">
-                {% if perms.employee.view_employee %}
-                    {% if "recruitment"|app_installed %}
-                        <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                            <div class="oh-card-dashboard oh-card-dashboard--success tile">
-                                <a href="{% url 'candidate-view' %}?joining_date={{current_date}}"
-                                    style="text-decoration: none">
-                                    <div class="oh-card-dashboard__header">
-                                        <span class="oh-card-dashboard__title">{% trans "New Joining Today" %}</span>
-                                    </div>
-                                    <div class="oh-card-dashboard__body">
-                                        <div class="oh-card-dashboard__counts">
-                                            <span class="oh-card-dashboard__count" hx-get="{% url 'joining-today-count' %}" hx-trigger="load">
-                                                <div style="height: 67px;"></div>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </a>
+        {% if request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser %}
+            <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="oh-dashboard__cards row" style="margin:0;">
+                    <div class="col-12">
+                        <div id="employeeDashboardSummaryPlaceholder" hx-get="{% url 'employee-dashboard-summary' %}" hx-trigger="load" hx-swap="innerHTML">
+                            <div class="oh-card-dashboard tile">
+                                <div class="oh-card-dashboard__body"><div class="animated-background" style="height:180px"></div></div>
                             </div>
                         </div>
-                        <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                            <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--warning tile">
-                                <a href="{% url 'candidate-view' %}?scheduled_from={{first_day_of_week}}&scheduled_till={{last_day_of_week}}"
-                                    style="text-decoration: none">
-                                    <div class="oh-card-dashboard__header">
-                                        <span class="oh-card-dashboard__title">{% trans "New Joining This Week" %}</span>
-                                    </div>
-                                    <div class="oh-card-dashboard__body">
-                                        <div class="oh-card-dashboard__counts">
-                                            <span class="oh-card-dashboard__count" hx-get="{% url 'joining-week-count' %}" hx-trigger="load">
-                                                <div style="height: 67px;"></div>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                    {% endif %}
-                    <div class="col-12 col-sm-12 col-md-6 col-lg-4">
-                        <a href="{% url 'employee-view' %}" style="text-decoration: none">
-                            <div class="oh-card-dashboard oh-card-dashboard--neutral tile">
-                                <div class="oh-card-dashboard__header">
-                                    <span class="oh-card-dashboard__title">{% trans "Total Strength" %}</span>
-                                </div>
-                                <div class="oh-card-dashboard__body">
-                                    <div class="oh-card-dashboard__counts">
-                                        <span class="oh-card-dashboard__count" hx-get="{% url 'total-employees-count' %}"
-                                            hx-trigger="load">
-                                            <div style="height: 67px;"></div>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
                     </div>
-                {% endif %}
-                <div class="oh-dashboard__movable-cards row mt-4" id="tileContainer">
-                    {% include "dashboard_tile_container.html" %}
                 </div>
             </div>
-        </div>
-        <div class="oh-dashboard__right col-12 col-sm-12 col-md-12 col-lg-3">
-            {% if 'birthday_view'|feature_is_accessible:request or perms.employee.view_employee %}
-                <div class="oh-dashboard__events" hx-get="{% url 'get-birthday' %}" hx-trigger="load"> </div>
-            {% endif %}
-            <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mb-3">
-                <div style="display: flex;align-items:center;justify-content:space-between;margin-right:20px">
-                    <span class="oh-card-dashboard__title">{% trans "Announcements" %}</span>
-                    {% if perms.base.add_announcement %}
-                        <span>
-                            <button id="addAnnouncement" style="display: inline-block;padding: 0px;
-                            border-radius: 6px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            width: 50px;
-                            height: 28px;" class="oh-btn oh-btn--secondary-outline float-end ms-3"
-                                hx-get="{% url 'create-announcement' %}" hx-target="#objectCreateModalTarget"
-                                hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
-                                title="{% trans 'Create Announcement' %}">
-                                <ion-icon name="add-outline" class="m-0"></ion-icon>
-                            </button>
-                        </span>
-                    {% endif %}
-                </div>
-
-                <hr>
-
-                <div class="oh-card-dashboard__body" hx-get="{% url 'announcement-list' %}" hx-trigger="load"
-                    id="announcementListCard">
-                    <div class="animated-background"></div>
-                </div>
-            </div>
-            {% if "leave"|app_installed %}
-                {% if perms.leave.view_leaverequest or request.user|is_reportingmanager %}
-                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mb-3">
-                        <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                            <span class="oh-card-dashboard__title">{% trans "On Leave" %}</span>
+        {% else %}
+            <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
+                <div class="oh-dashboard__cards row">
+                    {% if perms.employee.view_employee %}
+                        {% if "recruitment"|app_installed %}
+                            <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                                <div class="oh-card-dashboard oh-card-dashboard--success tile">
+                                    <a href="{% url 'candidate-view' %}?joining_date={{current_date}}"
+                                        style="text-decoration: none">
+                                        <div class="oh-card-dashboard__header">
+                                            <span class="oh-card-dashboard__title">{% trans "New Joining Today" %}</span>
+                                        </div>
+                                        <div class="oh-card-dashboard__body">
+                                            <div class="oh-card-dashboard__counts">
+                                                <span class="oh-card-dashboard__count" hx-get="{% url 'joining-today-count' %}" hx-trigger="load">
+                                                    <div style="height: 67px;"></div>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                                <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--warning tile">
+                                    <a href="{% url 'candidate-view' %}?scheduled_from={{first_day_of_week}}&scheduled_till={{last_day_of_week}}"
+                                        style="text-decoration: none">
+                                        <div class="oh-card-dashboard__header">
+                                            <span class="oh-card-dashboard__title">{% trans "New Joining This Week" %}</span>
+                                        </div>
+                                        <div class="oh-card-dashboard__body">
+                                            <div class="oh-card-dashboard__counts">
+                                                <span class="oh-card-dashboard__count" hx-get="{% url 'joining-week-count' %}" hx-trigger="load">
+                                                    <div style="height: 67px;"></div>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                            <a href="{% url 'employee-view' %}" style="text-decoration: none">
+                                <div class="oh-card-dashboard oh-card-dashboard--neutral tile">
+                                    <div class="oh-card-dashboard__header">
+                                        <span class="oh-card-dashboard__title">{% trans "Total Strength" %}</span>
+                                    </div>
+                                    <div class="oh-card-dashboard__body">
+                                        <div class="oh-card-dashboard__counts">
+                                            <span class="oh-card-dashboard__count" hx-get="{% url 'total-employees-count' %}"
+                                                hx-trigger="load">
+                                                <div style="height: 67px;"></div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
                         </div>
-                        <div class="oh-card-dashboard__body" hx-get="{% url 'employee-leave' %}" hx-trigger="load"
-                            style="height:300px;overflow-x: auto;">
+                    {% endif %}
+                    <div class="oh-dashboard__movable-cards row mt-4" id="tileContainer">
+                        {% include "dashboard_tile_container.html" %}
+                    </div>
+                </div>
+            </div>
+            <div class="oh-dashboard__right col-12 col-sm-12 col-md-12 col-lg-3">
+                {% if 'birthday_view'|feature_is_accessible:request or perms.employee.view_employee %}
+                    <div class="oh-dashboard__events" hx-get="{% url 'get-birthday' %}" hx-trigger="load"> </div>
+                {% endif %}
+                <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mb-3">
+                    <div style="display: flex;align-items:center;justify-content:space-between;margin-right:20px">
+                        <span class="oh-card-dashboard__title">{% trans "Announcements" %}</span>
+                        {% if perms.base.add_announcement %}
+                            <span>
+                                <button id="addAnnouncement" style="display: inline-block;padding: 0px;
+                                border-radius: 6px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                width: 50px;
+                                height: 28px;" class="oh-btn oh-btn--secondary-outline float-end ms-3"
+                                    hx-get="{% url 'create-announcement' %}" hx-target="#objectCreateModalTarget"
+                                    hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+                                    title="{% trans 'Create Announcement' %}">
+                                    <ion-icon name="add-outline" class="m-0"></ion-icon>
+                                </button>
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <hr>
+
+                    <div class="oh-card-dashboard__body" hx-get="{% url 'announcement-list' %}" hx-trigger="load"
+                        id="announcementListCard">
+                        <div class="animated-background"></div>
+                    </div>
+                </div>
+                {% if "leave"|app_installed %}
+                    {% if perms.leave.view_leaverequest or request.user|is_reportingmanager %}
+                        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mb-3">
+                            <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                                <span class="oh-card-dashboard__title">{% trans "On Leave" %}</span>
+                            </div>
+                            <div class="oh-card-dashboard__body" hx-get="{% url 'employee-leave' %}" hx-trigger="load"
+                                style="height:300px;overflow-x: auto;">
+                                <div class="animated-background"></div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+                {% if perms.employee.view_employeeworkinformation or request.user|is_reportingmanager %}
+                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent employee-workinfo-widget">
+                        <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                            <span class="oh-card-dashboard__title">{% trans "Employee Work Information" %}</span>
+                        </div>
+                        <div class="oh-search-bar mb-3">
+                            <input type="text" hx-get="{% url 'emp-workinfo-complete' %}" hx-target="#pending"
+                                hx-trigger="keyup  changed delay:0.3s" id="employeeSearch" name="search"
+                                placeholder="{% trans 'Search Employee' %}">
+                        </div>
+                        <div class="oh-card-dashboard__body" hx-get="{% url 'emp-workinfo-complete' %}" hx-trigger="load">
                             <div class="animated-background"></div>
                         </div>
                     </div>
                 {% endif %}
-            {% endif %}
-            {% if perms.employee.view_employeeworkinformation or request.user|is_reportingmanager %}
-                <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
-                    <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                        <span class="oh-card-dashboard__title">{% trans "Employee Work Information" %}</span>
-                    </div>
-                    <!-- Search bar -->
-                    <div class="oh-search-bar mb-3">
-                        <input type="text" hx-get="{% url 'emp-workinfo-complete' %}" hx-target="#pending"
-                            hx-trigger="keyup  changed delay:0.3s" id="employeeSearch" name="search"
-                            placeholder="{% trans 'Search Employee' %}">
-                    </div>
-                    <div class="oh-card-dashboard__body" hx-get="{% url 'emp-workinfo-complete' %}" hx-trigger="load">
-                        <div class="animated-background"></div>
-                    </div>
-                </div>
-            {% endif %}
-        </div>
+            </div>
+        {% endif %}
+    </div>
+
     </div>
 </div>
 <div class="oh-modal" id="sendMailModal" role="dialog" aria-labelledby="sendMailModal" aria-hidden="true">
@@ -432,62 +456,66 @@
         $(anchorElement).parent().find('#newTab').hide();
     }
 
-    var w = c.width = window.innerWidth,
-        h = c.height = window.innerHeight,
-        ctx = c.getContext('2d'),
+    var c = document.getElementById('c');
+    if (!c) {
+        console.warn('Birthday canvas not found; skipping birthday animation.');
+    } else {
+        var w = c.width = window.innerWidth,
+            h = c.height = window.innerHeight,
+            ctx = c.getContext('2d'),
 
-        hw = w / 2, // half-width
-        hh = h / 2,
+            hw = w / 2, // half-width
+            hh = h / 2,
 
-        opts = {
-            strings: ['HAPPY', 'BIRTHDAY!', "{{request.user.employee_get|escapejs}}"],
-            charSize: 60,
-            charSpacing: 45,
-            lineHeight: 65,
-            cx: w / 2,
-            cy: h / 2,
-            fireworkPrevPoints: 10,
-            fireworkBaseLineWidth: 5,
-            fireworkAddedLineWidth: 8,
-            fireworkSpawnTime: 200,
-            fireworkBaseReachTime: 30,
-            fireworkAddedReachTime: 30,
-            fireworkCircleBaseSize: 20,
-            fireworkCircleAddedSize: 10,
-            fireworkCircleBaseTime: 30,
-            fireworkCircleAddedTime: 30,
-            fireworkCircleFadeBaseTime: 10,
-            fireworkCircleFadeAddedTime: 5,
-            fireworkBaseShards: 20,
-            fireworkAddedShards: 5,
-            fireworkShardPrevPoints: 3,
-            fireworkShardBaseVel: 4,
-            fireworkShardAddedVel: 2,
-            fireworkShardBaseSize: 10,
-            fireworkShardAddedSize: 3,
-            gravity: 0.1,
-            upFlow: -0.1,
-            letterContemplatingWaitTime: 360,
-            balloonSpawnTime: 10,
-            balloonBaseInflateTime: 10,
-            balloonAddedInflateTime: 10,
-            balloonBaseSize: 60,
-            balloonAddedSize: 20,
-            balloonBaseVel: 0.4,
-            balloonAddedVel: 0.4,
-            balloonBaseRadian: -(Math.PI / 2 - 0.5),
-            balloonAddedRadian: -1,
-        },
-        calc = {
-            totalWidth: opts.charSpacing * Math.max(opts.strings[0].length, opts.strings[1].length)
-        },
+            opts = {
+                strings: ['HAPPY', 'BIRTHDAY!', "{{request.user.employee_get|escapejs}}"],
+                charSize: 60,
+                charSpacing: 45,
+                lineHeight: 65,
+                cx: w / 2,
+                cy: h / 2,
+                fireworkPrevPoints: 10,
+                fireworkBaseLineWidth: 5,
+                fireworkAddedLineWidth: 8,
+                fireworkSpawnTime: 200,
+                fireworkBaseReachTime: 30,
+                fireworkAddedReachTime: 30,
+                fireworkCircleBaseSize: 20,
+                fireworkCircleAddedSize: 10,
+                fireworkCircleBaseTime: 30,
+                fireworkCircleAddedTime: 30,
+                fireworkCircleFadeBaseTime: 10,
+                fireworkCircleFadeAddedTime: 5,
+                fireworkBaseShards: 20,
+                fireworkAddedShards: 5,
+                fireworkShardPrevPoints: 3,
+                fireworkShardBaseVel: 4,
+                fireworkShardAddedVel: 2,
+                fireworkShardBaseSize: 10,
+                fireworkShardAddedSize: 3,
+                gravity: 0.1,
+                upFlow: -0.1,
+                letterContemplatingWaitTime: 360,
+                balloonSpawnTime: 10,
+                balloonBaseInflateTime: 10,
+                balloonAddedInflateTime: 10,
+                balloonBaseSize: 60,
+                balloonAddedSize: 20,
+                balloonBaseVel: 0.4,
+                balloonAddedVel: 0.4,
+                balloonBaseRadian: -(Math.PI / 2 - 0.5),
+                balloonAddedRadian: -1,
+            },
+            calc = {
+                totalWidth: opts.charSpacing * Math.max(opts.strings[0].length, opts.strings[1].length)
+            },
 
-        Tau = Math.PI * 2,
-        TauQuarter = Tau / 4,
+            Tau = Math.PI * 2,
+            TauQuarter = Tau / 4,
 
-        letters = [];
+            letters = [];
 
-    ctx.font = opts.charSize + 'px "Lobster"';
+        ctx.font = opts.charSize + 'px "Lobster"';
 
 
     function Letter(char, x, y) {
@@ -806,6 +834,7 @@
 
         ctx.font = opts.charSize + 'px Verdana';
     })
+    }
 
 </script>
 <script src="{% static 'build/js/dashboardDriver.js' %}"></script>
@@ -815,5 +844,4 @@
     runDriver()
 </script>
 {% endif %}
-
 

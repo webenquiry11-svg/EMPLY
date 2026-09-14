@@ -1,10 +1,13 @@
 import calendar
 import datetime as dt
+import os
 import sys
 from datetime import datetime, timedelta
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from dateutil.relativedelta import relativedelta
+from django.conf import settings
+from django.db import close_old_connections
 
 
 def leave_reset():
@@ -46,7 +49,21 @@ def leave_reset():
             leave_type.save()
 
 
-if not any(
+def _database_job(job):
+    def run(*args, **kwargs):
+        close_old_connections()
+        try:
+            return job(*args, **kwargs)
+        finally:
+            close_old_connections()
+
+    return run
+
+
+if (
+    not settings.DEBUG
+    or os.environ.get("RUN_MAIN") == "true"
+) and not any(
     cmd in sys.argv
     for cmd in ["makemigrations", "migrate", "compilemessages", "flush", "shell"]
 ):
@@ -54,6 +71,6 @@ if not any(
     Initializes and starts background tasks using APScheduler when the server is running.
     """
     scheduler = BackgroundScheduler()
-    scheduler.add_job(leave_reset, "interval", seconds=20)
+    scheduler.add_job(_database_job(leave_reset), "interval", seconds=20)
 
     scheduler.start()

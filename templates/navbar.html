@@ -2,11 +2,25 @@
 <nav class="oh-navbar">
   <div class="oh-wrapper oh-navbar__wrapper">
     <div class="oh-navbar__toggle-container">
-      <a href="#" class="oh-navbar__toggle-link oh-link__unstyled">
+          <a href="#" class="oh-navbar__toggle-link oh-link__unstyled" id="mobileMenuToggle" onclick="toggleMobileSectionMenu(event)">
         <img src="./static/images/ui/menu.svg" width="24" height="24" class="oh-navbar__toggle-menu"
           loading="lazy" />
         <span class="oh-navbar__page-title">{% trans "Attendances" %}</span>
       </a>
+    </div>
+
+    <!-- Mobile section menu overlay (injected here so it is present on every page) -->
+    <div id="mobileSectionMenu" class="mobile-section-menu" aria-hidden="true">
+      <div class="mobile-section-menu__backdrop" id="mobileSectionBackdrop"></div>
+      <div class="mobile-section-menu__panel" role="menu" aria-label="Sections">
+        <div class="mobile-section-menu__header">
+          <button id="mobileSectionClose" class="oh-btn oh-btn--neutral" aria-label="Close menu">&times;</button>
+          <h4 class="mb-0">{% trans "Sections" %}</h4>
+        </div>
+        <div class="mobile-section-menu__body" id="mobileSectionBody">
+          <!-- populated dynamically from hidden submenus or fallback links -->
+        </div>
+      </div>
     </div>
     <div class="oh-navbar__systray">
       <!-- CLOCK-IN -->
@@ -159,3 +173,130 @@
 
   </div>
 </nav>
+
+<style>
+/* Mobile section menu overlay styles */
+.mobile-section-menu{position:fixed;inset:0;z-index:1700;display:none}
+.mobile-section-menu.mobile-section-menu--show{display:block}
+.mobile-section-menu__backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.45)}
+.mobile-section-menu__panel{position:absolute;top:56px;left:8px;right:8px;margin:auto;border-radius:12px;background:#161f18;color:#fff;border:1px solid rgba(255,255,255,0.08);max-height:80vh;overflow:auto;box-shadow:0 18px 40px rgba(2,8,5,0.42);}
+.mobile-section-menu__header{display:flex;align-items:center;gap:12px;padding:12px;border-bottom:1px solid rgba(0,0,0,0.06)}
+.mobile-section-menu__body{padding:12px}
+.mobile-section-block__title{font-size:0.95rem;margin:8px 0;color:#fff}
+.mobile-section-block__list{list-style:none;padding:0;margin:0 0 12px}
+.mobile-section-block__list li{padding:8px 6px;border-radius:8px}
+.mobile-section-block__list li a{display:block;color:#d1e7dd;text-decoration:none;padding:6px}
+.mobile-section-block__list li:hover{background:rgba(45,90,63,0.22)}
+@media (min-width:900px){ .mobile-section-menu{display:none!important} }
+</style>
+
+<script>
+// Mobile menu toggle behavior: clone hidden submenu contents from sidebar into mobile panel
+(function(){
+    var $ = window.jQuery;
+    function buildMobileSectionMenu(){
+        var body = $('#mobileSectionBody');
+        if(!body.length) return;
+        body.empty();
+        // clone visible hidden submenu containers
+        $('.oh-hidden-submenu').each(function(){
+            var $h = $(this);
+            var cloned = $h.clone(true);
+            var title = cloned.find('h4').text() || cloned.data('title') || '';
+            var items = cloned.find('ul').html() || '';
+            if(title || items){
+                var section = $('<div class="mobile-section-block" />');
+                section.append('<h5 class="mobile-section-block__title">' + title + '</h5>');
+                section.append('<ul class="mobile-section-block__list">' + items + '</ul>');
+                body.append(section);
+            }
+        });
+        // fallback: top-level collapsed nav
+        if(body.children().length === 0){
+            var ul = $('<ul class="mobile-section-block__list"/>');
+            $('.oh-collapsed-nav-link').each(function(){
+                var $el = $(this);
+                var label = $el.data('label') || $el.attr('title') || $el.text().trim();
+                var href = $el.attr('href') || '#';
+                ul.append($('<li/>').append($('<a/>',{ href: href, text: label })));
+            });
+            body.append(ul);
+        }
+    }
+
+    // jQuery click handler (existing)
+    $(document).on('click', '#mobileMenuToggle', function(e){
+        e.preventDefault();
+        toggleMobileSectionMenu(e);
+    });
+
+    // Global fallback for environments without jQuery or in case the delegated handler fails
+    window.toggleMobileSectionMenu = function(e){
+        try{ if(e && e.preventDefault) e.preventDefault(); }catch(err){}
+        if(window.innerWidth > 900) return; // keep original behavior on desktop
+        // If jQuery available, use the builder and show via jQuery for consistency
+        if(window.jQuery){
+            try{ buildMobileSectionMenu(); $('#mobileSectionMenu').addClass('mobile-section-menu--show').attr('aria-hidden','false'); return; }catch(err){}
+        }
+        // Vanilla JS fallback: attempt to clone hidden submenu nodes, or fallback to collapsed nav links
+        var body = document.getElementById('mobileSectionBody');
+        if(!body) return;
+        body.innerHTML = '';
+        var hidden = document.querySelectorAll('.oh-hidden-submenu');
+        if(hidden && hidden.length){
+            hidden.forEach(function(h){
+                var title = (h.querySelector('h4') && h.querySelector('h4').textContent) || h.getAttribute('data-title') || '';
+                var ul = h.querySelector('ul');
+                var items = ul ? ul.innerHTML : '';
+                if(title || items){
+                    var section = document.createElement('div'); section.className = 'mobile-section-block';
+                    var h5 = document.createElement('h5'); h5.className = 'mobile-section-block__title'; h5.textContent = title; section.appendChild(h5);
+                    var list = document.createElement('ul'); list.className = 'mobile-section-block__list'; list.innerHTML = items; section.appendChild(list);
+                    body.appendChild(section);
+                }
+            });
+        }
+        if(!body.children.length){
+            var ul = document.createElement('ul'); ul.className = 'mobile-section-block__list';
+            var topLinks = document.querySelectorAll('.oh-collapsed-nav-link');
+            topLinks.forEach(function(el){
+                var label = el.getAttribute('data-label') || el.getAttribute('title') || el.textContent.trim();
+                var href = el.getAttribute('href') || '#';
+                var li = document.createElement('li'); var a = document.createElement('a'); a.href = href; a.textContent = label; li.appendChild(a); ul.appendChild(li);
+            });
+            body.appendChild(ul);
+        }
+        var menu = document.getElementById('mobileSectionMenu');
+        if(menu) menu.classList.add('mobile-section-menu--show');
+        if(menu) menu.setAttribute('aria-hidden','false');
+    };
+
+    $(document).on('click', '#mobileSectionBackdrop, #mobileSectionClose', function(e){
+        e.preventDefault();
+        $('#mobileSectionMenu').removeClass('mobile-section-menu--show').attr('aria-hidden','true');
+    });
+
+    // Close when clicking a link inside the mobile menu
+    $(document).on('click', '#mobileSectionBody a', function(){
+        $('#mobileSectionMenu').removeClass('mobile-section-menu--show').attr('aria-hidden','true');
+    });
+})();
+</script>
+
+<script>
+// Ensure mobile menu toggle works even if other scripts didn't bind.
+(function(){
+    function ensureBinding(){
+        var toggle = document.getElementById('mobileMenuToggle') || document.querySelector('.oh-navbar__toggle-link');
+        if(!toggle) return;
+        // avoid double-binding
+        if(toggle.__mobileMenuBound) return; toggle.__mobileMenuBound = true;
+        function onClick(e){
+            try{ window.toggleMobileSectionMenu(e); }catch(err){ console && console.error && console.error('toggleMobileSectionMenu error', err); }
+        }
+        toggle.addEventListener('click', onClick, {passive:false});
+        toggle.addEventListener('touchstart', onClick, {passive:false});
+    }
+    if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ensureBinding); else ensureBinding();
+})();
+</script>

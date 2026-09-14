@@ -20,13 +20,13 @@
 {% endif %}
 <!-- end of messages -->
 
-<div class="oh-modal__dialog-header">
+<div class="oh-modal__dialog-header employee-asset-detail">
     <span class="oh-modal__dialog-title" id="assetModalLabel">{{ asset.asset_name }}</span>
     <button class="oh-modal__close" aria-label="{% trans 'Close' %}" style="top: 17px">
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
-<div class="oh-modal__dialog-body oh-modal__dialog-relative">
+<div class="oh-modal__dialog-body oh-modal__dialog-relative employee-asset-detail">
     {% if request.GET.requests_ids %}
         <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
             <button
@@ -126,7 +126,7 @@
         </div>
 
         {% if asset.asset_report.all %}
-            <div class="oh-kanban__card-footer mt-3 bg-light" style="position: relative; padding-top: 0">
+            <div class="oh-kanban__card-footer mt-3 employee-asset-detail__reports" style="position: relative; padding-top: 0">
                 <span class="mb-2" style="font-weight: 600">{% trans "Reports" %}</span>
                 <button
                     onclick="event.stopPropagation();$(this).siblings('.oh-kanban__card-content').toggleClass('oh-kanban__card-content--hide')"

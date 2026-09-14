@@ -3,79 +3,199 @@
 {% load mathfilters %}
 {% load static %}
 <div class="oh-wrapper employee-panel-dashboard">
+  <style id="employee-panel-override">
+  /* Reference premium dark-green theme for Employee Panel dashboard */
+  .employee-panel-dashboard {
+    --bg-main: #0d140e;
+    --card-bg-dark: #161f18;
+    --card-bg-light: #f4f6f0;
+    --accent-green: #2d5a3f;
+    --accent-light-green: #d1e7dd;
+    --text-main: #ffffff;
+    --text-muted-dark: #8c9e90;
+    --text-main-light: #111812;
+    --text-muted-light: #667569;
+    --border-soft: rgba(255,255,255,0.08);
+    width: 100%;
+    max-width: none;
+    min-height: calc(100vh - 96px);
+    margin: 0;
+    background: var(--bg-main);
+    color: var(--text-main);
+    padding: 18px 16px 28px;
+    border-radius: 0;
+    border: 0;
+    box-sizing: border-box;
+  }
+
+  .employee-panel-dashboard,
+  .employee-panel-dashboard .oh-dashboard,
+  .employee-panel-dashboard .oh-dashboard__left,
+  .employee-panel-dashboard .oh-dashboard__right {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    background: var(--bg-main);
+  }
+
+  .employee-panel-dashboard .ep-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:18px; }
+  .employee-panel-dashboard .ep-title { font-size:24px; font-weight:800; color:var(--text-main); margin:0; letter-spacing:-0.02em; }
+  .employee-panel-dashboard .ep-subtitle { font-size:13px; color:var(--text-muted-dark); margin-top:4px; }
+  .employee-panel-dashboard .ep-kpi-row { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:20px; }
+  .employee-panel-dashboard .ep-kpi {
+    background: var(--card-bg-dark);
+    border: 1px solid var(--border-soft);
+    border-radius: 18px;
+    display:flex;
+    align-items:center;
+    padding:16px;
+    min-width:220px;
+    box-shadow: 0 12px 30px rgba(1, 9, 5, 0.18);
+    border-left: 6px solid var(--accent-green);
+  }
+  .employee-panel-dashboard .ep-kpi__left {
+    width:64px; height:64px; display:flex; align-items:center; justify-content:center; border-radius:14px;
+    margin-right:14px; font-size:22px; background: rgba(209, 231, 221, 0.08); color:var(--accent-light-green);
+    border: 1px solid var(--border-soft);
+  }
+  .employee-panel-dashboard .ep-kpi__label { font-size:12px; color:var(--text-muted-dark); font-weight:700; letter-spacing:0.02em; }
+  .employee-panel-dashboard .ep-kpi__value { font-size:28px; font-weight:800; color:var(--text-main); margin-top:4px; }
+  .employee-panel-dashboard .ep-kpi__meta { font-size:13px; color:var(--text-muted-dark); margin-top:6px; }
+  .employee-panel-dashboard .ep-kpi--accent-success { border-left-color: var(--accent-green); }
+  .employee-panel-dashboard .ep-kpi--accent-danger { border-left-color: rgba(255,255,255,0.24); }
+  .employee-panel-dashboard .ep-kpi--accent-neutral { border-left-color: rgba(255,255,255,0.18); }
+  .employee-panel-dashboard .ep-chart-card--large, .employee-panel-dashboard .ep-chart-card {
+    background: var(--card-bg-dark);
+    border: 1px solid var(--border-soft);
+    border-radius: 18px;
+    box-shadow: 0 14px 36px rgba(1, 9, 5, 0.14);
+  }
+  .employee-panel-dashboard .ep-chart-card--large { padding:18px; }
+  .employee-panel-dashboard .ep-chart-card__body--large { min-height:360px; }
+  .employee-panel-dashboard .oh-card-dashboard { border-radius:18px; background: transparent; border: 0; }
+  .employee-panel-dashboard .oh-card-dashboard__header { border-bottom: 1px solid var(--border-soft); }
+  .employee-panel-dashboard .oh-card-dashboard__title,
+  .employee-panel-dashboard .ep-chart-card__meta { color:var(--text-main); }
+  .employee-panel-dashboard .employee-birthday-card {
+    background: var(--card-bg-dark);
+    border: 1px solid var(--border-soft);
+    border-radius: 16px;
+    padding:12px;
+    box-shadow: 0 8px 18px rgba(1, 9, 5, 0.12);
+  }
+  .employee-panel-dashboard .employee-birthday-card__label,
+  .employee-panel-dashboard .employee-birthday-card__date { color:var(--text-muted-dark); }
+  .employee-panel-dashboard .employee-birthday-card__name { color:var(--text-main); }
+  @media (max-width: 767.98px) {
+    .employee-panel-dashboard .ep-kpi-row { flex-direction:column; }
+    .employee-panel-dashboard .ep-kpi { width:100%; }
+    .employee-panel-dashboard .ep-chart-card__body--large { min-height:240px; }
+  }
+
+  /* Employee-scoped overrides to fix breadcrumb (EMPLY) visibility and ensure hero/profile contrast */
+  .oh-wrapper-main.employee-bottom-nav-active .oh-navbar__breadcrumb-link,
+  .oh-wrapper-main.employee-bottom-nav-active .oh-navbar__breadcrumb-link.active {
+    color: var(--text-main) !important;
+    opacity: 1 !important;
+    text-shadow: none !important;
+  }
+
+  /* Ensure any breadcrumb icon/text uses readable weight/size in employee shell */
+  .oh-wrapper-main.employee-bottom-nav-active .oh-navbar__breadcrumb {
+    color: var(--text-main) !important;
+  }
+
+  /* Additional safety: hero/profile block within employee panel should have clear contrast */
+  .employee-panel-dashboard .employee-dashboard-hero__title { color: var(--text-main) !important; }
+  .employee-panel-dashboard .employee-dashboard-hero__meta { color: var(--text-muted-dark) !important; }
+  .employee-panel-dashboard .employee-dashboard-hero__greeting-text { color: var(--text-main) !important; }
+  .employee-panel-dashboard .employee-dashboard-hero__greeting-sub { color: var(--text-muted-dark) !important; }
+
+  </style>
   <div class="oh-dashboard row">
     <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
 
-      <!-- Metrics / KPIs -->
-      <div class="ep-metrics d-grid">
-        <div class="ep-metric-card ep-metric-card--success">
-          <div class="ep-metric-card__top">
-            <div class="ep-metric-card__icon"><ion-icon name="accessibility"></ion-icon></div>
-            <div class="ep-metric-card__title">{% trans "Active Employees" %}</div>
-          </div>
-          <div class="ep-metric-card__main">
-            <div class="ep-metric-card__count">{{active_employees}}</div>
-            <div class="ep-metric-card__sub">{{active_ratio}}% {% trans "Active" %}</div>
+      <!-- Metrics / KPIs - new professional layout -->
+      <div class="ep-header d-flex align-items-center justify-content-between mb-3">
+        <div>
+          <h2 class="ep-title">{% trans "Employee Dashboard" %}</h2>
+          <div class="ep-subtitle">{% trans "Overview & key metrics" %}</div>
+        </div>
+        <div class="ep-actions d-flex align-items-center">
+          <!-- keep action area empty to preserve existing buttons elsewhere -->
+        </div>
+      </div>
+
+      <div class="ep-kpi-row d-flex flex-wrap" role="region" aria-label="Employee KPIs">
+        <div class="ep-kpi ep-kpi--accent-success">
+          <div class="ep-kpi__left"><ion-icon name="accessibility"></ion-icon></div>
+          <div class="ep-kpi__body">
+            <div class="ep-kpi__label">{% trans "Active Employees" %}</div>
+            <div class="ep-kpi__value">{{active_employees}}</div>
+            <div class="ep-kpi__meta">{{active_ratio}}% {% trans "Active" %}</div>
           </div>
         </div>
 
-        <div class="ep-metric-card ep-metric-card--neutral">
-          <div class="ep-metric-card__top">
-            <div class="ep-metric-card__icon"><ion-icon name="people"></ion-icon></div>
-            <div class="ep-metric-card__title">{% trans "Total Employees" %}</div>
-          </div>
-          <div class="ep-metric-card__main">
-            <div class="ep-metric-card__count">{{total_employees}}</div>
-            <div class="ep-metric-card__sub">100% {% trans "of Records" %}</div>
+        <div class="ep-kpi ep-kpi--accent-neutral">
+          <div class="ep-kpi__left"><ion-icon name="people"></ion-icon></div>
+          <div class="ep-kpi__body">
+            <div class="ep-kpi__label">{% trans "Total Employees" %}</div>
+            <div class="ep-kpi__value">{{total_employees}}</div>
+            <div class="ep-kpi__meta">100% {% trans "of Records" %}</div>
           </div>
         </div>
 
-        <div class="ep-metric-card ep-metric-card--danger">
-          <div class="ep-metric-card__top">
-            <div class="ep-metric-card__icon"><ion-icon name="person-remove"></ion-icon></div>
-            <div class="ep-metric-card__title">{% trans "Inactive Employees" %}</div>
-          </div>
-          <div class="ep-metric-card__main">
-            <div class="ep-metric-card__count">{{inactive_employees}}</div>
-            <div class="ep-metric-card__sub">{{inactive_ratio}}% {% trans "Inactive" %}</div>
+        <div class="ep-kpi ep-kpi--accent-danger">
+          <div class="ep-kpi__left"><ion-icon name="person-remove"></ion-icon></div>
+          <div class="ep-kpi__body">
+            <div class="ep-kpi__label">{% trans "Inactive Employees" %}</div>
+            <div class="ep-kpi__value">{{inactive_employees}}</div>
+            <div class="ep-kpi__meta">{{inactive_ratio}}% {% trans "Inactive" %}</div>
           </div>
         </div>
       </div>
 
       <!-- Charts area (preserve ids and canvases) -->
       <div class="oh-dashboard__movable-cards row mt-4">
-        <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
-          <div class="oh-card-dashboard oh-card-dashboard--no-scale ep-chart-card">
-            <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-              <span class="oh-card-dashboard__title">{% trans "Employee Chart" %}</span>
+
+        <!-- Primary KPI chart: full width for better visual hierarchy -->
+        <div class="col-12 oh-card-dashboard--moveable">
+          <div class="oh-card-dashboard oh-card-dashboard--no-scale ep-chart-card ep-chart-card--large">
+            <div class="oh-card-dashboard__header oh-card-dashboard__header--divider ep-chart-card__header-large">
+              <div class="ep-chart-card__title-wrap">
+                <span class="oh-card-dashboard__title">{% trans "Employee Chart" %}</span>
+                <span class="ep-chart-card__meta">{% trans "Trend over time" %}</span>
+              </div>
             </div>
-            <div class="oh-card-dashboard__body ep-chart-card__body">
+            <div class="oh-card-dashboard__body ep-chart-card__body ep-chart-card__body--large">
               <canvas id="totalEmployees"></canvas>
             </div>
           </div>
         </div>
 
-        <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
+        <!-- Secondary charts placed side-by-side -->
+        <div class="col-12 col-md-6 oh-card-dashboard--moveable mt-3 mt-md-0">
           <div class="oh-card-dashboard oh-card-dashboard--no-scale ep-chart-card">
             <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
               <span class="oh-card-dashboard__title">{% trans "Gender Chart" %}</span>
             </div>
-            <div class="oh-card-dashboard__body ep-chart-card__body">
+            <div class="oh-card-dashboard__body ep-chart-card__body ep-chart-card__body--small">
               <canvas id="genderChart"></canvas>
             </div>
           </div>
         </div>
 
-        <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
+        <div class="col-12 col-md-6 oh-card-dashboard--moveable mt-3 mt-md-0">
           <div class="oh-card-dashboard oh-card-dashboard--no-scale ep-chart-card">
             <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
               <span class="oh-card-dashboard__title">{% trans "Department Chart" %}</span>
             </div>
-            <div class="oh-card-dashboard__body ep-chart-card__body">
+            <div class="oh-card-dashboard__body ep-chart-card__body ep-chart-card__body--small">
               <canvas id="departmentChart"></canvas>
             </div>
           </div>
         </div>
+
       </div>
 
     </div>
