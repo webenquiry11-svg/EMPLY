@@ -109,6 +109,11 @@
             /* header */
             .card-title{font-size:28px;margin:0 0 6px;color:var(--deep);font-weight:800}
             .card-sub{font-size:14px;color:var(--muted);margin-bottom:18px}
+            .login-mode-toggle{display:flex;align-items:center;gap:3px;width:100%;padding:3px;margin:0 0 20px;background:#f1f8f3;border:1px solid var(--soft-border);border-radius:12px}
+            .login-mode-toggle button{flex:1;min-height:36px;padding:7px 12px;border:0;border-radius:9px;background:transparent;color:var(--muted);font:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:background-color .18s ease,color .18s ease,box-shadow .18s ease}
+            .login-mode-toggle button:hover{color:var(--deep)}
+            .login-mode-toggle button[aria-pressed="true"]{background:var(--panel-bg);color:var(--deep);box-shadow:0 3px 10px rgba(8,50,34,0.08)}
+            .login-mode-toggle button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 
             /* inputs */
             .oh-input-group{position:relative;margin-bottom:18px}
@@ -271,6 +276,11 @@
                                     <h2 class="card-title">Welcome Back!</h2>
                                     <p class="card-sub">Please login to access the dashboard.</p>
 
+                                    <div class="login-mode-toggle" role="group" aria-label="Login mode">
+                                        <button type="button" data-login-mode="emply" aria-pressed="true">EMPLY</button>
+                                        <button type="button" data-login-mode="payroll" aria-pressed="false">Payroll</button>
+                                    </div>
+
                                     <form method="post" class="oh-form-group" novalidate>
                                         {% csrf_token %}
 
@@ -336,6 +346,26 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
         <script>
             $(document).ready(function () {
+                const modeToggle = document.querySelector(".login-mode-toggle");
+                const cardTitle = document.querySelector(".card-title");
+                const cardSub = document.querySelector(".card-sub");
+
+                if (modeToggle && cardTitle && cardSub) {
+                    modeToggle.addEventListener("click", function (event) {
+                        const button = event.target.closest("[data-login-mode]");
+                        if (!button) return;
+
+                        const payrollSelected = button.dataset.loginMode === "payroll";
+                        modeToggle.querySelectorAll("[data-login-mode]").forEach(function (modeButton) {
+                            modeButton.setAttribute("aria-pressed", String(modeButton === button));
+                        });
+                        cardTitle.textContent = payrollSelected ? "Payroll Sign-in" : "Welcome Back!";
+                        cardSub.textContent = payrollSelected
+                            ? "Use your existing credentials to continue."
+                            : "Please login to access the dashboard.";
+                    });
+                }
+
                 if ($(".oh-alert--warning").length > 0) {
                     Swal.fire({
                         title: 'Access Denied !',
