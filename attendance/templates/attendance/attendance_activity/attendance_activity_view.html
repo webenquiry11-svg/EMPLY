@@ -1,6 +1,99 @@
 {% extends 'index.html' %}{% block content %} {% load i18n %}{% load static %}
 {% load basefilters %}
-<div>
+<style>
+    .attendance-activity-page {
+        --emp-bg: #0d140e;
+        --emp-surface: #161f18;
+        --emp-surface-elevated: rgba(22, 31, 24, 0.9);
+        --emp-border: rgba(255, 255, 255, 0.08);
+        --emp-text: #ffffff;
+        --emp-muted: #8c9e90;
+        --emp-green: #2d5a3f;
+        --emp-green-soft: rgba(45, 90, 63, 0.2);
+        --emp-light-green: #d1e7dd;
+    }
+
+    .attendance-activity-page .oh-wrapper,
+    .attendance-activity-page #activity-table,
+    .attendance-activity-page .oh-sticky-table,
+    .attendance-activity-page .oh-sticky-table__table,
+    .attendance-activity-page .oh-sticky-table__thead,
+    .attendance-activity-page .oh-sticky-table__tbody,
+    .attendance-activity-page .oh-sticky-table__tr,
+    .attendance-activity-page .oh-checkpoint-badge,
+    .attendance-activity-page .oh-dropdown__menu,
+    .attendance-activity-page .oh-sticky-dropdown_btn {
+        background: var(--emp-surface);
+        color: var(--emp-text);
+        border-color: var(--emp-border);
+    }
+
+    .attendance-activity-page .oh-sticky-table__th,
+    .attendance-activity-page .oh-sticky-table__td,
+    .attendance-activity-page .oh-sticky-table__tr {
+        border-color: var(--emp-border);
+        color: var(--emp-text);
+        background: rgba(22, 31, 24, 0.7);
+    }
+
+    .attendance-activity-page .oh-sticky-table__th {
+        background: #1d2a22;
+        color: var(--emp-light-green);
+        font-weight: 700;
+    }
+
+    .attendance-activity-page .oh-sticky-table__tr:hover {
+        background: rgba(45, 90, 63, 0.14);
+    }
+
+    .attendance-activity-page .oh-checkpoint-badge {
+        background: rgba(45, 90, 63, 0.18);
+        border: 1px solid var(--emp-border);
+        color: var(--emp-light-green);
+        border-radius: 999px;
+        padding: 0.4rem 0.75rem;
+    }
+
+    .attendance-activity-page .oh-dropdown__menu,
+    .attendance-activity-page .oh-sticky-table_dropdown {
+        background: var(--emp-surface-elevated);
+        border: 1px solid var(--emp-border);
+        color: var(--emp-text);
+        box-shadow: 0 20px 45px rgba(1, 9, 5, 0.34);
+    }
+
+    .attendance-activity-page .oh-sticky-dropdown_btn,
+    .attendance-activity-page .oh-btn,
+    .attendance-activity-page input,
+    .attendance-activity-page select,
+    .attendance-activity-page textarea {
+        background: rgba(22, 31, 24, 0.85);
+        color: var(--emp-text);
+        border: 1px solid var(--emp-border);
+        border-radius: 10px;
+    }
+
+    .attendance-activity-page a,
+    .attendance-activity-page .oh-sticky-table__th,
+    .attendance-activity-page .oh-sticky-table__td {
+        color: var(--emp-text);
+    }
+
+    .attendance-activity-page .oh-dropdown__link,
+    .attendance-activity-page .oh-dropdown__items li {
+        color: var(--emp-text);
+    }
+
+    .attendance-activity-page .oh-dropdown__menu a:hover,
+    .attendance-activity-page .oh-dropdown__menu button:hover {
+        background: var(--emp-green-soft);
+    }
+
+    .attendance-activity-page .oh-sticky-table__tbody .oh-sticky-table__tr:nth-child(even) {
+        background: rgba(255, 255, 255, 0.02);
+    }
+</style>
+<div class="attendance-activity-page">
     {% include 'attendance/attendance_activity/nav.html' %}
     <div class="oh-checkpoint-badge mb-2" id="selectedActivity" data-ids="[]" data-clicked="" style="display: none">
         {% trans "Selected Attendance" %}

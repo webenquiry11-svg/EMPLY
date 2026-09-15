@@ -175,14 +175,15 @@ def clock_in(request):
             if timezone.is_naive(datetime_now):
                 datetime_now = timezone.make_aware(datetime_now)
         if employee and work_info is not None:
-            if (
-                employee.attendance_source == "biometric_machine"
-                and not request.__dict__.get("datetime")
-            ):
+            is_biometric_request = bool(request.__dict__.get("datetime"))
+            expected_source = (
+                "biometric_machine" if is_biometric_request else "emply_portal"
+            )
+            if employee.attendance_source != expected_source:
                 messages.error(
                     request,
                     _(
-                        "This employee is configured for biometric attendance and cannot use portal check-in/check-out."
+                        "This attendance source is not enabled for this employee."
                     ),
                 )
                 return HorillaRedirect(request)
@@ -249,9 +250,7 @@ def clock_in(request):
                         at_work_seconds = {at_work_seconds_forecasted};
                     </script>
                     """.format(
-                    at_work_seconds_forecasted=employee.get_forecasted_at_work()[
-                        "forecasted_at_work_seconds"
-                    ]
+                    at_work_seconds_forecasted=employee.get_current_attendance_session_seconds()
                 )
                 hidden_label = """
                 style="display:none"
@@ -517,14 +516,15 @@ def clock_out(request):
                 attendance.attendance_day = EmployeeShiftDay.objects.get(day=day_name)
                 attendance.save(update_fields=["attendance_day"])
             day = attendance.attendance_day
-        if (
-            employee.attendance_source == "biometric_machine"
-            and not request.__dict__.get("datetime")
-        ):
+        is_biometric_request = bool(request.__dict__.get("datetime"))
+        expected_source = (
+            "biometric_machine" if is_biometric_request else "emply_portal"
+        )
+        if employee.attendance_source != expected_source:
             messages.error(
                 request,
                 _(
-                    "This employee is configured for biometric attendance and cannot use portal check-in/check-out."
+                    "This attendance source is not enabled for this employee."
                 ),
             )
             return HorillaRedirect(request)
@@ -565,50 +565,18 @@ def clock_out(request):
                         shift=shift,
                     )
 
-        script = ""
-        hidden_label = ""
-        time_runner_enabled = timerunner_enabled(request)["enabled_timerunner"]
-        mouse_in = ""
-        mouse_out = ""
-        if time_runner_enabled:
-            script = """
-                <script>
-                $(document).ready(function () {{
-                    $('.at-work-seconds').html(secondsToDuration({at_work_seconds_forecasted}))
-                }});
-                run = 0;
-                at_work_seconds = {at_work_seconds_forecasted};
-                </script>
-            """.format(
-                at_work_seconds_forecasted=employee.get_forecasted_at_work()[
-                    "forecasted_at_work_seconds"
-                ],
-            )
-            hidden_label = """
-            style="display:none"
-            """
-            mouse_in = """ onmouseenter="$(this).find('div.at-work-seconds').hide();$(this).find('span').show();" """
-            mouse_out = """onmouseleave="$(this).find('div.at-work-seconds').show();$(this).find('span').hide();" """
         return HttpResponse(
             """
                 <button class="oh-btn oh-btn--success-outline mr-2"
-                {mouse_in}
-                {mouse_out}
                 hx-get="/attendance/clock-in"
                 hx-target='#attendance-activity-container'
                 hx-swap='innerHTML'>
                 <ion-icon class="oh-navbar__clock-icon mr-2 text-success"
                 name="enter-outline"></ion-icon>
-                <span class="hr-check-in-out-text" {hidden_label} >{check_in}</span>
-                <div class="at-work-seconds"></div>
+                <span class="hr-check-in-out-text">{check_in}</span>
                 </button>
-                {script}
                 """.format(
                 check_in=_("Check-In"),
-                script=script,
-                hidden_label=hidden_label,
-                mouse_in=mouse_in,
-                mouse_out=mouse_out,
             )
         )
     else:

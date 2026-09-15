@@ -80,7 +80,185 @@
         <div class="oh-modal__dialog" id="assignedLeavesExportModalTarget"></div>
     </div>
 
-    <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+    <style>
+        .assigned-leave-page {
+            --emp-bg: #0d140e;
+            --emp-surface: #161f18;
+            --emp-surface-elevated: rgba(22, 31, 24, 0.9);
+            --emp-border: rgba(255, 255, 255, 0.08);
+            --emp-text: #ffffff;
+            --emp-muted: #8c9e90;
+            --emp-green: #2d5a3f;
+            --emp-green-soft: rgba(45, 90, 63, 0.18);
+            --emp-light-green: #d1e7dd;
+        }
+
+        .assigned-leave-page,
+        .assigned-leave-page .oh-main__topbar,
+        .assigned-leave-page .oh-main__titlebar,
+        .assigned-leave-page .oh-main__titlebar-button-container,
+        .assigned-leave-page .oh-dropdown__menu,
+        .assigned-leave-page .oh-input-group,
+        .assigned-leave-page .oh-input,
+        .assigned-leave-page .oh-select,
+        .assigned-leave-page .oh-btn,
+        .assigned-leave-page .oh-table_sticky--wrapper,
+        .assigned-leave-page .oh-sticky-table,
+        .assigned-leave-page .oh-sticky-table__table,
+        .assigned-leave-page .oh-sticky-table__thead,
+        .assigned-leave-page .oh-sticky-table__tbody,
+        .assigned-leave-page .oh-sticky-table__tr,
+        .assigned-leave-page .oh-sticky-table__th,
+        .assigned-leave-page .oh-sticky-table__td,
+        .assigned-leave-page .oh-wrapper,
+        .assigned-leave-page #assignedLeaves,
+        .assigned-leave-page .oh-pagination,
+        .assigned-leave-page .oh-pagination__input,
+        .assigned-leave-page .oh-pagination__link,
+        .assigned-leave-page .oh-pagination__item,
+        .assigned-leave-page .oh-pagination__nav,
+        body .assigned-leave-page,
+        body #assignedLeaves,
+        body #assignedLeaves .oh-table_sticky--wrapper,
+        body #assignedLeaves .oh-sticky-table,
+        body #assignedLeaves .oh-sticky-table__thead,
+        body #assignedLeaves .oh-sticky-table__tbody,
+        body #assignedLeaves .oh-sticky-table__tr,
+        body #assignedLeaves .oh-sticky-table__th,
+        body #assignedLeaves .oh-sticky-table__td,
+        body #assignedLeaves .oh-pagination {
+            background: var(--emp-surface) !important;
+            background-color: var(--emp-surface) !important;
+            color: var(--emp-text) !important;
+            border-color: var(--emp-border) !important;
+        }
+
+        .assigned-leave-page .oh-main__titlebar-title,
+        .assigned-leave-page .oh-main__titlebar-title h1,
+        .assigned-leave-page .oh-main__titlebar-search-toggle,
+        .assigned-leave-page .oh-dropdown__link,
+        .assigned-leave-page .oh-input,
+        .assigned-leave-page .oh-select,
+        .assigned-leave-page .oh-btn,
+        .assigned-leave-page .oh-sticky-table__th,
+        .assigned-leave-page .oh-sticky-table__td,
+        .assigned-leave-page .oh-empty__title,
+        .assigned-leave-page .oh-empty__subtitle,
+        .assigned-leave-page .oh-profile__name,
+        .assigned-leave-page .oh-pagination__label,
+        .assigned-leave-page .oh-pagination__page,
+        .assigned-leave-page .oh-pagination__input,
+        .assigned-leave-page .oh-pagination__link {
+            color: var(--emp-text) !important;
+        }
+
+        .assigned-leave-page .oh-sticky-table__th,
+        body .assigned-leave-page .oh-sticky-table__thead .oh-sticky-table__th,
+        body .assigned-leave-page .oh-sticky-table__th:first-child {
+            background: #1d2a22 !important;
+            background-color: #1d2a22 !important;
+            color: var(--emp-light-green) !important;
+            font-weight: 700;
+        }
+
+        .assigned-leave-page .oh-sticky-table__td,
+        body .assigned-leave-page .oh-sticky-table__td,
+        body .assigned-leave-page .oh-sticky-table__sd {
+            background: rgba(22, 31, 24, 0.7) !important;
+            background-color: rgba(22, 31, 24, 0.7) !important;
+            border-top: 1px solid var(--emp-border) !important;
+            border-left: 1px solid var(--emp-border) !important;
+            border-right: 1px solid var(--emp-border) !important;
+            color: var(--emp-text) !important;
+        }
+
+        .assigned-leave-page .oh-sticky-table__tr:hover,
+        body .assigned-leave-page .oh-sticky-table__tr:hover {
+            background: rgba(45, 90, 63, 0.12) !important;
+        }
+
+        .assigned-leave-page .oh-sticky-table__tbody .oh-sticky-table__tr:nth-child(even),
+        body .assigned-leave-page .oh-sticky-table__tbody .oh-sticky-table__tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02) !important;
+        }
+
+        body .assigned-leave-page .oh-sticky-table__thead,
+        body .assigned-leave-page .oh-sticky-table__tbody,
+        body .assigned-leave-page .oh-sticky-table__table,
+        body .assigned-leave-page .oh-sticky-table {
+            background: var(--emp-surface) !important;
+            background-color: var(--emp-surface) !important;
+        }
+
+        .assigned-leave-page .oh-input,
+        .assigned-leave-page .oh-select,
+        .assigned-leave-page .oh-btn,
+        .assigned-leave-page .oh-dropdown__menu,
+        .assigned-leave-page .oh-pagination__input,
+        .assigned-leave-page .oh-dropdown__item,
+        .assigned-leave-page .oh-sticky-dropdown_btn {
+            border: 1px solid var(--emp-border) !important;
+            border-radius: 12px !important;
+            background: rgba(22, 31, 24, 0.85) !important;
+        }
+
+        .assigned-leave-page .oh-btn:hover,
+        .assigned-leave-page .oh-dropdown__menu a:hover,
+        .assigned-leave-page .oh-pagination__link:hover,
+        .assigned-leave-page .oh-dropdown__item:hover {
+            background: rgba(45, 90, 63, 0.18) !important;
+        }
+
+        .assigned-leave-page .oh-checkpoint-badge {
+            background: rgba(45, 90, 63, 0.18) !important;
+            background-color: rgba(45, 90, 63, 0.18) !important;
+            color: var(--emp-light-green) !important;
+            border: 1px solid var(--emp-border) !important;
+            border-radius: 999px !important;
+            padding: 0.4rem 0.85rem !important;
+        }
+
+        .assigned-leave-page .oh-table_sticky--wrapper,
+        body .assigned-leave-page .oh-table_sticky--wrapper {
+            background: var(--emp-surface) !important;
+            background-color: var(--emp-surface) !important;
+            border-radius: 14px !important;
+            overflow: hidden;
+        }
+
+        .assigned-leave-page .oh-sticky-table__thead .oh-sticky-table__th:first-child,
+        .assigned-leave-page .oh-sticky-table__td:first-child {
+            background: rgba(22, 31, 24, 0.7) !important;
+        }
+
+        .assigned-leave-page .oh-btn--light-bkg,
+        .assigned-leave-page .oh-btn--danger-outline,
+        .assigned-leave-page .oh-btn-group .oh-btn {
+            background: rgba(22, 31, 24, 0.85) !important;
+            color: var(--emp-text) !important;
+            border: 1px solid var(--emp-border) !important;
+        }
+
+        .assigned-leave-page .oh-accordion-meta,
+        .assigned-leave-page .oh-accordion-meta__item,
+        .assigned-leave-page .oh-accordion-meta__header,
+        .assigned-leave-page .oh-accordion-meta__body {
+            background: var(--emp-surface) !important;
+            background-color: var(--emp-surface) !important;
+            color: var(--emp-text) !important;
+            border-color: var(--emp-border) !important;
+        }
+
+        .assigned-leave-page .oh-accordion-meta__header:hover {
+            background: var(--emp-green-soft) !important;
+        }
+
+        .assigned-leave-page .oh-accordion-meta__title,
+        .assigned-leave-page .oh-accordion-meta__header ion-icon {
+            color: var(--emp-light-green) !important;
+        }
+    </style>
+    <section class="oh-wrapper oh-main__topbar assigned-leave-page" x-data="{searchShow: false}">
         <div class="oh-main__titlebar oh-main__titlebar--left">
             <h1 class="oh-main__titlebar-title fw-bold">
                 {% trans "All Assigned Leaves" %}
@@ -276,7 +454,7 @@
         </div>
     {% endif %}
 
-    <div class="oh-wrapper" id="assignedLeaves">
+    <div class="oh-wrapper assigned-leave-page" id="assignedLeaves">
         {% if available_leaves %}
             {% if not request.GET.field %}
                 {% include 'leave/leave_assign/assigned_leave.html' %}

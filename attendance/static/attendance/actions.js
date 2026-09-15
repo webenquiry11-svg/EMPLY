@@ -44,6 +44,11 @@ window.toggleHighlight = window.toggleHighlight || function toggleHighlight(ids)
         }
     });
 };
+window.highlightRow = window.highlightRow || function highlightRow(checkbox) {
+    var $checkbox = checkbox && checkbox.jquery ? checkbox : $(checkbox);
+    var $row = $checkbox.closest(".oh-sticky-table__tr, tr");
+    $row.toggleClass("highlight-selected", $checkbox.is(":checked"));
+};
 var noRowValidateMessages = {
     ar: "لم يتم تحديد أي صفوف من فحص الحضور.",
     de: "Im Feld „Anwesenheit validieren“ sind keine Zeilen ausgewählt.",

@@ -3,6 +3,7 @@
 import threading
 
 from django.apps import apps
+from django.db import transaction
 from django.db.models.signals import post_migrate, post_save, pre_delete, pre_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
@@ -33,44 +34,38 @@ if apps.is_installed("attendance"):
                 return
             for date in period_dates:
                 try:
-                    work_entry = (
-                        WorkRecords.objects.filter(
-                            date=date,
-                            employee_id=instance.employee_id,
-                        ).first()
-                        if WorkRecords.objects.filter(
-                            date=date,
-                            employee_id=instance.employee_id,
-                        ).exists()
-                        else WorkRecords()
-                    )
-                    work_entry.employee_id = instance.employee_id
-                    work_entry.is_leave_record = True
-                    work_entry.leave_request_id = instance
-                    work_entry.day_percentage = (
-                        0.50
-                        if instance.start_date == date
-                        and instance.start_date_breakdown == "first_half"
-                        or instance.end_date == date
-                        and instance.end_date_breakdown == "second_half"
-                        else 0.00
-                    )
-                    status = (
-                        "CONF"
-                        if instance.start_date == date
-                        and instance.start_date_breakdown == "first_half"
-                        or instance.end_date == date
-                        and instance.end_date_breakdown == "second_half"
-                        else "ABS"
-                    )
-                    work_entry.work_record_type = status
-                    work_entry.date = date
-                    work_entry.message = (
-                        "Leave"
-                        if status == "ABS"
-                        else _("Half day Attendance need to validate")
-                    )
-                    work_entry.save()
+                    with transaction.atomic():
+                        work_entry, _ = (
+                            WorkRecords.objects.select_for_update().get_or_create(
+                                date=date,
+                                employee_id=instance.employee_id,
+                            )
+                        )
+                        work_entry.is_leave_record = True
+                        work_entry.leave_request_id = instance
+                        work_entry.day_percentage = (
+                            0.50
+                            if instance.start_date == date
+                            and instance.start_date_breakdown == "first_half"
+                            or instance.end_date == date
+                            and instance.end_date_breakdown == "second_half"
+                            else 0.00
+                        )
+                        status = (
+                            "CONF"
+                            if instance.start_date == date
+                            and instance.start_date_breakdown == "first_half"
+                            or instance.end_date == date
+                            and instance.end_date_breakdown == "second_half"
+                            else "ABS"
+                        )
+                        work_entry.work_record_type = status
+                        work_entry.message = (
+                            "Leave"
+                            if status == "ABS"
+                            else _("Half day Attendance need to validate")
+                        )
+                        work_entry.save()
 
                 except Exception as e:
                     print(e)

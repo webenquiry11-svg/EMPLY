@@ -135,8 +135,9 @@
             .oh-link{color:var(--accent);font-weight:600;text-decoration:none}
             .oh-link:hover{opacity:0.9}
 
-            .sign-btn{background:var(--deep);color:var(--panel-bg);border-radius:14px;padding:14px 18px;border:none;font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;gap:10px;height:56px;width:100%;box-shadow:0 6px 18px rgba(8,50,34,0.08);transition:transform .12s ease,filter .12s ease}
-            .sign-btn:hover{filter:brightness(1.04);transform:translateY(-2px)}
+            .sign-btn{background:var(--deep);color:#ffffff;border-radius:14px;padding:14px 18px;border:none;font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;gap:10px;height:56px;width:100%;box-shadow:0 6px 18px rgba(8,50,34,0.08);transition:background-color .12s ease,color .12s ease,transform .12s ease,filter .12s ease}
+            .sign-btn:hover,.sign-btn:focus,.sign-btn:focus-visible{background:var(--deep);color:#ffffff;filter:brightness(1.04);transform:translateY(-2px);outline:none}
+            .sign-btn ion-icon{color:currentColor}
 
             .card-footer{font-size:13px;color:var(--muted);text-align:center;margin-top:auto;padding-top:20px}
 

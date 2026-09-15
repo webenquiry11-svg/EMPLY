@@ -1,6 +1,7 @@
 {% load static %}
 {% load i18n %}
 {% load horillafilters %}
+{% load attendancefilters %}
 <!DOCTYPE html>
 <html>
 {% get_current_language_bidi as LANGUAGE_BIDI %}
@@ -12,10 +13,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <script>
-        var at_work_seconds = {{ request.user.employee_get.get_forecasted_at_work.forecasted_at_work_seconds }}
+        var at_work_seconds = {{ request.user.employee_get.get_current_attendance_session_seconds }}
         var run = 0
     </script>
-    <title class="time-runner stop-runner">{{white_label_company_name}}</title>
+    <title class="{% if request.user|is_clocked_in %}time-runner stop-runner{% endif %}">{{white_label_company_name}}</title>
     <link rel="stylesheet" href="{% static 'build/css/driver.min.css' %}" />
     <meta name="theme-color" content="#043927">
     <link rel="manifest" href="{% static 'build/manifest.json' %}">
@@ -406,7 +407,7 @@
                         <div id="globalSearchResults" class="oh-global-search__results" role="listbox" aria-live="polite" hidden></div>
                     </div>
                     <div class="oh-navbar__systray">
-                        {% if "attendance"|app_installed %}
+                        {% if "attendance"|app_installed and request.user.employee_get %}
                             <!-- Start of check in/out button in nav bar -->
                             <div id="attendance-activity-container">
                                 {% include "attendance/components/in_out_component.html" %}
@@ -2059,7 +2060,7 @@
             window.history.replaceState({}, document.title, urlWithoutQuery);
         }
     </script>
-    {% if enabled_timerunner %}
+    {% if enabled_timerunner and request.user|is_clocked_in %}
         <script>
             // time-runner
             function secondsToDuration(seconds) {

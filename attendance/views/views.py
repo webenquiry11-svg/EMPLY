@@ -32,7 +32,7 @@ import pandas as pd
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.core.validators import validate_ipv46_address
-from django.db import transaction
+from django.db import close_old_connections, transaction
 from django.db.models import ProtectedError
 from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
@@ -126,6 +126,18 @@ from horilla.decorators import (
     permission_required,
 )
 from notifications.signals import notify
+
+
+@login_required
+def attendance_activity_component(request):
+    """Return the current server-backed check-in/check-out control for employee users only."""
+    close_old_connections()
+    if not getattr(request.user, "employee_get", None):
+        return HttpResponse("")
+    try:
+        return render(request, "attendance/components/in_out_component.html")
+    finally:
+        close_old_connections()
 
 
 def attendance_validate(attendance):
@@ -1051,6 +1063,19 @@ def attendance_activity_view(request):
     annotated_activities_list = []
     for activity in page_obj.object_list:
         activity.attendance = attendance_map.get((activity.employee_id_id, activity.attendance_date))
+        if activity.attendance:
+            activity.worked_hours = activity.attendance.attendance_worked_hour
+            activity.overtime = activity.attendance.attendance_overtime
+            late_come_types = {
+                item.type for item in activity.attendance.late_come_early_out.all()
+            }
+            activity.late_coming = "Yes" if "late_come" in late_come_types else "No"
+            activity.early_out = "Yes" if "early_out" in late_come_types else "No"
+        else:
+            activity.worked_hours = "-"
+            activity.overtime = "-"
+            activity.late_coming = "No"
+            activity.early_out = "No"
         annotated_activities_list.append(activity)
         
     # Replace the paginator's object list with the annotated one
@@ -1385,12 +1410,16 @@ def attendance_activity_export(request):
     field_mapping = {key: label for key, label in ATTENDANCE_ACTIVITY_EXPORT_COLUMNS}
     export_keys = [key for key in selected_fields if key in field_mapping]
 
+    selected_activity_pairs = None
     if activity_ids:
         activities = AttendanceActivity.objects.filter(id__in=activity_ids)
         employee_ids = activities.values_list('employee_id', flat=True).distinct()
         employees = Employee.objects.filter(id__in=employee_ids).select_related('employee_work_info')
         
         dates = activities.values_list('attendance_date', flat=True).distinct()
+        selected_activity_pairs = set(
+            activities.values_list("employee_id", "attendance_date")
+        )
         if dates:
             start_date = min(dates)
             end_date = max(dates)
@@ -1485,6 +1514,11 @@ def attendance_activity_export(request):
     for employee in employees:
         work_info = employee.employee_work_info
         for single_date in date_range:
+            if selected_activity_pairs is not None and (
+                employee.id,
+                single_date,
+            ) not in selected_activity_pairs:
+                continue
             row_data = {key: "" for key in export_keys} # Initialize row with selected keys
             
             # Populate data based on export_keys

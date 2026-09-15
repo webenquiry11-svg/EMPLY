@@ -276,6 +276,33 @@ class BiometricEmployees(models.Model):
         verbose_name_plural = _("Employees in Biometric Device")
 
 
+class BiometricPunchEvent(models.Model):
+    """Idempotency record for a raw biometric punch."""
+
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
+    device = models.ForeignKey(
+        BiometricDevices, on_delete=models.CASCADE, related_name="punch_events"
+    )
+    employee = models.ForeignKey(
+        Employee,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="biometric_punch_events",
+    )
+    event_key = models.CharField(max_length=255, unique=True)
+    user_id = models.CharField(max_length=100)
+    timestamp = models.DateTimeField()
+    punch = models.IntegerField(null=True)
+    processed = models.BooleanField(default=False)
+    processed_at = models.DateTimeField(null=True, blank=True)
+    error = models.TextField(default="", blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["timestamp", "created_at"]
+
+
 class COSECAttendanceArguments(models.Model):
     """
     Model: COSECAttendanceArguments

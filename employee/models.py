@@ -18,6 +18,7 @@ from django.db.models.query import QuerySet
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.templatetags.static import static
+from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as trans
 from PIL import Image
@@ -334,6 +335,43 @@ class Employee(models.Model):
             }
         else:
             return {}
+
+    def get_current_attendance_session_seconds(self):
+        """Return elapsed seconds for the employee's currently open activity."""
+        if not apps.is_installed("attendance"):
+            return 0
+
+        attendance = self.employee_attendances.order_by(
+            "-attendance_date", "-id"
+        ).first()
+        if not attendance:
+            return 0
+
+        activity = (
+            self.employee_attendance_activities.filter(
+                attendance_date=attendance.attendance_date,
+                clock_out__isnull=True,
+            )
+            .order_by("-id")
+            .first()
+        )
+        if not activity:
+            return 0
+
+        current_time = timezone.now()
+        if activity.in_datetime:
+            started_at = activity.in_datetime
+            if timezone.is_naive(started_at):
+                started_at = timezone.make_aware(
+                    started_at, timezone.get_current_timezone()
+                )
+        else:
+            started_at = timezone.make_aware(
+                datetime.combine(activity.clock_in_date, activity.clock_in),
+                timezone.get_current_timezone(),
+            )
+
+        return max(0, (current_time - started_at).total_seconds())
 
     def get_today_attendance(self):
         """

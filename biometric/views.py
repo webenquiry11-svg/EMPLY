@@ -424,7 +424,6 @@ def biometric_device_schedule(request, device_id):
                         ommit_ping=False,
                     )
                     conn = zk_device.connect()
-                    conn.test_voice(index=0)
                     device = BiometricDevices.objects.get(id=device_id)
                     device.scheduler_duration = duration
                     device.is_scheduler = True
@@ -2061,13 +2060,11 @@ def biometric_device_live(request):
                     ommit_ping=False,
                 )
                 conn = zk_device.connect()
-                instance = ZKBioAttendance(machine_ip, port_no, password)
                 conn.test_voice(index=14)
                 if conn:
                     device.is_live = True
                     device.is_scheduler = False
                     device.save()
-                    instance.start()
             elif device.machine_type == "cosec":
                 cosec = COSECBiometric(
                     device.machine_ip,
@@ -2630,7 +2627,6 @@ def etimeoffice_biometric_attendance_scheduler(device_id):
 
 
 try:
-    devices = BiometricDevices.objects.all().update(is_live=False)
     for device in BiometricDevices.objects.filter(is_scheduler=True):
         if device:
             if str_time_seconds(device.scheduler_duration) > 0:
