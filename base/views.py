@@ -839,6 +839,7 @@ def login_user(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
+        login_mode = request.POST.get("login_mode", "emply").lower()
         next_url = request.GET.get("next", "/")
         query_params = request.GET.dict()
         query_params.pop("next", None)
@@ -886,6 +887,22 @@ def login_user(request):
         else:
             request.session.set_expiry(0)
 
+        if login_mode == "payroll":
+            work_info = getattr(employee, "employee_work_info", None)
+            salary_value = getattr(work_info, "basic_salary", None)
+            if salary_value is None or salary_value <= 0:
+                logout(request)
+                messages.error(
+                    request,
+                    _(
+                        "Payroll access is unavailable because salary information "
+                        "has not been configured for your employee profile."
+                    ),
+                )
+                return redirect(f"{reverse('login')}?login_mode=payroll")
+            messages.success(request, _("Login successful."))
+            return redirect("payroll-dashboard")
+
         messages.success(request, _("Login successful."))
 
         # Ensure `next_url` is a safe local URL
@@ -898,8 +915,16 @@ def login_user(request):
             next_url += f"?{params}"
         return redirect(next_url)
 
+    login_mode = request.GET.get("login_mode", "emply").lower()
+    if login_mode not in {"emply", "payroll"}:
+        login_mode = "emply"
     return render(
-        request, "login.html", {"initialize_database": initialize_database_condition()}
+        request,
+        "login.html",
+        {
+            "initialize_database": initialize_database_condition(),
+            "login_mode": login_mode,
+        },
     )
 
 

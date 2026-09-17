@@ -283,7 +283,7 @@
 
                                     <form method="post" class="oh-form-group" novalidate>
                                         {% csrf_token %}
-                                        <input type="hidden" name="login_mode" id="login_mode" value="emply">
+                                        <input type="hidden" name="login_mode" id="login_mode" value="{{ login_mode|default:'emply' }}">
 
                                         <div class="oh-input-group no-icon">
                                             <label class="oh-label" for="username">{% trans "Username" %}</label>

@@ -12,6 +12,7 @@ from urllib.parse import parse_qs
 
 import pandas as pd
 import pdfkit
+from django.contrib.auth import logout
 from django.contrib import messages
 from django.db.models import ProtectedError, Q
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -708,7 +709,17 @@ def employee_payroll_dashboard(request):
     employee = getattr(request.user, "employee_get", None)
     work_info = getattr(employee, "employee_work_info", None)
     salary_value = getattr(work_info, "basic_salary", None)
-    salary_configured = bool(salary_value not in [None, "", 0])
+    salary_configured = salary_value is not None and salary_value > 0
+    if not salary_configured:
+        logout(request)
+        messages.error(
+            request,
+            _(
+                "Payroll access is unavailable because salary information "
+                "has not been configured for your employee profile."
+            ),
+        )
+        return redirect(f"{reverse('login')}?login_mode=payroll")
 
     current_month = timezone.now().strftime("%B %Y")
     current_period = getattr(work_info, "date_joining", None)
