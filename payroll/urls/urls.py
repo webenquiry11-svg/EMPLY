@@ -89,6 +89,11 @@ urlpatterns = [
         name="contract-info-initial",
     ),
     path(
+        "dashboard/",
+        views.employee_payroll_dashboard,
+        name="payroll-dashboard",
+    ),
+    path(
         "view-payroll-dashboard/",
         views.view_payroll_dashboard,
         name="view-payroll-dashboard",

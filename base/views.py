@@ -881,6 +881,10 @@ def login_user(request):
             return redirect("login")
 
         login(request, user)
+        if request.POST.get("remember"):
+            request.session.set_expiry(None)
+        else:
+            request.session.set_expiry(0)
 
         messages.success(request, _("Login successful."))
 
@@ -7880,4 +7884,3 @@ def protected_media(request, path):
         response["Content-Disposition"] = f'inline; filename="{filename}"'
 
     return response
-

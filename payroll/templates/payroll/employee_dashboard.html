@@ -1,0 +1,422 @@
+{% load static i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payroll Dashboard</title>
+    <style>
+        :root {
+            --page-bg: #f6faf7;
+            --panel: #ffffff;
+            --surface: #f4faf6;
+            --border: #e4efe7;
+            --accent: #14b864;
+            --deep: #083022;
+            --muted: #5f6f68;
+            --soft: #f0f8f3;
+            --shadow: 0 12px 28px rgba(8,50,34,0.06);
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: var(--page-bg);
+            color: var(--deep);
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+        }
+        a { color: inherit; }
+        .payroll-shell {
+            min-height: 100vh;
+            background: var(--page-bg);
+        }
+        .payroll-header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 18px;
+            padding: 18px 32px;
+            background: rgba(255,255,255,0.94);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+        }
+        .payroll-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .payroll-brand-mark {
+            width: 36px;
+            height: 36px;
+            display: grid;
+            place-items: center;
+            border-radius: 10px;
+            background: #0b7a45;
+            color: #fff;
+            font-weight: 800;
+            font-size: 15px;
+        }
+        .payroll-brand strong {
+            font-size: 18px;
+            letter-spacing: 0.04em;
+        }
+        .payroll-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--deep);
+        }
+        .payroll-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .payroll-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #0d7a49);
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-weight: 700;
+        }
+        .payroll-user-meta {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+        .payroll-user-meta strong {
+            font-size: 14px;
+        }
+        .payroll-user-meta span {
+            color: var(--muted);
+            font-size: 12px;
+        }
+        .payroll-logout {
+            margin-left: 10px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--soft);
+            text-decoration: none;
+            color: var(--deep);
+            font-weight: 600;
+        }
+        .payroll-layout {
+            display: grid;
+            grid-template-columns: 220px minmax(0, 1fr);
+            min-height: calc(100vh - 78px);
+        }
+        .payroll-sidebar {
+            background: #ffffff;
+            border-right: 1px solid var(--border);
+            padding: 22px 18px;
+        }
+        .payroll-nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 10px;
+        }
+        .payroll-nav a {
+            display: block;
+            padding: 12px 14px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--muted);
+            font-weight: 600;
+            border: 1px solid transparent;
+            background: transparent;
+        }
+        .payroll-nav a.active {
+            background: var(--soft);
+            border-color: var(--border);
+            color: var(--deep);
+        }
+        .payroll-content {
+            padding: 28px;
+        }
+        .payroll-overview {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+        .payroll-card,
+        .payroll-panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+        }
+        .payroll-card {
+            padding: 20px 18px;
+        }
+        .payroll-card-label {
+            display: block;
+            margin-bottom: 12px;
+            color: var(--muted);
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .payroll-card-value {
+            font-size: clamp(24px, 2.8vw, 32px);
+            font-weight: 800;
+            color: var(--deep);
+        }
+        .payroll-panel {
+            padding: 22px 20px;
+            margin-top: 22px;
+        }
+        .payroll-panel h2 {
+            margin: 0 0 16px;
+            font-size: 20px;
+            color: var(--deep);
+        }
+        .payroll-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            background: #f7fbf9;
+            border: 1px solid var(--border);
+            margin-bottom: 10px;
+        }
+        .payroll-row span {
+            color: var(--muted);
+        }
+        .payroll-row strong {
+            color: var(--deep);
+        }
+        .payroll-flag {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
+            padding: 8px 10px;
+            border-radius: 999px;
+            background: rgba(20,184,100,0.08);
+            color: #0d7a49;
+            font-weight: 700;
+            font-size: 12px;
+        }
+        .payroll-empty {
+            border: 1px dashed #d6eadb;
+            border-radius: 12px;
+            background: #f9fbfa;
+            color: var(--muted);
+            padding: 18px 16px;
+            line-height: 1.6;
+        }
+        .payroll-slip {
+            background: #f7fbf9;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .payroll-slip-title {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .payroll-slip-title strong {
+            font-size: 18px;
+            color: var(--deep);
+        }
+        .payroll-slip-title span {
+            color: var(--muted);
+        }
+        .payroll-btn {
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--deep);
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .payroll-state {
+            padding: 28px 24px;
+            border-radius: 18px;
+            background: linear-gradient(180deg, #ffffff, #f5faf7);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+        .payroll-state h2 {
+            margin: 0 0 12px;
+            font-size: clamp(24px, 3vw, 32px);
+            color: var(--deep);
+        }
+        .payroll-state p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+        .payroll-link {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            background: #edf9f2;
+            color: #0d7a49;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        @media (max-width: 900px) {
+            .payroll-layout {
+                grid-template-columns: 1fr;
+            }
+            .payroll-sidebar {
+                border-right: 0;
+                border-bottom: 1px solid var(--border);
+            }
+            .payroll-nav {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+            .payroll-overview {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        @media (max-width: 600px) {
+            .payroll-header {
+                padding: 16px 18px;
+                flex-wrap: wrap;
+            }
+            .payroll-content {
+                padding: 18px 16px 32px;
+            }
+            .payroll-overview {
+                grid-template-columns: 1fr;
+            }
+            .payroll-nav {
+                grid-template-columns: 1fr 1fr;
+            }
+            .payroll-row,
+            .payroll-slip {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="payroll-shell">
+        <header class="payroll-header">
+            <div class="payroll-brand">
+                <div class="payroll-brand-mark">E</div>
+                <strong>EMPLY</strong>
+            </div>
+
+            <div class="payroll-title">Payroll</div>
+
+            <div class="payroll-user">
+                <div class="payroll-avatar">{{ employee_name|default:"E"|slice:":1"|upper }}</div>
+                <div class="payroll-user-meta">
+                    <strong>{{ employee_name|default:"Employee" }}</strong>
+                    <span>Profile</span>
+                </div>
+                <a href="{% url 'logout' %}" class="payroll-logout">Logout</a>
+            </div>
+        </header>
+
+        <div class="payroll-layout">
+            <aside class="payroll-sidebar">
+                <ul class="payroll-nav">
+                    <li><a href="#" class="active">Overview</a></li>
+                    <li><a href="#">Salary</a></li>
+                    <li><a href="#">Salary Slips</a></li>
+                    <li><a href="#">Payroll History</a></li>
+                </ul>
+            </aside>
+
+            <main class="payroll-content">
+                {% if not salary_configured %}
+                    <section class="payroll-state">
+                        <h2>Payroll access is not available yet.</h2>
+                        <p>Payroll access is not available yet because salary information has not been configured for your profile.</p>
+                        <a href="/" class="payroll-link">Return to EMPLY</a>
+                    </section>
+                {% else %}
+                    <section class="payroll-overview" aria-label="Payroll overview">
+                        <div class="payroll-card">
+                            <span class="payroll-card-label">Current Salary</span>
+                            <div class="payroll-card-value">{{ salary_value|default:"Not available yet" }}</div>
+                        </div>
+                        <div class="payroll-card">
+                            <span class="payroll-card-label">Current Payroll Period</span>
+                            <div class="payroll-card-value">{{ current_month|default:"Not available yet" }}</div>
+                        </div>
+                        <div class="payroll-card">
+                            <span class="payroll-card-label">Net Pay</span>
+                            <div class="payroll-card-value">{{ net_pay|default:"Not available yet" }}</div>
+                        </div>
+                        <div class="payroll-card">
+                            <span class="payroll-card-label">Total Deductions</span>
+                            <div class="payroll-card-value">{{ total_deductions|default:"Not available yet" }}</div>
+                        </div>
+                    </section>
+
+                    <section class="payroll-panel">
+                        <h2>Salary Summary</h2>
+                        <div class="payroll-row"><span>Basic Salary</span><strong>{{ salary_value|default:"Not available yet" }}</strong></div>
+                        <div class="payroll-row"><span>Allowances</span><strong>Not available yet</strong></div>
+                        <div class="payroll-row"><span>Deductions</span><strong>Not available yet</strong></div>
+                        <div class="payroll-row"><span>Net Salary</span><strong>{{ net_pay|default:"Not available yet" }}</strong></div>
+                    </section>
+
+                    <section class="payroll-panel">
+                        <h2>Salary Breakdown</h2>
+                        <div class="payroll-row"><span>Basic Salary</span><strong>{{ salary_value|default:"Not available yet" }}</strong></div>
+                        <div class="payroll-row"><span>Allowances</span><strong>Not available yet</strong></div>
+                        <div class="payroll-row"><span>Deductions</span><strong>Not available yet</strong></div>
+                        <div class="payroll-row"><span>Net Salary</span><strong>{{ net_pay|default:"Not available yet" }}</strong></div>
+                    </section>
+
+                    <section class="payroll-panel">
+                        <h2>Deductions</h2>
+                        <div class="payroll-row"><span>Attendance Deduction</span><strong class="payroll-flag">Not configured</strong></div>
+                        <div class="payroll-row"><span>Leave Deduction</span><strong class="payroll-flag">Not configured</strong></div>
+                        <div class="payroll-row"><span>Late Deduction</span><strong class="payroll-flag">Not configured</strong></div>
+                        <div class="payroll-row"><span>Other Deductions</span><strong class="payroll-flag">Not configured</strong></div>
+                        <div class="payroll-row"><span>Total Deduction</span><strong class="payroll-flag">Not configured</strong></div>
+                    </section>
+
+                    <section class="payroll-panel">
+                        <h2>Salary Slips</h2>
+                        <div class="payroll-slip">
+                            <div class="payroll-slip-title">
+                                <strong>September 2026</strong>
+                                <span>Net Salary — Not available yet</span>
+                            </div>
+                            <button type="button" class="payroll-btn">Download Salary Slip</button>
+                        </div>
+                        <div style="margin-top: 14px;" class="payroll-empty">No salary slips are available yet. Backend payslip generation will be implemented in a later phase.</div>
+                    </section>
+
+                    <section class="payroll-panel">
+                        <h2>Payroll History</h2>
+                        <div class="payroll-row"><span>Payroll Period</span><strong>Not available yet</strong></div>
+                        <div class="payroll-row"><span>Salary</span><strong>Not available yet</strong></div>
+                        <div class="payroll-row"><span>Deductions</span><strong>Not available yet</strong></div>
+                        <div class="payroll-row"><span>Net Pay</span><strong>Not available yet</strong></div>
+                        <div class="payroll-row"><span>Status</span><strong>Not available yet</strong></div>
+                        <div class="payroll-row"><span>Salary Slip</span><strong>Not available yet</strong></div>
+                    </section>
+                {% endif %}
+            </main>
+        </div>
+    </div>
+</body>
+</html>

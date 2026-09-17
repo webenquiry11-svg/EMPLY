@@ -703,6 +703,31 @@ def contract_info_initial(request):
 
 
 @login_required
+def employee_payroll_dashboard(request):
+    """Frontend-only employee payroll dashboard."""
+    employee = getattr(request.user, "employee_get", None)
+    work_info = getattr(employee, "employee_work_info", None)
+    salary_value = getattr(work_info, "basic_salary", None)
+    salary_configured = bool(salary_value not in [None, "", 0])
+
+    current_month = timezone.now().strftime("%B %Y")
+    current_period = getattr(work_info, "date_joining", None)
+
+    context = {
+        "employee": employee,
+        "employee_name": getattr(employee, "employee_first_name", "")
+        and f"{employee.employee_first_name} {employee.employee_last_name}".strip(),
+        "salary_configured": salary_configured,
+        "salary_value": salary_value,
+        "current_period": current_period or "Not available yet",
+        "current_month": current_month,
+        "net_pay": "Not available yet" if not salary_configured else salary_value,
+        "total_deductions": "Not available yet",
+    }
+    return render(request, "payroll/employee_dashboard.html", context=context)
+
+
+@login_required
 @permission_required("payroll.view_contract")
 def view_payroll_dashboard(request):
     """
