@@ -283,6 +283,7 @@
 
                                     <form method="post" class="oh-form-group" novalidate>
                                         {% csrf_token %}
+                                        <input type="hidden" name="login_mode" id="login_mode" value="emply">
 
                                         <div class="oh-input-group no-icon">
                                             <label class="oh-label" for="username">{% trans "Username" %}</label>
@@ -349,21 +350,28 @@
                 const modeToggle = document.querySelector(".login-mode-toggle");
                 const cardTitle = document.querySelector(".card-title");
                 const cardSub = document.querySelector(".card-sub");
+                const loginModeInput = document.getElementById("login_mode");
 
-                if (modeToggle && cardTitle && cardSub) {
+                if (modeToggle && cardTitle && cardSub && loginModeInput) {
+                    const syncMode = function (selected) {
+                        loginModeInput.value = selected;
+                        modeToggle.querySelectorAll("[data-login-mode]").forEach(function (modeButton) {
+                            const active = modeButton.dataset.loginMode === selected;
+                            modeButton.setAttribute("aria-pressed", String(active));
+                        });
+                        cardTitle.textContent = selected === "payroll" ? "Payroll Sign-in" : "Welcome Back!";
+                        cardSub.textContent = selected === "payroll"
+                            ? "Use your existing credentials to continue."
+                            : "Please login to access the dashboard.";
+                    };
+
                     modeToggle.addEventListener("click", function (event) {
                         const button = event.target.closest("[data-login-mode]");
                         if (!button) return;
-
-                        const payrollSelected = button.dataset.loginMode === "payroll";
-                        modeToggle.querySelectorAll("[data-login-mode]").forEach(function (modeButton) {
-                            modeButton.setAttribute("aria-pressed", String(modeButton === button));
-                        });
-                        cardTitle.textContent = payrollSelected ? "Payroll Sign-in" : "Welcome Back!";
-                        cardSub.textContent = payrollSelected
-                            ? "Use your existing credentials to continue."
-                            : "Please login to access the dashboard.";
+                        syncMode(button.dataset.loginMode);
                     });
+
+                    syncMode(loginModeInput.value || "emply");
                 }
 
                 if ($(".oh-alert--warning").length > 0) {
