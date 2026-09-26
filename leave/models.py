@@ -743,6 +743,12 @@ class LeaveRequest(HorillaModel):
         upload_to=upload_path,
         verbose_name=_("Attachment"),
     )
+    doctor_certificate = models.FileField(
+        null=True,
+        blank=True,
+        upload_to=upload_path,
+        verbose_name=_("Doctor Certificate"),
+    )
     status = models.CharField(
         max_length=30,
         choices=LEAVE_STATUS,

@@ -15,40 +15,20 @@
 {% endif %}
 
 {% if holidays %}
-<div class="holiday-toolbar">
-  <div class="holiday-select-badges">
-    <label class="holiday-inline-action" id="selectAllHolidays" for="holidayMainSelect">
-      <input type="checkbox" class="all-holidays" id="holidayMainSelect" title="{% trans 'Select All Holidays' %}" />
-      <span>{% trans "Select All Holidays" %}</span>
-    </label>
-    <button type="button" class="holiday-inline-action holiday-inline-action--soft" id="unselectAllHolidays">{% trans "Unselect All Holidays" %}</button>
-    <button type="button" class="holiday-inline-action holiday-inline-action--primary" id="exportHolidays" style="display:none">{% trans "Export Holidays" %}</button>
-  </div>
-  <div class="holiday-selected-counter" id="selectedShowHolidays" style="display:none"></div>
-</div>
-
 <div class="oh-sticky-table holiday-table">
   <div class="oh-sticky-table__table">
     <div class="oh-sticky-table__tbody holiday-grid">
       {% for holiday in holidays %}
       <div class="oh-sticky-table__tr holiday-item" data-start="{{ holiday.start_date|date:'Y-m-d' }}">
-        <article class="holiday-card">
-          <div class="holiday-card__top">
-            <span class="holiday-card__month">{{ holiday.start_date|date:"M Y"|upper }}</span>
-            <label class="holiday-card__select" aria-label="{% trans 'Select holiday' %}">
-              <input type="checkbox" id="{{ holiday.id }}" class="oh-input holiday-checkbox oh-input__checkbox all-holidays-row" onchange="highlightRow($(this))" />
-            </label>
+        <article class="holiday-card" data-date="{{ holiday.start_date|date:'Y-m-d' }}" data-name="{{ holiday.name|lower }}">
+          <div class="holiday-strip">
+            <span>{{ holiday.start_date|date:"M Y" }}</span>
+            <span>{{ holiday.start_date|date:"D" }}</span>
           </div>
 
-          <div class="holiday-card__date-area">
-            <div class="holiday-card__day">{{ holiday.start_date|date:"d" }}</div>
-            <div class="holiday-card__weekday">{{ holiday.start_date|date:"l"|upper }}</div>
-          </div>
-
-          <div class="holiday-card__visual {% if 'republic' in holiday.name|lower %}holiday-card__visual--flag{% elif 'independence' in holiday.name|lower %}holiday-card__visual--flag{% elif 'holi' in holiday.name|lower %}holiday-card__visual--holi{% elif 'good friday' in holiday.name|lower %}holiday-card__visual--cross{% elif 'muharram' in holiday.name|lower or 'ashura' in holiday.name|lower %}holiday-card__visual--moon{% elif 'gandhi' in holiday.name|lower %}holiday-card__visual--gandhi{% elif 'diwali' in holiday.name|lower or 'deepavali' in holiday.name|lower %}holiday-card__visual--diwali{% elif 'christmas' in holiday.name|lower or 'xmas' in holiday.name|lower %}holiday-card__visual--christmas{% elif 'raksha' in holiday.name|lower %}holiday-card__visual--default{% elif 'eid' in holiday.name|lower %}holiday-card__visual--default{% elif 'baisakhi' in holiday.name|lower %}holiday-card__visual--default{% elif 'dussehra' in holiday.name|lower %}holiday-card__visual--default{% elif 'ganesh' in holiday.name|lower %}holiday-card__visual--default{% elif 'makar' in holiday.name|lower or 'sankranti' in holiday.name|lower %}holiday-card__visual--default{% elif 'onam' in holiday.name|lower %}holiday-card__visual--default{% elif 'pongal' in holiday.name|lower %}holiday-card__visual--default{% elif 'shiv' in holiday.name|lower or 'mahashivratri' in holiday.name|lower %}holiday-card__visual--default{% elif 'buddha' in holiday.name|lower or 'purnima' in holiday.name|lower %}holiday-card__visual--default{% else %}holiday-card__visual--default{% endif %}">
+          <div class="holiday-visual {% if 'republic' in holiday.name|lower %}holiday-visual--republic{% elif 'independence' in holiday.name|lower %}holiday-visual--independence{% elif 'holi' in holiday.name|lower %}holiday-visual--holi{% elif 'good friday' in holiday.name|lower %}holiday-visual--good-friday{% elif 'diwali' in holiday.name|lower %}holiday-visual--diwali{% elif 'christmas' in holiday.name|lower %}holiday-visual--christmas{% else %}holiday-visual--default{% endif %}">
             <div class="holiday-card__imagebox">
-              <img
-                class="holiday-card__image"
+              <img class="holiday-card__image"
                 src="{% if 'republic' in holiday.name|lower %}{% static 'images/holidays/republic_day.svg' %}{% elif 'independence' in holiday.name|lower %}{% static 'images/holidays/independence_day.svg' %}{% elif 'holi' in holiday.name|lower %}{% static 'images/holidays/holi.svg' %}{% elif 'good friday' in holiday.name|lower %}{% static 'images/holidays/good_friday.svg' %}{% elif 'muharram' in holiday.name|lower or 'ashura' in holiday.name|lower %}{% static 'images/holidays/muharram.svg' %}{% elif 'gandhi' in holiday.name|lower %}{% static 'images/holidays/gandhi_jayanti.svg' %}{% elif 'diwali' in holiday.name|lower or 'deepavali' in holiday.name|lower %}{% static 'images/holidays/diwali.svg' %}{% elif 'christmas' in holiday.name|lower or 'xmas' in holiday.name|lower %}{% static 'images/holidays/christmas.svg' %}{% elif 'raksha' in holiday.name|lower or 'rakhi' in holiday.name|lower %}{% static 'images/holidays/raksha_bandhan.svg' %}{% elif 'eid' in holiday.name|lower %}{% static 'images/holidays/eid.svg' %}{% elif 'baisakhi' in holiday.name|lower %}{% static 'images/holidays/baisakhi.svg' %}{% elif 'dussehra' in holiday.name|lower %}{% static 'images/holidays/dussehra.svg' %}{% elif 'ganesh' in holiday.name|lower %}{% static 'images/holidays/ganesh_chaturthi.svg' %}{% elif 'makar' in holiday.name|lower or 'sankranti' in holiday.name|lower %}{% static 'images/holidays/makar_sankranti.svg' %}{% elif 'onam' in holiday.name|lower %}{% static 'images/holidays/onam.svg' %}{% elif 'pongal' in holiday.name|lower %}{% static 'images/holidays/pongal.svg' %}{% elif 'shiv' in holiday.name|lower or 'mahashivratri' in holiday.name|lower %}{% static 'images/holidays/mahashivratri.svg' %}{% elif 'buddha' in holiday.name|lower or 'purnima' in holiday.name|lower %}{% static 'images/holidays/buddha_purnima.svg' %}{% elif 'janmashtami' in holiday.name|lower or 'krishna' in holiday.name|lower %}{% static 'images/holidays/janmashtami.svg' %}{% else %}{% static 'images/holidays/default.svg' %}{% endif %}"
                 alt="{{ holiday.name }}"
                 loading="lazy"
@@ -56,20 +36,13 @@
             </div>
           </div>
 
-          <div class="holiday-card__body">
-            <h3 class="holiday-card__name">{{ holiday.name }}</h3>
-            <span class="holiday-card__tag">{% if holiday.recurring %}{% trans "Recurring Holiday" %}{% else %}{% trans "Holiday" %}{% endif %}</span>
+          <div class="holiday-date">
+            <strong>{{ holiday.start_date|date:"d" }}</strong>
+            <span>{{ holiday.start_date|date:"l" }}</span>
           </div>
-
-          <div class="holiday-card__meta">
-            <div class="holiday-card__meta-item">
-              <ion-icon name="calendar-outline"></ion-icon>
-              <span>{{ holiday.start_date|date:"d M Y" }}{% if holiday.end_date and holiday.end_date != holiday.start_date %} - {{ holiday.end_date|date:"d M Y" }}{% endif %}</span>
-            </div>
-            <div class="holiday-card__meta-item">
-              <ion-icon name="{% if holiday.recurring %}repeat-outline{% else %}checkmark-done-outline{% endif %}"></ion-icon>
-              <span>{% if holiday.recurring %}{% trans "Recurring" %}{% else %}{% trans "Non-recurring" %}{% endif %}</span>
-            </div>
+          <div class="holiday-info">
+            <strong>{{ holiday.name }}</strong>
+            <span class="holiday-relative-date" data-date="{{ holiday.start_date|date:'Y-m-d' }}"></span>
           </div>
 
           {% if perms.base.add_holidays or perms.base.change_holidays or perms.base.delete_holidays %}
@@ -136,38 +109,20 @@
 {% endif %}
 
 <script>
-  $(document).ready(function () {
-    tickHolidayCheckboxes();
-    $(".all-holidays-row").change(function () {
-      var parentTable = $(this).closest(".oh-sticky-table");
-      var body = parentTable.find(".oh-sticky-table__tbody");
-      var parentCheckbox = parentTable.find(".all-holidays");
-      parentCheckbox.prop(
-        "checked",
-        body.find(".all-holidays-row:checked").length === body.find(".all-holidays-row").length
-      );
-      addingHolidayIds();
-    });
-
-    $(".all-holidays").change(function () {
-      var is_checked = $(this).is(":checked");
-      if (is_checked) {
-        $(".all-holidays-row").prop("checked", true).closest(".holiday-card").addClass("holiday-card--selected");
-      } else {
-        $(".all-holidays-row").prop("checked", false).closest(".holiday-card").removeClass("holiday-card--selected");
-      }
-      addingHolidayIds();
-    });
-
-    $("#selectAllHolidays").click(function () {
-      selectAllHolidays();
-    });
-    $("#unselectAllHolidays").click(function () {
-      unselectAllHolidays();
-    });
-    $("#exportHolidays").click(function () {
-      exportHolidays();
-    });
+  document.querySelectorAll(".holiday-card[data-date]").forEach(function (card) {
+    var date = new Date(card.dataset.date + "T00:00:00");
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    var days = Math.round((date - today) / 86400000);
+    var relative = card.querySelector(".holiday-relative-date");
+    if (days < 0) {
+      card.classList.add("is-past");
+      relative.textContent = Math.abs(days) + " days ago";
+    } else if (days === 0) {
+      relative.textContent = "Today";
+    } else {
+      relative.textContent = "In " + days + " days";
+    }
   });
+
 </script>
-<script src="{% static '/holiday/action.js' %}"></script>

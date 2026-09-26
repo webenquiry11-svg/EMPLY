@@ -28,7 +28,7 @@ from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.db.models import F, ProtectedError
+from django.db.models import ProtectedError
 from django.db.models.query import QuerySet
 from django.forms import DateInput, Select
 from django.http import HttpResponse, JsonResponse
@@ -2923,17 +2923,26 @@ def birthday():
     This method is used to find upcoming birthday and returns the queryset
     """
     today = datetime.now().date()
-    last_day_of_month = calendar.monthrange(today.year, today.month)[1]
-    employees = Employee.objects.filter(
-        is_active=True,
-        dob__day__gte=today.day,
-        dob__month=today.month,
-        dob__day__lte=last_day_of_month,
-    ).order_by(F("dob__day").asc(nulls_last=True))
+    employees = Employee.objects.filter(is_active=True, dob__isnull=False)
+    upcoming_birthdays = []
 
     for employee in employees:
-        employee.days_until_birthday = employee.dob.day - today.day
-    return employees
+        try:
+            birthday_date = employee.dob.replace(year=today.year)
+        except ValueError:
+            birthday_date = date(today.year, 2, 28)
+        if birthday_date < today:
+            try:
+                birthday_date = employee.dob.replace(year=today.year + 1)
+            except ValueError:
+                birthday_date = date(today.year + 1, 2, 28)
+        employee.days_until_birthday = (birthday_date - today).days
+        upcoming_birthdays.append(employee)
+
+    return sorted(
+        upcoming_birthdays,
+        key=lambda employee: (employee.days_until_birthday, employee.dob),
+    )
 
 
 @login_required
@@ -3826,6 +3835,8 @@ def employee_dashboard_summary(request):
         "attendance_status": None,
         "expected_checkout": None,
         "worked_today": None,
+        "month_attended_days": 0,
+        "month_expected_days": 0,
         "week_hours": "00:00",
         "leave_available": False,
         "leave_allocated": 0,
@@ -3838,6 +3849,8 @@ def employee_dashboard_summary(request):
         "leave_rows": [],
         "attendance_month": [],
         "attendance_month_label": "",
+        "birthdays": birthday(),
+        "team_members": [],
         "attendance_legend": [
             {"label": "Present", "class": "present"},
             {"label": "Late", "class": "late"},
@@ -3848,14 +3861,32 @@ def employee_dashboard_summary(request):
         "now": timezone.now(),
     }
 
+    if employee:
+        team_members = []
+        manager = getattr(getattr(employee, "employee_work_info", None), "reporting_manager_id", None)
+        if manager:
+            team_members.append(manager)
+        team_members.extend(
+            Employee.objects.filter(
+                employee_work_info__reporting_manager_id=employee,
+                is_active=True,
+            ).exclude(id=employee.id)
+        )
+        context["team_members"] = team_members[:5]
+
     from django.apps import apps
     from datetime import date
 
     # Attendance data (per-employee)
     if employee and apps.is_installed("attendance"):
         try:
-            from attendance.models import Attendance
-            from attendance.methods.utils import strtime_seconds, format_time, get_week_start_end_dates
+            from attendance.models import Attendance, GraceTime
+            from attendance.methods.utils import (
+                format_time,
+                get_week_start_end_dates,
+                shift_schedule_today,
+                strtime_seconds,
+            )
 
             today = date.today()
             attendance = (
@@ -3884,7 +3915,36 @@ def employee_dashboard_summary(request):
                     context["worked_today"] = worked
 
                 if getattr(attendance, "attendance_clock_in", None) and not getattr(attendance, "attendance_clock_out", None):
-                    context["attendance_status"] = _("Checked in")
+                    is_late = False
+                    if getattr(attendance, "shift_id", None) and getattr(attendance, "attendance_day", None):
+                        _minimum_hour, shift_start_seconds, _shift_end_seconds = shift_schedule_today(
+                            day=attendance.attendance_day,
+                            shift=attendance.shift_id,
+                        )
+                        allowed_seconds = 0
+                        grace_time = GraceTime.objects.filter(
+                            is_default=True,
+                            is_active=True,
+                            allowed_clock_in=True,
+                        ).first()
+                        if (
+                            getattr(attendance.shift_id, "grace_time_id", None)
+                            and attendance.shift_id.grace_time_id.is_active
+                            and attendance.shift_id.grace_time_id.allowed_clock_in
+                        ):
+                            grace_time = attendance.shift_id.grace_time_id
+                        if grace_time:
+                            allowed_seconds = grace_time.allowed_time_in_secs
+                        check_in_seconds = strtime_seconds(
+                            attendance.attendance_clock_in.strftime("%H:%M")
+                        )
+                        is_late = (
+                            shift_start_seconds > 0
+                            and check_in_seconds > shift_start_seconds + allowed_seconds
+                        )
+                    context["attendance_status"] = _(
+                        "Checked in late" if is_late else "Checked in on time"
+                    )
                 elif getattr(attendance, "attendance_clock_in", None) and getattr(attendance, "attendance_clock_out", None):
                     context["attendance_status"] = _("Checked out")
                 else:
@@ -3975,6 +4035,14 @@ def employee_dashboard_summary(request):
                         curr += timedelta(days=1)
 
             month_days = []
+            context["month_attended_days"] = sum(
+                1 for record in attendance_map.values() if record
+            )
+            context["month_expected_days"] = sum(
+                1
+                for day_number in range(1, today.day + 1)
+                if date(today.year, today.month, day_number).weekday() < 5
+            )
             for week in calendar.Calendar().monthdayscalendar(today.year, today.month):
                 week_cells = []
                 for day_number in week:

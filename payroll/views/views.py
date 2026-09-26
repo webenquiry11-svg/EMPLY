@@ -44,6 +44,11 @@ from horilla.horilla_settings import HORILLA_DATE_FORMATS
 from horilla.http.response import HorillaRedirect
 from notifications.signals import notify
 from payroll.context_processors import get_active_employees
+from payroll.services import (
+    calculate_employee_payroll,
+    create_current_payslip,
+    employee_payslips,
+)
 from payroll.filters import ContractFilter, ContractReGroup, PayslipFilter
 from payroll.forms.component_forms import (
     ContractExportFieldForm,
@@ -547,10 +552,12 @@ def view_payslip_pdf(request, payslip_id):
     if Payslip.objects.filter(id=payslip_id).exists():
         payslip = Payslip.objects.get(id=payslip_id)
         company = Company.objects.filter(hq=True).first()
-        if (
+        is_owner = payslip.employee_id.employee_user_id == request.user
+        is_payroll_staff = (
             request.user.has_perm("payroll.view_payslip")
-            or payslip.employee_id.employee_user_id == request.user
-        ):
+            and (request.user.is_staff or request.user.is_superuser)
+        )
+        if is_owner or is_payroll_staff:
             user = request.user
             employee = user.employee_get
 
@@ -721,21 +728,37 @@ def employee_payroll_dashboard(request):
         )
         return redirect(f"{reverse('login')}?login_mode=payroll")
 
-    current_month = timezone.now().strftime("%B %Y")
-    current_period = getattr(work_info, "date_joining", None)
+    payroll = calculate_employee_payroll(employee)
+    payslips = employee_payslips(employee)[:6]
 
     context = {
         "employee": employee,
+        "employee_id": getattr(employee, "badge_id", ""),
+        "employee_department": getattr(getattr(work_info, "department_id", None), "department", ""),
+        "employee_designation": getattr(getattr(work_info, "job_position_id", None), "job_position", ""),
         "employee_name": getattr(employee, "employee_first_name", "")
         and f"{employee.employee_first_name} {employee.employee_last_name}".strip(),
         "salary_configured": salary_configured,
         "salary_value": salary_value,
-        "current_period": current_period or "Not available yet",
-        "current_month": current_month,
-        "net_pay": "Not available yet" if not salary_configured else salary_value,
-        "total_deductions": "Not available yet",
+        "current_period": payroll["start_date"].strftime("%B %Y"),
+        "current_month": payroll["start_date"].strftime("%B %Y"),
+        "payroll": payroll,
+        "payslips": payslips,
+        "employee_avatar": employee.get_avatar(),
     }
     return render(request, "payroll/employee_dashboard.html", context=context)
+
+
+@login_required
+def generate_employee_payslip(request):
+    """Create the authenticated employee's current payroll snapshot."""
+    if request.method != "POST":
+        return redirect("payroll-dashboard")
+    employee = getattr(request.user, "employee_get", None)
+    if employee is None:
+        return redirect("login")
+    create_current_payslip(employee)
+    return redirect("payroll-dashboard")
 
 
 @login_required

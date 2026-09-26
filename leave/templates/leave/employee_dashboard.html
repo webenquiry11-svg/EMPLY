@@ -3,6 +3,145 @@
 {% block content %}
     {% load i18n %}
     <style>
+        html:has(.leave-employee-dashboard),
+        body:has(.leave-employee-dashboard),
+        .oh-wrapper-main:has(.leave-employee-dashboard),
+        .oh-wrapper-main:has(.leave-employee-dashboard) > #main {
+            background: #e8f5f7 !important;
+        }
+
+        .leave-employee-dashboard {
+            min-height: calc(100vh - 32px);
+            padding: 24px 22px 130px;
+            color: #173f50;
+        }
+
+        .leave-employee-dashboard .oh-dashboard {
+            max-width: 1480px;
+            margin: 0 auto;
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard,
+        .leave-employee-dashboard .oh-dashboard__event {
+            border: 1px solid rgba(39, 141, 160, 0.2) !important;
+            border-radius: 20px !important;
+            background: #ffffff !important;
+            box-shadow: 0 14px 32px rgba(10, 77, 96, 0.1) !important;
+            color: #285d6b !important;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__cards {
+            row-gap: 18px;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__cards .oh-card-dashboard {
+            min-height: 142px;
+            overflow: hidden;
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard--neutral,
+        .leave-employee-dashboard .oh-card-dashboard--success,
+        .leave-employee-dashboard .oh-card-dashboard--danger {
+            border-top: 4px solid #278da0 !important;
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard--success {
+            border-top-color: #2b9b83 !important;
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard--danger {
+            border-top-color: #df6b72 !important;
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard__title,
+        .leave-employee-dashboard .oh-card-dashboard__count {
+            color: #173f50 !important;
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard__title {
+            font-weight: 750 !important;
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard__count {
+            font-weight: 800 !important;
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard__header--divider {
+            border-bottom-color: rgba(39, 141, 160, 0.18) !important;
+        }
+
+        .leave-employee-dashboard .month,
+        .leave-employee-dashboard input[type="month"] {
+            min-height: 36px;
+            padding: 6px 10px;
+            border: 1px solid rgba(39, 141, 160, 0.25) !important;
+            border-radius: 10px !important;
+            background: #ffffff !important;
+            color: #285d6b !important;
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard--transparent {
+            background: #ffffff !important;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__event--purple {
+            border-color: #176f80 !important;
+            background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+            color: #ffffff !important;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__event-title,
+        .leave-employee-dashboard .oh-dashboard__event-main,
+        .leave-employee-dashboard .oh-dashboard__event-date {
+            color: #ffffff !important;
+        }
+
+        .leave-employee-dashboard #upcomingHolidaysList {
+            color: #285d6b !important;
+        }
+
+        .leave-employee-dashboard #upcomingHolidaysList .oh-dashboard__event {
+            margin-bottom: 10px;
+            border-color: rgba(39, 141, 160, 0.16) !important;
+            border-radius: 16px !important;
+            background: #eef8f8 !important;
+            color: #285d6b !important;
+            box-shadow: none !important;
+        }
+
+        .leave-employee-dashboard #upcomingHolidaysList .oh-profile__name,
+        .leave-employee-dashboard #upcomingHolidaysList .oh-dashboard__event-date {
+            color: #285d6b !important;
+        }
+
+        .leave-employee-dashboard .oh-btn {
+            border: 1px solid #176f80 !important;
+            border-radius: 11px !important;
+            background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+            color: #ffffff !important;
+            font-weight: 700;
+        }
+
+        .leave-employee-dashboard .oh-btn:hover {
+            background: #176f80 !important;
+            transform: translateY(-1px);
+        }
+
+        .leave-employee-dashboard .oh-dashboard__event-photo {
+            border-radius: 50%;
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.24);
+        }
+
+        .leave-employee-dashboard canvas {
+            max-width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .leave-employee-dashboard {
+                padding: 14px 10px 112px;
+            }
+        }
+
         .oh-dashboard__right {
             display: flex;
             flex-direction: column;
@@ -21,8 +160,417 @@
         .dash-card {
             padding-bottom: 30px;
         }
+
+        html:has(.leave-employee-dashboard),
+        body:has(.leave-employee-dashboard),
+        .oh-wrapper-main:has(.leave-employee-dashboard),
+        .oh-wrapper-main:has(.leave-employee-dashboard) > #main {
+            background: #f5f7f3 !important;
+        }
+
+        .leave-employee-dashboard {
+            min-height: calc(100vh - 32px);
+            padding: 24px 22px 120px;
+            color: #123d2c;
+        }
+
+        .leave-employee-dashboard .oh-dashboard {
+            margin: 0;
+            max-width: 1480px;
+            margin-inline: auto;
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard,
+        .leave-employee-dashboard .oh-dashboard__event {
+            border: 1px solid rgba(209, 231, 221, 0.95) !important;
+            border-radius: 18px !important;
+            background: #ffffff !important;
+            box-shadow: 0 10px 26px rgba(18, 61, 44, 0.08) !important;
+            color: #294b47 !important;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__cards {
+            row-gap: 18px;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__movable-cards {
+            row-gap: 8px;
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard--neutral,
+        .leave-employee-dashboard .oh-card-dashboard--success,
+        .leave-employee-dashboard .oh-card-dashboard--danger {
+            border-top: 4px solid #6cae95 !important;
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard--success {
+            border-top-color: #2f8f6b !important;
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard--danger {
+            border-top-color: #d66a6a !important;
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard__title,
+        .leave-employee-dashboard .oh-card-dashboard__count {
+            color: #244943 !important;
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard__count {
+            font-weight: 800;
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard__header--divider {
+            border-bottom-color: #d1e7dd !important;
+        }
+
+        .leave-employee-dashboard .month {
+            border: 1px solid #b8d0c5 !important;
+            border-radius: 8px;
+            background: #ffffff !important;
+            color: #294b47 !important;
+            padding: 6px 8px;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__event--purple {
+            background: #2f5752 !important;
+            color: #ffffff !important;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__event-title,
+        .leave-employee-dashboard .oh-dashboard__event-main,
+        .leave-employee-dashboard .oh-dashboard__event-date {
+            color: #ffffff !important;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__event-main {
+            display: block;
+            max-width: 100%;
+            overflow-wrap: anywhere;
+            line-height: 1.2;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__event-photo {
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .leave-employee-dashboard .oh-btn {
+            border: 1px solid #2f5752 !important;
+            border-radius: 11px !important;
+            background: #2f5752 !important;
+            color: #ffffff !important;
+            font-weight: 700;
+        }
+
+        .leave-employee-dashboard .oh-btn:hover {
+            background: #244943 !important;
+            transform: translateY(-1px);
+        }
+
+        .leave-employee-dashboard #upcomingHolidaysList,
+        .leave-employee-dashboard #leaveRequest {
+            color: #294b47 !important;
+        }
+
+        .leave-employee-dashboard #upcomingHolidaysList .oh-dashboard__event {
+            margin-bottom: 10px;
+            border: 1px solid #d1e7dd !important;
+            background: #eef7f1 !important;
+            color: #294b47 !important;
+            box-shadow: none !important;
+        }
+
+        @media (min-width: 992px) {
+            .leave-employee-dashboard .oh-dashboard__right > .oh-card-dashboard {
+                margin-top: 0 !important;
+            }
+        }
+
+        .leave-employee-dashboard .oh-dashboard__event--purple {
+            border-color: #8ac4ad !important;
+        }
+
+        .leave-employee-dashboard #upcomingHolidaysList .oh-profile__name,
+        .leave-employee-dashboard #upcomingHolidaysList .oh-dashboard__event-date {
+            color: #294b47 !important;
+        }
+
+        .leave-employee-dashboard canvas {
+            max-width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .leave-employee-dashboard {
+                padding: 14px 10px 108px;
+            }
+        }
+
+        /* Final employee-panel palette overrides for all leave dashboard surfaces. */
+        html:has(.leave-employee-dashboard),
+        body:has(.leave-employee-dashboard),
+        .oh-wrapper-main:has(.leave-employee-dashboard),
+        .oh-wrapper-main:has(.leave-employee-dashboard) > #main {
+            background: #e8f5f7 !important;
+        }
+
+        .leave-employee-dashboard {
+            padding-bottom: 140px !important;
+            color: #173f50 !important;
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard,
+        .leave-employee-dashboard .oh-dashboard__event {
+            border-color: rgba(39, 141, 160, 0.2) !important;
+            border-radius: 20px !important;
+            background: #ffffff !important;
+            box-shadow: 0 14px 32px rgba(10, 77, 96, 0.1) !important;
+            color: #285d6b !important;
+            transition: transform 180ms ease, box-shadow 180ms ease,
+                border-color 180ms ease;
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard:hover {
+            border-color: rgba(39, 141, 160, 0.42) !important;
+            box-shadow: 0 18px 34px rgba(10, 77, 96, 0.15) !important;
+            transform: translateY(-3px);
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard--neutral {
+            border-top-color: #278da0 !important;
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard--success {
+            border-top-color: #2b9b83 !important;
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard--danger {
+            border-top-color: #df6b72 !important;
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard__title,
+        .leave-employee-dashboard .oh-card-dashboard__count {
+            color: #173f50 !important;
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard__header--divider {
+            border-bottom-color: rgba(39, 141, 160, 0.18) !important;
+            background: linear-gradient(90deg, #f4fbfc, #ffffff) !important;
+        }
+
+        .leave-employee-dashboard .month,
+        .leave-employee-dashboard input[type="month"] {
+            border-color: rgba(39, 141, 160, 0.25) !important;
+            border-radius: 10px !important;
+            background: #ffffff !important;
+            color: #285d6b !important;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__event--purple {
+            border-color: #176f80 !important;
+            background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+        }
+
+        .leave-employee-dashboard #upcomingHolidaysList .oh-dashboard__event {
+            border-color: rgba(39, 141, 160, 0.16) !important;
+            border-radius: 16px !important;
+            background: #eef8f8 !important;
+            color: #285d6b !important;
+        }
+
+        .leave-employee-dashboard #upcomingHolidaysList .oh-profile__name,
+        .leave-employee-dashboard #upcomingHolidaysList .oh-dashboard__event-date {
+            color: #285d6b !important;
+        }
+
+        .leave-employee-dashboard .oh-btn {
+            border-color: #176f80 !important;
+            border-radius: 11px !important;
+            background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+            color: #ffffff !important;
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard__header {
+            padding: 18px 16px 12px !important;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__movable-cards > .col-lg-8 .oh-card-dashboard__header {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between;
+            gap: 12px;
+            min-height: 58px;
+            padding: 11px 16px !important;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__movable-cards > .col-lg-8 .oh-card-dashboard__header input[type="month"] {
+            float: none !important;
+            flex: 0 0 auto;
+            margin: 0 !important;
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard__body {
+            padding: 12px 16px 18px !important;
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard__count {
+            font-size: 2.8rem !important;
+            line-height: 1 !important;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__event--purple {
+            border: 0 !important;
+            border-radius: 18px !important;
+            background: linear-gradient(135deg, #176f80, #45a5b5) !important;
+            box-shadow: 0 12px 24px rgba(10, 77, 96, 0.16) !important;
+            transition: transform 180ms ease, box-shadow 180ms ease;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__event--purple:hover {
+            box-shadow: 0 16px 28px rgba(10, 77, 96, 0.22) !important;
+            transform: translateY(-3px);
+        }
+
+        .leave-employee-dashboard #upcomingHolidaysList .oh-dashboard__event {
+            padding: 14px 16px !important;
+            transition: border-color 160ms ease, background 160ms ease,
+                transform 160ms ease, box-shadow 160ms ease;
+        }
+
+        .leave-employee-dashboard #upcomingHolidaysList .oh-dashboard__event:hover {
+            border-color: #8ac4d0 !important;
+            background: #e2f3f5 !important;
+            box-shadow: 0 5px 14px rgba(10, 77, 96, 0.1) !important;
+            transform: translateY(-2px);
+        }
+
+        .leave-employee-dashboard .oh-card-dashboard--transparent {
+            min-height: 100% !important;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__event-photo {
+            background: #ffffff !important;
+            border: 3px solid rgba(255, 255, 255, 0.55);
+        }
+
+        .leave-employee-dashboard #leaveRequest:has(.oh-empty),
+        .leave-employee-dashboard #leaveRequest:has(h3) {
+            min-height: 270px;
+            display: grid;
+            place-items: center;
+            color: #557b84 !important;
+            background: radial-gradient(circle at center, #f4fbfc, #ffffff 68%) !important;
+            border-radius: 14px;
+        }
+
+        body:has(.leave-employee-dashboard) #objectDetailsModalW25 .oh-modal__dialog {
+            overflow: hidden;
+            border: 1px solid #c7e5eb !important;
+            border-radius: 20px !important;
+            background: #f8fcfd !important;
+            box-shadow: 0 22px 50px rgba(10, 77, 96, 0.2) !important;
+        }
+
+        body:has(.leave-employee-dashboard) #objectDetailsModalW25Target > .oh-modal__dialog-header {
+            margin: 0 !important;
+            border: 0 !important;
+            background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+        }
+
+        body:has(.leave-employee-dashboard) #objectDetailsModalW25Target > .oh-modal__dialog-header .oh-modal__dialog-title {
+            color: #ffffff !important;
+            font-weight: 800 !important;
+        }
+
+        body:has(.leave-employee-dashboard) #objectDetailsModalW25Target > .oh-modal__dialog-header .oh-modal__close,
+        body:has(.leave-employee-dashboard) #objectDetailsModalW25Target > .oh-modal__dialog-header .oh-modal__close--custom {
+            border: 1px solid rgba(255, 255, 255, 0.5) !important;
+            border-radius: 50% !important;
+            background: rgba(255, 255, 255, 0.12) !important;
+            color: #ffffff !important;
+        }
+
+        body:has(.leave-employee-dashboard) #objectDetailsModalW25Target > .oh-modal__dialog-body {
+            padding: 18px !important;
+            background: #eef8f8 !important;
+        }
+
+        body:has(.leave-employee-dashboard) #objectDetailsModalW25Target > .oh-modal__dialog-body > .oh-modal__dialog {
+            margin: 0 !important;
+            padding: 0 !important;
+            border: 0 !important;
+            background: transparent !important;
+        }
+
+        body:has(.leave-employee-dashboard) #objectDetailsModalW25Target .oh-modal__dialog--navigation {
+            margin: 0 !important;
+            padding: 0 !important;
+            border: 0 !important;
+            background: transparent !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme #objectDetailsModalW25Target .oh-modal__dialog-body .oh-modal__dialog-header {
+            display: block !important;
+            min-height: 0 !important;
+            margin: 0 0 14px !important;
+            padding: 0 !important;
+            border: 0 !important;
+            background: #eef8f8 !important;
+            background-image: none !important;
+            color: #173f50 !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme #objectDetailsModalW25Target > .oh-modal__dialog-body > .oh-modal__dialog-header {
+            background: #eef8f8 !important;
+            background-image: none !important;
+            color: #173f50 !important;
+        }
+
+        body:has(.leave-employee-dashboard) #objectDetailsModalW25Target > .oh-modal__dialog-body > .oh-modal__dialog > .oh-modal__dialog-header {
+            margin: 0 0 14px !important;
+            padding: 0 !important;
+            border: 0 !important;
+            background: transparent !important;
+        }
+
+        body:has(.leave-employee-dashboard) #objectDetailsModalW25 .oh-timeoff-modal__profile-content,
+        body:has(.leave-employee-dashboard) #objectDetailsModalW25 .oh-timeoff-modal__stat {
+            border: 1px solid #c7e5eb !important;
+            border-radius: 14px !important;
+            background: #ffffff !important;
+            box-shadow: 0 5px 12px rgba(10, 77, 96, 0.06) !important;
+        }
+
+        body:has(.leave-employee-dashboard) #objectDetailsModalW25 .oh-timeoff-modal__profile-content {
+            display: block;
+            margin-bottom: 14px;
+            padding: 14px !important;
+        }
+
+        body:has(.leave-employee-dashboard) #objectDetailsModalW25 .oh-timeoff-modal__stats-container {
+            gap: 14px !important;
+            padding: 0 !important;
+            border: 0 !important;
+            background: transparent !important;
+        }
+
+        body:has(.leave-employee-dashboard) #objectDetailsModalW25 .oh-timeoff-modal__stats {
+            padding: 0 !important;
+            border: 0 !important;
+            background: transparent !important;
+        }
+
+        body:has(.leave-employee-dashboard) #objectDetailsModalW25 .oh-timeoff-modal__stat-title {
+            color: #557b84 !important;
+            font-weight: 700 !important;
+        }
+
+        body:has(.leave-employee-dashboard) #objectDetailsModalW25 .oh-timeoff-modal__stat-count {
+            color: #173f50 !important;
+            font-weight: 800 !important;
+        }
     </style>
-    <div class="oh-wrapper">
+    <div class="oh-wrapper leave-employee-dashboard">
         <div class="oh-dashboard row" id="dashboard">
             <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
                 <div class="oh-dashboard__cards row">

@@ -1,5 +1,180 @@
 {% load basefilters static %}
 {% load i18n %}
+<style>
+    #activitySidebar {
+        background: var(--card-bg-dark, #2f5752);
+        color: var(--text-main, #ffffff);
+        border-left: 1px solid var(--border-soft, rgba(255, 255, 255, 0.14));
+    }
+
+    #commentContainer {
+        background: transparent;
+    }
+
+    #commentContainer .oh-activity-sidebar__header {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        padding: 1rem 1.1rem;
+        border-bottom: 1px solid var(--border-soft, rgba(255, 255, 255, 0.14));
+        background: var(--card-bg-dark, #2f5752);
+        color: var(--text-main, #ffffff);
+    }
+
+    #commentContainer .oh-activity-sidebar__header-icon {
+        color: var(--accent-light-green, #d9f1e4) !important;
+    }
+
+    #commentContainer .oh-activity-sidebar__title {
+        color: var(--text-main, #ffffff) !important;
+        font-size: 0.88rem;
+        font-weight: 800;
+        line-height: 1.35;
+    }
+
+    #commentContainer form {
+        margin: 0;
+        padding: 1rem 1.1rem;
+        background: rgba(255, 255, 255, 0.08);
+        border-bottom: 1px solid var(--border-soft, rgba(255, 255, 255, 0.14));
+    }
+
+    #commentContainer form > div:first-of-type {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+    }
+
+    #commentContainer #commentInput {
+        flex: 1 1 220px;
+        min-height: 42px;
+        padding: 0.7rem 0.85rem;
+        border: 1px solid rgba(255, 255, 255, 0.28) !important;
+        border-radius: 11px;
+        background: var(--card-bg-light, #ffffff) !important;
+        color: var(--text-main-light, #111812) !important;
+        font-size: 0.84rem;
+        font-weight: 600;
+        outline: none;
+        box-shadow: 0 2px 8px rgba(22, 66, 45, 0.06);
+    }
+
+    #commentContainer #commentInput::placeholder {
+        color: var(--text-muted-light, #667569) !important;
+        opacity: 1;
+    }
+
+    #commentContainer #commentInput:focus {
+        border-color: var(--accent-light-green, #d9f1e4) !important;
+        box-shadow: 0 0 0 3px rgba(217, 241, 228, 0.2);
+    }
+
+    #commentContainer #commentButton {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        margin: 0 !important;
+        padding: 0.65rem 1rem;
+        border: 0;
+        border-radius: 11px;
+        background: var(--accent-green, #2f5752) !important;
+        color: #ffffff !important;
+        font-size: 0.78rem;
+        font-weight: 800;
+        box-shadow: 0 5px 12px rgba(0, 0, 0, 0.18);
+    }
+
+    #commentContainer #commentButton:hover {
+        background: var(--brand-color, #064e3b) !important;
+    }
+
+    #commentContainer .oh-activity-sidebar__qa-list {
+        margin: 0;
+        padding: 1rem 1.1rem 1.4rem 2rem;
+        background: transparent;
+    }
+
+    #commentContainer .oh-activity-sidebar__qa-item {
+        margin-bottom: 0.75rem;
+        padding: 0.9rem;
+        border: 1px solid var(--border-soft, rgba(255, 255, 255, 0.14));
+        border-radius: 13px;
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--text-main, #ffffff);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    #commentContainer .oh-activity-sidebar__q {
+        display: block;
+        color: var(--text-main, #ffffff) !important;
+        font-size: 0.86rem !important;
+        font-weight: 600;
+        line-height: 1.55;
+        overflow-wrap: anywhere;
+    }
+
+    #commentContainer .oh-activity-sidebar__qa-item .oh-timeoff-modal__stat-title {
+        color: var(--text-muted-dark, #b7c9c5) !important;
+        font-size: 0.72rem;
+    }
+
+    #commentContainer .oh-activity-sidebar__qa-item .oh-timeoff-modal__stat-title.fw-bold {
+        color: var(--accent-light-green, #d9f1e4) !important;
+    }
+
+    #commentContainer .oh-timeoff-modal__profile-content {
+        padding: 1.25rem 1rem;
+        background: transparent;
+        color: var(--text-muted-dark, #b7c9c5);
+    }
+
+    #commentContainer .oh-timeoff-title {
+        color: var(--text-muted-dark, #b7c9c5) !important;
+        text-align: center;
+    }
+
+    #commentContainer .oh-activity-sidebar__header {
+        background: var(--card-bg-dark, #2f5752) !important;
+        border-bottom-color: var(--border-soft, rgba(255, 255, 255, 0.14)) !important;
+    }
+
+    #commentContainer form {
+        background: rgba(255, 255, 255, 0.08) !important;
+        border-bottom-color: var(--border-soft, rgba(255, 255, 255, 0.14)) !important;
+    }
+
+    #commentContainer #commentInput {
+        color: var(--text-main-light, #111812) !important;
+        border-color: rgba(255, 255, 255, 0.28) !important;
+    }
+
+    #commentContainer #commentInput:focus {
+        border-color: var(--accent-light-green, #d9f1e4) !important;
+        box-shadow: 0 0 0 3px rgba(217, 241, 228, 0.2) !important;
+    }
+
+    #commentContainer #commentButton {
+        background: var(--accent-green, #2f5752) !important;
+        box-shadow: 0 5px 12px rgba(0, 0, 0, 0.18);
+    }
+
+    #commentContainer .oh-activity-sidebar__qa-list,
+    #commentContainer .oh-timeoff-modal__profile-content {
+        background: transparent !important;
+    }
+
+    #commentContainer .oh-activity-sidebar__qa-item {
+        border-color: var(--border-soft, rgba(255, 255, 255, 0.14)) !important;
+        background: rgba(255, 255, 255, 0.08) !important;
+        color: var(--text-main, #ffffff) !important;
+    }
+
+    #commentContainer .oh-activity-sidebar__q {
+        color: var(--text-main, #ffffff) !important;
+    }
+</style>
 
 {% if messages %}
     <div class="oh-alert-container">

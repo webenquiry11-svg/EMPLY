@@ -117,12 +117,23 @@
                     <div class="oh-sticky-table__td {% if leave_request.status == 'rejected' %} diff-cell{% endif %} dateformat_changer">{{leave_request.end_date}}</div>
                     <div class="oh-sticky-table__td {% if leave_request.status == 'rejected' %} diff-cell{% endif %}">{{leave_request.requested_days}}</div>
                     <div class="oh-sticky-table__td {% if leave_request.status == 'rejected' %} diff-cell{% endif %}">
+                        <span class="employee-leave-status employee-leave-status--{{ leave_request.status }}">
+                            {% if leave_request.status == "requested" %}
+                                {% trans "Requested" %}
+                            {% elif leave_request.status == "approved" %}
+                                {% trans "Approved" %}
+                            {% elif leave_request.status == "cancelled" %}
+                                {% trans "Cancelled" %}
+                            {% elif leave_request.status == "rejected" %}
+                                {% trans "Rejected" %}
+                            {% else %}
+                                {{ leave_request.get_status_display }}
+                            {% endif %}
+                        </span>
                         {% if leave_request.multiple_approvals and leave_request.status == "requested" %}
                             <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary" title="{% for manager in leave_request.multiple_approvals.managers %}{{ manager }}{% if not forloop.last %} , {% endif %}{% endfor %}">
                             {{leave_request.multiple_approvals.approved|length}} / {{leave_request.multiple_approvals.managers|length}} {% trans "Approved" %}
                             </div>
-                        {% else %}
-                            {{leave_request.get_status_display}}
                         {% endif %}
                     </div>
                     <div class="oh-sticky-table__td" onclick="event.stopPropagation();">

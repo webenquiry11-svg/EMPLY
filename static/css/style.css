@@ -801,6 +801,16 @@ form label {
     color: var(--panel-text);
 }
 
+/* Authenticated shells hide the sidebar, so the main content must use the
+   full available grid width instead of retaining the sidebar column. */
+.oh-wrapper-main.no-left-sidebar-active {
+    grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.oh-wrapper-main.no-left-sidebar-active > #main {
+    min-width: 0;
+}
+
 .oh-wrapper-main.employee-bottom-nav-active {
     --panel-accent-soft: rgba(45, 90, 63, 0.2);
 }
@@ -1984,6 +1994,219 @@ body:has(.oh-wrapper-main.super-admin-panel-theme) .select2-results__option[aria
     border-color: var(--panel-border, rgba(255, 255, 255, 0.08));
 }
 
+/* Super-admin dashboard uses the same light teal visual system as the
+   finalized employee panel. */
+.oh-wrapper-main.super-admin-panel-theme {
+    --super-admin-bg: #e8f5f7;
+    --super-admin-surface: #ffffff;
+    --super-admin-surface-soft: #eef8f8;
+    --super-admin-accent: #176f80;
+    --super-admin-accent-hover: #0a4d60;
+    --super-admin-text: #173f50;
+    --super-admin-muted: #557b84;
+    --super-admin-border: #c7e5eb;
+    background: var(--super-admin-bg) !important;
+    color: var(--super-admin-text) !important;
+}
+
+.oh-wrapper-main.super-admin-panel-theme > #main,
+.oh-wrapper-main.super-admin-panel-theme #main-section,
+.oh-wrapper-main.super-admin-panel-theme #main-section-data,
+.oh-wrapper-main.super-admin-panel-theme .oh-wrapper,
+.oh-wrapper-main.super-admin-panel-theme .oh-dashboard,
+.oh-wrapper-main.super-admin-panel-theme #dashboard {
+    background: #f5f7f3 !important;
+    color: var(--super-admin-text) !important;
+}
+
+.oh-wrapper-main.super-admin-panel-theme .oh-navbar,
+.oh-wrapper-main.super-admin-panel-theme .oh-navbar__wrapper {
+    background: #ffffff !important;
+    border-bottom: 1px solid var(--super-admin-border) !important;
+    color: var(--super-admin-text) !important;
+}
+
+.oh-wrapper-main.super-admin-panel-theme .oh-navbar__breadcrumb,
+.oh-wrapper-main.super-admin-panel-theme .oh-navbar__breadcrumb-link,
+.oh-wrapper-main.super-admin-panel-theme .oh-navbar__breadcrumb-link.active,
+.oh-wrapper-main.super-admin-panel-theme .oh-navbar__user-name,
+.oh-wrapper-main.super-admin-panel-theme .oh-navbar__time {
+    color: var(--super-admin-text) !important;
+}
+
+.oh-wrapper-main.super-admin-panel-theme .oh-global-search__box {
+    background: var(--super-admin-surface-soft) !important;
+    border: 1px solid var(--super-admin-border) !important;
+    border-radius: 999px !important;
+    box-shadow: none !important;
+}
+
+.oh-wrapper-main.super-admin-panel-theme .oh-global-search__input,
+.oh-wrapper-main.super-admin-panel-theme .oh-global-search__icon {
+    color: var(--super-admin-text) !important;
+}
+
+.oh-wrapper-main.super-admin-panel-theme .oh-global-search__input::placeholder {
+    color: var(--super-admin-muted) !important;
+}
+
+.oh-wrapper-main.super-admin-panel-theme .oh-navbar__notifications,
+.oh-wrapper-main.super-admin-panel-theme .oh-navbar__action-icons,
+.oh-wrapper-main.super-admin-panel-theme .oh-navbar__user-info {
+    background: transparent !important;
+    border-color: var(--super-admin-border) !important;
+}
+
+.oh-wrapper-main.super-admin-panel-theme .oh-navbar__notification-link,
+.oh-wrapper-main.super-admin-panel-theme .oh-navbar__action-icons-link {
+    background: var(--super-admin-surface-soft) !important;
+    border: 1px solid var(--super-admin-border) !important;
+    border-radius: 12px !important;
+    color: var(--super-admin-accent) !important;
+}
+
+.oh-wrapper-main.super-admin-panel-theme .oh-navbar__notification-link:hover,
+.oh-wrapper-main.super-admin-panel-theme .oh-navbar__notification-link:focus-visible,
+.oh-wrapper-main.super-admin-panel-theme .oh-navbar__action-icons-link:hover,
+.oh-wrapper-main.super-admin-panel-theme .oh-navbar__action-icons-link:focus-visible {
+    background: var(--super-admin-accent) !important;
+    border-color: var(--super-admin-accent) !important;
+    color: #ffffff !important;
+}
+
+.oh-wrapper-main.super-admin-panel-theme #mainNavProfile .oh-navbar__user-info {
+    background: var(--super-admin-accent) !important;
+    border: 3px solid #ffffff !important;
+    box-shadow: 0 4px 12px rgba(23, 111, 128, 0.2) !important;
+}
+
+.oh-wrapper-main.super-admin-panel-theme .oh-card-dashboard,
+.oh-wrapper-main.super-admin-panel-theme .oh-card {
+    background: var(--super-admin-surface) !important;
+    border: 1px solid var(--super-admin-border) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 12px 28px rgba(10, 77, 96, 0.1) !important;
+    color: var(--super-admin-text) !important;
+    transition: transform 180ms ease, box-shadow 180ms ease,
+        border-color 180ms ease;
+}
+
+.oh-wrapper-main.super-admin-panel-theme .oh-card-dashboard:hover,
+.oh-wrapper-main.super-admin-panel-theme .oh-card:hover {
+    border-color: #8ac4d0 !important;
+    box-shadow: 0 16px 32px rgba(10, 77, 96, 0.15) !important;
+    transform: translateY(-2px);
+}
+
+.oh-wrapper-main.super-admin-panel-theme .oh-card-dashboard__header,
+.oh-wrapper-main.super-admin-panel-theme .oh-card-dashboard__header--divider {
+    background: linear-gradient(90deg, #f4fbfc, #ffffff) !important;
+    border-bottom-color: var(--super-admin-border) !important;
+}
+
+.oh-wrapper-main.super-admin-panel-theme .oh-card-dashboard__title,
+.oh-wrapper-main.super-admin-panel-theme .oh-card-dashboard__count,
+.oh-wrapper-main.super-admin-panel-theme .oh-main__titlebar-title {
+    color: var(--super-admin-text) !important;
+}
+
+.oh-wrapper-main.super-admin-panel-theme .oh-card-dashboard__subtitle,
+.oh-wrapper-main.super-admin-panel-theme .oh-empty__subtitle,
+.oh-wrapper-main.super-admin-panel-theme small {
+    color: var(--super-admin-muted) !important;
+}
+
+.oh-wrapper-main.super-admin-panel-theme .oh-btn,
+.oh-wrapper-main.super-admin-panel-theme button:not(.oh-modal_close):not(.close) {
+    border: 1px solid var(--super-admin-accent) !important;
+    border-radius: 11px !important;
+    background: var(--super-admin-accent) !important;
+    color: #ffffff !important;
+}
+
+.oh-wrapper-main.super-admin-panel-theme .oh-btn:hover,
+.oh-wrapper-main.super-admin-panel-theme .oh-btn:focus-visible,
+.oh-wrapper-main.super-admin-panel-theme button:not(.oh-modal_close):not(.close):hover,
+.oh-wrapper-main.super-admin-panel-theme button:not(.oh-modal_close):not(.close):focus-visible {
+    background: var(--super-admin-accent-hover) !important;
+    border-color: var(--super-admin-accent-hover) !important;
+    color: #ffffff !important;
+    transform: translateY(-1px);
+}
+
+.oh-wrapper-main.super-admin-panel-theme .oh-input,
+.oh-wrapper-main.super-admin-panel-theme input:not([type="checkbox"]):not([type="radio"]),
+.oh-wrapper-main.super-admin-panel-theme select,
+.oh-wrapper-main.super-admin-panel-theme textarea,
+.oh-wrapper-main.super-admin-panel-theme .form-control {
+    background: #ffffff !important;
+    border: 1px solid var(--super-admin-border) !important;
+    border-radius: 11px !important;
+    color: var(--super-admin-text) !important;
+    box-shadow: none !important;
+}
+
+.oh-wrapper-main.super-admin-panel-theme .oh-input:focus,
+.oh-wrapper-main.super-admin-panel-theme input:not([type="checkbox"]):not([type="radio"]):focus,
+.oh-wrapper-main.super-admin-panel-theme select:focus,
+.oh-wrapper-main.super-admin-panel-theme textarea:focus,
+.oh-wrapper-main.super-admin-panel-theme .form-control:focus {
+    border-color: var(--super-admin-accent) !important;
+    box-shadow: 0 0 0 3px rgba(23, 111, 128, 0.14) !important;
+    outline: none;
+}
+
+.oh-wrapper-main.super-admin-panel-theme .oh-table,
+.oh-wrapper-main.super-admin-panel-theme table {
+    background: #ffffff !important;
+    color: var(--super-admin-text) !important;
+    border-color: var(--super-admin-border) !important;
+}
+
+.oh-wrapper-main.super-admin-panel-theme .oh-table thead,
+.oh-wrapper-main.super-admin-panel-theme table thead {
+    background: var(--super-admin-surface-soft) !important;
+}
+
+.oh-wrapper-main.super-admin-panel-theme .oh-table tbody tr:hover,
+.oh-wrapper-main.super-admin-panel-theme table tbody tr:hover {
+    background: #eef8f8 !important;
+}
+
+.oh-wrapper-main.super-admin-panel-theme .oh-sidebar-flyout,
+.oh-wrapper-main.super-admin-panel-theme .oh-dropdown__menu,
+.oh-wrapper-main.super-admin-panel-theme .oh-navbar__notification-tray,
+.oh-wrapper-main.super-admin-panel-theme .oh-global-search__results {
+    background: #ffffff !important;
+    color: var(--super-admin-text) !important;
+    border: 1px solid var(--super-admin-border) !important;
+    box-shadow: 0 18px 38px rgba(10, 77, 96, 0.16) !important;
+}
+
+.oh-wrapper-main.super-admin-panel-theme .oh-dropdown__link:hover,
+.oh-wrapper-main.super-admin-panel-theme .oh-global-search__item:hover,
+.oh-wrapper-main.super-admin-panel-theme .oh-sidebar-flyout li:hover {
+    background: #eef8f8 !important;
+    color: var(--super-admin-accent) !important;
+}
+
+.oh-wrapper-main.super-admin-panel-theme .material-symbols-outlined,
+.oh-wrapper-main.super-admin-panel-theme ion-icon,
+.oh-wrapper-main.super-admin-panel-theme .oh-navbar__icon {
+    color: var(--super-admin-accent) !important;
+}
+
+@media (max-width: 768px) {
+    .oh-wrapper-main.super-admin-panel-theme .oh-dashboard {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+    .oh-wrapper-main.super-admin-panel-theme .oh-card-dashboard {
+        border-radius: 16px !important;
+    }
+}
+
 .oh-wrapper-main .attendance-theme .oh-sticky-table__th {
     color: var(--panel-text, #ffffff);
     background: var(--panel-surface-elevated, #1b2a20);
@@ -2014,6 +2237,303 @@ body:has(.oh-wrapper-main.super-admin-panel-theme) .select2-results__option[aria
     color: var(--panel-text, #ffffff);
     background: var(--panel-surface-elevated, #1b2a20);
     border-color: var(--panel-border, rgba(255, 255, 255, 0.08));
+}
+
+/* Match the super-admin navbar to the employee panel's finalized controls. */
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar {
+    background: #ffffff !important;
+    border-bottom: 0 !important;
+    box-shadow: 0 8px 24px rgba(23, 109, 131, 0.08) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__wrapper {
+    background: transparent !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__user-name,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__breadcrumb,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__breadcrumb-link,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__icon {
+    color: #245b6b !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-global-search__box {
+    background: linear-gradient(110deg, #0a4d60, #176f80) !important;
+    background-image: linear-gradient(110deg, #0a4d60, #176f80) !important;
+    border: 1px solid rgba(42, 132, 155, 0.35) !important;
+    border-radius: 999px !important;
+    box-shadow: 0 6px 16px rgba(10, 77, 96, 0.14) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-global-search__input,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-global-search__box ion-icon,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-global-search__icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-global-search__input::placeholder {
+    color: rgba(247, 250, 248, 0.78) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__notification-link,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__action-icons-link {
+    background: #176d83 !important;
+    background-color: #176d83 !important;
+    border: 1px solid #176d83 !important;
+    border-radius: 50% !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 16px rgba(10, 77, 96, 0.16) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__notification-link:hover,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__notification-link:focus-visible,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__action-icons-link:hover,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__action-icons-link:focus-visible {
+    background: #278da0 !important;
+    border-color: #278da0 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 0 4px rgba(39, 141, 160, 0.2),
+        0 8px 18px rgba(10, 77, 96, 0.2) !important;
+    transform: translateY(-1px);
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__notification-link .oh-navbar__icon,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__action-icons-link .oh-navbar__icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #mainNavProfile .oh-navbar__user-info {
+    width: 52px !important;
+    height: 52px !important;
+    min-width: 52px !important;
+    min-height: 52px !important;
+    padding: 0 !important;
+    overflow: hidden;
+    background: #6f72bd !important;
+    border: 3px solid #ffffff !important;
+    border-radius: 50% !important;
+    box-shadow: 0 4px 12px rgba(47, 87, 82, 0.2) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #mainNavProfile .oh-navbar__user-name,
+html body .oh-wrapper-main.super-admin-panel-theme #mainNavProfile .oh-navbar__user-info::before,
+html body .oh-wrapper-main.super-admin-panel-theme #mainNavProfile .oh-navbar__user-info::after {
+    display: none !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #mainNavProfile .oh-navbar__user-photo,
+html body .oh-wrapper-main.super-admin-panel-theme #mainNavProfile .oh-navbar__user-image {
+    width: 46px !important;
+    height: 46px !important;
+    min-width: 46px !important;
+    min-height: 46px !important;
+    margin: 0 !important;
+    display: block !important;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .employee-navbar-apply-leave {
+    background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+    border: 1px solid #176d83 !important;
+    border-radius: 11px !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 16px rgba(10, 77, 96, 0.18) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .employee-navbar-apply-leave:hover,
+html body .oh-wrapper-main.super-admin-panel-theme .employee-navbar-apply-leave:focus-visible {
+    background: linear-gradient(110deg, #083f50, #176f80) !important;
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__notification-beacon {
+    background: #c7e5eb !important;
+    color: #0a4d60 !important;
+    box-shadow: 0 0 0 2px #176d83 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__clock {
+    background: linear-gradient(110deg, #0a4d60, #176f80) !important;
+    border: 1px solid #176d83 !important;
+    border-radius: 11px !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 16px rgba(10, 77, 96, 0.18) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__clock:hover,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__clock:focus-visible {
+    background: linear-gradient(110deg, #083f50, #176f80) !important;
+    border-color: #176f80 !important;
+    color: #ffffff !important;
+    transform: translateY(-1px);
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__clock-icon,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__clock-text {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .employee-attendance-action {
+    background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+    border: 1px solid #176d83 !important;
+    border-radius: 11px !important;
+    color: #ffffff !important;
+    box-shadow: 0 6px 16px rgba(10, 77, 96, 0.18) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .employee-attendance-action:hover,
+html body .oh-wrapper-main.super-admin-panel-theme .employee-attendance-action:focus-visible {
+    background: linear-gradient(110deg, #083f50, #176f80) !important;
+    border-color: #176f80 !important;
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .employee-attendance-action .oh-navbar__clock-icon,
+html body .oh-wrapper-main.super-admin-panel-theme .employee-attendance-action .hr-Check-In-out-text,
+html body .oh-wrapper-main.super-admin-panel-theme .employee-attendance-action .time-runner {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__systray {
+    gap: 0.65rem !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar {
+    min-height: 92px !important;
+    height: 92px !important;
+    background: #ffffff !important;
+    border-bottom: 0 !important;
+    box-shadow: none !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__wrapper {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    min-height: 92px !important;
+    height: 92px !important;
+    margin: 0 !important;
+    padding: 0 3.25rem !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__toggle-container {
+    display: none !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .employee-navbar-greeting {
+    flex: 1 1 auto !important;
+    min-width: 250px !important;
+    margin-right: auto !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .employee-navbar-greeting__title {
+    color: #173f50 !important;
+    font-size: 1.25rem !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .employee-navbar-greeting__subtitle {
+    margin-top: 0.3rem;
+    color: #557b84 !important;
+    font-size: 0.75rem;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .employee-navbar-period {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.22rem;
+    border-radius: 999px;
+    background: linear-gradient(110deg, #0a4d60, #176f80) !important;
+    color: rgba(255, 255, 255, 0.68) !important;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .employee-navbar-period span {
+    padding: 0.55rem 0.95rem;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .employee-navbar-period .is-active {
+    background: #0a4d60 !important;
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-global-search {
+    flex: 0 1 280px !important;
+    min-width: 180px !important;
+    max-width: 280px !important;
+    margin: 0 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-global-search__box {
+    min-height: 40px !important;
+    height: 40px !important;
+    padding: 0 1rem !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__systray,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__notifications,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__action-icons,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__user-info,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__search {
+    background: transparent !important;
+    border-color: transparent !important;
+    color: #163f35 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__systray > *,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__notifications,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__action-icons,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__user-info {
+    height: 92px !important;
+    align-items: center !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__notification-link,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__action-icons-link {
+    width: 50px !important;
+    height: 50px !important;
+    min-width: 50px !important;
+    min-height: 50px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+@media (max-width: 850px) {
+    html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__wrapper {
+        min-height: 64px !important;
+        height: 64px !important;
+        padding: 0 1rem !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar {
+        min-height: 64px !important;
+        height: 64px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme .employee-navbar-greeting,
+    html body .oh-wrapper-main.super-admin-panel-theme .employee-navbar-period {
+        display: none !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__toggle-container {
+        display: flex !important;
+        align-items: center !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme .oh-global-search {
+        flex: 1 1 auto !important;
+        max-width: none !important;
+    }
 }
 
 .oh-wrapper-main .attendance-theme .oh-btn--light-bkg,
@@ -3184,6 +3704,40 @@ ul.errorlist {
     border-color: var(--panel-accent-hover);
 }
 
+/* Keep the employee navigation below modal forms and their backdrops. */
+body .employee-bottom-nav,
+body #employeeBottomNav {
+    z-index: 900 !important;
+}
+
+body #employeeMobileNavOverlay {
+    z-index: 940 !important;
+}
+
+body #employeeMobileNavDrawer {
+    z-index: 950 !important;
+}
+
+body #employeeMobileNavToggle {
+    z-index: 960 !important;
+}
+
+body .oh-modal,
+body .oh-modal.oh-modal--show,
+body .modal {
+    z-index: 3000 !important;
+}
+
+body .oh-modal__dialog,
+body .modal-dialog {
+    position: relative;
+    z-index: 3001 !important;
+}
+
+body .employee-payroll-login-modal {
+    z-index: 3000 !important;
+}
+
 .oh-wrapper-main.employee-bottom-nav-active .oh-modal {
     background: rgba(2, 8, 5, 0.78);
     z-index: 1200 !important;
@@ -3403,10 +3957,40 @@ body:has(.oh-wrapper-main.employee-bottom-nav-active .oh-modal.oh-modal--show) #
 body:has(.oh-wrapper-main.employee-bottom-nav-active .oh-modal.oh-modal--show) #employeeMobileNavToggle,
 body:has(.oh-wrapper-main.employee-bottom-nav-active .oh-modal.oh-modal--show) #employeeMobileNavOverlay,
 body:has(.oh-wrapper-main.employee-bottom-nav-active .oh-modal.oh-modal--show) #employeeMobileNavDrawer,
-body:has(.oh-wrapper-main.employee-bottom-nav-active .oh-modal.oh-modal--show) #employeeBottomNav,
 body:has(.oh-wrapper-main.employee-bottom-nav-active .oh-modal.oh-modal--show) .oh-sidebar-tooltip,
 body:has(.oh-wrapper-main.employee-bottom-nav-active .oh-modal.oh-modal--show) .oh-sidebar-flyout {
     z-index: 2200 !important;
+}
+
+/* Final layer contract: navigation must always stay below every form modal. */
+body .employee-bottom-nav,
+body #employeeBottomNav {
+    z-index: 100 !important;
+}
+
+body #employeeMobileNavOverlay {
+    z-index: 110 !important;
+}
+
+body #employeeMobileNavDrawer {
+    z-index: 120 !important;
+}
+
+body #employeeMobileNavToggle {
+    z-index: 130 !important;
+}
+
+body .oh-modal,
+body .oh-modal.oh-modal--show,
+body .modal,
+body .employee-payroll-login-modal {
+    z-index: 5000 !important;
+}
+
+body .oh-modal__dialog,
+body .modal-dialog {
+    position: relative;
+    z-index: 5001 !important;
 }
 
 /* Employee Assets surfaces stay within the EMPLY theme without affecting other modules. */

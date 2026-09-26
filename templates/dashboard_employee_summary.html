@@ -1,16 +1,16 @@
 {% load i18n tz horillafilters accessibility_filters %}
 <style>
     :root {
-        --bg-main: #0d140e;
-        --card-bg-dark: #161f18;
-        --card-bg-light: #f4f6f0;
-        --accent-green: #2d5a3f;
-        --accent-light-green: #d1e7dd;
+        --bg-main: #f5f7f3;
+        --card-bg-dark: #2f5752;
+        --card-bg-light: #ffffff;
+        --accent-green: #2f5752;
+        --accent-light-green: #d9f1e4;
         --text-main: #ffffff;
-        --text-muted-dark: #8c9e90;
+        --text-muted-dark: #b7c9c5;
         --text-main-light: #111812;
         --text-muted-light: #667569;
-        --border-soft: rgba(255,255,255,0.08);
+        --border-soft: rgba(255,255,255,0.14);
         --warning-bg: #34281a;
         --warning-text: #dfab66;
     }
@@ -19,10 +19,8 @@
         width: 100%;
         max-width: none;
         margin: 0;
-        padding: 0.9rem 0 7rem;
-        background:
-            radial-gradient(circle at top left, rgba(45, 90, 63, 0.16), transparent 35%),
-            linear-gradient(180deg, #0d140e 0%, #0c120d 100%);
+        padding: 1.25rem clamp(1rem, 3vw, 3.5rem) 7rem;
+        background: var(--bg-main);
         color: var(--text-main);
         min-height: calc(100vh - 94px);
     }
@@ -30,7 +28,7 @@
     .employee-dashboard-shell .employee-dashboard-card {
         position: relative;
         height: 100%;
-        background: linear-gradient(180deg, rgba(22,31,24,0.96), rgba(16,22,18,0.98));
+        background: #c7e5eb;
         border: 1px solid var(--border-soft);
         border-radius: 22px;
         box-shadow: 0 12px 28px rgba(2, 8, 5, 0.2);
@@ -95,9 +93,7 @@
         margin-bottom: 1.4rem;
         border-radius: 28px;
         border: 1px solid rgba(255,255,255,0.08);
-        background:
-            radial-gradient(circle at top right, rgba(45,90,63,0.24), transparent 30%),
-            linear-gradient(135deg, rgba(22,31,24,0.98), rgba(15,20,17,0.94));
+        background: var(--card-bg-dark);
         box-shadow: 0 18px 46px rgba(1, 9, 5, 0.22);
         color: var(--text-main);
         overflow: hidden;
@@ -757,13 +753,50 @@
     }
 
     @media (max-width: 640px) {
+        .employee-dashboard-shell {
+            padding: 0.85rem 0.75rem 7rem;
+            overflow-x: hidden;
+        }
+
         .employee-dashboard-hero {
             flex-direction: column;
             align-items: flex-start;
+            width: 100%;
+            padding: 1rem;
+            gap: 0.8rem;
         }
 
         .employee-dashboard-hero__status {
             width: 100%;
+        }
+
+        .employee-dashboard-hero__identity {
+            width: 100%;
+            gap: 0.7rem;
+        }
+
+        .employee-dashboard-hero__avatar {
+            width: 56px;
+            height: 56px;
+        }
+
+        .employee-dashboard-hero__title {
+            font-size: 1.35rem;
+        }
+
+        .employee-dashboard-hero__meta {
+            font-size: 0.78rem;
+        }
+
+        .employee-dashboard-card {
+            border-radius: 16px !important;
+            padding: 0.8rem !important;
+        }
+
+        .employee-dashboard-attendance__grid {
+            grid-template-columns: repeat(7, minmax(34px, 1fr));
+            overflow-x: auto;
+            padding-bottom: 4px;
         }
 
         .employee-dashboard-summary-row,
@@ -779,6 +812,11 @@
     }
 
     @media (max-width: 540px) {
+        .employee-dashboard-shell {
+            padding-left: 0.6rem;
+            padding-right: 0.6rem;
+        }
+
         .employee-dashboard-summary-row,
         .employee-dashboard-lower-grid {
             grid-template-columns: 1fr;
@@ -790,19 +828,1267 @@
     }
 </style>
 
+<style>
+    .employee-dashboard-shell {
+        font-family: inherit;
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
+        grid-template-rows: 266px auto auto auto;
+        gap: 1rem;
+        align-items: start;
+        margin-top: -4rem;
+    }
+
+    /* The greeting belongs to the Employee navbar; the first dashboard row
+       must begin with the attendance and leave widgets. */
+    .employee-dashboard-shell .employee-dashboard-greeting-bar {
+        display: none !important;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-greeting-bar {
+        grid-column: 1 / -1;
+        grid-row: 1;
+        display: flex;
+        align-items: center;
+        min-height: 4.25rem;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-greeting-bar h1 {
+        margin: 0;
+        color: #163f35;
+        font-size: clamp(1.35rem, 2.3vw, 2rem);
+        font-weight: 800;
+        letter-spacing: -0.035em;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-greeting-bar p {
+        margin: 0.25rem 0 0;
+        color: #6b887d;
+        font-size: 0.82rem;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero {
+        grid-column: 1;
+        grid-row: 2;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        align-items: stretch;
+        gap: 1.5rem;
+        min-height: 266px;
+        background: linear-gradient(115deg, #315b55 0%, #9baba8 72%, #f7f8f6 100%);
+        border: 1px solid rgba(18,61,44,0.12);
+        border-radius: 24px;
+        box-shadow: 0 18px 38px rgba(18, 61, 44, 0.14);
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero__identity {
+        align-items: flex-start;
+        padding-right: 220px;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero__avatar,
+    .employee-dashboard-shell .employee-dashboard-hero__meta {
+        display: none;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero__content {
+        padding-top: 0.1rem;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero__greeting-text {
+        display: none;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero__greeting-sub {
+        display: none;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero__title {
+        display: none;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero__meta {
+        color: rgba(255,255,255,0.7) !important;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero__aside {
+        min-width: 0;
+        align-items: stretch;
+        position: absolute;
+        top: 5.4rem;
+        left: 1.25rem;
+        right: auto;
+        bottom: auto;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-birthday {
+        position: absolute;
+        top: 1.25rem;
+        right: 1.25rem;
+        bottom: 1.25rem;
+        width: 195px;
+        padding-left: 1.1rem;
+        border-left: 1px solid rgba(18,61,44,0.16);
+    }
+
+    .employee-dashboard-shell .employee-dashboard-birthday__label {
+        margin-bottom: 0.55rem;
+        color: rgba(18,61,44,0.7);
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-birthday img {
+        display: block;
+        width: 100%;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 14px 14px 0 0;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-birthday__details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        padding: 0.6rem 0.7rem;
+        border-radius: 0 0 14px 14px;
+        background: rgba(255,255,255,0.75);
+        color: #163f35;
+        font-size: 0.72rem;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-birthday__details span {
+        color: #6b887d;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero__status,
+    .employee-dashboard-shell .employee-dashboard-hero__time-widget {
+        background: rgba(255,255,255,0.08);
+        border-color: rgba(255,255,255,0.12);
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero__status {
+        min-width: 0;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero__time-widget {
+        display: none;
+    }
+
+    .employee-dashboard-shell .attendance-hero-stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.65rem;
+        margin-top: 1.25rem;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero__identity {
+        position: relative;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero__identity::before {
+        content: "Today's attendance";
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        color: rgba(255,255,255,0.74);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero__identity::after {
+        content: "{{ attendance_display_time|default:'—' }}";
+        display: block;
+        position: absolute;
+        top: 1.4rem;
+        left: 0;
+        color: #fff;
+        font-size: clamp(2.3rem, 5vw, 3.5rem);
+        font-weight: 850;
+        letter-spacing: -0.05em;
+    }
+
+    .employee-dashboard-shell .attendance-hero-stat {
+        padding: 0.7rem 0.8rem;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.08);
+    }
+
+    .employee-dashboard-shell .attendance-hero-stat__label {
+        display: block;
+        color: rgba(255,255,255,0.6);
+        font-size: 0.68rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .employee-dashboard-shell .attendance-hero-stat__value {
+        display: block;
+        margin-top: 0.25rem;
+        color: #fff;
+        font-size: 1rem;
+        font-weight: 800;
+    }
+
+    /* Attendance hero matches the reference card: deep teal at the left,
+       fading into a pale misty surface around the birthday panel. */
+    .employee-dashboard-shell .employee-dashboard-hero {
+        grid-column: 1;
+        grid-row: 1;
+        z-index: 2;
+        font-family: "Inter", "Segoe UI", Arial, sans-serif;
+        min-height: 266px;
+        padding: 1.45rem 1.7rem;
+        background: linear-gradient(110deg, #31594f 0%, #91a4a1 71%, #f5f7f5 100%) !important;
+        border: 1px solid rgba(47,87,82,0.18) !important;
+        border-radius: 28px !important;
+        box-shadow: 0 16px 30px rgba(47,87,82,0.16) !important;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero.attendance-state--empty {
+        background: linear-gradient(110deg, #31594f 0%, #91a4a1 71%, #f5f7f5 100%) !important;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero__identity {
+        width: 100%;
+        min-height: 100%;
+        padding-right: 285px;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero__content {
+        display: block;
+        width: 100%;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero__content > .employee-dashboard-hero__greeting,
+    .employee-dashboard-shell .employee-dashboard-hero__content > .employee-dashboard-hero__title,
+    .employee-dashboard-shell .employee-dashboard-hero__content > .employee-dashboard-hero__meta {
+        display: none;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero__meta span + span::before {
+        content: none;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero__identity::before,
+    .employee-dashboard-shell .employee-dashboard-hero__identity::after {
+        content: none;
+    }
+
+    .employee-dashboard-shell .attendance-hero-heading {
+        position: absolute;
+        top: 1.45rem;
+        left: 1.7rem;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .employee-dashboard-shell .attendance-hero-heading__label {
+        color: rgba(255,255,255,0.84);
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.075em;
+        line-height: 1.2;
+        text-transform: uppercase;
+    }
+
+    .employee-dashboard-shell .attendance-hero-heading__value {
+        margin-top: 0.55rem;
+        color: #fff;
+        font-size: clamp(2.75rem, 4vw, 3.5rem);
+        font-weight: 800;
+        letter-spacing: -0.055em;
+        line-height: 1;
+    }
+
+    .employee-dashboard-shell .attendance-hero-heading__empty {
+        margin-top: 0.55rem;
+        color: #fff;
+        font-size: 1.75rem;
+        line-height: 1;
+    }
+
+    .employee-dashboard-shell .attendance-state--empty .attendance-hero-heading__empty::after {
+        content: "";
+        display: block;
+        width: 4.45rem;
+        height: 0.55rem;
+        margin-top: 1.2rem;
+        background: #fff;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero__aside {
+        top: 7.35rem;
+        left: 1.7rem;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero__status {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 0.28rem 0.72rem;
+        border: 0 !important;
+        border-radius: 999px;
+        background: rgba(74,177,143,0.18) !important;
+        color: #8dd1b7;
+        font-size: 0.86rem;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        line-height: 1;
+        margin-top: 0.65rem;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero__status::before {
+        content: "✓";
+        margin-right: 0.42rem;
+        color: #8dd1b7;
+        font-weight: 800;
+    }
+
+    .employee-dashboard-shell .attendance-hero-stats {
+        position: absolute;
+        left: 1.7rem;
+        right: 285px;
+        bottom: 1.7rem;
+        grid-template-columns: repeat(3, max-content);
+        justify-content: start;
+        gap: clamp(1.5rem, 3vw, 3.5rem);
+        margin-top: 0;
+    }
+
+    .employee-dashboard-shell .attendance-hero-stat {
+        padding: 0;
+        background: transparent;
+        border-radius: 0;
+    }
+
+    .employee-dashboard-shell .attendance-hero-stat__label {
+        color: rgba(255,255,255,0.82);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.035em;
+        line-height: 1.2;
+    }
+
+    .employee-dashboard-shell .attendance-hero-stat__value {
+        margin-top: 0.35rem;
+        color: #ffffff;
+        font-size: clamp(1.35rem, 2vw, 1.7rem);
+        font-family: "Inter", "Segoe UI", Arial, sans-serif;
+        font-weight: 800;
+        letter-spacing: -0.035em;
+        line-height: 1;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-birthday {
+        top: 1.25rem;
+        right: 1.25rem;
+        bottom: 1.25rem;
+        width: 245px;
+        padding-left: 1.45rem;
+        border-left: 1px solid rgba(47,87,82,0.22);
+    }
+
+    .employee-dashboard-shell .employee-dashboard-birthday__label {
+        margin-bottom: 0.75rem;
+        color: rgba(47,87,82,0.72);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        line-height: 1.2;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-birthday img {
+        height: 205px;
+        border-radius: 16px 16px 0 0;
+        color: #687872;
+        font-size: 0.75rem;
+        line-height: 1.25;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-birthday__details {
+        min-height: 70px;
+        padding: 0.78rem 0.8rem;
+        border-radius: 0 0 16px 16px;
+        background: rgba(248,246,240,0.88);
+        color: #294b47;
+        font-size: 0.78rem;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-birthday__details strong {
+        color: #294b47;
+        font-size: 0.86rem;
+        line-height: 1.15;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-birthday__empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 244px;
+        padding: 1rem;
+        border-radius: 16px;
+        background: linear-gradient(145deg, rgba(248,249,248,0.78), rgba(188,201,198,0.82));
+        color: rgba(47,87,82,0.78);
+        font-size: 0.8rem;
+        text-align: center;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child {
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .oh-card-dashboard__body,
+    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .leave-balance-wrap,
+    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .leave-balance-right {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    /* Keep the attendance panel proportions aligned with the reference card. */
+    .employee-dashboard-shell .employee-dashboard-hero {
+        min-height: 333px !important;
+        height: 333px !important;
+        padding: 1.45rem 1.2rem !important;
+        background: linear-gradient(112deg, #315b55 0%, #78938f 100%) !important;
+        border-radius: 0 0 28px 28px !important;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero__identity {
+        padding-right: 285px;
+    }
+
+    .employee-dashboard-shell .attendance-hero-heading {
+        left: 0;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-hero__aside {
+        left: 0;
+    }
+
+    .employee-dashboard-shell .attendance-hero-stats {
+        left: 0;
+        right: 285px;
+        bottom: 1.7rem;
+    }
+
+    .employee-dashboard-shell .attendance-hero-heading__label,
+    .employee-dashboard-shell .attendance-hero-stat__label {
+        font-size: 0.82rem;
+        letter-spacing: 0.04em;
+    }
+
+    .employee-dashboard-shell .attendance-hero-heading__value {
+        font-size: clamp(3rem, 4vw, 3.5rem);
+        line-height: 0.98;
+    }
+
+    .employee-dashboard-shell .attendance-hero-stat__value {
+        font-size: clamp(1.55rem, 2vw, 1.7rem);
+    }
+
+    @media (max-width: 850px) {
+        .employee-dashboard-shell .employee-dashboard-hero {
+            min-height: 0 !important;
+            height: auto !important;
+            padding: 1.25rem !important;
+            border-radius: 22px !important;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-hero__identity {
+            padding-right: 0;
+        }
+
+        .employee-dashboard-shell .attendance-hero-heading,
+        .employee-dashboard-shell .employee-dashboard-hero__aside,
+        .employee-dashboard-shell .attendance-hero-stats {
+            left: auto;
+            right: auto;
+        }
+    }
+
+    .employee-dashboard-shell .leave-balance-wrap {
+        align-items: flex-start;
+        gap: 1.1rem;
+    }
+
+    .employee-dashboard-shell .leave-balance-left {
+        flex: 0 0 84px;
+        max-width: 84px;
+        padding-top: 0.2rem;
+    }
+
+    .employee-dashboard-shell .leave-balance-right {
+        overflow: hidden;
+    }
+
+    .employee-dashboard-shell .leave-balance-right > div:first-child {
+        display: flex !important;
+        flex-wrap: wrap;
+        gap: 0.35rem 0.75rem;
+        align-items: baseline !important;
+    }
+
+    .employee-dashboard-shell .leave-balance-right > div:first-child .metric-label,
+    .employee-dashboard-shell .leave-balance-right > div:first-child .leave-percent {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .employee-dashboard-shell .leave-balance-right > div:first-child .metric-label {
+        flex: 1 1 150px;
+    }
+
+    .employee-dashboard-shell .leave-balance-right > div:first-child .leave-percent {
+        flex: 0 1 auto;
+    }
+
+    .employee-dashboard-shell .leave-stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem 1rem;
+        min-width: 0;
+        font-size: 0.82rem;
+    }
+
+    .employee-dashboard-shell .leave-stats > div {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .employee-dashboard-shell .leave-balance-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.78rem;
+        min-width: 0;
+        margin-top: 0.8rem;
+    }
+
+    .employee-dashboard-shell .leave-balance-item {
+        display: grid;
+        grid-template-columns: minmax(92px, 0.8fr) minmax(78px, 1fr) minmax(0, 1.35fr);
+        align-items: center;
+        gap: 0.6rem;
+        min-width: 0;
+    }
+
+    .employee-dashboard-shell .leave-balance-item__name,
+    .employee-dashboard-shell .leave-balance-item__meta {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .employee-dashboard-shell .leave-balance-item__bar {
+        min-width: 0;
+        width: 100%;
+    }
+
+    @media (max-width: 1100px) {
+        .employee-dashboard-shell .leave-balance-item {
+            grid-template-columns: minmax(80px, 0.8fr) minmax(70px, 1fr);
+        }
+
+        .employee-dashboard-shell .leave-balance-item__meta {
+            grid-column: 1 / -1;
+            text-align: left;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .employee-dashboard-shell .leave-balance-wrap {
+            flex-direction: column;
+        }
+
+        .employee-dashboard-shell .leave-balance-left {
+            flex-basis: auto;
+            max-width: none;
+        }
+    }
+
+    .employee-dashboard-shell .employee-dashboard-summary-row {
+        display: contents;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-card {
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(18, 61, 44, 0.08);
+    }
+
+    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child {
+        grid-column: 2;
+        grid-row: 1;
+        background: #0d5064;
+        color: #fff;
+        min-height: 338px;
+        height: 338px;
+        overflow: hidden;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .oh-card-dashboard__title,
+    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .metric-label,
+    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .leave-balance-item__meta {
+        color: rgba(255,255,255,0.68);
+    }
+
+    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .leave-percent,
+    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .leave-balance-item__name,
+    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .leave-stats {
+        color: #fff;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .oh-card-dashboard__header {
+        min-height: 48px;
+        padding: 0;
+        border: 0;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child {
+        height: 266px;
+    }
+
+    .employee-dashboard-shell .leave-card-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        background: rgba(126, 157, 218, 0.22);
+        color: #b8c7ed;
+        font-size: 1.35rem;
+    }
+
+    .employee-dashboard-shell .leave-card-badge {
+        padding: 0.45rem 0.75rem;
+        border-radius: 999px;
+        background: rgba(126, 194, 164, 0.18);
+        color: #8ac4ad;
+        font-size: 0.8rem;
+        font-weight: 800;
+    }
+
+    .employee-dashboard-shell .leave-overview {
+        padding-top: 1.25rem;
+    }
+
+    .employee-dashboard-shell .leave-overview__headline {
+        display: flex;
+        align-items: baseline;
+        gap: 0.3rem;
+        color: #fff;
+    }
+
+    .employee-dashboard-shell .leave-overview__headline strong {
+        font-size: clamp(2.25rem, 4vw, 3rem);
+        line-height: 1;
+    }
+
+    .employee-dashboard-shell .leave-overview__headline span {
+        font-size: 1rem;
+        font-weight: 700;
+        opacity: 0.8;
+    }
+
+    .employee-dashboard-shell .leave-overview__label {
+        margin-top: 0.45rem;
+        color: rgba(255,255,255,0.68);
+        font-size: 0.9rem;
+    }
+
+    .employee-dashboard-shell .leave-overview__details {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .employee-dashboard-shell .leave-overview__ring {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 80px;
+        height: 80px;
+        flex: 0 0 80px;
+        border-radius: 50%;
+        background: conic-gradient(#8f8ee8 var(--leave-used), rgba(255,255,255,0.06) 0);
+        position: relative;
+        color: #fff;
+        font-size: 0.85rem;
+        font-weight: 800;
+    }
+
+    .employee-dashboard-shell .leave-overview__ring::after {
+        content: "";
+        position: absolute;
+        inset: 9px;
+        border-radius: 50%;
+        background: #2a849b;
+    }
+
+    .employee-dashboard-shell .leave-overview__ring span {
+        position: relative;
+        z-index: 1;
+    }
+
+    .employee-dashboard-shell .leave-overview__details > div:last-child {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .employee-dashboard-shell .leave-overview__details strong {
+        color: #fff;
+        font-size: 1rem;
+    }
+
+    .employee-dashboard-shell .leave-overview__details span,
+    .employee-dashboard-shell .leave-overview__pending {
+        color: rgba(255,255,255,0.68);
+        font-size: 0.78rem;
+    }
+
+    .employee-dashboard-shell .leave-overview__progress {
+        display: none;
+    }
+
+    .employee-dashboard-shell .leave-overview__progress .bar {
+        height: 100%;
+        border-radius: inherit;
+        background: #8f8ee8;
+    }
+
+    .employee-dashboard-shell .leave-overview__pending {
+        display: none;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:nth-child(2) {
+        grid-column: 1;
+        grid-row: 2;
+        background: var(--card-bg-dark);
+        color: #fff;
+        min-height: 126px;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:nth-child(2) .oh-card-dashboard__title,
+    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:nth-child(2) .metric-label {
+        color: rgba(255,255,255,0.7);
+    }
+
+    .employee-dashboard-shell .employee-dashboard-leave-requests {
+        grid-column: 2;
+        grid-row: 3;
+        min-height: 126px;
+        background: var(--card-bg-dark);
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:nth-child(2) .metric-value,
+    .employee-dashboard-shell .employee-dashboard-leave-requests .metric-value {
+        color: #fff;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-leave-requests .oh-card-dashboard__header {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-badge {
+        padding: 0.28rem 0.55rem;
+        border-radius: 999px;
+        background: rgba(221, 177, 102, 0.18);
+        color: #dfab66;
+        font-size: 0.68rem;
+        font-weight: 700;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-leave-requests .oh-card-dashboard__title,
+    .employee-dashboard-shell .employee-dashboard-leave-requests .metric-label {
+        color: rgba(255,255,255,0.7);
+    }
+
+    .employee-dashboard-shell .employee-dashboard-lower-grid {
+        grid-column: 1 / -1;
+        grid-row: 4;
+        grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.75fr);
+        gap: 1rem;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-lower-grid .employee-dashboard-card {
+        background: var(--card-bg-dark);
+    }
+
+    .employee-dashboard-shell .employee-dashboard-card-link {
+        color: rgba(255,255,255,0.8);
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-card-link:hover {
+        color: #fff;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-announcements {
+        grid-column: 2;
+        grid-row: 2;
+        min-height: 220px;
+        background: #b9dce3;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-announcements .oh-card-dashboard__header {
+        margin-bottom: 0.3rem;
+        padding-bottom: 0;
+        border-bottom: 0;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-announcements .oh-card-dashboard__title {
+        color: #ffffff;
+        font-size: 0.95rem;
+        letter-spacing: 0.02em;
+        text-transform: none;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-announcements .employee-dashboard-card-link {
+        display: none !important;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-announcements .employee-dashboard-card-link:hover {
+        background: rgba(255,255,255,0.18);
+        color: #ffffff;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-announcements .oh-card-dashboard__body {
+        flex: 1 1 auto;
+        height: auto;
+        min-height: 0;
+        padding: 0.45rem 0.35rem 0.35rem;
+        overflow: hidden;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-announcements .oh-card-dashboard__body > * {
+        border-color: rgba(255,255,255,0.12) !important;
+        color: rgba(255,255,255,0.88);
+    }
+
+    .employee-dashboard-shell .employee-announcement-list {
+        height: 100% !important;
+        max-height: none;
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(169,229,201,.45) transparent;
+    }
+
+    .employee-dashboard-shell .employee-announcement-list .oh-sticky-table__table,
+    .employee-dashboard-shell .employee-announcement-list .oh-sticky-table__tbody {
+        width: 100%;
+        height: 100%;
+    }
+
+    .employee-dashboard-shell .employee-announcement-list .oh-sticky-table__tbody {
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+    }
+
+    .employee-dashboard-shell .employee-announcement-list .oh-sticky-table__tbody > .oh-sticky-table__tr:only-child,
+    .employee-dashboard-shell .employee-announcement-list .oh-sticky-table__tbody > .oh-sticky-table__tr:only-child .employee-announcement-item {
+        height: 100%;
+        min-height: 0;
+    }
+
+    .employee-dashboard-shell .employee-announcement-list .oh-sticky-table__tr {
+        padding: 0 !important;
+        border: 0 !important;
+        background: transparent !important;
+    }
+
+    .employee-dashboard-shell .employee-announcement-item {
+        display: flex;
+        align-items: center;
+        flex: 1 1 auto;
+        width: 100%;
+        min-width: 0;
+        margin: 0;
+        padding: 0.7rem 0.8rem;
+        border: 1px solid rgba(169,229,201,.16);
+        border-radius: 14px;
+        background: linear-gradient(100deg, rgba(11,35,27,.92), rgba(22,49,39,.78));
+        box-sizing: border-box;
+        transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+
+    .employee-dashboard-shell .employee-announcement-item:hover {
+        transform: translateX(3px);
+        border-color: rgba(169,229,201,.42);
+        background: linear-gradient(100deg, rgba(18,55,42,.98), rgba(28,67,52,.85));
+    }
+
+    .employee-dashboard-shell .employee-announcement-item__avatar {
+        display: grid;
+        place-items: center;
+        flex: 0 0 34px;
+        width: 34px;
+        height: 34px;
+        margin-right: 0.7rem !important;
+        border: 1px solid rgba(169,229,201,.3);
+        border-radius: 11px;
+        background: rgba(169,229,201,.12);
+        overflow: hidden;
+    }
+
+    .employee-dashboard-shell .employee-announcement-item__avatar .oh-profile__image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .employee-dashboard-shell .employee-announcement-item__content {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        gap: 0.18rem;
+    }
+
+    .employee-dashboard-shell .employee-announcement-item__title {
+        display: block;
+        overflow: hidden;
+        color: #f5fff9 !important;
+        font-size: 0.78rem;
+        line-height: 1.3;
+        font-weight: 750;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .employee-dashboard-shell .employee-announcement-item__date {
+        color: rgba(209,231,221,.62);
+        font-size: 0.65rem;
+        font-weight: 600;
+    }
+
+    .employee-dashboard-shell .employee-announcement-item .oh-profile__info-value {
+        flex: 0 0 auto;
+        margin-left: auto !important;
+        background: #8dd1b7 !important;
+        color: #123127 !important;
+        font-size: 0.58rem !important;
+        letter-spacing: .04em;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .empty-state {
+        align-items: flex-start;
+        justify-content: center;
+        text-align: left;
+        padding: 0.35rem 0.15rem;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .empty-state .metric-value {
+        margin-bottom: 0.3rem;
+        line-height: 1;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .empty-state .metric-label,
+    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .empty-state .metric-subtitle {
+        width: 100%;
+        text-align: left;
+    }
+
+    .employee-dashboard-shell .employee-team-member {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.55rem 0;
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .employee-dashboard-shell .employee-team-member__avatar {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        flex: 0 0 34px;
+        overflow: hidden;
+        border-radius: 50%;
+        background: #716ac4;
+        color: #fff;
+        font-size: 0.72rem;
+        font-weight: 800;
+    }
+
+    .employee-dashboard-shell .employee-team-member__avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .employee-dashboard-shell .employee-team-member__info {
+        display: flex;
+        min-width: 0;
+        flex: 1;
+        flex-direction: column;
+    }
+
+    .employee-dashboard-shell .employee-team-member__info strong {
+        font-size: 0.78rem;
+    }
+
+    .employee-dashboard-shell .employee-team-member__info small {
+        overflow: hidden;
+        color: rgba(255,255,255,0.68);
+        font-size: 0.68rem;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .employee-dashboard-shell .employee-team-member__status {
+        width: 9px;
+        height: 9px;
+        flex: 0 0 9px;
+        border: 2px solid #d9f1e4;
+        border-radius: 50%;
+        background: #8ac4ad;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-empty {
+        padding: 1rem 0;
+        color: rgba(255,255,255,0.68);
+        font-size: 0.78rem;
+    }
+
+    @media (max-width: 850px) {
+        .employee-dashboard-shell {
+            display: block;
+            grid-template-rows: none;
+            margin-top: 0;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-greeting-bar {
+            margin-bottom: 0.75rem;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-hero {
+            grid-column: 1;
+            min-height: 0;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border-radius: 22px !important;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-hero__identity {
+            display: block;
+            min-height: 0;
+            padding-right: 0;
+        }
+
+        .employee-dashboard-shell .attendance-hero-heading {
+            position: static;
+        }
+
+        .employee-dashboard-shell .attendance-hero-heading__value {
+            font-size: clamp(2.5rem, 11vw, 3.5rem);
+        }
+
+        .employee-dashboard-shell .employee-dashboard-hero__aside {
+            position: static;
+            width: auto;
+            margin-top: 0.65rem;
+        }
+
+        .employee-dashboard-shell .attendance-hero-stats {
+            position: static;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1rem;
+            margin-top: 4.5rem;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-summary-row {
+            display: block;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card,
+        .employee-dashboard-shell .employee-dashboard-leave-requests {
+            margin-bottom: 1rem;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child {
+            height: auto;
+            min-height: 0;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-announcements {
+            margin-bottom: 1rem;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-lower-grid {
+            display: block;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-lower-grid > .employee-dashboard-card {
+            margin-bottom: 1rem;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-hero__aside {
+            min-width: 0;
+            width: 100%;
+            position: static;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-hero__identity {
+            padding-right: 0;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-birthday {
+            position: static;
+            width: 100%;
+            margin-top: 1rem;
+            padding: 0;
+            border-left: 0;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-birthday img {
+            height: min(52vw, 220px);
+        }
+    }
+
+    @media (max-width: 640px) {
+        .employee-dashboard-shell {
+            padding: 0.75rem 0.75rem 5.5rem;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-hero {
+            padding: 1.1rem;
+            border-radius: 18px;
+        }
+
+        .employee-dashboard-shell .attendance-hero-stats {
+            grid-template-columns: 1fr;
+            gap: 0.8rem;
+            margin-top: 2rem;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-hero__aside {
+            flex-direction: column;
+        }
+    }
+
+    /* Keep the first row at the compact reference height after legacy card rules. */
+    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child {
+        min-height: 266px;
+        height: 266px;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-birthday img {
+        height: 205px;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-birthday__details {
+        min-height: 70px;
+        padding: 0.78rem 0.7rem;
+        background: #f8f6f0;
+        color: #294b47 !important;
+        overflow: visible;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-birthday__details strong {
+        display: block;
+        color: #294b47 !important;
+        font-size: 0.86rem;
+        font-weight: 800;
+        line-height: 1.15;
+        white-space: nowrap;
+    }
+
+    .employee-dashboard-shell .employee-dashboard-birthday__details span {
+        display: block;
+        color: #6b887d !important;
+        font-size: 0.78rem;
+        line-height: 1.25;
+        white-space: nowrap;
+    }
+
+    .employee-dashboard-shell .leave-overview__details {
+        margin-top: 1rem;
+    }
+
+    .employee-dashboard-shell .leave-overview__ring {
+        width: 64px;
+        height: 64px;
+        flex-basis: 64px;
+    }
+
+    .employee-dashboard-shell .leave-overview__ring::after {
+        inset: 7px;
+    }
+
+    @media (max-width: 850px) {
+        .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child {
+            min-height: 0;
+            height: auto;
+        }
+    }
+
+    @media (min-width: 851px) {
+        .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:nth-child(2) {
+            grid-column: 1;
+            grid-row: 2;
+            min-height: 266px;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-announcements {
+            grid-column: 2;
+            grid-row: 2;
+            min-height: 266px;
+        }
+    }
+</style>
+
 <div class="employee-dashboard-shell">
-    <div class="employee-dashboard-hero greeting--{% if now.hour < 13 %}morning{% elif now.hour < 17 %}afternoon{% elif now.hour < 21 %}evening{% else %}night{% endif %}">
+    <div class="employee-dashboard-greeting-bar">
+        <div>
+            <h1>
+                {% if now.hour < 13 %}{% trans "Good morning" %}
+                {% elif now.hour < 17 %}{% trans "Good afternoon" %}
+                {% elif now.hour < 21 %}{% trans "Good evening" %}
+                {% else %}{% trans "Good night" %}{% endif %},
+                {{ request.user.employee_get.get_full_name|default:request.user.username }} 👋
+            </h1>
+            <p>{% blocktrans with date=now|date:"M j" %}Here's what's happening across EMPLY today, {{ date }}.{% endblocktrans %}</p>
+        </div>
+    </div>
+
+    <div class="employee-dashboard-hero attendance-state--{% if attendance_display_time %}active{% else %}empty{% endif %} greeting--{% if now.hour < 13 %}morning{% elif now.hour < 17 %}afternoon{% elif now.hour < 21 %}evening{% else %}night{% endif %}">
         <style>
             /* Time-aware greeting variants */
             .employee-dashboard-hero.greeting--morning,
             .employee-dashboard-hero.greeting--afternoon,
             .employee-dashboard-hero.greeting--evening,
             .employee-dashboard-hero.greeting--night {
-                background: var(--card-bg-dark);
-                border: 1px solid rgba(255,255,255,0.08);
+                background: linear-gradient(115deg, #31594f 0%, #8fa3a0 72%, #f8faf7 100%) !important;
+                border: 1px solid rgba(47,87,82,0.18) !important;
                 color: var(--text-main);
                 border-radius: 28px;
-                box-shadow: 0 18px 36px rgba(1, 9, 5, 0.18);
+                box-shadow: 0 16px 30px rgba(47,87,82,0.16);
             }
 
             /* When the hero uses a light card surface, ensure all hero text uses the light-surface tokens */
@@ -928,6 +2214,94 @@
         </style>
 
         <div class="employee-dashboard-hero__identity">
+            <div class="attendance-hero-heading">
+                <span class="attendance-hero-heading__label">{% trans "Today's attendance" %}</span>
+                {% if attendance_display_time %}
+                    <span class="attendance-hero-heading__value">{{ attendance_display_time }}</span>
+                {% else %}
+                    <span class="attendance-hero-heading__empty">☀️</span>
+                {% endif %}
+                {% if attendance_status %}
+                    <span class="employee-dashboard-hero__status">{{ attendance_status }}</span>
+                {% endif %}
+                <style>
+                    .employee-dashboard-shell {
+                        grid-template-rows: 333px auto auto auto !important;
+                    }
+
+                    .employee-dashboard-shell .employee-dashboard-hero {
+                        grid-column: 1 !important;
+                        grid-row: 1 !important;
+                        height: 333px !important;
+                        min-height: 333px !important;
+                        margin-bottom: 0 !important;
+                        padding: 1.45rem 1.7rem !important;
+                        background: linear-gradient(110deg, #31594f 0%, #8fa3a0 72%, #f5f7f5 100%) !important;
+                        border: 1px solid rgba(47,87,82,0.18) !important;
+                        border-radius: 28px !important;
+                        box-shadow: 0 16px 30px rgba(47,87,82,0.16) !important;
+                    }
+
+                    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child {
+                        grid-column: 2 !important;
+                        grid-row: 1 !important;
+                        height: 333px !important;
+                        min-height: 333px !important;
+                    }
+
+                    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:nth-child(2),
+                    .employee-dashboard-shell .employee-dashboard-announcements {
+                        grid-row: 2 !important;
+                        min-height: 266px !important;
+                    }
+
+                    .employee-dashboard-shell .employee-dashboard-hero__identity {
+                        padding-right: 285px !important;
+                    }
+
+                    .employee-dashboard-shell .attendance-hero-heading {
+                        top: 1.45rem !important;
+                        left: 1.7rem !important;
+                    }
+
+                    .employee-dashboard-shell .employee-dashboard-hero__aside {
+                        top: 7.35rem !important;
+                        left: 1.7rem !important;
+                    }
+
+                    .employee-dashboard-shell .attendance-hero-stats {
+                        left: 1.7rem !important;
+                        right: 285px !important;
+                        bottom: 1.7rem !important;
+                    }
+
+                    .employee-dashboard-shell .employee-dashboard-birthday {
+                        top: 1.25rem !important;
+                        right: 1.25rem !important;
+                        bottom: 1.25rem !important;
+                        width: 245px !important;
+                        padding-left: 1.45rem !important;
+                    }
+
+                    @media (max-width: 850px) {
+                        .employee-dashboard-shell {
+                            grid-template-rows: none !important;
+                        }
+
+                        .employee-dashboard-shell .employee-dashboard-hero {
+                            height: auto !important;
+                            min-height: 0 !important;
+                            padding: 1.25rem !important;
+                            border-radius: 22px !important;
+                        }
+
+                        .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child {
+                            height: auto !important;
+                            min-height: 0 !important;
+                        }
+                    }
+                </style>
+            </div>
             <div class="employee-dashboard-hero__avatar">
                 {% if request.user.employee_get.get_avatar %}
                     <img src="{{ request.user.employee_get.get_avatar }}" alt="{{ request.user.employee_get.get_full_name }}" />
@@ -947,7 +2321,7 @@
                             {% endif %}
                         </div>
                         <div class="employee-dashboard-hero__greeting-sub">
-                            {% if now.hour < 13 %}Subah{% elif now.hour < 17 %}Dopahar{% elif now.hour < 21 %}Shaam{% else %}Raat{% endif %}
+                            {% blocktrans with date=now|date:"l, F j, Y" %}Here's what's happening across EMPLY today, {{ date }}.{% endblocktrans %}
                         </div>
                     </div>
                 </div>
@@ -960,18 +2334,45 @@
                         {% if employee.email %}<span>{{ employee.email }}</span>{% endif %}
                     {% endwith %}
                 </div>
+                <div class="attendance-hero-stats">
+                    <div class="attendance-hero-stat">
+                        <span class="attendance-hero-stat__label">{% trans "Hours logged" %}</span>
+                        <span class="attendance-hero-stat__value">{{ worked_today|default:"—" }}</span>
+                    </div>
+                    <div class="attendance-hero-stat">
+                        <span class="attendance-hero-stat__label">{% trans "Expected checkout" %}</span>
+                        <span class="attendance-hero-stat__value">{{ expected_checkout|default:"—" }}</span>
+                    </div>
+                    <div class="attendance-hero-stat">
+                        <span class="attendance-hero-stat__label">{% trans "This month" %}</span>
+                        <span class="attendance-hero-stat__value">{{ month_attended_days }} / {{ month_expected_days }} {% trans "days" %}</span>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="employee-dashboard-hero__aside">
-            {% if attendance_status %}
-                <div class="employee-dashboard-hero__status">{{ attendance_status }}</div>
-            {% endif %}
             <div class="employee-dashboard-hero__time-widget" aria-live="polite">
                 <div class="employee-dashboard-hero__time-widget-label">India / IST</div>
                 <div class="employee-dashboard-hero__time-widget-time" id="indiaTimeWidgetTime">--:-- --</div>
                 <div class="employee-dashboard-hero__time-widget-date" id="indiaTimeWidgetDate">--</div>
             </div>
         </div>
+        {% if birthdays %}
+        <div class="employee-dashboard-birthday">
+            <div class="employee-dashboard-birthday__label">{% trans "Upcoming birthdays" %}</div>
+            {% with birthday=birthdays.0 %}
+                <img src="{{ birthday.get_avatar }}" alt="{{ birthday.get_full_name }}">
+                <div class="employee-dashboard-birthday__details">
+                    <strong style="color:#294b47 !important;">{{ birthday.get_full_name }}</strong>
+                    <span style="color:#6b887d !important;">{{ birthday.dob|date:"F j" }} ·
+                        {% if birthday.days_until_birthday == 0 %}{% trans "Today" %}
+                        {% elif birthday.days_until_birthday == 1 %}{% trans "Tomorrow" %}
+                        {% else %}{% blocktrans with days=birthday.days_until_birthday %}In {{ days }} days{% endblocktrans %}{% endif %}
+                    </span>
+                </div>
+            {% endwith %}
+        </div>
+        {% endif %}
     </div>
 
 <script>
@@ -993,10 +2394,12 @@
         var textEl = hero.querySelector('.employee-dashboard-hero__greeting-text');
         var subEl = hero.querySelector('.employee-dashboard-hero__greeting-sub');
         if(!textEl || !iconEl || !subEl) return;
-        if(period === 'morning') { iconEl.textContent = '☀️'; textEl.textContent = 'Good morning'; subEl.textContent = 'Subah'; }
-        else if(period === 'afternoon') { iconEl.textContent = '🌤️'; textEl.textContent = 'Good afternoon'; subEl.textContent = 'Dopahar'; }
-        else if(period === 'evening') { iconEl.textContent = '🌇'; textEl.textContent = 'Good evening'; subEl.textContent = 'Shaam'; }
-        else { iconEl.textContent = '🌙'; textEl.textContent = 'Good night'; subEl.textContent = 'Raat'; }
+        var today = new Intl.DateTimeFormat(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).format(new Date());
+        if(period === 'morning') { iconEl.textContent = '☀️'; textEl.textContent = 'Good morning'; }
+        else if(period === 'afternoon') { iconEl.textContent = '🌤️'; textEl.textContent = 'Good afternoon'; }
+        else if(period === 'evening') { iconEl.textContent = '🌇'; textEl.textContent = 'Good evening'; }
+        else { iconEl.textContent = '🌙'; textEl.textContent = 'Good night'; }
+        subEl.textContent = "Here's what's happening across EMPLY today, " + today + ".";
     }
 
     function updateIndiaTime(){
@@ -1024,34 +2427,31 @@
         {% if "leave"|app_installed %}
             <div class="employee-dashboard-card employee-dashboard-card--wide">
                 <div class="oh-card-dashboard__header">
-                    <span class="oh-card-dashboard__title">{% trans "Leave Balance" %}</span>
+                    <span class="leave-card-icon" aria-hidden="true">▣</span>
+                    <span class="leave-card-badge">{{ leave_remaining }} {% trans "left" %}</span>
                 </div>
                 <div class="oh-card-dashboard__body">
                     {% if leave_available and leave_rows %}
-                        <div class="leave-balance-wrap">
-                            <div class="leave-balance-left">
-                                <div class="leave-circle">{{ leave_remaining }}</div>
-                                <div class="metric-label text-center">{% trans "available days" %}</div>
+                        <div class="leave-overview">
+                            <div class="leave-overview__headline">
+                                <strong>{{ leave_remaining }}</strong>
+                                <span>/ {{ leave_allocated }} {% trans "days" %}</span>
                             </div>
-                            <div class="leave-balance-right">
-                                <div style="display:flex;justify-content:space-between;align-items:center">
-                                    <div class="metric-label">{% trans "Available days" %} <strong>{{ leave_remaining }}</strong> / {{ leave_allocated }}</div>
-                                    <div class="leave-percent">{% trans "Available" %}: {{ leave_percent }}%</div>
+                            <div class="leave-overview__label">{% trans "Leave balance remaining" %}</div>
+                            <div class="leave-overview__details">
+                                <div class="leave-overview__ring" style="--leave-used: {{ leave_percent }}%;">
+                                    <span>{{ leave_percent }}%</span>
                                 </div>
-                                <div class="leave-progress"><div class="bar" style="width: {{ leave_percent }}%;"></div></div>
-                                <div class="leave-stats">
-                                    <div><strong>{{ leave_used }}</strong> {% trans "approved used" %}</div>
-                                    <div><strong>{{ pending_leaves }}</strong> {% trans "pending requests" %}</div>
+                                <div>
+                                    <strong>{% trans "Used so far" %}</strong>
+                                    <span>{{ leave_used }} {% trans "of" %} {{ leave_allocated }} {% trans "annual days taken" %}</span>
                                 </div>
-                                <div class="leave-balance-list">
-                                    {% for row in leave_rows %}
-                                        <div class="leave-balance-item">
-                                            <div class="leave-balance-item__name">{{ row.name }}</div>
-                                            <div class="leave-balance-item__bar"><div class="leave-balance-item__fill" style="width: {{ row.percent }}%;"></div></div>
-                                            <div class="leave-balance-item__meta">{% trans "Available" %}: {{ row.remaining }} · {% trans "Total" %}: {{ row.total }} · {% trans "Used" %}: {{ row.taken }}</div>
-                                        </div>
-                                    {% endfor %}
-                                </div>
+                            </div>
+                            <div class="leave-overview__progress">
+                                <div class="bar" style="width: {{ leave_percent }}%;"></div>
+                            </div>
+                            <div class="leave-overview__pending">
+                                {{ pending_leaves }} {% trans "pending requests" %}
                             </div>
                         </div>
                     {% else %}
@@ -1068,7 +2468,7 @@
         {% endif %}
 
         {% if "attendance"|app_installed %}
-            <div class="employee-dashboard-card employee-dashboard-card--wide">
+            <div class="employee-dashboard-card employee-dashboard-card--wide work-hours-card">
                 <div class="oh-card-dashboard__header">
                     <span class="oh-card-dashboard__title">{% trans "Work Hours This Week" %}</span>
                 </div>
@@ -1089,62 +2489,340 @@
                 </div>
             </div>
         {% endif %}
-    </div>
 
-    <div class="employee-dashboard-card employee-dashboard-card--full employee-dashboard-attendance">
-        <div class="oh-card-dashboard__header">
-            <span class="oh-card-dashboard__title">{% trans "My Attendance" %}</span>
-        </div>
-        <div class="oh-card-dashboard__body">
-            <div class="employee-dashboard-attendance__header">
-                <div class="metric-label" style="margin-top:0; font-size: 0.82rem;">{{ attendance_month_label }}</div>
-                <div class="employee-dashboard-attendance__legend">
-                    {% for legend in attendance_legend %}
-                        <span class="attendance-legend-item">
-                            <span class="attendance-legend-swatch {{ legend.class }}"></span>
-                            {{ legend.label }}
-                        </span>
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="employee-dashboard-attendance__grid">
-                <div class="employee-dashboard-attendance__weekday">Mon</div>
-                <div class="employee-dashboard-attendance__weekday">Tue</div>
-                <div class="employee-dashboard-attendance__weekday">Wed</div>
-                <div class="employee-dashboard-attendance__weekday">Thu</div>
-                <div class="employee-dashboard-attendance__weekday">Fri</div>
-                <div class="employee-dashboard-attendance__weekday">Sat</div>
-                <div class="employee-dashboard-attendance__weekday">Sun</div>
-                {% for week in attendance_month %}
-                    {% for day in week %}
-                        {% if day.day %}
-                            <div class="attendance-day {{ day.status_class }}" title="{{ day.title }}">
-                                {{ day.day }}
-                            </div>
-                        {% else %}
-                            <div class="attendance-day day--empty" aria-hidden="true"></div>
-                        {% endif %}
-                    {% endfor %}
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-
-    <div class="employee-dashboard-lower-grid">
-        {% if 'birthday_view'|feature_is_accessible:request or perms.employee.view_employee %}
-            <div class="employee-dashboard-card">
-                <div class="oh-card-dashboard__header">
-                    <span class="oh-card-dashboard__title">{% trans "Birthdays" %}</span>
-                </div>
-                <div class="oh-card-dashboard__body employee-dashboard-htmx" hx-get="{% url 'get-birthday' %}" hx-trigger="load" hx-swap="innerHTML"></div>
-            </div>
-        {% endif %}
-
-        <div class="employee-dashboard-card">
+        <div class="employee-dashboard-card employee-dashboard-announcements">
             <div class="oh-card-dashboard__header">
                 <span class="oh-card-dashboard__title">{% trans "Announcements" %}</span>
             </div>
             <div class="oh-card-dashboard__body employee-dashboard-htmx" hx-get="{% url 'announcement-list' %}" hx-trigger="load" hx-swap="innerHTML"></div>
         </div>
     </div>
+    <style>
+        .employee-dashboard-shell .employee-dashboard-hero {
+            border: 1px solid rgba(47, 87, 82, 0.35) !important;
+            border-radius: 28px !important;
+            box-shadow: 0 12px 24px rgba(47, 87, 82, 0.12) !important;
+            box-sizing: border-box;
+        }
+
+        html body .oh-wrapper-main.employee-bottom-nav-active .employee-dashboard-shell .employee-dashboard-hero {
+            border: 1px solid rgba(47, 87, 82, 0.35) !important;
+            border-radius: 28px !important;
+            box-shadow: 0 12px 24px rgba(47, 87, 82, 0.12) !important;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-hero__status {
+            text-transform: none !important;
+            color: #8dd1b7 !important;
+            background: rgba(74,177,143,0.2) !important;
+            font-size: 0.86rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 0 !important;
+            width: fit-content !important;
+            margin-top: 0.65rem !important;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-hero__status::before {
+            color: #8dd1b7 !important;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-hero__aside {
+            top: 7.8rem !important;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-birthday img {
+            height: 205px !important;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-birthday__details {
+            min-height: 70px !important;
+            padding: 0.78rem 0.7rem !important;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-hero.greeting--morning,
+        .employee-dashboard-shell .employee-dashboard-hero.greeting--afternoon,
+        .employee-dashboard-shell .employee-dashboard-hero.greeting--evening,
+        .employee-dashboard-shell .employee-dashboard-hero.greeting--night {
+            background: linear-gradient(110deg, #31594f 0%, #8fa3a0 72%, #f5f7f5 100%) !important;
+        }
+
+        /* Employee dashboard palette: preserve the existing layout and
+           component styling while matching the teal/light-blue reference. */
+        .employee-dashboard-shell {
+            --bg-main: #e8f5f7;
+            --card-bg-dark: #0d5064;
+            --card-bg-light: #c7e5eb;
+            --accent-green: #2a849b;
+            --accent-light-green: #b9e0e7;
+            --text-main-light: #173f50;
+            --text-muted-light: #557b84;
+            --border-soft: rgba(22, 91, 109, 0.22);
+            background: var(--bg-main);
+            color: var(--text-main-light);
+        }
+
+        .employee-dashboard-shell .employee-dashboard-card {
+            background: #c7e5eb !important;
+            border-color: rgba(42, 132, 155, 0.24);
+            box-shadow: 0 12px 28px rgba(17, 78, 94, 0.14);
+            color: var(--text-main-light);
+        }
+
+        .employee-dashboard-shell .employee-dashboard-card .oh-card-dashboard__title,
+        .employee-dashboard-shell .employee-dashboard-card .metric-label,
+        .employee-dashboard-shell .employee-dashboard-card .metric-subtitle,
+        .employee-dashboard-shell .work-hours-day__label {
+            color: var(--text-muted-light) !important;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-card .metric-value,
+        .employee-dashboard-shell .employee-dashboard-card .oh-card-dashboard__body,
+        .employee-dashboard-shell .work-hours-day__value {
+            color: var(--text-main-light);
+        }
+
+        .employee-dashboard-shell .employee-dashboard-hero,
+        .employee-dashboard-shell .employee-dashboard-hero.greeting--morning,
+        .employee-dashboard-shell .employee-dashboard-hero.greeting--afternoon,
+        .employee-dashboard-shell .employee-dashboard-hero.greeting--evening,
+        .employee-dashboard-shell .employee-dashboard-hero.greeting--night {
+            background: linear-gradient(110deg, #0b485d 0%, #176b82 62%, #2a8ca3 100%) !important;
+            border-color: rgba(28, 116, 137, 0.45) !important;
+            box-shadow: 0 12px 24px rgba(11, 72, 93, 0.2) !important;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-hero__avatar {
+            background: linear-gradient(135deg, #2a8ca3, #0d5064);
+        }
+
+        .employee-dashboard-shell .employee-dashboard-hero__status {
+            color: #79d0c0 !important;
+            background: rgba(70, 190, 171, 0.2) !important;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-hero__status::before {
+            color: #79d0c0 !important;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-card .leave-percent,
+        .employee-dashboard-shell .employee-dashboard-card .metric-subtitle strong {
+            color: #24758a !important;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-card .progress-bar,
+        .employee-dashboard-shell .work-hours-day__bar {
+            background: linear-gradient(180deg, #5eb8c8, #24758a);
+        }
+
+        .employee-dashboard-shell .employee-dashboard-lower-grid .employee-dashboard-card,
+        .employee-dashboard-shell .employee-dashboard-announcements {
+            background: #c7e5eb !important;
+            color: #173f50 !important;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-announcements .oh-card-dashboard__title,
+        .employee-dashboard-shell .employee-dashboard-announcements .employee-dashboard-card-link,
+        .employee-dashboard-shell .employee-dashboard-announcements .employee-dashboard-card-link:hover {
+            color: #173f50 !important;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-htmx,
+        .employee-dashboard-shell .employee-dashboard-htmx .oh-dashboard__event {
+            background: transparent !important;
+        }
+
+        .employee-dashboard-shell .employee-dashboard-card .work-hours-day__bar-wrap {
+            background: rgba(255,255,255,0.28);
+            border-color: rgba(42,132,155,0.16);
+        }
+
+        html body .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child,
+        html body .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:nth-child(2),
+        html body .employee-dashboard-shell .employee-dashboard-lower-grid > .employee-dashboard-card,
+        html body .employee-dashboard-shell .employee-dashboard-announcements {
+            background: #c7e5eb !important;
+            color: #173f50 !important;
+        }
+
+        html body .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child {
+            background: #0d5064 !important;
+            color: #ffffff !important;
+        }
+
+        /* Match the reference deep-teal to blue gradient on both primary
+           dashboard widgets without changing their existing layout. */
+        html body .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child,
+        html body .employee-dashboard-shell .employee-dashboard-hero {
+            background: linear-gradient(112deg, #0a4d60 0%, #176d83 55%, #2b90a8 100%) !important;
+        }
+
+        /* Secondary widgets use the reference contrast pairing: a soft
+           light-blue work-hours card and a deep teal announcements card. */
+        html body .employee-dashboard-shell .employee-dashboard-lower-grid > .employee-dashboard-card:not(.employee-dashboard-announcements) {
+            background: #c7e5eb !important;
+            color: #173f50 !important;
+            border-color: rgba(42, 132, 155, 0.2) !important;
+            box-shadow: 0 14px 30px rgba(24, 91, 109, 0.12) !important;
+        }
+
+        html body .employee-dashboard-shell .employee-dashboard-lower-grid > .employee-dashboard-card:not(.employee-dashboard-announcements) .oh-card-dashboard__title,
+        html body .employee-dashboard-shell .employee-dashboard-lower-grid > .employee-dashboard-card:not(.employee-dashboard-announcements) .metric-label,
+        html body .employee-dashboard-shell .employee-dashboard-lower-grid > .employee-dashboard-card:not(.employee-dashboard-announcements) .work-hours-day__label {
+            color: #557b84 !important;
+        }
+
+        html body .employee-dashboard-shell .employee-dashboard-lower-grid > .employee-dashboard-card:not(.employee-dashboard-announcements) .metric-value,
+        html body .employee-dashboard-shell .employee-dashboard-lower-grid > .employee-dashboard-card:not(.employee-dashboard-announcements) .work-hours-day__value {
+            color: #173f50 !important;
+        }
+
+        html body .employee-dashboard-shell .employee-dashboard-announcements {
+            background: linear-gradient(145deg, #0f596a 0%, #176f80 58%, #278da0 100%) !important;
+            color: #ffffff !important;
+            border-color: rgba(42, 132, 155, 0.28) !important;
+            box-shadow: 0 14px 30px rgba(24, 91, 109, 0.16) !important;
+        }
+
+        html body .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:nth-child(2) {
+            background: #c7e5eb !important;
+            color: #173f50 !important;
+            border-color: rgba(42, 132, 155, 0.2) !important;
+            box-shadow: 0 14px 30px rgba(24, 91, 109, 0.12) !important;
+        }
+
+        html body .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-announcements {
+            background: linear-gradient(145deg, #0f596a 0%, #176f80 58%, #278da0 100%) !important;
+            color: #ffffff !important;
+        }
+
+        html body .employee-dashboard-shell .work-hours-card {
+            background: #c7e5eb !important;
+            color: #173f50 !important;
+        }
+
+        html body .employee-dashboard-shell .work-hours-card .oh-card-dashboard__header,
+        html body .employee-dashboard-shell .work-hours-card .oh-card-dashboard__title,
+        html body .employee-dashboard-shell .work-hours-card .metric-value,
+        html body .employee-dashboard-shell .work-hours-card .metric-label,
+        html body .employee-dashboard-shell .work-hours-card .work-hours-day__value,
+        html body .employee-dashboard-shell .work-hours-card .work-hours-day__label {
+            color: #173f50 !important;
+        }
+
+        html body .employee-dashboard-shell .work-hours-card .oh-card-dashboard__header {
+            border-bottom-color: rgba(23, 63, 80, 0.16) !important;
+        }
+
+        html body .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-announcements .oh-card-dashboard__body {
+            color: #ffffff !important;
+        }
+
+        html body .employee-dashboard-shell .employee-dashboard-announcements {
+            background: linear-gradient(145deg, #0f596a 0%, #176f80 58%, #278da0 100%) !important;
+            color: #ffffff !important;
+        }
+
+        html body .employee-dashboard-shell .employee-dashboard-announcements .oh-card-dashboard__title {
+            color: #ffffff !important;
+        }
+
+        html body .employee-dashboard-shell .employee-dashboard-announcements .oh-card-dashboard__title {
+            color: #ffffff !important;
+        }
+
+        html body .employee-dashboard-shell .employee-announcement-item {
+            background: linear-gradient(100deg, #092e2b, #123f3a) !important;
+            border-color: rgba(157, 221, 220, 0.28) !important;
+        }
+
+        html body .employee-dashboard-shell .employee-announcement-item:hover {
+            background: linear-gradient(100deg, #0d3d39, #18534d) !important;
+            border-color: rgba(157, 221, 220, 0.55) !important;
+        }
+
+        html body .employee-dashboard-shell .employee-announcement-item__title {
+            color: #f5ffff !important;
+        }
+
+        html body .employee-dashboard-shell .employee-announcement-item__date {
+            color: #a9d3d1 !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .oh-navbar {
+            border-bottom: 0 !important;
+            border-bottom-style: none !important;
+            box-shadow: none !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme #notificationIcon .oh-navbar__notification-link:hover,
+        html body .oh-wrapper-main.employee-panel-theme #notificationIcon .oh-navbar__notification-link:focus-visible {
+            background: #278da0 !important;
+            border-color: #278da0 !important;
+            box-shadow: 0 0 0 4px rgba(39, 141, 160, 0.2), 0 8px 18px rgba(10, 77, 96, 0.2) !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .oh-modal__dialog {
+            background: #f4fbfc !important;
+            border: 1px solid rgba(42, 132, 155, 0.28) !important;
+            border-radius: 24px !important;
+            box-shadow: 0 24px 60px rgba(10, 77, 96, 0.24) !important;
+            color: #173f50 !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .oh-modal__dialog-header {
+            background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+            border-bottom: 1px solid rgba(199, 229, 235, 0.55) !important;
+            color: #ffffff !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .oh-modal__dialog-title,
+        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .oh-modal__dialog-header h2 {
+            color: #ffffff !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .oh-modal__dialog-body,
+        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .oh-modal__dialog-footer {
+            background: #f4fbfc !important;
+            color: #173f50 !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal label,
+        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .oh-label,
+        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal legend,
+        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal p {
+            color: #173f50 !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal input,
+        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal textarea,
+        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal select,
+        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .oh-input,
+        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .oh-select,
+        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .select2-selection {
+            background: #ffffff !important;
+            border-color: rgba(42, 132, 155, 0.2) !important;
+            color: #285d6b !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal input::placeholder,
+        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal textarea::placeholder {
+            color: #7a9da5 !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .oh-btn,
+        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal button[type="submit"],
+        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal input[type="submit"] {
+            background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+            border-color: #176d83 !important;
+            color: #ffffff !important;
+            box-shadow: 0 8px 18px rgba(10, 77, 96, 0.2) !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .oh-modal__close,
+        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .oh-modal__close--custom {
+            background: rgba(10, 77, 96, 0.22) !important;
+            border-color: rgba(199, 229, 235, 0.5) !important;
+            color: #ffffff !important;
+        }
+    </style>
 </div>

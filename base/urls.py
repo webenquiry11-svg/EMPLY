@@ -935,6 +935,11 @@ urlpatterns = [
     ),
     path("announcement-list", announcement.announcement_list, name="announcement-list"),
     path(
+        "announcement-notifications",
+        announcement.announcement_notifications,
+        name="announcement-notifications",
+    ),
+    path(
         "create-announcement",
         announcement.create_announcement,
         name="create-announcement",

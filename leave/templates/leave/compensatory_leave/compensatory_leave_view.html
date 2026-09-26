@@ -16,8 +16,139 @@
         .diff-cell {
             background: rgba(255, 166, 0, 0.158);
         }
+
+        .compensatory-leave-employee-theme {
+            min-height: calc(100vh - 32px);
+            padding: 18px 18px 110px;
+            background: #f5f7f3;
+            color: #123d2c;
+        }
+
+        .compensatory-leave-employee-theme .oh-main__topbar,
+        .compensatory-leave-employee-theme .oh-tabs,
+        .compensatory-leave-employee-theme .oh-sticky-table {
+            background: #ffffff;
+            border: 1px solid rgba(209, 231, 221, 0.95);
+            border-radius: 18px;
+            box-shadow: 0 10px 26px rgba(18, 61, 44, 0.08);
+        }
+
+        .compensatory-leave-employee-theme .oh-main__topbar {
+            margin-bottom: 16px;
+            padding: 18px 22px;
+        }
+
+        .compensatory-leave-employee-theme .oh-main__titlebar-title {
+            color: #244943;
+            font-size: 1.45rem;
+        }
+
+        .compensatory-leave-employee-theme .oh-btn {
+            border: 1px solid #2f5752 !important;
+            border-radius: 11px !important;
+            background: #2f5752 !important;
+            color: #ffffff !important;
+            font-weight: 700;
+            box-shadow: 0 6px 14px rgba(47, 87, 82, 0.16);
+        }
+
+        .compensatory-leave-employee-theme .oh-btn:hover {
+            background: #244943 !important;
+            transform: translateY(-1px);
+        }
+
+        .compensatory-leave-employee-theme .oh-input,
+        .compensatory-leave-employee-theme .oh-select,
+        .compensatory-leave-employee-theme input,
+        .compensatory-leave-employee-theme select {
+            border-color: rgba(47, 87, 82, 0.2) !important;
+            border-radius: 10px !important;
+            background: #ffffff !important;
+            color: #123d2c !important;
+        }
+
+        .compensatory-leave-employee-theme .oh-tabs {
+            overflow: hidden;
+            padding: 0;
+        }
+
+        .compensatory-leave-employee-theme .oh-tabs__tablist {
+            padding: 12px 16px 0;
+            background: #eef7f1;
+            border-bottom: 1px solid #d1e7dd;
+        }
+
+        .compensatory-leave-employee-theme .oh-tabs__tab,
+        .compensatory-leave-employee-theme .oh-tabs__tab--active {
+            border-radius: 11px 11px 0 0;
+            font-weight: 700;
+        }
+
+        .compensatory-leave-employee-theme .oh-tabs__tab {
+            color: #52736a;
+        }
+
+        .compensatory-leave-employee-theme .oh-tabs__tab--active {
+            background: #ffffff;
+            color: #244943;
+        }
+
+        .compensatory-leave-employee-theme .oh-sticky-table {
+            overflow: hidden;
+            border: 0;
+            box-shadow: none;
+        }
+
+        .compensatory-leave-employee-theme .oh-sticky-table__thead {
+            background: #2f5752;
+            color: #ffffff;
+        }
+
+        .compensatory-leave-employee-theme .oh-sticky-table__th {
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .compensatory-leave-employee-theme .oh-sticky-table__tr {
+            border-bottom: 1px solid #e1eee7;
+        }
+
+        .compensatory-leave-employee-theme .oh-sticky-table__tbody .oh-sticky-table__tr {
+            background: #ffffff;
+            color: #294b47;
+            transition: background 160ms ease, transform 160ms ease;
+        }
+
+        .compensatory-leave-employee-theme .oh-sticky-table__tbody .oh-sticky-table__tr:hover {
+            background: #f0f8f3;
+            transform: translateX(2px);
+        }
+
+        .compensatory-leave-employee-theme .oh-profile__name,
+        .compensatory-leave-employee-theme .oh-sticky-table__sd {
+            color: #294b47 !important;
+        }
+
+        .compensatory-leave-employee-theme .oh-404 {
+            padding: 64px 24px;
+            border: 1px solid #d1e7dd;
+            border-radius: 18px;
+            background: #ffffff;
+            color: #294b47;
+        }
+
+        @media (max-width: 768px) {
+            .compensatory-leave-employee-theme {
+                padding: 12px 10px 100px;
+            }
+
+            .compensatory-leave-employee-theme .oh-main__topbar {
+                padding: 14px;
+            }
+        }
     </style>
 
+    <div class="compensatory-leave-employee-theme">
     <!-- start of nav bar -->
     <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
         <div class="oh-main__titlebar oh-main__titlebar--left">
@@ -410,4 +541,5 @@
         nomodule
         src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
     ></script>
+    </div>
 {% endblock %}

@@ -115,25 +115,6 @@
             </div>
 
             <div class="oh-table_sticky--wrapper">
-                <div class="oh-sticky-dropdown--header" style="border: none">
-                    <div class="oh-dropdown" x-data="{open: false}">
-                        <button class="oh-sticky-dropdown_btn" @click="open = !open">
-                            <ion-icon
-                                name="ellipsis-vertical-sharp"
-                                role="img"
-                                class="md hydrated"
-                                aria-label="{% trans 'ellipsis vertical sharp' %}"
-                            ></ion-icon>
-                        </button>
-                        <div
-                            class="oh-dropdown__menu oh-sticky-table_dropdown"
-                            x-show="open"
-                            @click.outside="open = false"
-                        >
-                            <ul class="oh-dropdown__items" id="fieldContainerTable"></ul>
-                        </div>
-                    </div>
-                </div>
                 <div id="employee-tab-profile" data-table-name="employee_tab_profile">
                     <div class="row">
                         <div class="col-sm-12 col-md-12 col lg-12">
@@ -267,24 +248,6 @@
                                     </li>
                                 {% endif %}
 
-                                {% if "pms"|app_installed %}
-                                    <li
-                                        data-cell-index="12"
-                                        data-cell-title="{% trans 'Performance' %}"
-                                        class="oh-general__tab"
-                                    >
-                                        <a
-                                            hx-get="{% url 'performance-tab' employee.id %}"
-                                            hx-target="#performance_target"
-                                            data-action="general-tab"
-                                            data-target="#performance_target"
-                                            id="asset"
-                                            class="oh-general__tab-link"
-                                            role="button"
-                                        >{% trans "Performance" %}</a>
-                                    </li>
-                                {% endif %}
-
                                 <li
                                     data-cell-index="11"
                                     data-cell-title="{% trans 'Documents' %}"
@@ -299,40 +262,6 @@
                                         role="button"
                                     >{% trans "Documents" %}</a>
                                 </li>
-
-                                {% if "payroll"|app_installed %}
-                                    <li
-                                        data-cell-index="10"
-                                        data-cell-title="{% trans 'Bonus Points' %}"
-                                        class="oh-general__tab"
-                                    >
-                                        <a
-                                            hx-get="{% url 'bonus-points-tab' employee.id %}"
-                                            hx-target="#bonus_points_target"
-                                            data-action="general-tab"
-                                            data-target="#bonus_points_target"
-                                            class="oh-general__tab-link"
-                                            role="button"
-                                        >{% trans "Bonus Points" %}</a>
-                                    </li>
-                                {% endif %}
-
-                                {% if "recruitment"|app_installed %}
-                                    <li
-                                        data-cell-index="20"
-                                        data-cell-title='{% trans "Interview" %}'
-                                        class="oh-general__tab"
-                                    >
-                                        <a
-                                            href="#"
-                                            class="oh-general__tab-link"
-                                            hx-get="{% url 'employee-interview-tab' %}"
-                                            hx-target="#interview"
-                                            data-action="general-tab"
-                                            data-target="#interview"
-                                        >{% trans "Scheduled Interview" %}</a>
-                                    </li>
-                                {% endif %}
 
                                 {% if "offboarding"|app_installed and enabled_resignation_request %}
                                     <li
@@ -350,6 +279,24 @@
                                         >{% trans "Resignation" %}</a>
                                     </li>
                                 {% endif %}
+
+                                <li class="oh-profile-tabs__actions" x-data="{open: false}">
+                                    <button
+                                        type="button"
+                                        class="oh-sticky-dropdown_btn"
+                                        @click="open = !open"
+                                        aria-label="{% trans 'More profile sections' %}"
+                                    >
+                                        <ion-icon name="ellipsis-vertical-sharp"></ion-icon>
+                                    </button>
+                                    <div
+                                        class="oh-dropdown__menu oh-sticky-table_dropdown"
+                                        x-show="open"
+                                        @click.outside="open = false"
+                                    >
+                                        <ul class="oh-dropdown__items" id="fieldContainerTable"></ul>
+                                    </div>
+                                </li>
                             </ul>
 
                             <div class="oh-general__tab-target oh-profile__info-tab mb-4" id="personal_target"></div>

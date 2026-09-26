@@ -27,6 +27,15 @@
       <a href="#" class="oh-navbar__clock"><ion-icon class="oh-navbar__clock-icon me-2" name="enter-outline"></ion-icon>
         <span class="oh-navbar__clock-text">{% trans "Check-In" %}</span>
       </a>
+      <a href="#objectCreateModal"
+        class="employee-navbar-apply-leave"
+        data-toggle="oh-modal-toggle"
+        data-target="#objectCreateModal"
+        hx-get="{% url 'leave-request-create' %}"
+        hx-target="#objectCreateModalTarget">
+        <span class="material-symbols-outlined" aria-hidden="true">event_available</span>
+        <span>{% trans "Apply leave" %}</span>
+      </a>
       <!-- CLOCK-IN -->
       <!-- CLOCK-OUT -->
       <!-- <a href="#" class="oh-navbar__clock"><ion-icon class="oh-navbar__clock-icon me-2" name="exit-outline"></ion-icon>
@@ -173,6 +182,40 @@
 
   </div>
 </nav>
+
+<style>
+  .employee-navbar-apply-leave {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    height: 38px;
+    margin: 0 0.4rem;
+    padding: 0 1rem;
+    border-radius: 999px;
+    background: #2f5752;
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .employee-navbar-apply-leave:hover,
+  .employee-navbar-apply-leave:focus-visible {
+    background: #244842;
+    color: #fff;
+  }
+
+  .employee-navbar-apply-leave .material-symbols-outlined {
+    font-size: 1rem;
+  }
+
+  @media (max-width: 850px) {
+    .employee-navbar-apply-leave {
+      display: none;
+    }
+  }
+</style>
 
 <style>
 /* Mobile section menu overlay styles */

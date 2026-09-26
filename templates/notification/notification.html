@@ -31,7 +31,7 @@
         class="oh-navbar__notification-tray"
         x-data="{markRead: false, visible: true}"
         x-show="open"
-        style="display: none"
+        style="display: none; position: absolute !important; right: -12px !important; bottom: calc(100% + 12px) !important; width: min(370px, calc(100vw - 34px)) !important; min-height: 360px !important; max-height: 620px !important; background: #ffffff !important; border: 1px solid rgba(42, 132, 155, 0.25) !important; border-radius: 20px !important; box-shadow: 0 24px 52px rgba(23, 109, 131, 0.18) !important; overflow: hidden !important; z-index: 2200 !important;"
         @click.outside="open = false"
     >
         <div id="notificationContainer">

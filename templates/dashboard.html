@@ -5,13 +5,13 @@
 <div id="mainNav"></div>
 <!-- End of Navigation -->
 <style>
-    #dashboard {
-        background: #0d140e;
+    .employee-home-wrapper #dashboard {
+        background: #f5f7f3;
         border-radius: 0;
         padding-bottom: 3.5rem;
     }
 
-    #dashboard .oh-dashboard__cards {
+    .employee-home-wrapper #dashboard .oh-dashboard__cards {
         background: transparent;
     }
 
@@ -121,7 +121,7 @@
     }
 </style>
 
-<div class="oh-wrapper" style="max-width: none; width: 100%; margin: 0; background: #0d140e;">
+<div class="oh-wrapper{% if request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser %} employee-home-wrapper{% endif %}" style="max-width: none; width: 100%; margin: 0;">
 
     <!-- back button -->
     <div class="d-none mt-5" id="back_button" style="width: 10%">
@@ -130,7 +130,7 @@
                 aria-label="arrow-back-outline"></ion-icon>{% trans "Back" %}</a>
     </div>
     <!-- end of back button -->
-    <div class="oh-dashboard row" id="dashboard" style="padding-bottom: 3.5rem; width: 100%; max-width: none; margin: 0; background: #0d140e;">
+    <div class="oh-dashboard row" id="dashboard" style="padding-bottom: 3.5rem; width: 100%; max-width: none; margin: 0;">
 
         {% if request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser %}
             <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-12">
@@ -844,4 +844,3 @@
     runDriver()
 </script>
 {% endif %}
-

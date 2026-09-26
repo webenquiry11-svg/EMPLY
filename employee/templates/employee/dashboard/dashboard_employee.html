@@ -86,10 +86,67 @@
   .employee-panel-dashboard .employee-birthday-card__label,
   .employee-panel-dashboard .employee-birthday-card__date { color:var(--text-muted-dark); }
   .employee-panel-dashboard .employee-birthday-card__name { color:var(--text-main); }
+  .employee-panel-dashboard .oh-dashboard__left,
+  .employee-panel-dashboard .oh-dashboard__right,
+  .employee-panel-dashboard .oh-dashboard__movable-cards,
+  .employee-panel-dashboard [class*="col-"] {
+    min-width: 0;
+  }
+  .employee-panel-dashboard canvas {
+    max-width: 100%;
+  }
+  .employee-panel-dashboard .ep-kpi {
+    flex: 1 1 220px;
+  }
   @media (max-width: 767.98px) {
+    .employee-panel-dashboard {
+      padding: 12px 10px 92px;
+      min-height: calc(100vh - 72px);
+    }
+    .employee-panel-dashboard .ep-header {
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .employee-panel-dashboard .ep-title {
+      font-size: 20px;
+    }
     .employee-panel-dashboard .ep-kpi-row { flex-direction:column; }
-    .employee-panel-dashboard .ep-kpi { width:100%; }
+    .employee-panel-dashboard .ep-kpi {
+      width:100%;
+      min-width: 0;
+      padding: 13px;
+    }
+    .employee-panel-dashboard .ep-kpi__left {
+      width: 50px;
+      height: 50px;
+      margin-right: 10px;
+    }
+    .employee-panel-dashboard .ep-chart-card--large,
+    .employee-panel-dashboard .ep-chart-card {
+      border-radius: 14px;
+    }
+    .employee-panel-dashboard .ep-chart-card--large {
+      padding: 12px;
+    }
     .employee-panel-dashboard .ep-chart-card__body--large { min-height:240px; }
+  }
+  @media (max-width: 480px) {
+    .employee-panel-dashboard .ep-header {
+      display: block;
+    }
+    .employee-panel-dashboard .ep-title {
+      font-size: 18px;
+    }
+    .employee-panel-dashboard .ep-subtitle {
+      font-size: 12px;
+    }
+    .employee-panel-dashboard .ep-kpi__value {
+      font-size: 24px;
+    }
+    .employee-panel-dashboard .oh-dashboard__movable-cards {
+      margin-top: 14px !important;
+    }
   }
 
   /* Employee-scoped overrides to fix breadcrumb (EMPLY) visibility and ensure hero/profile contrast */

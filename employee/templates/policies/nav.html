@@ -1,5 +1,61 @@
 {% load i18n %}
-<section class="oh-wrapper oh-main__topbar" style="padding-bottom: 1rem">
+<section class="oh-wrapper oh-main__topbar employee-policies-head" style="padding-bottom: 1rem">
+    <style>
+        .employee-policies-head {
+            background: #ffffff;
+            border: 1px solid #d6e9e6;
+            border-radius: 20px;
+            margin: 26px 28px 18px;
+            padding: 20px 24px !important;
+            box-shadow: 0 10px 26px rgba(29, 86, 79, .08);
+        }
+        .employee-policies-head .oh-main__titlebar-title {
+            color: #174f4b;
+        }
+        .employee-policies-head * {
+            color: #315244;
+        }
+        .employee-policies-head .oh-main__titlebar-title {
+            color: #17241d !important;
+        }
+        .employee-policies-head .oh-input::placeholder {
+            color: #849088;
+        }
+        .employee-policies-head .oh-input {
+            border-color: #cfe2e0;
+            border-radius: 12px;
+            background: #f8fcfb;
+            box-shadow: 0 4px 12px rgba(29, 86, 79, .05);
+        }
+        .employee-policies-head .oh-btn--secondary {
+            background: linear-gradient(135deg, #155f6d, #238da0);
+            border: 0;
+            color: #fff;
+            border-radius: 11px;
+            box-shadow: 0 6px 14px rgba(21, 95, 109, .16);
+        }
+        .employee-policies-head .oh-btn--secondary:hover {
+            background: linear-gradient(135deg, #0d5362, #167b8d);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+        @media (max-width: 640px) {
+            .employee-policies-head {
+                margin: 14px 12px 14px;
+                padding: 16px !important;
+            }
+            .employee-policies-head .oh-main__titlebar--right {
+                gap: 10px;
+            }
+            .employee-policies-head .oh-input__search-group,
+            .employee-policies-head .oh-input,
+            .employee-policies-head .oh-main__titlebar-button-container,
+            .employee-policies-head .oh-btn {
+                width: 100%;
+                margin-right: 0 !important;
+            }
+        }
+    </style>
     <div class="oh-main__titlebar oh-main__titlebar--left oh-d-flex-column--resp oh-mb-3--small">
         <h1 class="oh-main__titlebar-title fw-bold">{% trans 'Policies' %}</h1>
     </div>

@@ -1038,6 +1038,24 @@ def leave_request_approve(request, id, emp_id=None):
             return redirect(f"/employee/employee-view/{emp_id}/")
         return HorillaRedirect(request)
 
+    try:
+        _policy_leave_validation(
+            {
+                "employee_id": leave_request.employee_id,
+                "leave_type_id": leave_request.leave_type_id,
+                "start_date": leave_request.start_date,
+                "end_date": leave_request.end_date,
+                "attachment": leave_request.attachment,
+                "doctor_certificate": leave_request.doctor_certificate,
+            },
+            leave_request,
+        )
+    except ValidationError as error:
+        messages.error(request, error.messages[0])
+        if emp_id:
+            return redirect(f"/employee/employee-view/{emp_id}/")
+        return HorillaRedirect(request)
+
     # Handle minute-based (short) leave approvals
     if leave_type_id.leave_unit == "minute":
         final_approval = False

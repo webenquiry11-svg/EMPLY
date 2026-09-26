@@ -11,8 +11,8 @@
         bottom: max(14px, env(safe-area-inset-bottom)) !important;
         left: auto !important;
         top: auto !important;
-        width: 46px;
-        height: 46px;
+        width: 58px;
+        height: 58px;
         overflow: visible;
         isolation: isolate;
         z-index: 2147483647 !important;
@@ -26,14 +26,14 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 44px;
-        height: 44px;
+        width: 58px;
+        height: 58px;
         margin: 0 !important;
         padding: 0;
-        border: 1px solid rgba(255,255,255,0.08);
-        background: rgba(22,31,24,0.96);
-        box-shadow: 0 10px 20px rgba(2, 8, 5, 0.28);
-        color: #ffffff;
+        border: 1px solid #b8dfe0;
+        background: #ffffff;
+        box-shadow: 0 10px 24px rgba(21, 95, 109, 0.16);
+        color: #155f6d;
         cursor: pointer;
         user-select: none;
         text-decoration: none;
@@ -60,7 +60,7 @@
     }
 
     #employeeQuickActionMenu.show {
-        width: 46px;
+        width: 58px;
         height: auto;
     }
 
@@ -69,41 +69,44 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.1rem;
-        color: #ffffff;
+        font-size: 1.35rem;
+        color: #155f6d;
         transition: transform 220ms ease;
     }
 
-    #employeeQuickActionMenu.show > .quick-action-fab:not(#employeeQuickActionButton):nth-child(1) { transition-delay: 0ms; }
-    #employeeQuickActionMenu.show .quick-action-fab:nth-child(2) { transition-delay: 20ms; }
-    #employeeQuickActionMenu.show .quick-action-fab:nth-child(3) { transition-delay: 40ms; }
-    #employeeQuickActionMenu.show .quick-action-fab:nth-child(4) { transition-delay: 60ms; }
-    #employeeQuickActionMenu.show .quick-action-fab:nth-child(5) { transition-delay: 80ms; }
-    #employeeQuickActionMenu.show .quick-action-fab:nth-child(6) { transition-delay: 100ms; }
-    #employeeQuickActionMenu.show .quick-action-fab:nth-child(7) { transition-delay: 120ms; }
-    #employeeQuickActionMenu.show .quick-action-fab:nth-child(8) { transition-delay: 140ms; }
+    #employeeQuickActionMenu.show .quick-action-fab:not(#employeeQuickActionButton) {
+        border-color: #8fcacc;
+    }
+
+    #employeeQuickActionMenu .quick-action-fab:not(#employeeQuickActionButton):hover,
+    #employeeQuickActionMenu .quick-action-fab:not(#employeeQuickActionButton):focus-visible {
+        background: #e5f5f4;
+        border-color: #238da0;
+        box-shadow: 0 12px 26px rgba(21, 95, 109, 0.2);
+        transform: translateY(0) scale(1.08);
+        outline: none;
+    }
 
     #employeeQuickActionButton {
         position: relative !important;
-        width: 46px;
-        height: 46px;
-        background: linear-gradient(180deg, rgba(45,90,63,0.96), rgba(18,27,21,0.96));
-        border-color: rgba(255,255,255,0.08);
-        box-shadow: 0 12px 24px rgba(2, 8, 5, 0.28);
+        width: 58px;
+        height: 58px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, #155f6d, #238da0) !important;
+        border-color: #155f6d !important;
+        box-shadow: 0 12px 26px rgba(21, 95, 109, 0.3);
         z-index: 2147483647 !important;
     }
 
     #employeeQuickActionButton.is-open {
-        background: linear-gradient(180deg, rgba(58,115,80,0.96), rgba(22,31,24,0.98));
-        box-shadow: 0 14px 28px rgba(13,20,14,0.34);
+        background: #0f4f5d !important;
+        box-shadow: 0 14px 28px rgba(15, 79, 93, 0.34);
     }
 
     #employeeQuickActionButton i {
         transition: transform 220ms ease;
-    }
-
-    #employeeQuickActionButton.is-open i {
-        transform: rotate(180deg);
+        color: #ffffff;
+        font-size: 2rem;
     }
 
     .quick-action-fab:before {
@@ -117,10 +120,10 @@
         font-size: 0.68rem;
         font-weight: 700;
         letter-spacing: 0.02em;
-        background: rgba(12, 19, 15, 0.94);
-        color: #eff7ef;
-        border: 1px solid rgba(255,255,255,0.06);
-        box-shadow: 0 8px 16px rgba(0,0,0,0.18);
+        background: #155f6d;
+        color: #ffffff;
+        border: 1px solid #238da0;
+        box-shadow: 0 8px 16px rgba(21, 95, 109, 0.2);
         opacity: 0;
         visibility: hidden;
         white-space: nowrap;
@@ -143,27 +146,49 @@
         text-decoration: none;
     }
 
+    #employeeQuickActionButton:focus-visible {
+        outline: 3px solid rgba(35, 141, 160, 0.38);
+        outline-offset: 3px;
+    }
+
     @media (max-width: 640px) {
         #employeeQuickActionMenu {
-            right: max(12px, env(safe-area-inset-right)) !important;
-            bottom: max(16px, calc(env(safe-area-inset-bottom) + 12px)) !important;
+            right: max(10px, env(safe-area-inset-right)) !important;
+            bottom: max(82px, calc(env(safe-area-inset-bottom) + 76px)) !important;
             gap: 8px;
         }
 
         .quick-action-fab {
-            width: 40px;
-            height: 40px;
+            width: 48px;
+            height: 48px;
             border-radius: 12px;
         }
 
         #employeeQuickActionButton {
-            width: 42px;
-            height: 42px;
+            width: 52px;
+            height: 52px;
+        }
+
+        .quick-action-fab:before {
+            display: none;
+        }
+    }
+
+    @media (max-width: 420px) {
+        #employeeQuickActionMenu {
+            right: max(8px, env(safe-area-inset-right)) !important;
+            bottom: max(76px, calc(env(safe-area-inset-bottom) + 70px)) !important;
+        }
+
+        #employeeQuickActionMenu .quick-action-fab {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
         }
     }
 </style>
 
-<div id="employeeQuickActionMenu" class="inner-fabs" style="position: fixed !important; right: 14px !important; bottom: 14px !important; left: auto !important;">
+<div id="employeeQuickActionMenu" class="inner-fabs">
     <div id="fab9" class="quick-action-fab round" data-tooltip="{% trans 'Dashboard Charts' %}">
         <a
             class="text-light"
@@ -271,7 +296,7 @@
     </div>
     {% endif %}
     <div id="employeeQuickActionButton" class="quick-action-fab round" data-tooltip="{% trans 'Quick Action' %}" aria-label="{% trans 'Quick Actions' %}" aria-expanded="false" tabindex="0" role="button">
-        <i id="fabIcon" class="material-icons" aria-hidden="true">chevron_right</i>
+        <i id="fabIcon" class="material-icons" aria-hidden="true">add</i>
     </div>
 </div>
 
@@ -291,7 +316,7 @@
         fab1.toggleClass("is-open", isOpen);
         fab1.attr("aria-expanded", isOpen ? "true" : "false");
         fab1.attr("title", isOpen ? "{% trans 'Close quick actions' %}" : "{% trans 'Open quick actions' %}");
-        fabIcon.text(isOpen ? "chevron_left" : "chevron_right");
+        fabIcon.text(isOpen ? "close" : "add");
     }
 
     function positionQuickActionItems() {

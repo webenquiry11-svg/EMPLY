@@ -1,15 +1,256 @@
 {% load i18n %}
 {% load static %}
 {% load basefilters %}
+<style>
+    #objectDetailsModalTarget .announcement-detail-modal-header {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        margin: 0 !important;
+        min-height: 72px;
+        padding: 1rem 1.4rem !important;
+        border-bottom: 1px solid rgba(157, 221, 220, 0.35) !important;
+        background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-modal-header .announcement-detail-modal-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.65rem;
+        margin: 0 !important;
+        color: #ffffff !important;
+        font-size: 0.9rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        line-height: 1;
+        text-transform: uppercase;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-modal-header .announcement-detail-modal-label ion-icon {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        padding: 8px;
+        border: 1px solid rgba(213, 240, 242, 0.42);
+        border-radius: 11px;
+        background: rgba(213, 240, 242, 0.16);
+        color: #d5f0f2;
+        font-size: 18px;
+        box-sizing: border-box;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-modal-header .oh-modal__close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border: 1px solid rgba(157, 221, 220, 0.34);
+        border-radius: 11px;
+        background: rgba(157, 221, 220, 0.14);
+        color: #ffffff !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card {
+        max-width: 760px !important;
+        margin: 0 auto 1.25rem !important;
+        padding: 0 !important;
+        overflow: hidden;
+        border: 1px solid rgba(42, 132, 155, 0.3) !important;
+        border-radius: 20px !important;
+        background: #ffffff !important;
+        color: #173f50 !important;
+        box-shadow: 0 22px 52px rgba(10, 77, 96, 0.22) !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-header,
+    #objectDetailsModalTarget .announcement-detail-card .card-body,
+    #objectDetailsModalTarget .announcement-detail-card .card-footer {
+        border-color: rgba(42, 132, 155, 0.2) !important;
+        background: transparent !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-header {
+        display: block;
+        margin: 0 !important;
+        padding: 1.65rem 1.8rem 1.3rem !important;
+        background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-title {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        margin: 0 0 0.65rem !important;
+        color: #ffffff !important;
+        font-size: clamp(1.25rem, 3vw, 1.8rem);
+        line-height: 1.2;
+        letter-spacing: -0.02em;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-title > .oh-checkpoint-badge {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        margin: 0 !important;
+        padding: 0.35rem 0.55rem;
+        border: 1px solid rgba(157, 221, 220, 0.34);
+        border-radius: 999px;
+        background: rgba(157, 221, 220, 0.14);
+        color: #d5f0f2 !important;
+        font-size: 0.72rem;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .announcement-detail-date {
+        display: block;
+        color: #d5f0f2 !important;
+        font-size: 0.78rem;
+        font-weight: 600;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-body {
+        padding: 1.7rem 1.8rem !important;
+        background: #ffffff !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-text {
+        margin: 0;
+        color: #173f50 !important;
+        font-size: 1rem;
+        line-height: 1.75;
+        overflow-wrap: anywhere;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-footer {
+        padding: 1rem 1.8rem !important;
+        background: #e8f5f7 !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .oh-announcement__comment-view {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.55rem;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .oh-announcement__comment-view .oh-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        padding: 0;
+        border: 1px solid rgba(157, 221, 220, 0.3);
+        border-radius: 11px;
+        background: rgba(157, 221, 220, 0.14);
+        color: #d5f0f2 !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .oh-announcement__comment-view .oh-btn.oh-activity-sidebar__open {
+        width: auto;
+        min-width: 112px;
+        padding: 0 0.85rem;
+        gap: 0.45rem;
+        background: #176d83;
+        color: #ffffff !important;
+        font-size: 0.78rem;
+        font-weight: 700;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .oh-announcement__comment-view .oh-btn.oh-activity-sidebar__open::after {
+        content: "Comments";
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .oh-announcement__comment-view .oh-btn:hover {
+        background: rgba(42, 132, 155, 0.28);
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .oh-modal__close,
+    #objectDetailsModalTarget > .oh-modal__dialog-header .oh-modal__close {
+        color: #ffffff !important;
+    }
+
+    @media (max-width: 620px) {
+        #objectDetailsModalTarget .announcement-detail-card .card-header,
+        #objectDetailsModalTarget .announcement-detail-card .card-body {
+            padding-left: 1.15rem !important;
+            padding-right: 1.15rem !important;
+        }
+    }
+
+    #objectDetailsModalTarget .announcement-detail-modal-header {
+        background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+        border-bottom-color: rgba(157, 221, 220, 0.35) !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-modal-header .announcement-detail-modal-label,
+    #objectDetailsModalTarget .announcement-detail-modal-header .announcement-detail-modal-label ion-icon {
+        color: #ffffff !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card {
+        border-color: rgba(42, 132, 155, 0.3) !important;
+        background: #ffffff !important;
+        box-shadow: 0 22px 52px rgba(10, 77, 96, 0.22) !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-header {
+        background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-title,
+    #objectDetailsModalTarget .announcement-detail-card .card-title[style] {
+        color: #ffffff !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .announcement-detail-date {
+        color: #d5f0f2 !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-body {
+        background: #ffffff !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-text,
+    #objectDetailsModalTarget .announcement-detail-card .card-text[style] {
+        color: #173f50 !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-footer {
+        background: #e8f5f7 !important;
+        border-top-color: rgba(42, 132, 155, 0.2) !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .oh-announcement__comment-view .oh-btn.oh-activity-sidebar__open {
+        background: #176d83 !important;
+        border-color: #176d83 !important;
+        color: #ffffff !important;
+        box-shadow: 0 8px 18px rgba(23, 109, 131, 0.24);
+    }
+
+    #objectDetailsModal #objectDetailsModalTarget .announcement-detail-modal-header {
+        background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+    }
+
+    #objectDetailsModal #objectDetailsModalTarget .announcement-detail-card .oh-announcement__comment-view .oh-btn.oh-activity-sidebar__open,
+    #objectDetailsModal #objectDetailsModalTarget .announcement-detail-card .oh-announcement__comment-view .oh-btn.oh-btn--light {
+        background: #176d83 !important;
+        border-color: #176d83 !important;
+        color: #ffffff !important;
+    }
+</style>
 {% if messages %}
     <script>
         reloadMessage();
     </script>
     <span hx-get="{% url 'announcement-list' %}" hx-trigger="load" hx-target="#announcementListCard"></span>
 {% endif %}
-<div class="oh-modal__dialog-header pb-4">
-    <div class="oh-main__titlebar oh-main__titlebar--left">
-        <span class="oh-main__titlebar-title fw-bold mb-0 text-dark">{% trans "Announcement" %} </span>
+<div class="oh-modal__dialog-header announcement-detail-modal-header">
+    <div class="announcement-detail-modal-label">
+        <ion-icon name="megaphone-outline" aria-hidden="true"></ion-icon>
+        <span>{% trans "Announcement" %}</span>
     </div>
 
     <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
@@ -50,8 +291,7 @@
     {% endif %}
     {% if announcement %}
         <div
-            class="card mx-auto p-4 mb-4"
-            style="max-width: 800px; border: 1px solid lightgrey; border-radius: 10px; box-shadow: 2px 2px 2px grey"
+            class="card announcement-detail-card mx-auto mb-4"
         >
             {% if perms.base.change_announcement or perms.base.delete_announcement %}
                 <div class="oh-dropdown float-end" x-data="{open: false}">
@@ -99,8 +339,8 @@
                     </div>
                 </div>
             {% endif %}
-            <div class="card-header mb-3">
-                <h5 class="card-title fw-bold">
+            <div class="card-header announcement-detail-card__header mb-3">
+                <h5 class="card-title fw-bold" style="color: #ffffff !important;">
                     {{ announcement.title }}
                     {% if perms.base.view_announcement %}
                         <div
@@ -120,7 +360,7 @@
                         </div>
                     {% endif %}
                 </h5>
-                <span class="text-muted fw-bold"><small>
+                <span class="announcement-detail-date text-muted fw-bold"><small>
                         {% trans "Posted on" %} &nbsp<span
                             class="dateformat_changer"
                         >{{ announcement.created_at|date:"F j, Y" }}</span> &nbsp
@@ -130,7 +370,7 @@
                 </span>
             </div>
             <div class="card-body">
-                <p class="card-text">{{ announcement.description|safe }}</p>
+                <p class="card-text" style="color: #31443a !important;">{{ announcement.description|safe }}</p>
             </div>
             <div class="card-footer">
                 {% for attachment in announcement.attachments.all %}

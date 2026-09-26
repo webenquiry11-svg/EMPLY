@@ -1,5 +1,7 @@
 {% load static %}
 {% load i18n %}
+{% load tz %}
+{% now "Y-m-d" as current_date %}
 {% if not announcements %}
     <div class="oh-empty h-100" style="padding-top: 50px">
         <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="{% trans 'Page not found. 404.' %}">
@@ -7,12 +9,12 @@
         <p class="oh-empty__subtitle">{% trans "There are no announcements at the moment." %}</p>
     </div>
 {% else %}
-    <div class="oh-sticky-table" style="height: 400px; border: none">
+    <div class="oh-sticky-table employee-announcement-list" style="height: 100%; min-height: 0; border: none">
         <div class="oh-sticky-table__table oh-table--sortable">
             <div class="oh-sticky-table__tbody">
                 {% for announcement in announcements %}
                     <div class="oh-sticky-table__tr" draggable="true">
-                        <div class="announcement_title">
+                        <div class="announcement_title employee-announcement-item">
                             <a
                                 class="oh-profile oh-profile--md"
                                 style="text-decoration: none"
@@ -21,14 +23,17 @@
                                 hx-target="#objectDetailsModalTarget"
                                 onclick="closeNew(this)"
                             >
-                                <div class="oh-profile__avatar mr-1">
+                                <div class="oh-profile__avatar employee-announcement-item__avatar mr-1">
                                     <img
                                         src="https://ui-avatars.com/api/?name={{announcement.title}}&background=random"
                                         class="oh-profile__image"
                                     >
                                 </div>
-                                <span class="oh-profile__name oh-text--dark fw-bold">
-                                    {{ announcement.title }}
+                                <span class="employee-announcement-item__content">
+                                    <span class="oh-profile__name employee-announcement-item__title">
+                                        {{ announcement.title }}
+                                    </span>
+                                    <span class="employee-announcement-item__date">{{ announcement.created_at|date:"M d, Y" }}</span>
                                 </span>
                                 {% if announcement.created_at|date:"Y-m-d" == current_date and request.user not in announcement.viewed_by %}
                                     <span

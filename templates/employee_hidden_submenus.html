@@ -15,7 +15,11 @@
                                     <li><a href="{{submenu.redirect}}">{{submenu.menu}}</a></li>
                                 {% endif %}
                             {% elif menues.menu == "Attendance" %}
-                                {% if submenu.menu == "Attendances" or submenu.menu == "Attendances" or submenu.menu == "Hour Account" or submenu.menu == "Late Come Early Out" or submenu.menu == "Late Come/Early Out" or submenu.menu == "Late Come / Early Out" %}
+                                {% if not request.user.is_staff and not request.user.is_superuser %}
+                                    {% if submenu.menu == "My Attendances" or submenu.redirect == "/attendance/view-my-attendance" or submenu.redirect == "/attendance/view-my-attendance/" %}
+                                        <li><a href="{{submenu.redirect}}">{% trans "My Attendances" %}</a></li>
+                                    {% endif %}
+                                {% elif submenu.menu == "Attendances" or submenu.menu == "Attendances" or submenu.menu == "Hour Account" or submenu.menu == "Late Come Early Out" or submenu.menu == "Late Come/Early Out" or submenu.menu == "Late Come / Early Out" %}
                                 {% else %}
                                     <li><a href="{{submenu.redirect}}">{{submenu.menu}}</a></li>
                                 {% endif %}
@@ -38,7 +42,13 @@
                                 <li><a href="{{submenu.redirect}}">{{submenu.menu}}</a></li>
                             {% endif %}
                         {% else %}
-                            <li><a href="{{submenu.redirect}}">{{submenu.menu}}</a></li>
+                            {% if menues.menu == "Attendance" %}
+                                {% if submenu.menu == "My Attendances" or submenu.redirect == "/attendance/view-my-attendance" or submenu.redirect == "/attendance/view-my-attendance/" %}
+                                    <li><a href="{{submenu.redirect}}">{% trans "My Attendances" %}</a></li>
+                                {% endif %}
+                            {% else %}
+                                <li><a href="{{submenu.redirect}}">{{submenu.menu}}</a></li>
+                            {% endif %}
                         {% endif %}
                     {% endif %}
                 {% endfor %}

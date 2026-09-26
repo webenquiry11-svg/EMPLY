@@ -94,6 +94,11 @@ urlpatterns = [
         name="payroll-dashboard",
     ),
     path(
+        "dashboard/generate-payslip/",
+        views.generate_employee_payslip,
+        name="generate-employee-payslip",
+    ),
+    path(
         "view-payroll-dashboard/",
         views.view_payroll_dashboard,
         name="view-payroll-dashboard",

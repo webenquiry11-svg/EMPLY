@@ -4,419 +4,940 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payroll Dashboard</title>
+    <title>Payroll | EMPLY</title>
     <style>
         :root {
-            --page-bg: #f6faf7;
-            --panel: #ffffff;
-            --surface: #f4faf6;
-            --border: #e4efe7;
-            --accent: #14b864;
-            --deep: #083022;
-            --muted: #5f6f68;
-            --soft: #f0f8f3;
-            --shadow: 0 12px 28px rgba(8,50,34,0.06);
+            --ink: #12372b;
+            --ink-soft: #557067;
+            --green: #14965a;
+            --green-dark: #0b6d41;
+            --green-pale: #eaf7ef;
+            --canvas: #f5f8f6;
+            --surface: #ffffff;
+            --line: #dfeae3;
+            --line-dark: #cbdcd1;
+            --shadow: 0 14px 38px rgba(20, 70, 45, .06);
+            --radius: 16px;
         }
         * { box-sizing: border-box; }
         body {
             margin: 0;
-            background: var(--page-bg);
-            color: var(--deep);
+            color: var(--ink);
+            background: var(--canvas);
             font-family: Inter, "Segoe UI", Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
         }
         a { color: inherit; }
-        .payroll-shell {
-            min-height: 100vh;
-            background: var(--page-bg);
-        }
+        .payroll-shell { min-height: 100vh; }
         .payroll-header {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            display: flex;
-            justify-content: space-between;
+            height: 76px;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
             align-items: center;
-            gap: 18px;
-            padding: 18px 32px;
-            background: rgba(255,255,255,0.94);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border);
+            gap: 24px;
+            padding: 0 34px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--line);
         }
-        .payroll-brand {
+        .brand, .user-area, .user-details, .hero-meta, .section-heading,
+        .salary-primary, .metric, .history-empty, .slip-empty {
             display: flex;
             align-items: center;
-            gap: 12px;
         }
-        .payroll-brand-mark {
+        .brand { gap: 11px; text-decoration: none; }
+        .brand-logo { width: 104px; height: auto; display: block; }
+        .brand-mark {
+            display: grid;
             width: 36px;
             height: 36px;
-            display: grid;
             place-items: center;
             border-radius: 10px;
-            background: #0b7a45;
             color: #fff;
-            font-weight: 800;
+            background: var(--green-dark);
             font-size: 15px;
+            font-weight: 800;
         }
-        .payroll-brand strong {
+        .brand-name { font-size: 17px; letter-spacing: .06em; font-weight: 800; }
+        .module-title {
+            position: relative;
+            padding-left: 18px;
             font-size: 18px;
-            letter-spacing: 0.04em;
-        }
-        .payroll-title {
-            font-size: 20px;
             font-weight: 700;
-            color: var(--deep);
         }
-        .payroll-user {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .module-title::before {
+            position: absolute;
+            left: 0;
+            top: 3px;
+            width: 1px;
+            height: 18px;
+            background: var(--line-dark);
+            content: "";
         }
-        .payroll-avatar {
+        .user-area { justify-content: flex-end; gap: 12px; }
+        .user-details { flex-direction: column; align-items: flex-start; gap: 2px; }
+        .user-details strong { font-size: 13px; }
+        .user-details span { color: var(--ink-soft); font-size: 11px; }
+        .avatar {
+            display: grid;
             width: 38px;
             height: 38px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), #0d7a49);
-            display: grid;
             place-items: center;
-            color: #fff;
+            border-radius: 50%;
+            color: var(--green-dark);
+            background: var(--green-pale);
+            font-weight: 800;
+        }
+        .avatar img, .hero-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+        .header-action, .logout {
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            padding: 9px 12px;
+            color: var(--ink);
+            background: #fbfdfb;
+            font-size: 12px;
             font-weight: 700;
-        }
-        .payroll-user-meta {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.2;
-        }
-        .payroll-user-meta strong {
-            font-size: 14px;
-        }
-        .payroll-user-meta span {
-            color: var(--muted);
-            font-size: 12px;
-        }
-        .payroll-logout {
-            margin-left: 10px;
-            padding: 10px 14px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            background: var(--soft);
             text-decoration: none;
-            color: var(--deep);
-            font-weight: 600;
         }
-        .payroll-layout {
-            display: grid;
-            grid-template-columns: 220px minmax(0, 1fr);
-            min-height: calc(100vh - 78px);
+        .logout:hover, .header-action:hover { border-color: var(--green); color: var(--green-dark); }
+        .workspace { display: grid; grid-template-columns: 228px minmax(0, 1fr); min-height: calc(100vh - 76px); }
+        .sidebar {
+            padding: 27px 16px;
+            background: var(--surface);
+            border-right: 1px solid var(--line);
         }
-        .payroll-sidebar {
-            background: #ffffff;
-            border-right: 1px solid var(--border);
-            padding: 22px 18px;
-        }
-        .payroll-nav {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: grid;
-            gap: 10px;
-        }
-        .payroll-nav a {
-            display: block;
-            padding: 12px 14px;
-            border-radius: 12px;
-            text-decoration: none;
-            color: var(--muted);
-            font-weight: 600;
-            border: 1px solid transparent;
-            background: transparent;
-        }
-        .payroll-nav a.active {
-            background: var(--soft);
-            border-color: var(--border);
-            color: var(--deep);
-        }
-        .payroll-content {
-            padding: 28px;
-        }
-        .payroll-overview {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 18px;
-            margin-bottom: 24px;
-        }
-        .payroll-card,
-        .payroll-panel {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            box-shadow: var(--shadow);
-        }
-        .payroll-card {
-            padding: 20px 18px;
-        }
-        .payroll-card-label {
-            display: block;
-            margin-bottom: 12px;
-            color: var(--muted);
-            font-size: 12px;
-            letter-spacing: 0.08em;
+        .side-label, .eyebrow, .card-label {
+            color: var(--ink-soft);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .12em;
             text-transform: uppercase;
         }
-        .payroll-card-value {
-            font-size: clamp(24px, 2.8vw, 32px);
-            font-weight: 800;
-            color: var(--deep);
-        }
-        .payroll-panel {
-            padding: 22px 20px;
-            margin-top: 22px;
-        }
-        .payroll-panel h2 {
-            margin: 0 0 16px;
-            font-size: 20px;
-            color: var(--deep);
-        }
-        .payroll-row {
+        .side-label { padding: 0 12px 13px; }
+        .nav-list { display: grid; gap: 5px; margin: 0; padding: 0; list-style: none; }
+        .nav-list a {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            gap: 16px;
-            padding: 14px 16px;
-            border-radius: 12px;
-            background: #f7fbf9;
-            border: 1px solid var(--border);
-            margin-bottom: 10px;
-        }
-        .payroll-row span {
-            color: var(--muted);
-        }
-        .payroll-row strong {
-            color: var(--deep);
-        }
-        .payroll-flag {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 120px;
-            padding: 8px 10px;
-            border-radius: 999px;
-            background: rgba(20,184,100,0.08);
-            color: #0d7a49;
-            font-weight: 700;
-            font-size: 12px;
-        }
-        .payroll-empty {
-            border: 1px dashed #d6eadb;
-            border-radius: 12px;
-            background: #f9fbfa;
-            color: var(--muted);
-            padding: 18px 16px;
-            line-height: 1.6;
-        }
-        .payroll-slip {
-            background: #f7fbf9;
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 18px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .payroll-slip-title {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        .payroll-slip-title strong {
-            font-size: 18px;
-            color: var(--deep);
-        }
-        .payroll-slip-title span {
-            color: var(--muted);
-        }
-        .payroll-btn {
-            padding: 10px 14px;
+            gap: 10px;
+            padding: 11px 12px;
+            border: 1px solid transparent;
             border-radius: 10px;
-            border: 1px solid var(--border);
-            background: var(--deep);
-            color: #fff;
-            font-weight: 700;
-            cursor: pointer;
-        }
-        .payroll-state {
-            padding: 28px 24px;
-            border-radius: 18px;
-            background: linear-gradient(180deg, #ffffff, #f5faf7);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-        }
-        .payroll-state h2 {
-            margin: 0 0 12px;
-            font-size: clamp(24px, 3vw, 32px);
-            color: var(--deep);
-        }
-        .payroll-state p {
-            margin: 0;
-            color: var(--muted);
-            line-height: 1.7;
-            font-size: 15px;
-        }
-        .payroll-link {
-            display: inline-block;
-            margin-top: 16px;
-            padding: 10px 14px;
-            border-radius: 10px;
-            background: #edf9f2;
-            color: #0d7a49;
-            font-weight: 700;
+            color: var(--ink-soft);
+            font-size: 13px;
+            font-weight: 650;
             text-decoration: none;
         }
-        @media (max-width: 900px) {
-            .payroll-layout {
-                grid-template-columns: 1fr;
-            }
-            .payroll-sidebar {
-                border-right: 0;
-                border-bottom: 1px solid var(--border);
-            }
-            .payroll-nav {
-                grid-template-columns: repeat(4, minmax(0, 1fr));
-            }
-            .payroll-overview {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
+        .nav-list a:hover, .nav-list a.active {
+            color: var(--green-dark);
+            background: var(--green-pale);
+            border-color: #d6eddf;
         }
-        @media (max-width: 600px) {
-            .payroll-header {
-                padding: 16px 18px;
-                flex-wrap: wrap;
-            }
-            .payroll-content {
-                padding: 18px 16px 32px;
-            }
-            .payroll-overview {
-                grid-template-columns: 1fr;
-            }
-            .payroll-nav {
-                grid-template-columns: 1fr 1fr;
-            }
-            .payroll-row,
-            .payroll-slip {
-                flex-direction: column;
-                align-items: flex-start;
-            }
+        .nav-icon {
+            display: grid;
+            width: 23px;
+            height: 23px;
+            place-items: center;
+            border-radius: 7px;
+            background: #f0f5f1;
+            font-size: 11px;
+        }
+        .nav-list .active .nav-icon { background: #d3efdc; }
+        .content { width: 100%; max-width: 1440px; padding: 38px 44px 54px; }
+        .hero {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+        .hero h1 { margin: 7px 0 8px; font-size: clamp(26px, 3vw, 36px); letter-spacing: -.035em; }
+        .hero p { margin: 0; color: var(--ink-soft); font-size: 14px; }
+        .hero-meta { gap: 22px; padding-bottom: 3px; }
+        .hero-meta div { padding-left: 18px; border-left: 1px solid var(--line-dark); }
+        .hero-meta span { display: block; margin-bottom: 4px; color: var(--ink-soft); font-size: 11px; }
+        .hero-meta strong { font-size: 13px; }
+        .hero-identity { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+        .hero-avatar { width: 58px; height: 58px; flex: 0 0 auto; border: 3px solid #fff; border-radius: 16px; background: var(--green-pale); box-shadow: 0 5px 16px rgba(20, 70, 45, .08); overflow: hidden; }
+        .detail-list { display: grid; gap: 10px; }
+        .detail-card { padding: 16px; border: 1px solid #edf2ee; border-radius: 12px; background: #fbfdfb; }
+        .detail-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .detail-top strong { font-size: 13px; }
+        .detail-card p { margin: 8px 0 0; color: var(--ink-soft); font-size: 12px; line-height: 1.5; }
+        .detail-meta { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px; color: var(--ink-soft); font-size: 11px; }
+        .detail-policy { margin-top: 9px; padding-top: 9px; border-top: 1px solid #edf2ee; color: var(--green-dark); font-size: 11px; font-weight: 700; }
+        .detail-dates { margin-top: 5px; color: var(--ink-soft); font-size: 11px; }
+        .detail-calculation { margin-top: 6px; color: var(--ink); font-size: 11px; font-weight: 700; }
+        .deduction-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+        .deduction-summary .metric { min-height: auto; padding: 15px; }
+        .final-pay { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-top: 16px; padding: 16px; border-top: 1px solid var(--line); background: var(--green-pale); }
+        .final-pay strong { color: var(--green-dark); font-size: 18px; }
+        @media (max-width: 650px) { .deduction-summary { grid-template-columns: 1fr; } .final-pay { align-items: flex-start; flex-direction: column; } }
+        [data-payroll-section].payroll-section-hidden { display: none !important; }
+        .overview {
+            display: grid;
+            grid-template-columns: minmax(250px, 1.45fr) repeat(3, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        .salary-card, .metric, .panel {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: var(--surface);
+            box-shadow: var(--shadow);
+        }
+        .salary-card { padding: 24px; color: #fff; background: var(--green-dark); border-color: var(--green-dark); }
+        .salary-card .card-label { color: #b9e5c9; }
+        .salary-primary { justify-content: space-between; gap: 14px; margin-top: 18px; }
+        .salary-value { font-size: clamp(27px, 3.3vw, 40px); font-weight: 800; letter-spacing: -.04em; }
+        .salary-note { color: #c5e6d1; font-size: 11px; }
+        .salary-symbol {
+            display: grid;
+            width: 42px;
+            height: 42px;
+            place-items: center;
+            border: 1px solid rgba(255,255,255,.18);
+            border-radius: 12px;
+            color: #d8f1e0;
+            font-size: 19px;
+            font-weight: 700;
+        }
+        .metric { min-height: 135px; padding: 22px 20px; }
+        .metric-value { margin-top: 21px; color: var(--ink); font-size: 17px; font-weight: 750; line-height: 1.25; }
+        .metric-value.muted { color: var(--ink-soft); font-size: 14px; font-weight: 600; }
+        .section-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(310px, .85fr); gap: 20px; align-items: start; }
+        .panel { padding: 23px; }
+        .panel + .panel { margin-top: 20px; }
+        .section-heading { justify-content: space-between; gap: 14px; margin-bottom: 19px; }
+        .section-heading h2 { margin: 0; font-size: 17px; letter-spacing: -.015em; }
+        .section-heading p { margin: 5px 0 0; color: var(--ink-soft); font-size: 12px; }
+        .status { padding: 6px 9px; border-radius: 999px; color: var(--green-dark); background: var(--green-pale); font-size: 10px; font-weight: 800; }
+        .data-list { margin: 0; }
+        .data-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid #edf2ee;
+        }
+        .data-row:first-child { padding-top: 0; }
+        .data-row:last-child { padding-bottom: 0; border-bottom: 0; }
+        .data-row dt { color: var(--ink-soft); font-size: 13px; }
+        .data-row dd { margin: 0; color: var(--ink); font-size: 13px; font-weight: 750; text-align: right; }
+        .data-row dd.muted { color: var(--ink-soft); font-weight: 600; }
+        .deduction-list { display: grid; gap: 7px; }
+        .deduction-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 13px; border: 1px solid #edf2ee; border-radius: 10px; }
+        .deduction-item span { color: var(--ink-soft); font-size: 12px; }
+        .not-ready { color: var(--ink-soft); font-size: 11px; font-weight: 700; }
+        .table-wrap { overflow-x: auto; }
+        .data-table { width: 100%; border-collapse: collapse; min-width: 590px; }
+        .data-table th { padding: 0 10px 12px; color: var(--ink-soft); font-size: 10px; letter-spacing: .08em; text-align: left; text-transform: uppercase; }
+        .data-table td { padding: 15px 10px; border-top: 1px solid #edf2ee; color: var(--ink-soft); font-size: 12px; }
+        .data-table td strong { color: var(--ink); }
+        .empty-row { padding: 24px 0 4px; color: var(--ink-soft); font-size: 13px; text-align: center; }
+        .empty-row strong { display: block; margin-bottom: 6px; color: var(--ink); font-size: 14px; }
+        .empty-row span { font-size: 12px; }
+        .disabled-action {
+            margin-top: 14px;
+            padding: 9px 12px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            color: #8a9b92;
+            background: #f5f8f6;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: not-allowed;
+        }
+        .footer-note { margin-top: 25px; color: var(--ink-soft); font-size: 11px; text-align: right; }
+        @media (max-width: 1100px) {
+            .overview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .salary-card { grid-column: span 2; }
+            .content { padding-inline: 28px; }
+        }
+        @media (max-width: 820px) {
+            .payroll-header { grid-template-columns: 1fr auto; padding-inline: 20px; }
+            .module-title { display: none; }
+            .workspace { display: block; }
+            .sidebar { padding: 15px 18px; border-right: 0; border-bottom: 1px solid var(--line); }
+            .side-label { display: none; }
+            .nav-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+            .nav-list a { justify-content: center; padding-inline: 6px; }
+            .nav-list a span:last-child { display: none; }
+            .content { padding-top: 28px; }
+            .section-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 570px) {
+            .payroll-header { height: auto; min-height: 70px; gap: 12px; }
+            .user-details, .header-action { display: none; }
+            .content { padding: 25px 16px 40px; }
+            .hero { display: block; }
+            .hero-meta { margin-top: 21px; gap: 14px; flex-wrap: wrap; }
+            .hero-meta div { padding-left: 12px; }
+            .overview { grid-template-columns: 1fr; }
+            .salary-card { grid-column: auto; }
+            .metric { min-height: 110px; }
+            .metric-value { margin-top: 13px; }
+            .panel { padding: 19px 16px; }
+            .nav-list { gap: 3px; }
+            .nav-list a { font-size: 10px; }
+            .nav-icon { width: 20px; height: 20px; }
+        }
+
+        /* Payroll product shell: a denser, dashboard-first visual system. */
+        :root {
+            --ink: #102c22;
+            --ink-soft: #6a8176;
+            --green: #24b873;
+            --green-dark: #0b5d3a;
+            --green-pale: #e7f6ed;
+            --canvas: #f1f5f2;
+            --surface: #ffffff;
+            --line: #dce8e0;
+            --line-dark: #c1d4c8;
+            --shadow: 0 18px 45px rgba(16, 53, 35, .07);
+            --radius: 18px;
+        }
+        body { background: var(--canvas); }
+        .payroll-header {
+            position: relative;
+            height: 82px;
+            padding: 0 38px;
+            color: #eaf8ef;
+            background: #102d23;
+            border-bottom: 0;
+        }
+        .payroll-header::after {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #24b873, #79d99f 45%, transparent);
+            content: "";
+        }
+        .brand-logo { width: 108px; filter: brightness(0) invert(1); }
+        .module-title { color: #b9d7c5; font-size: 15px; letter-spacing: .04em; }
+        .module-title::before { background: rgba(210, 239, 220, .24); }
+        .avatar { width: 40px; height: 40px; color: #b9f0ce; background: #1c4b38; border: 1px solid rgba(255,255,255,.12); }
+        .user-details strong { color: #fff; }
+        .user-details span { color: #a8c6b4; }
+        .header-action, .logout {
+            color: #e4f5ea;
+            background: rgba(255,255,255,.06);
+            border-color: rgba(255,255,255,.16);
+        }
+        .logout:hover, .header-action:hover { color: #fff; border-color: #62d493; background: rgba(255,255,255,.12); }
+        .workspace { grid-template-columns: 248px minmax(0, 1fr); }
+        .sidebar {
+            padding: 32px 18px;
+            color: #bdd7c6;
+            background: #15392c;
+            border-right: 0;
+        }
+        .side-label { color: #7ea992; font-size: 9px; letter-spacing: .16em; }
+        .nav-list { gap: 8px; }
+        .nav-list a {
+            min-height: 48px;
+            gap: 12px;
+            padding: 11px 13px;
+            color: #a9c6b5;
+            border: 1px solid transparent;
+            border-radius: 12px;
+        }
+        .nav-list a:hover { color: #fff; background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.08); }
+        .nav-list a.active {
+            color: #fff;
+            background: #227c50;
+            border-color: #4bbf7c;
+            box-shadow: 0 8px 20px rgba(4, 32, 20, .22);
+        }
+        .nav-icon, .nav-list .active .nav-icon {
+            width: 27px;
+            height: 27px;
+            color: #8ec9a7;
+            background: rgba(255,255,255,.08);
+            border-radius: 8px;
+            font-size: 10px;
+        }
+        .nav-list .active .nav-icon { color: #0f5e3a; background: #d7f4e1; }
+        .content { max-width: 1520px; padding: 42px 48px 58px; }
+        .hero {
+            position: relative;
+            min-height: 236px;
+            align-items: flex-end;
+            margin-bottom: 22px;
+            padding: 30px 34px;
+            overflow: hidden;
+            color: #fff;
+            border-radius: 24px;
+            background: linear-gradient(118deg, #0d5e3a 0%, #147b4d 58%, #2b9a61 100%);
+            box-shadow: 0 22px 42px rgba(13, 94, 58, .18);
+        }
+        .hero::after {
+            position: absolute;
+            top: -90px;
+            right: -55px;
+            width: 330px;
+            height: 330px;
+            border: 1px solid rgba(255,255,255,.13);
+            border-radius: 50%;
+            box-shadow: 0 0 0 28px rgba(255,255,255,.035), 0 0 0 58px rgba(255,255,255,.025);
+            content: "";
+        }
+        .hero > div { position: relative; z-index: 1; }
+        .hero .eyebrow, .hero p { color: #bfe8ce; }
+        .hero h1 { max-width: 520px; margin-top: 10px; font-size: clamp(28px, 3.1vw, 42px); }
+        .hero-identity { margin-bottom: 25px; }
+        .hero-identity strong { font-size: 14px; }
+        .hero-avatar { width: 48px; height: 48px; border: 2px solid rgba(255,255,255,.65); box-shadow: none; }
+        .hero-meta { position: relative; z-index: 1; gap: 0; padding: 0; }
+        .hero-meta div { min-width: 110px; padding: 0 0 0 18px; border-left-color: rgba(255,255,255,.25); }
+        .hero-meta div + div { margin-left: 18px; }
+        .hero-meta span { color: #bfe8ce; }
+        .hero-meta strong { color: #fff; }
+        .overview { grid-template-columns: minmax(290px, 1.55fr) repeat(3, minmax(145px, 1fr)); gap: 14px; margin-bottom: 30px; }
+        .salary-card, .metric, .panel { border-radius: 18px; box-shadow: 0 10px 30px rgba(16,53,35,.045); }
+        .salary-card { min-height: 155px; padding: 25px 27px; background: #102d23; border-color: #102d23; }
+        .salary-value { font-size: clamp(30px, 3.4vw, 44px); }
+        .metric { min-height: 155px; padding: 24px 21px; }
+        .metric::before {
+            display: block;
+            width: 28px;
+            height: 3px;
+            margin-bottom: 19px;
+            border-radius: 10px;
+            background: var(--green);
+            content: "";
+        }
+        .metric-value { margin-top: 0; font-size: 18px; }
+        .section-grid { gap: 24px; }
+        .panel { padding: 26px; }
+        .section-heading { margin-bottom: 23px; }
+        .section-heading h2 { font-size: 19px; }
+        .section-heading p { font-size: 12px; line-height: 1.5; }
+        .status { padding: 7px 10px; color: #147044; background: #e5f6eb; }
+        .data-row { padding: 16px 0; }
+        .data-row dt { font-size: 12px; }
+        .data-row dd { font-size: 14px; }
+        .deduction-item { padding: 14px 15px; border-radius: 12px; background: #fbfdfb; }
+        .detail-list { gap: 12px; }
+        .detail-card { padding: 18px; border-radius: 14px; background: #fbfdfb; }
+        .detail-top strong:first-child { color: #176c46; }
+        .deduction-summary { gap: 14px; }
+        .deduction-summary .metric { min-height: 0; padding: 18px; }
+        .final-pay { margin-top: 20px; border-radius: 12px; border: 1px solid #ccebd7; }
+        .data-table { min-width: 640px; }
+        .data-table th { padding-bottom: 14px; }
+        .data-table td { padding: 17px 10px; }
+        .data-table tbody tr:hover { background: #f7fbf8; }
+        .data-table .header-action { display: inline-block; color: #146d45; background: #e8f6ed; border-color: #ccebd7; }
+        .empty-row { padding: 34px 15px 12px; }
+        .footer-note { margin-top: 30px; color: #80968b; }
+        @media (max-width: 1100px) {
+            .content { padding-inline: 30px; }
+            .hero { display: block; }
+            .hero-meta { margin-top: 28px; }
+        }
+        @media (max-width: 820px) {
+            .payroll-header { padding-inline: 22px; }
+            .workspace { display: block; }
+            .sidebar { padding: 14px 18px; }
+            .nav-list { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+            .nav-list a { justify-content: center; }
+            .content { padding-top: 26px; }
+        }
+        @media (max-width: 570px) {
+            .payroll-header { min-height: 72px; padding-inline: 16px; }
+            .brand-logo { width: 94px; }
+            .content { padding: 18px 14px 38px; }
+            .hero { min-height: 0; padding: 24px 20px; border-radius: 18px; }
+            .hero h1 { font-size: 29px; }
+            .hero-meta { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px 0; }
+            .hero-meta div { min-width: 0; }
+            .hero-meta div + div { margin-left: 0; }
+            .overview { gap: 10px; }
+            .salary-card, .metric { min-height: 125px; }
+            .panel { padding: 20px 17px; border-radius: 15px; }
+            .nav-list { grid-template-columns: repeat(5, minmax(55px, 1fr)); gap: 2px; }
+            .nav-list a { min-height: 56px; padding: 7px 3px; }
+            .nav-list a span:last-child { display: block; max-width: 60px; overflow: hidden; font-size: 9px; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
+            .nav-icon { width: 22px; height: 22px; }
+        }
+
+        .detail-card .detail-top > div { display: flex; align-items: baseline; gap: 9px; }
+        .detail-card .detail-top strong:first-child { color: var(--ink); font-size: 15px; }
+        .detail-day { color: var(--ink-soft); font-size: 11px; }
+        .detail-kind { color: var(--green-dark) !important; font-weight: 800; }
+        .rate-badge {
+            padding: 4px 7px;
+            border-radius: 4px;
+            color: #517064;
+            background: #eef3ef;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+        .rate-badge.double { color: #8a5b18; background: #fff4dc; }
+        .detail-card p { max-width: 760px; margin-top: 12px; line-height: 1.65; }
+
+        /* Editorial payroll workspace: white navigation, asymmetric financial canvas. */
+        :root {
+            --ink: #17352a;
+            --ink-soft: #718279;
+            --green: #168b54;
+            --green-dark: #0f6940;
+            --green-pale: #e9f5ed;
+            --canvas: #f7f8f6;
+            --surface: #fff;
+            --line: #e3e9e4;
+            --line-dark: #cbd8cf;
+            --shadow: 0 12px 32px rgba(28, 60, 43, .05);
+            --radius: 12px;
+        }
+        body { background: var(--canvas); }
+        .payroll-header {
+            height: 74px;
+            padding: 0 42px;
+            background: #fff;
+            border-bottom: 1px solid var(--line);
+            box-shadow: 0 2px 12px rgba(29, 62, 43, .035);
+        }
+        .payroll-header::after { display: none; }
+        .brand-logo { width: 105px; filter: none; }
+        .module-title { color: var(--ink); font-size: 14px; letter-spacing: .02em; }
+        .module-title::before { background: var(--line-dark); }
+        .avatar { width: 38px; height: 38px; color: var(--green-dark); background: var(--green-pale); border: 1px solid #d4e9da; }
+        .user-details strong { color: var(--ink); }
+        .user-details span { color: var(--ink-soft); }
+        .header-action, .logout {
+            color: var(--ink);
+            background: #fff;
+            border-color: var(--line-dark);
+        }
+        .logout:hover, .header-action:hover { color: var(--green-dark); border-color: var(--green); background: var(--green-pale); }
+        .workspace { grid-template-columns: 244px minmax(0, 1fr); min-height: calc(100vh - 74px); }
+        .sidebar {
+            padding: 35px 23px;
+            background: #fff;
+            border-right: 1px solid var(--line);
+        }
+        .side-label { padding: 0 10px 18px; color: #8a9990; font-size: 9px; letter-spacing: .16em; }
+        .nav-list { gap: 3px; }
+        .nav-list a {
+            position: relative;
+            min-height: 45px;
+            gap: 12px;
+            padding: 10px 12px;
+            color: #728178;
+            border: 0;
+            border-radius: 8px;
+        }
+        .nav-list a::before {
+            position: absolute;
+            left: -23px;
+            width: 3px;
+            height: 24px;
+            border-radius: 0 3px 3px 0;
+            background: transparent;
+            content: "";
+        }
+        .nav-list a:hover { color: var(--ink); background: #f5f8f5; border: 0; }
+        .nav-list a.active { color: var(--green-dark); background: var(--green-pale); border: 0; box-shadow: none; }
+        .nav-list a.active::before { background: var(--green); }
+        .nav-icon, .nav-list .active .nav-icon {
+            width: 25px;
+            height: 25px;
+            color: #89988e;
+            background: transparent;
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            font-size: 9px;
+        }
+        .nav-list .active .nav-icon { color: var(--green-dark); background: #fff; border-color: #bfe0c9; }
+        .content {
+            max-width: 1500px;
+            padding: 42px 54px 64px;
+        }
+        .hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 390px;
+            align-items: stretch;
+            min-height: 280px;
+            margin-bottom: 18px;
+            padding: 0;
+            overflow: hidden;
+            color: #fff;
+            border-radius: 12px;
+            background: #17352a;
+            box-shadow: 0 18px 38px rgba(21, 59, 40, .12);
+        }
+        .hero::after { top: auto; right: -70px; bottom: -180px; width: 430px; height: 430px; border-color: rgba(255,255,255,.1); box-shadow: 0 0 0 40px rgba(255,255,255,.035); }
+        .hero > div:first-child { padding: 35px 38px; }
+        .hero > div { position: relative; z-index: 1; }
+        .hero .eyebrow, .hero p { color: #a7cbb5; }
+        .hero h1 { max-width: 500px; margin: 12px 0 10px; font-size: clamp(30px, 3.8vw, 50px); line-height: 1.02; letter-spacing: -.055em; }
+        .hero p { max-width: 360px; line-height: 1.6; }
+        .hero-identity { margin-bottom: 30px; }
+        .hero-identity strong { font-size: 14px; }
+        .hero-avatar { width: 44px; height: 44px; border: 2px solid rgba(255,255,255,.55); box-shadow: none; }
+        .hero-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-content: end;
+            gap: 22px 18px;
+            padding: 35px 31px;
+            background: #204936;
+        }
+        .hero-meta div, .hero-meta div + div { min-width: 0; margin-left: 0; padding-left: 0; border-left: 0; }
+        .hero-meta span { color: #a7cbb5; }
+        .hero-meta strong { color: #fff; font-size: 13px; }
+        .overview {
+            grid-template-columns: 1.1fr .95fr .95fr;
+            grid-template-rows: auto auto;
+            gap: 0;
+            margin: 0 0 28px;
+            padding: 22px 25px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: var(--shadow);
+        }
+        .salary-card, .metric { min-height: 0; border: 0; border-radius: 0; box-shadow: none; }
+        .salary-card {
+            grid-row: span 2;
+            padding: 6px 28px 6px 0;
+            color: var(--ink);
+            background: transparent;
+            border-right: 1px solid var(--line);
+        }
+        .salary-card .card-label { color: var(--ink-soft); }
+        .salary-primary { align-items: flex-end; margin-top: 26px; }
+        .salary-value { color: var(--green-dark); font-size: clamp(32px, 4vw, 52px); letter-spacing: -.06em; }
+        .salary-note { color: var(--ink-soft); }
+        .salary-symbol { width: 35px; height: 35px; color: var(--green-dark); background: var(--green-pale); border: 0; border-radius: 50%; }
+        .metric { display: block; min-height: 78px; padding: 6px 0 6px 25px; }
+        .metric + .metric { border-left: 1px solid var(--line); }
+        .metric::before { display: none; }
+        .metric-value { margin-top: 12px; color: var(--ink); font-size: 16px; }
+        .section-grid { grid-template-columns: minmax(0, 1.05fr) minmax(330px, .95fr); gap: 18px; }
+        .panel { border: 1px solid var(--line); border-radius: 12px; background: #fff; box-shadow: var(--shadow); }
+        .section-grid .panel { box-shadow: none; }
+        .panel + .panel { margin-top: 18px; }
+        .section-heading { margin-bottom: 21px; }
+        .section-heading h2 { font-size: 18px; letter-spacing: -.025em; }
+        .section-heading p { line-height: 1.5; }
+        .status { padding: 6px 9px; color: var(--green-dark); background: var(--green-pale); border-radius: 5px; }
+        .data-row { padding: 16px 0; }
+        .data-row dd { font-size: 14px; }
+        .deduction-list { gap: 0; }
+        .deduction-item { padding: 14px 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; }
+        .deduction-item:last-child { border-bottom: 0; }
+        .detail-list { gap: 10px; }
+        .detail-card { padding: 19px; border: 1px solid var(--line); border-left: 3px solid #5dbb7d; border-radius: 7px; background: #fff; }
+        .detail-top strong:first-child { color: var(--green-dark); }
+        .deduction-summary { gap: 0; margin-bottom: 21px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+        .deduction-summary .metric { padding: 16px 18px; background: #fbfcfb; }
+        .deduction-summary .metric + .metric { border-top: 0; }
+        .final-pay { margin-top: 18px; padding: 18px; border: 1px solid #cfe8d6; border-radius: 8px; background: var(--green-pale); }
+        .data-table { min-width: 620px; }
+        .data-table th { padding-bottom: 14px; }
+        .data-table td { padding: 16px 10px; }
+        .data-table tbody tr { transition: background .2s ease; }
+        .data-table tbody tr:hover { background: #f7faf7; }
+        .data-table .header-action { color: var(--green-dark); background: var(--green-pale); border-color: #cfe8d6; }
+        .empty-row { padding: 38px 15px 16px; }
+        .footer-note { margin-top: 28px; color: #8b998f; }
+        @media (max-width: 1100px) {
+            .content { padding-inline: 30px; }
+            .hero { grid-template-columns: 1fr 320px; }
+        }
+        @media (max-width: 820px) {
+            .payroll-header { padding-inline: 22px; }
+            .workspace { display: block; }
+            .sidebar { padding: 13px 18px; border-right: 0; border-bottom: 1px solid var(--line); }
+            .side-label { display: none; }
+            .nav-list { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+            .nav-list a { justify-content: center; }
+            .nav-list a::before { display: none; }
+            .content { padding-top: 27px; }
+            .hero { grid-template-columns: 1fr; }
+            .hero-meta { grid-template-columns: repeat(4, 1fr); padding: 18px 28px; }
+            .section-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 570px) {
+            .payroll-header { min-height: 70px; padding-inline: 16px; }
+            .brand-logo { width: 94px; }
+            .content { padding: 18px 14px 38px; }
+            .hero { border-radius: 9px; }
+            .hero > div:first-child { padding: 25px 21px 28px; }
+            .hero h1 { font-size: 32px; }
+            .hero-meta { grid-template-columns: 1fr 1fr; gap: 15px 20px; padding: 21px; }
+            .overview { display: grid; grid-template-columns: 1fr 1fr; padding: 16px; }
+            .salary-card { grid-column: span 2; grid-row: auto; padding: 4px 0 20px; border-right: 0; border-bottom: 1px solid var(--line); }
+            .metric { padding: 17px 10px 7px 0; }
+            .metric + .metric { padding-left: 15px; }
+            .panel { padding: 20px 17px; }
+            .nav-list { grid-template-columns: repeat(5, minmax(55px, 1fr)); gap: 2px; }
+            .nav-list a { min-height: 55px; padding: 6px 3px; }
+            .nav-list a span:last-child { display: block; max-width: 61px; overflow: hidden; font-size: 9px; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
+            .nav-icon { width: 22px; height: 22px; }
         }
     </style>
 </head>
 <body>
     <div class="payroll-shell">
         <header class="payroll-header">
-            <div class="payroll-brand">
-                <div class="payroll-brand-mark">E</div>
-                <strong>EMPLY</strong>
-            </div>
-
-            <div class="payroll-title">Payroll</div>
-
-            <div class="payroll-user">
-                <div class="payroll-avatar">{{ employee_name|default:"E"|slice:":1"|upper }}</div>
-                <div class="payroll-user-meta">
+            <a class="brand" href="{% url 'payroll-dashboard' %}" aria-label="EMPLY Payroll home">
+                <img class="brand-logo" src="{% static 'images/ui/emply-logo.png' %}" alt="EMPLY">
+            </a>
+            <div class="module-title">Payroll</div>
+            <div class="user-area">
+                <div class="avatar"><img src="{{ employee_avatar }}" alt="{{ employee_name|default:'Employee' }}"></div>
+                <div class="user-details">
                     <strong>{{ employee_name|default:"Employee" }}</strong>
-                    <span>Profile</span>
+                    <span>Employee</span>
                 </div>
-                <a href="{% url 'logout' %}" class="payroll-logout">Logout</a>
+                <a class="logout" href="{% url 'logout' %}">Logout</a>
             </div>
         </header>
 
-        <div class="payroll-layout">
-            <aside class="payroll-sidebar">
-                <ul class="payroll-nav">
-                    <li><a href="#" class="active">Overview</a></li>
-                    <li><a href="#">Salary</a></li>
-                    <li><a href="#">Salary Slips</a></li>
-                    <li><a href="#">Payroll History</a></li>
-                </ul>
+        <div class="workspace">
+            <aside class="sidebar">
+                <div class="side-label">Payroll workspace</div>
+                <nav aria-label="Payroll navigation">
+                    <ul class="nav-list">
+                        <li><a class="active" href="#overview"><span class="nav-icon">01</span><span>Overview</span></a></li>
+                        <li><a href="#salary"><span class="nav-icon">02</span><span>Salary</span></a></li>
+                        <li><a href="#deductions"><span class="nav-icon">03</span><span>Deductions</span></a></li>
+                        <li><a href="#salary-slips"><span class="nav-icon">04</span><span>Salary Slips</span></a></li>
+                        <li><a href="#payroll-history"><span class="nav-icon">05</span><span>Payroll History</span></a></li>
+                    </ul>
+                </nav>
             </aside>
 
-            <main class="payroll-content">
+            <main class="content">
                 {% if not salary_configured %}
-                    <section class="payroll-state">
-                        <h2>Payroll access is not available yet.</h2>
-                        <p>Payroll access is not available yet because salary information has not been configured for your profile.</p>
-                        <a href="/" class="payroll-link">Return to EMPLY</a>
+                    <section class="panel">
+                        <div class="section-heading">
+                            <div>
+                                <div class="eyebrow">Payroll access</div>
+                                <h2>Salary information is not configured</h2>
+                            </div>
+                            <span class="status">Unavailable</span>
+                        </div>
+                        <p class="empty-row">Payroll access is not available yet because salary information has not been configured for your employee profile.</p>
                     </section>
                 {% else %}
-                    <section class="payroll-overview" aria-label="Payroll overview">
-                        <div class="payroll-card">
-                            <span class="payroll-card-label">Current Salary</span>
-                            <div class="payroll-card-value">{{ salary_value|default:"Not available yet" }}</div>
-                        </div>
-                        <div class="payroll-card">
-                            <span class="payroll-card-label">Current Payroll Period</span>
-                            <div class="payroll-card-value">{{ current_month|default:"Not available yet" }}</div>
-                        </div>
-                        <div class="payroll-card">
-                            <span class="payroll-card-label">Net Pay</span>
-                            <div class="payroll-card-value">{{ net_pay|default:"Not available yet" }}</div>
-                        </div>
-                        <div class="payroll-card">
-                            <span class="payroll-card-label">Total Deductions</span>
-                            <div class="payroll-card-value">{{ total_deductions|default:"Not available yet" }}</div>
-                        </div>
-                    </section>
-
-                    <section class="payroll-panel">
-                        <h2>Salary Summary</h2>
-                        <div class="payroll-row"><span>Basic Salary</span><strong>{{ salary_value|default:"Not available yet" }}</strong></div>
-                        <div class="payroll-row"><span>Allowances</span><strong>Not available yet</strong></div>
-                        <div class="payroll-row"><span>Deductions</span><strong>Not available yet</strong></div>
-                        <div class="payroll-row"><span>Net Salary</span><strong>{{ net_pay|default:"Not available yet" }}</strong></div>
-                    </section>
-
-                    <section class="payroll-panel">
-                        <h2>Salary Breakdown</h2>
-                        <div class="payroll-row"><span>Basic Salary</span><strong>{{ salary_value|default:"Not available yet" }}</strong></div>
-                        <div class="payroll-row"><span>Allowances</span><strong>Not available yet</strong></div>
-                        <div class="payroll-row"><span>Deductions</span><strong>Not available yet</strong></div>
-                        <div class="payroll-row"><span>Net Salary</span><strong>{{ net_pay|default:"Not available yet" }}</strong></div>
-                    </section>
-
-                    <section class="payroll-panel">
-                        <h2>Deductions</h2>
-                        <div class="payroll-row"><span>Attendance Deduction</span><strong class="payroll-flag">Not configured</strong></div>
-                        <div class="payroll-row"><span>Leave Deduction</span><strong class="payroll-flag">Not configured</strong></div>
-                        <div class="payroll-row"><span>Late Deduction</span><strong class="payroll-flag">Not configured</strong></div>
-                        <div class="payroll-row"><span>Other Deductions</span><strong class="payroll-flag">Not configured</strong></div>
-                        <div class="payroll-row"><span>Total Deduction</span><strong class="payroll-flag">Not configured</strong></div>
-                    </section>
-
-                    <section class="payroll-panel">
-                        <h2>Salary Slips</h2>
-                        <div class="payroll-slip">
-                            <div class="payroll-slip-title">
-                                <strong>September 2026</strong>
-                                <span>Net Salary — Not available yet</span>
+                    <section class="hero" id="overview" data-payroll-section="overview">
+                        <div>
+                            <div class="hero-identity">
+                                <div class="hero-avatar"><img src="{{ employee_avatar }}" alt="{{ employee_name|default:'Employee' }}"></div>
+                                <div>
+                                    <div class="eyebrow">Employee payroll profile</div>
+                                    <strong>{{ employee_name|default:"Not available yet" }}</strong>
+                                </div>
                             </div>
-                            <button type="button" class="payroll-btn">Download Salary Slip</button>
+                            <div class="eyebrow">Payroll overview</div>
+                            <h1>Your compensation overview</h1>
+                            <p>Review your configured salary details and payroll documents.</p>
                         </div>
-                        <div style="margin-top: 14px;" class="payroll-empty">No salary slips are available yet. Backend payslip generation will be implemented in a later phase.</div>
+                        <div class="hero-meta">
+                            <div>
+                                <span>Employee</span>
+                                <strong>{{ employee_name|default:"Not available yet" }}</strong>
+                            </div>
+                            {% if employee_id %}
+                                <div><span>Employee ID</span><strong>{{ employee_id }}</strong></div>
+                            {% endif %}
+                            {% if employee_designation %}
+                                <div><span>Designation</span><strong>{{ employee_designation }}</strong></div>
+                            {% endif %}
+                            {% if employee_department %}
+                                <div><span>Department</span><strong>{{ employee_department }}</strong></div>
+                            {% endif %}
+                        </div>
                     </section>
 
-                    <section class="payroll-panel">
-                        <h2>Payroll History</h2>
-                        <div class="payroll-row"><span>Payroll Period</span><strong>Not available yet</strong></div>
-                        <div class="payroll-row"><span>Salary</span><strong>Not available yet</strong></div>
-                        <div class="payroll-row"><span>Deductions</span><strong>Not available yet</strong></div>
-                        <div class="payroll-row"><span>Net Pay</span><strong>Not available yet</strong></div>
-                        <div class="payroll-row"><span>Status</span><strong>Not available yet</strong></div>
-                        <div class="payroll-row"><span>Salary Slip</span><strong>Not available yet</strong></div>
+                    <section class="overview" aria-label="Payroll summary" data-payroll-section="overview">
+                        <div class="salary-card">
+                            <div class="card-label">Current salary</div>
+                            <div class="salary-primary">
+                                <div>
+                                    <div class="salary-value">{{ payroll.basic_salary_display|default:"Not available yet" }}</div>
+                                    <div class="salary-note">Configured basic salary</div>
+                                </div>
+                                <span class="salary-symbol">&#8377;</span>
+                            </div>
+                        </div>
+                        <div class="metric">
+                            <div class="card-label">Payroll period</div>
+                            <div class="metric-value">{{ current_month|default:"Not available yet" }}</div>
+                        </div>
+                        <div class="metric">
+                            <div class="card-label">Net pay</div>
+                            <div class="metric-value">{{ payroll.net_pay_display }}</div>
+                        </div>
+                        <div class="metric">
+                            <div class="card-label">Total deductions</div>
+                            <div class="metric-value">{{ payroll.total_deductions_display }}</div>
+                        </div>
+                    </section>
+
+                    <div class="section-grid">
+                        <div>
+                            <section class="panel" id="salary" data-payroll-section="salary">
+                                <div class="section-heading">
+                                    <div><h2>Salary snapshot</h2><p>Values currently available in your employee profile.</p></div>
+                                    <span class="status">Profile data</span>
+                                </div>
+                                <dl class="data-list">
+                                    <div class="data-row"><dt>Basic salary</dt><dd>{{ payroll.basic_salary_display|default:"Not available yet" }}</dd></div>
+                                    <div class="data-row"><dt>Allowances</dt><dd class="muted">Not available yet</dd></div>
+                                    <div class="data-row"><dt>Net salary</dt><dd>{{ payroll.net_pay_display }}</dd></div>
+                                </dl>
+                            </section>
+                            <section class="panel" data-payroll-section="salary">
+                                <div class="section-heading">
+                                    <div><h2>Salary breakdown</h2><p>Calculation rules will be added in a future payroll phase.</p></div>
+                                </div>
+                                <dl class="data-list">
+                                    <div class="data-row"><dt>Basic salary</dt><dd>{{ payroll.basic_salary_display|default:"Not available yet" }}</dd></div>
+                                    <div class="data-row"><dt>Allowances</dt><dd class="muted">Not available yet</dd></div>
+                                    <div class="data-row"><dt>Gross salary</dt><dd class="muted">Not configured</dd></div>
+                                    <div class="data-row"><dt>Net salary</dt><dd>{{ payroll.net_pay_display }}</dd></div>
+                                </dl>
+                            </section>
+                        </div>
+                        <section class="panel" id="attendance-impact" data-payroll-section="overview">
+                            <div class="section-heading">
+                                <div><h2>Leave &amp; attendance impact</h2><p>Calculated from approved leave and validated attendance records.</p></div>
+                                <span class="status">Payroll result</span>
+                            </div>
+                            <div class="deduction-list">
+                                <div class="deduction-item"><span>Paid leave</span><strong class="not-ready">{{ payroll.paid_leave_days }} days</strong></div>
+                                <div class="deduction-item"><span>Unpaid leave / LWP</span><strong class="not-ready">{{ payroll.unpaid_leave_days }} days</strong></div>
+                                <div class="deduction-item"><span>Absence</span><strong class="not-ready">{{ payroll.absence_days }} days</strong></div>
+                                <div class="deduction-item"><span>Sandwich deduction</span><strong class="not-ready">{{ payroll.sandwich_days }} days</strong></div>
+                                <div class="deduction-item"><span>Total deductions</span><strong>{{ payroll.total_deductions_display }}</strong></div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <section class="panel" id="deductions" data-payroll-section="deductions">
+                        <div class="section-heading">
+                            <div><h2>Deduction details</h2><p>Each non-zero deduction is explained from the payroll calculation.</p></div>
+                        </div>
+                        <div class="deduction-summary">
+                            <div class="metric"><div class="card-label">Total deductions</div><div class="metric-value">{{ payroll.total_deductions_display }}</div></div>
+                            <div class="metric"><div class="card-label">Deduction categories</div><div class="metric-value">{{ payroll.deduction_details|length }}</div></div>
+                            <div class="metric"><div class="card-label">Affected days</div><div class="metric-value">{{ payroll.total_affected_days }}</div></div>
+                        </div>
+                        <div class="detail-list">
+                            {% for detail in payroll.deduction_details %}
+                                <article class="detail-card">
+                                    <div class="detail-top">
+                                        <div>
+                                            <strong>{{ detail.date|date:"d M Y" }}</strong>
+                                            <span class="detail-day">{{ detail.day }}</span>
+                                        </div>
+                                        <strong>{{ detail.amount_display }}</strong>
+                                    </div>
+                                    <div class="detail-meta">
+                                        <span class="detail-kind">{{ detail.leave_type }}</span>
+                                        <span>{{ detail.days }} affected day</span>
+                                        <span class="rate-badge {{ detail.rate_label|lower }}">{{ detail.rate_label }} rate</span>
+                                    </div>
+                                    <p>{{ detail.reason }}</p>
+                                    <div class="detail-policy">Policy: {{ detail.policy }}</div>
+                                    <div class="detail-calculation">Calculation: {{ detail.calculation }}</div>
+                                </article>
+                            {% empty %}
+                                <div class="empty-row"><strong>No deductions recorded</strong><span>No deduction detail applies to this payroll period.</span></div>
+                            {% endfor %}
+                        </div>
+                        <div class="final-pay"><span>Basic salary − total deductions</span><strong>Final net pay: {{ payroll.net_pay_display }}</strong></div>
+                    </section>
+
+                    <section class="panel" id="salary-slips" data-payroll-section="salary-slips">
+                        <div class="section-heading">
+                            <div><h2>Salary slips</h2><p>Issued payroll documents will appear here.</p></div>
+                            <span class="status">No documents</span>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead><tr><th>Payroll period</th><th>Net pay</th><th>Status</th><th>Action</th></tr></thead>
+                                <tbody>
+                                    {% for payslip in payslips %}
+                                        <tr>
+                                            <td><strong>{{ payslip.start_date|date:"F Y" }}</strong></td>
+                                            <td>₹{{ payslip.net_pay|floatformat:2|default:"Not available yet" }}</td>
+                                            <td>{{ payslip.get_status_display }}</td>
+                                            <td><a href="{% url 'view-payslip-pdf' payslip.id %}" class="header-action">Download</a></td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr><td colspan="4"><div class="empty-row"><strong>No salary slips available</strong><span>Generate a snapshot from the current payroll calculation.</span><br><form method="post" action="{% url 'generate-employee-payslip' %}">{% csrf_token %}<button type="submit" class="disabled-action" style="cursor:pointer;color:var(--green-dark);">Generate Salary Slip</button></form></div></td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <section class="panel" id="payroll-history" data-payroll-section="payroll-history">
+                        <div class="section-heading">
+                            <div><h2>Payroll history</h2><p>Historical payroll records will appear here when available.</p></div>
+                            <span class="status">No records</span>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead><tr><th>Payroll period</th><th>Basic salary</th><th>Deductions</th><th>Net pay</th><th>Status</th><th>Payslip</th></tr></thead>
+                                <tbody>
+                                    {% for payslip in payslips %}
+                                        <tr>
+                                            <td><strong>{{ payslip.start_date|date:"F Y" }}</strong></td>
+                                            <td>₹{{ payslip.basic_pay|floatformat:2|default:"Not available yet" }}</td>
+                                            <td>₹{{ payslip.deduction|floatformat:2|default:"Not available yet" }}</td>
+                                            <td>₹{{ payslip.net_pay|floatformat:2|default:"Not available yet" }}</td>
+                                            <td>{{ payslip.get_status_display }}</td>
+                                            <td><a href="{% url 'view-payslip-pdf' payslip.id %}" class="header-action">View</a></td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr><td colspan="6"><div class="empty-row"><strong>No payroll history available</strong><span>There are no genuine payroll records to display yet.</span></div></td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </section>
                 {% endif %}
+                <div class="footer-note">Payroll workspace · EMPLY</div>
             </main>
         </div>
     </div>
+    <script>
+        (() => {
+            const validSections = ["overview", "salary", "deductions", "salary-slips", "payroll-history"];
+            const links = Array.from(document.querySelectorAll(".nav-list a"));
+            const sections = Array.from(document.querySelectorAll("[data-payroll-section]"));
+
+            function activateSection() {
+                const requested = window.location.hash.slice(1);
+                const section = validSections.includes(requested) ? requested : "overview";
+                if (requested !== section) {
+                    history.replaceState(null, "", `${window.location.pathname}${window.location.search}#${section}`);
+                }
+                sections.forEach((element) => {
+                    element.classList.toggle(
+                        "payroll-section-hidden",
+                        element.dataset.payrollSection !== section
+                    );
+                });
+                links.forEach((link) => {
+                    link.classList.toggle("active", link.getAttribute("href") === `#${section}`);
+                });
+            }
+
+            window.addEventListener("hashchange", activateSection);
+            activateSection();
+        })();
+    </script>
 </body>
 </html>

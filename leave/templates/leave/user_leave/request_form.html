@@ -1,4 +1,317 @@
 {% load i18n %}{% load horillafilters %}
+<style>
+    #objectCreateModal {
+        z-index: 100000 !important;
+    }
+
+    #objectCreateModal + .oh-modal-backdrop,
+    .oh-modal-backdrop {
+        z-index: 99999 !important;
+    }
+
+    #objectCreateModal .select2-container,
+    #objectCreateModal .select2-container--open,
+    body > .select2-container {
+        z-index: 100001 !important;
+    }
+
+    #objectCreateModal .select2-selection,
+    #objectCreateModal .select2-selection--single,
+    #objectCreateModal .select2-selection--multiple {
+        min-height: 44px !important;
+        border: 1px solid #d7e2dc !important;
+        border-radius: 10px !important;
+        background: #fff !important;
+        color: #294b47 !important;
+    }
+
+    #objectCreateModal .select2-selection__rendered {
+        padding: 0.72rem 2.2rem 0.72rem 0.8rem !important;
+        color: #294b47 !important;
+        line-height: 1.2 !important;
+    }
+
+    #objectCreateModal .select2-selection__arrow {
+        height: 42px !important;
+    }
+
+    #objectCreateModal .select2-selection__arrow b {
+        border-color: #2f5752 transparent transparent transparent !important;
+    }
+
+    #objectCreateModal .select2-container--open .select2-selection,
+    #objectCreateModal .select2-container--open .select2-selection--single,
+    #objectCreateModal .select2-container--focus .select2-selection,
+    html body:has(.oh-wrapper-main.employee-bottom-nav-active) #objectCreateModal .select2-container--open .select2-selection {
+        border-color: #6cae95 !important;
+        background: #fff !important;
+        color: #294b47 !important;
+        box-shadow: 0 0 0 3px rgba(108,174,149,0.16) !important;
+    }
+
+    #objectCreateModal .select2-container--open .select2-selection__rendered,
+    html body:has(.oh-wrapper-main.employee-bottom-nav-active) #objectCreateModal .select2-container--open .select2-selection__rendered {
+        background: #fff !important;
+        color: #294b47 !important;
+    }
+
+    body > .select2-container--open .select2-dropdown,
+    body > .select2-container .select2-dropdown {
+        z-index: 100002 !important;
+        overflow: hidden;
+        border: 1px solid #b8d0c5 !important;
+        border-radius: 10px !important;
+        background: #fff !important;
+        box-shadow: 0 14px 30px rgba(8, 31, 24, 0.2) !important;
+    }
+
+    html body:has(.oh-wrapper-main.employee-bottom-nav-active) > .select2-container .select2-dropdown,
+    html body:has(.oh-wrapper-main.employee-bottom-nav-active) > .select2-container .select2-results,
+    html body:has(.oh-wrapper-main.employee-bottom-nav-active) > .select2-container .select2-results__options {
+        background: #fff !important;
+        color: #294b47 !important;
+    }
+
+    body > .select2-container .select2-results,
+    body > .select2-container .select2-results__options {
+        background: #fff !important;
+        color: #294b47 !important;
+    }
+
+    body > .select2-container .select2-results__option {
+        padding: 0.65rem 0.8rem !important;
+        background: #fff !important;
+        color: #294b47 !important;
+        font-size: 0.82rem;
+    }
+
+    html body:has(.oh-wrapper-main.employee-bottom-nav-active) > .select2-container .select2-results__option {
+        background: #fff !important;
+        color: #294b47 !important;
+    }
+
+    body > .select2-container .select2-results__option--highlighted[aria-selected] {
+        background: #2f5752 !important;
+        color: #fff !important;
+    }
+
+    html body:has(.oh-wrapper-main.employee-bottom-nav-active) > .select2-container .select2-results__option--highlighted[aria-selected] {
+        background: #2f5752 !important;
+        color: #fff !important;
+    }
+
+    body > .select2-container .select2-results__option[aria-selected="true"] {
+        background: #e4f0eb !important;
+        color: #294b47 !important;
+    }
+
+    body > .select2-container .select2-search--dropdown {
+        padding: 0.55rem !important;
+        background: #f5faf9 !important;
+    }
+
+    body > .select2-container .select2-search--dropdown .select2-search__field {
+        width: 100% !important;
+        min-height: 38px !important;
+        border: 1px solid #d7e2dc !important;
+        border-radius: 8px !important;
+        background: #fff !important;
+        color: #294b47 !important;
+    }
+
+    html body:has(.oh-wrapper-main.employee-bottom-nav-active) > .select2-container--open .select2-search--dropdown,
+    html body:has(.oh-wrapper-main.employee-bottom-nav-active) > .select2-container--open .select2-search--dropdown .select2-search__field {
+        background: #fff !important;
+        color: #294b47 !important;
+        border-color: #b9d8c9 !important;
+    }
+
+    html body:has(.oh-wrapper-main.employee-bottom-nav-active) > .select2-container--open .select2-search--dropdown .select2-search__field:focus {
+        background: #fff !important;
+        color: #294b47 !important;
+        border-color: #6cae95 !important;
+        outline: none !important;
+        box-shadow: 0 0 0 3px rgba(108,174,149,0.16) !important;
+    }
+
+    html body:has(.oh-wrapper-main.employee-bottom-nav-active) > .select2-container--open .select2-search--dropdown .select2-search__field::placeholder {
+        color: #75958c !important;
+        opacity: 1 !important;
+    }
+
+    #objectCreateModal .oh-modal__dialog {
+        width: min(680px, calc(100vw - 2rem));
+        max-width: 680px;
+        overflow: hidden;
+        border: 1px solid rgba(126, 194, 164, 0.28);
+        border-radius: 20px;
+        background: #f5faf9 !important;
+        box-shadow: 0 24px 70px rgba(8, 31, 24, 0.38);
+    }
+
+    #objectCreateModal .oh-modal__dialog-header {
+        display: flex;
+        align-items: center;
+        min-height: 72px;
+        padding: 1.1rem 1.35rem;
+        background: #2f5752 !important;
+        color: #fff !important;
+        border: 0;
+    }
+
+    #objectCreateModal .oh-modal__dialog-title {
+        margin: 0;
+        color: #fff;
+        font-size: 1.2rem;
+        font-weight: 800;
+    }
+
+    #objectCreateModal .oh-modal__close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        margin-left: auto;
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 50%;
+        background: rgba(255,255,255,0.1);
+        color: #fff;
+    }
+
+    #objectCreateModal .oh-modal__dialog-body {
+        padding: 1.35rem;
+        background: #f5faf9 !important;
+    }
+
+    #objectCreateModal #userLeaveForm {
+        display: block !important;
+        background: #f5faf9 !important;
+        color: #294b47 !important;
+    }
+
+    #objectCreateModal #userLeaveForm > .oh-profile-section {
+        width: 100% !important;
+        max-width: none !important;
+        padding: 0 !important;
+        background: #f5faf9 !important;
+    }
+
+    #objectCreateModal #userLeaveForm p {
+        min-width: 0;
+        margin: 0;
+    }
+
+    #objectCreateModal #userLeaveForm p:last-child {
+        grid-column: 1 / -1;
+    }
+
+    #objectCreateModal #userLeaveForm .row {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    #objectCreateModal #userLeaveForm .col,
+    #objectCreateModal #userLeaveForm [class*="col-"] {
+        padding: 0.5rem !important;
+    }
+
+    #objectCreateModal #userLeaveForm label {
+        display: block;
+        margin-bottom: 0.4rem;
+        color: #294b47;
+        font-size: 0.78rem;
+        font-weight: 800;
+    }
+
+    #objectCreateModal #userLeaveForm input,
+    #objectCreateModal #userLeaveForm select,
+    #objectCreateModal #userLeaveForm textarea {
+        width: 100% !important;
+        min-width: 0 !important;
+        min-height: 44px !important;
+        box-sizing: border-box;
+        padding: 0.7rem 0.8rem;
+        border: 1px solid #d7e2dc;
+        border-radius: 10px;
+        background: #fff !important;
+        color: #294b47 !important;
+        font-size: 0.84rem;
+    }
+
+    #objectCreateModal #userLeaveForm textarea {
+        min-height: 92px;
+        resize: vertical;
+    }
+
+    #objectCreateModal #userLeaveForm input:focus,
+    #objectCreateModal #userLeaveForm select:focus,
+    #objectCreateModal #userLeaveForm textarea:focus {
+        outline: 0;
+        border-color: #6cae95;
+        box-shadow: 0 0 0 3px rgba(108,174,149,0.16);
+    }
+
+    #objectCreateModal #userLeaveForm .oh-btn,
+    #objectCreateModal #userLeaveForm button[type="submit"] {
+        grid-column: 1 / -1;
+        justify-self: end;
+        min-width: 110px;
+        padding: 0.7rem 1.2rem;
+        border: 0;
+        border-radius: 10px;
+        background: #2f5752;
+        color: #fff;
+        font-weight: 800;
+    }
+
+    @media (max-width: 640px) {
+        #objectCreateModal .oh-modal__dialog {
+            width: calc(100vw - 1rem);
+            border-radius: 16px;
+        }
+
+        #objectCreateModal #userLeaveForm {
+            grid-template-columns: 1fr;
+        }
+
+        #objectCreateModal #userLeaveForm p:last-child,
+        #objectCreateModal #userLeaveForm .oh-btn,
+        #objectCreateModal #userLeaveForm button[type="submit"] {
+            grid-column: auto;
+        }
+    }
+
+    html body:has(.oh-wrapper-main.employee-bottom-nav-active) > .select2-container--open .select2-search--dropdown .select2-search__field {
+        min-height: 40px !important;
+        padding: 8px 12px !important;
+        background: #ffffff !important;
+        border: 1px solid rgba(42, 132, 155, 0.26) !important;
+        border-radius: 10px !important;
+        color: #285d6b !important;
+        box-shadow: none !important;
+    }
+
+    html body:has(.oh-wrapper-main.employee-bottom-nav-active) > .select2-container--open .select2-search--dropdown .select2-search__field:focus {
+        border-color: #278da0 !important;
+        box-shadow: 0 0 0 3px rgba(39, 141, 160, 0.16) !important;
+    }
+
+    html body:has(.oh-wrapper-main.employee-bottom-nav-active) > .select2-container--open .select2-results__option {
+        margin: 2px 0 !important;
+        padding: 10px 12px !important;
+        border-radius: 9px !important;
+        background: #ffffff !important;
+        color: #285d6b !important;
+        font-weight: 600 !important;
+    }
+
+    html body:has(.oh-wrapper-main.employee-bottom-nav-active) > .select2-container--open .select2-results__option--highlighted,
+    html body:has(.oh-wrapper-main.employee-bottom-nav-active) > .select2-container--open .select2-results__option[aria-selected="true"] {
+        background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+        color: #ffffff !important;
+    }
+</style>
 {% if messages %}
     <span
         hx-get="{% url 'user-request-filter' %}?{{pd}}"
@@ -15,7 +328,7 @@
     <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
     </button>
-    <div id="availableLeaveCount" style="height: 40px; display: none"></div>
+    <div id="availableLeaveCount" class="leave-balance-summary" style="display: none"></div>
 </div>
 <div class="oh-modal__dialog-body">
     <form

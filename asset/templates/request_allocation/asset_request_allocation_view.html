@@ -6,6 +6,258 @@
     {% load widget_tweaks %}
     {% comment %} {% include'filter_tags.html' %} {% endcomment %}
     <style>
+        html:has(.employee-asset-page),
+        body:has(.employee-asset-page),
+        body:has(.employee-asset-page) .oh-wrapper-main,
+        body:has(.employee-asset-page) #main {
+            background: #f5f7f3 !important;
+        }
+        .employee-asset-page {
+            min-height: 100vh;
+            width: 100%;
+            padding: 32px 36px 120px;
+            background:
+                radial-gradient(circle at 8% 12%, rgba(224, 244, 242, .72), transparent 25%),
+                #f5f8f7;
+            color: #173f3b;
+        }
+        .employee-asset-page .oh-main__topbar {
+            max-width: none;
+            margin: 0 0 24px;
+            padding: 0;
+        }
+        .employee-asset-page .oh-input__search-group {
+            width: 260px;
+        }
+        .employee-asset-page .oh-input__search-group .oh-input {
+            height: 44px;
+            border: 1px solid #cfe2e0;
+            border-radius: 10px;
+            background: #ffffff;
+            color: #245b63;
+            box-shadow: 0 4px 12px rgba(29, 86, 79, .06);
+        }
+        .employee-asset-page .oh-input__search-group .oh-input:focus {
+            border-color: #238da0;
+            box-shadow: 0 0 0 3px rgba(35, 141, 160, .14);
+            outline: none;
+        }
+        .employee-asset-page .oh-main__titlebar-title {
+            color: #173f3b !important;
+            font-size: 1.75rem;
+            font-weight: 800;
+        }
+        .employee-asset-page .oh-wrapper:not(.oh-main__topbar) {
+            padding: 0;
+            max-width: none;
+        }
+        .employee-asset-page .oh-tabs {
+            overflow: hidden;
+            border: 1px solid #d7e7e5;
+            border-radius: 18px;
+            background: #ffffff;
+            box-shadow: 0 12px 30px rgba(29, 86, 79, .08);
+        }
+        .employee-asset-page .oh-tabs__tablist {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-height: 66px;
+            padding: 12px 16px;
+            border-bottom: 1px solid #dcebea;
+            background: #f8fcfb;
+        }
+        .employee-asset-page .oh-tabs__tab {
+            flex: 0 0 auto;
+            min-width: 150px;
+            padding: 11px 22px;
+            border-radius: 10px;
+            color: #4d716d;
+            font-weight: 700;
+            transition: background .2s ease, color .2s ease, transform .2s ease;
+        }
+        .employee-asset-page .oh-tabs__tab > .oh-btn {
+            min-width: 38px;
+            width: 38px;
+            height: 38px;
+            position: absolute;
+            top: 6px;
+            left: calc(100% + 8px);
+            margin: 0;
+            padding: 0;
+            border: 0;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            background: linear-gradient(135deg, #155f6d, #238da0) !important;
+            color: #ffffff !important;
+            box-shadow: 0 5px 12px rgba(21, 95, 109, .2);
+        }
+        .employee-asset-page .oh-tabs__tab:has(> .oh-btn) {
+            position: relative;
+            margin-right: 48px;
+        }
+        .employee-asset-page .oh-tabs__tab > .oh-btn:hover {
+            background: linear-gradient(135deg, #0d5362, #167b8d) !important;
+            color: #ffffff !important;
+            transform: translateY(-1px);
+        }
+        .employee-asset-page .oh-tabs__tab > .oh-btn ion-icon {
+            margin: 0;
+            font-size: 1.05rem;
+        }
+        html body .oh-wrapper-main.employee-bottom-nav-active .employee-asset-page .oh-tabs__tab > .oh-btn {
+            background: linear-gradient(135deg, #155f6d, #238da0) !important;
+            color: #ffffff !important;
+            border: 0 !important;
+            box-shadow: 0 5px 12px rgba(21, 95, 109, .2) !important;
+        }
+        .employee-asset-page .oh-tabs__tab:hover {
+            color: #0f6977;
+            background: #e4f3f2;
+            transform: translateY(-1px);
+        }
+        .employee-asset-page .oh-tabs__tab--active {
+            color: #ffffff;
+            background: #126b78;
+            box-shadow: 0 5px 12px rgba(18, 107, 120, .18);
+        }
+        .employee-asset-page .oh-tabs__contents,
+        .employee-asset-page .oh-tabs__content {
+            height: auto !important;
+            min-height: 0 !important;
+            padding: 18px 20px 18px;
+            background: #ffffff;
+        }
+        .employee-asset-page .oh-tabs__content:not(.oh-tabs__content--active) {
+            display: none;
+        }
+        .employee-asset-page .oh-table_sticky--wrapper {
+            margin: 0 0 8px;
+        }
+        .employee-asset-page .oh-main__titlebar-button-container .oh-btn,
+        .employee-asset-page .oh-btn {
+            border: 0;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #155f6d, #238da0);
+            color: #fff;
+            box-shadow: 0 7px 16px rgba(21, 95, 109, .18);
+            transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+        }
+        .employee-asset-page .oh-main__titlebar-button-container .oh-btn:hover,
+        .employee-asset-page .oh-btn:hover {
+            background: linear-gradient(135deg, #0d5362, #167b8d);
+            color: #fff;
+            box-shadow: 0 10px 20px rgba(21, 95, 109, .25);
+            transform: translateY(-2px);
+        }
+        .employee-asset-page .oh-tabs__contents,
+        .employee-asset-page .oh-tabs__content,
+        .employee-asset-page .employee-asset-table {
+            width: 100%;
+            max-width: none;
+        }
+        .employee-asset-page .oh-sticky-table__table {
+            min-width: 760px;
+            border-radius: 18px;
+            overflow: hidden;
+            background: #ffffff;
+            border: 1px solid #d9e9e7;
+            box-shadow: 0 6px 16px rgba(29, 86, 79, .06);
+        }
+        .employee-asset-page .oh-sticky-table__thead .oh-sticky-table__tr {
+            min-height: 48px;
+        }
+        .employee-asset-page .oh-sticky-table__thead .oh-sticky-table__th {
+            padding: 14px 16px;
+        }
+        .employee-asset-page .oh-sticky-table__th {
+            background: linear-gradient(135deg, #155f6d, #238da0) !important;
+            color: #fff !important;
+            border-color: rgba(255,255,255,.14);
+            font-weight: 700;
+            letter-spacing: .01em;
+            text-transform: uppercase;
+            font-size: .75rem;
+            transition: background .2s ease, color .2s ease;
+        }
+        .employee-asset-page .oh-sticky-table__th:hover {
+            background: linear-gradient(135deg, #0d5362, #167b8d) !important;
+            color: #fff !important;
+        }
+        html body .oh-wrapper-main.employee-bottom-nav-active .employee-asset-page .oh-sticky-table__th {
+            background: linear-gradient(135deg, #155f6d, #238da0) !important;
+            color: #ffffff !important;
+            border-color: rgba(255,255,255,.14) !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+        }
+        html body .oh-wrapper-main.employee-section-fullscreen .employee-asset-page .oh-sticky-table__th {
+            background: linear-gradient(135deg, #e8f5f3, #d5eeec) !important;
+            color: #245b63 !important;
+            border-color: #c9e2df !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+        }
+        html body .oh-wrapper-main.employee-section-fullscreen .employee-asset-page .oh-sticky-table__th:hover {
+            background: linear-gradient(135deg, #d9efed, #c5e6e3) !important;
+            color: #174f4b !important;
+        }
+        .employee-asset-page .oh-sticky-table__td,
+        .employee-asset-page .oh-sticky-table__sd {
+            background: #ffffff;
+            color: #315e5a !important;
+            border-color: #e1eeec;
+            min-height: 62px;
+            padding: 12px 16px;
+            vertical-align: middle;
+        }
+        .employee-asset-page .oh-sticky-table__td *,
+        .employee-asset-page .oh-sticky-table__sd * {
+            color: inherit;
+        }
+        .employee-asset-page .oh-sticky-table__tr:hover > * {
+            background: #eef8f7 !important;
+            color: #174f4b !important;
+        }
+        .employee-asset-page .oh-sticky-table__tbody .oh-sticky-table__tr:nth-child(even) > * {
+            background: #fbfdfd;
+        }
+        .employee-asset-page .oh-sticky-table__tbody .oh-sticky-table__tr {
+            transition: background .2s ease, box-shadow .2s ease;
+        }
+        .employee-asset-page .oh-sticky-table__tbody .oh-sticky-table__tr:hover {
+            box-shadow: inset 3px 0 0 #238da0;
+        }
+        .employee-asset-page .oh-profile__name {
+            color: #245b63 !important;
+            font-weight: 600;
+        }
+        .employee-asset-page .oh-sticky-table__td .oh-btn {
+            min-width: 142px;
+            min-height: 40px;
+            justify-content: center;
+            font-size: .82rem;
+        }
+        .employee-asset-page .oh-pagination {
+            padding: 14px 4px 0;
+        }
+        .employee-asset-page .oh-pagination__input {
+            border: 1px solid #d5e5e3;
+            border-radius: 8px;
+            color: #245b63;
+            background: #fff;
+        }
+        .employee-asset-page .oh-table_sticky--wrapper,
+        .employee-asset-page .oh-sticky-table {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        @media (max-width: 767px) {
+            .employee-asset-page { padding: 20px 14px 105px; }
+        }
         .oh-modal_close--custom {
             position: absolute;
             top: 25px;
@@ -16,7 +268,7 @@
             opacity: 0.7;
         }
     </style>
-    <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    <main class="employee-asset-page" :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
         <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
             <div class="oh-main__titlebar oh-main__titlebar--left">
                 <h1 class="oh-main__titlebar-title fw-bold">{% trans "Asset" %}</h1>

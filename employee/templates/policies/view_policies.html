@@ -3,6 +3,109 @@
     {% load i18n %}
     {% load static %}
     {% include 'policies/nav.html' %}
+    <style>
+        html:has(#policyContainer),
+        body:has(#policyContainer),
+        .oh-wrapper-main:has(#policyContainer),
+        .oh-wrapper-main:has(#policyContainer) > #main {
+            background: #f5faf9 !important;
+        }
+        #policyContainer {
+            width: auto;
+            margin: 0 28px;
+            padding-bottom: 135px;
+            color: #245b63;
+        }
+        #policyContainer *,
+        .employee-policies-head * {
+            color: #263b30;
+        }
+        #policyContainer .oh-faq-cards {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 22px;
+        }
+        #policyContainer .oh-faq-card {
+            display: flex;
+            flex-direction: column;
+            min-height: 420px;
+            background: #ffffff;
+            border: 1px solid #d6e9e6;
+            border-radius: 20px;
+            box-shadow: 0 10px 26px rgba(29, 86, 79, .08);
+            padding: 20px;
+            transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+        }
+        #policyContainer .oh-faq-card:hover {
+            transform: translateY(-3px);
+            border-color: #8ecbc7;
+            box-shadow: 0 16px 32px rgba(21, 95, 109, .13);
+        }
+        #policyContainer .oh-faq-card__title {
+            color: #174f4b;
+            border-bottom: 1px solid #dcece9;
+            padding-bottom: 14px;
+            margin-bottom: 16px !important;
+            line-height: 1.35;
+        }
+        #policyContainer .oh-faq-card__title a {
+            color: #238da0;
+            margin-left: 8px;
+        }
+        #policyContainer .oh-faq-card .oh-btn--secondary {
+            margin-top: auto;
+            background: linear-gradient(135deg, #155f6d, #238da0);
+            border: 0;
+            color: #fff;
+            border-radius: 11px;
+            box-shadow: 0 6px 14px rgba(21, 95, 109, .16);
+            transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+        }
+        #policyContainer .oh-faq-card .oh-btn--secondary:hover {
+            background: linear-gradient(135deg, #0d5362, #167b8d);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(21, 95, 109, .23);
+        }
+        #policyContainer .oh-faq-card .truncated-text {
+            color: #5d7775;
+            line-height: 1.65;
+            margin-bottom: 18px;
+            scrollbar-color: #8ecbc7 #eff8f7;
+        }
+        #policyContainer .oh-faq-card__title span,
+        #policyContainer .oh-faq-card__title span *,
+        #policyContainer .oh-faq-card .truncated-text *,
+        #policyContainer .oh-faq-card p,
+        #policyContainer .oh-faq-card li {
+            color: #5d7775 !important;
+        }
+        #policyContainer .oh-faq-card__title span {
+            color: #174f4b !important;
+            font-weight: 800;
+        }
+        #policyContainer .oh-faq-card .oh-btn--secondary,
+        #policyContainer .oh-faq-card .oh-btn--secondary * {
+            color: #ffffff !important;
+        }
+        #policyContainer .oh-empty {
+            background: #ffffff;
+            border: 1px solid #dce8df;
+            border-radius: 18px;
+            box-shadow: 0 8px 24px rgba(22, 52, 37, 0.07);
+            padding: 70px 20px;
+            text-align: center;
+        }
+        @media (max-width: 900px) {
+            #policyContainer .oh-faq-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 640px) {
+            #policyContainer { margin: 0 12px; padding-bottom: 112px; }
+            #policyContainer .oh-faq-cards { grid-template-columns: 1fr; }
+            #policyContainer .oh-faq-card { min-height: 0; padding: 16px; }
+            #policyContainer .oh-faq-card .truncated-text { max-height: 260px !important; }
+        }
+    </style>
     <div class="oh-wrapper" id="policyContainer">
         {% if policies %}
             {% include 'policies/records.html' %}
