@@ -157,15 +157,25 @@
     {% endif %}
     <button id="reloadMessagesButton" hx-get="{% url 'reload-messages' %}" hx-swap="afterend" hidden hx-target="#reloadMessages"></button>
 
-    <div class="oh-wrapper-main{% if request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser %} employee-panel-theme{% endif %}{% if '/helpdesk/' in request.path %} helpdesk-panel-theme{% endif %}{% if '/employee/' in request.path %} employee-module-theme{% endif %}{% if request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser and request.path == '/' or request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser and request.path == '/dashboard-employee' %} employee-bottom-nav-active{% endif %}{% if request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser and request.path != '/' and request.path != '/dashboard-employee' %} employee-section-fullscreen{% endif %}{% if request.user.is_staff and not request.user.is_superuser %} admin-panel-theme{% endif %}{% if request.user.is_superuser %} super-admin-panel-theme{% endif %}{% if request.user.is_authenticated %} no-left-sidebar-active{% endif %}">
+    <div class="oh-wrapper-main{% if request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser %} employee-panel-theme{% endif %}{% if '/helpdesk/' in request.path %} helpdesk-panel-theme{% endif %}{% if '/employee/' in request.path %} employee-module-theme{% endif %}{% if request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser and request.path == '/' or request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser and request.path == '/dashboard-employee' %} employee-bottom-nav-active{% endif %}{% if request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser and request.path != '/' and request.path != '/dashboard-employee' %} employee-section-fullscreen{% endif %}{% if request.user.is_superuser and request.path == '/' %} employee-bottom-nav-active{% endif %}{% if request.user.is_superuser and request.path != '/' %} super-admin-section-fullscreen{% endif %}{% if request.user.is_staff and not request.user.is_superuser %} admin-panel-theme{% endif %}{% if request.user.is_superuser %} super-admin-panel-theme{% endif %}{% if request.user.is_authenticated %} no-left-sidebar-active{% endif %}">
         <style>
             .oh-wrapper-main.employee-section-fullscreen {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .oh-wrapper-main.super-admin-section-fullscreen {
                 grid-template-columns: minmax(0, 1fr);
             }
 
             .oh-wrapper-main.employee-section-fullscreen > #main {
                 min-width: 0;
                 width: 100%;
+            }
+
+            .oh-wrapper-main.super-admin-section-fullscreen > #main {
+                min-width: 0;
+                width: 100%;
+                min-height: 100vh;
             }
 
             .oh-wrapper-main.employee-bottom-nav-active {
@@ -744,12 +754,12 @@
             <!-- End of Confirm Modal -->
 
             <!-- Start of Notifications activity bar -->
-            <div class="oh-activity-sidebar " id="allNotifications" style="z-index:1000">
+            <div class="oh-activity-sidebar " id="allNotifications" style="z-index:4000">
                 <div class="oh-activity-sidebar__header">
                     <span id="notificationClose" style="cursor: pointer;" title="{% trans 'Close' %}">
                         <ion-icon name="chevron-forward-outline"
                             class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close" id="close"
-                            data-target="#activitySidebar" style="font-size: 24px;"></ion-icon>
+                            data-target="#allNotifications" style="font-size: 24px;"></ion-icon>
                     </span>
                     <span class="oh-activity-sidebar__title"> {% trans "All Notifications" %}</span>
                     <a class="delete-all-link" hx-target="#allNotificationBody"
@@ -762,7 +772,7 @@
             <!-- End of Notifications activity bar -->
 
             <!-- Start of Nav bar -->
-            {% if not request.user.employee_get or request.user.is_staff or request.user.is_superuser or request.path == '/' or request.path == '/dashboard-employee' %}
+            {% if request.user.is_superuser and request.path == '/' or not request.user.is_superuser and not request.user.employee_get or not request.user.is_superuser and request.user.is_staff or not request.user.is_superuser and request.path == '/' or not request.user.is_superuser and request.path == '/dashboard-employee' %}
             <nav class="oh-navbar" style="width: -webkit-fill-available;;">
                 <div class="oh-wrapper oh-navbar__wrapper">
                     <div class="oh-navbar__toggle-container">
@@ -1153,6 +1163,13 @@
             border-radius: 8px;
             color: #374151;
             text-decoration: none;
+        }
+
+        .oh-global-search__suggestion:visited,
+        .oh-global-search__suggestion:hover,
+        .oh-global-search__suggestion:focus,
+        .oh-global-search__suggestion:active {
+            text-decoration: none !important;
         }
 
         .oh-global-search__suggestion:hover,
@@ -4776,7 +4793,7 @@
         }
 
         .oh-wrapper-main.super-admin-panel-theme .oh-btn,
-        .oh-wrapper-main.super-admin-panel-theme button:not(.oh-modal_close):not(.close) {
+        .oh-wrapper-main.super-admin-panel-theme button:not(.oh-modal__close):not(.close) {
            border: 1px solid var(--super-admin-accent) !important;
            border-radius: 11px !important;
            background: var(--super-admin-accent) !important;
@@ -4785,12 +4802,33 @@
 
         .oh-wrapper-main.super-admin-panel-theme .oh-btn:hover,
         .oh-wrapper-main.super-admin-panel-theme .oh-btn:focus-visible,
-        .oh-wrapper-main.super-admin-panel-theme button:not(.oh-modal_close):not(.close):hover,
-        .oh-wrapper-main.super-admin-panel-theme button:not(.oh-modal_close):not(.close):focus-visible {
+        .oh-wrapper-main.super-admin-panel-theme button:not(.oh-modal__close):not(.close):hover,
+        .oh-wrapper-main.super-admin-panel-theme button:not(.oh-modal__close):not(.close):focus-visible {
            background: var(--super-admin-accent-hover) !important;
            border-color: var(--super-admin-accent-hover) !important;
            color: #ffffff !important;
            transform: translateY(-1px);
+        }
+
+        .oh-wrapper-main.super-admin-panel-theme .oh-modal__dialog-header {
+           padding-right: 4.25rem;
+        }
+
+        .oh-wrapper-main.super-admin-panel-theme .oh-modal__close {
+           top: 50%;
+           right: 1rem;
+           width: 2.25rem;
+           height: 2.25rem;
+           display: inline-flex;
+           align-items: center;
+           justify-content: center;
+           transform: translateY(-50%);
+           margin: 0;
+        }
+
+        .oh-wrapper-main.super-admin-panel-theme .oh-modal__close:hover,
+        .oh-wrapper-main.super-admin-panel-theme .oh-modal__close:focus-visible {
+           transform: translateY(-50%);
         }
 
         .oh-wrapper-main.super-admin-panel-theme .oh-input,
@@ -6634,6 +6672,1563 @@
     </style>
     {% endif %}
     {% include 'employee_bottom_nav.html' %}
+{% endif %}
+{% if request.user.is_superuser and request.path == '/' %}
+    {% include 'employee_bottom_nav.html' %}
+{% endif %}
+{% if request.user.is_superuser and request.path == '/' %}
+<style>
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar {
+        background: #e8f5f7 !important;
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar__wrapper {
+        background: #e8f5f7 !important;
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #main-section,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #main-section-data,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-wrapper,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-dashboard,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard {
+        background: #e8f5f7 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-dashboard {
+        padding-top: 8px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar__systray {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        gap: 0.65rem !important;
+        height: 92px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar__systray > * {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        align-self: center !important;
+        height: 92px !important;
+        position: relative;
+        top: auto !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .employee-navbar-apply-leave {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        align-self: center !important;
+        width: auto !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        margin: 0 0.4rem !important;
+        padding: 0 1rem !important;
+        background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+        border: 1px solid #176d83 !important;
+        border-radius: 999px !important;
+        color: #ffffff !important;
+        white-space: nowrap;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-global-search__box {
+        display: flex !important;
+        align-items: center !important;
+        overflow: hidden;
+        background: linear-gradient(110deg, #0a4d60, #176f80) !important;
+        border: 1px solid rgba(42, 132, 155, 0.35) !important;
+        border-radius: 999px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-global-search__input {
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        height: 100% !important;
+        padding: 0 !important;
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        color: #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-global-search__input::placeholder {
+        color: rgba(255, 255, 255, 0.78) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar__notifications,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar__action-icons {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 50px !important;
+        height: 92px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #mainNavProfile {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 52px !important;
+        height: 92px !important;
+        margin: 0 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar__systray > .oh-dropdown {
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany {
+        width: 50px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #notificationConfig,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar__systray > script {
+        display: none !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #notificationIcon,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany > .oh-navbar__action-icons {
+        flex: 0 0 50px !important;
+        width: 50px !important;
+        min-width: 50px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany > .oh-navbar__action-icons,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany > .oh-navbar__action-icons,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link {
+        width: 50px !important;
+        height: 50px !important;
+        min-width: 50px !important;
+        min-height: 50px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany ion-icon,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link .oh-navbar__icon {
+        display: block !important;
+        width: 22px !important;
+        height: 22px !important;
+        min-width: 22px !important;
+        min-height: 22px !important;
+        margin: 0 !important;
+        font-size: 22px !important;
+        line-height: 1 !important;
+        color: #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link {
+        position: relative !important;
+        width: 50px !important;
+        height: 50px !important;
+        min-width: 50px !important;
+        min-height: 50px !important;
+        padding: 0 !important;
+        border-radius: 50% !important;
+        background: #176d83 !important;
+        border: 1px solid #176d83 !important;
+        box-shadow: 0 6px 16px rgba(10, 77, 96, 0.16) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #notificationIcon .oh-navbar__notification-beacon {
+        top: 8px !important;
+        right: 8px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-width: 8px !important;
+        width: 8px !important;
+        height: 8px !important;
+        min-height: 8px !important;
+        padding: 0 !important;
+        border: 2px solid #176d83 !important;
+        border-radius: 50% !important;
+        background: #c7e5eb !important;
+        color: transparent !important;
+        font-size: 0 !important;
+        line-height: 0 !important;
+        box-shadow: none !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #showallnotificationbtn.oh-navbar__notification-tray {
+        background: #ffffff !important;
+        background-image: none !important;
+        background-color: #ffffff !important;
+        border: 1px solid rgba(42, 132, 155, 0.25) !important;
+        border-radius: 20px !important;
+        box-shadow: 0 24px 52px rgba(23, 109, 131, 0.18) !important;
+        color: #173f50 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #showallnotificationbtn .oh-navbar__notification-head {
+        background: #e8f5f7 !important;
+        border-bottom: 1px solid rgba(42, 132, 155, 0.18) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #showallnotificationbtn .oh-navbar__notification-head-title,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #showallnotificationbtn .oh-navbar__notification-text {
+        background: transparent !important;
+        color: #173f50 !important;
+        opacity: 1 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #showallnotificationbtn .oh-navbar__notification-body,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #showallnotificationbtn .oh-navbar__notification-footer {
+        background: #ffffff !important;
+        color: #173f50 !important;
+        border-color: rgba(42, 132, 155, 0.16) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #showallnotificationbtn .oh-navbar__notification-item {
+        background: #e8f5f7 !important;
+        border: 1px solid rgba(42, 132, 155, 0.2) !important;
+        color: #173f50 !important;
+        box-shadow: 0 4px 12px rgba(23, 109, 131, 0.08) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #showallnotificationbtn .oh-navbar__notification-date,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #showallnotificationbtn .oh-navbar__notification-empty-desc {
+        background: transparent !important;
+        color: #557b84 !important;
+        opacity: 1 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #showallnotificationbtn .oh-navbar__notification-empty-title {
+        background: transparent !important;
+        color: #173f50 !important;
+        opacity: 1 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #showallnotificationbtn .oh-navbar__notification-image {
+        background: #d8edf1 !important;
+        border-color: rgba(42, 132, 155, 0.28) !important;
+        color: #176d83 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #showallnotificationbtn .oh-navbar__notification-image ion-icon {
+        color: #176d83 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #showallnotificationbtn .oh-navbar__notification-tray-link {
+        background: #176d83 !important;
+        border-color: #176d83 !important;
+        color: #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #showallnotificationbtn .oh-navbar__notification-tray-link--danger {
+        background: #fff1f1 !important;
+        border-color: #f1caca !important;
+        color: #b94a48 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #allNotifications.oh-activity-sidebar {
+        position: fixed !important;
+        inset: 0 0 0 auto !important;
+        width: min(520px, 94vw) !important;
+        max-width: 100vw !important;
+        height: 100vh !important;
+        height: 100dvh !important;
+        min-height: 100vh !important;
+        padding: 22px !important;
+        overflow: hidden !important;
+        background: #f4fbfc !important;
+        color: #173f50 !important;
+        border-left: 1px solid rgba(42, 132, 155, 0.22) !important;
+        box-shadow: -18px 0 48px rgba(10, 77, 96, 0.22) !important;
+        z-index: 4000 !important;
+        box-sizing: border-box !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar__wrapper {
+        width: 100% !important;
+        max-width: none !important;
+        padding-right: 24px !important;
+        padding-left: 24px !important;
+        box-sizing: border-box !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #allNotifications.oh-activity-sidebar--show {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active:has(#allNotifications.oh-activity-sidebar--show) {
+        z-index: 3000 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #allNotifications .oh-activity-sidebar__header {
+        position: relative !important;
+        flex: 0 0 auto !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        min-height: 58px !important;
+        margin: -22px -22px 16px !important;
+        padding: 14px 22px !important;
+        background: linear-gradient(110deg, #0a4d60, #176f80) !important;
+        border-bottom: 1px solid rgba(199, 229, 235, 0.55) !important;
+        color: #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #allNotifications .oh-activity-sidebar__title,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #allNotifications .oh-activity-sidebar__header-icon {
+        color: #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #allNotifications .oh-activity-sidebar__title {
+        flex: 1 1 auto !important;
+        font-size: 1.05rem !important;
+        font-weight: 800 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #allNotifications #notificationClose {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 38px !important;
+        height: 38px !important;
+        border: 1px solid rgba(255, 255, 255, 0.24) !important;
+        border-radius: 11px !important;
+        background: rgba(255, 255, 255, 0.12) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #allNotifications #notificationClose:hover {
+        background: rgba(255, 255, 255, 0.22) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #allNotifications .delete-all-link {
+        position: static !important;
+        flex: 0 0 auto !important;
+        margin: 0 !important;
+        padding: 8px 12px !important;
+        border: 1px solid rgba(255, 255, 255, 0.42) !important;
+        border-radius: 10px !important;
+        background: rgba(255, 255, 255, 0.12) !important;
+        color: #ffffff !important;
+        font-size: 0.75rem !important;
+        font-weight: 700 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #allNotificationBody.oh-activity-sidebar__body {
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        padding: 0 !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        background: #f4fbfc !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #allNotificationBody .oh-activity-sidebar__qa-list {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+        margin: 0 !important;
+        padding: 2px !important;
+        list-style: none !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #allNotificationBody .oh-activity-sidebar__qa-item {
+        margin: 0 !important;
+        padding: 16px !important;
+        border: 1px solid rgba(42, 132, 155, 0.2) !important;
+        border-radius: 14px !important;
+        background: #e8f5f7 !important;
+        box-shadow: 0 5px 14px rgba(23, 109, 131, 0.08) !important;
+        color: #173f50 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #allNotificationBody .oh-activity-sidebar__qa-item:hover {
+        background: #d8edf1 !important;
+        border-color: #278da0 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #allNotificationBody .oh-activity-sidebar__q,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #allNotificationBody .oh-activity-sidebar__q p,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #allNotificationBody .oh-activity-sidebar__a {
+        color: #173f50 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #allNotificationBody .oh-activity-sidebar__q p {
+        margin: 0.25rem 0 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+        font-size: 0.9rem !important;
+        line-height: 1.5 !important;
+        font-weight: 700 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #allNotificationBody .oh-activity-sidebar__a {
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        margin-top: 10px !important;
+        color: #557b84 !important;
+        font-size: 0.75rem !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #allNotificationBody .oh-activity-sidebar__qa-item ion-icon {
+        color: #176d83 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany .oh-dropdown__menu {
+        top: calc(100% + 10px) !important;
+        right: 0 !important;
+        left: auto !important;
+        bottom: auto !important;
+        margin-top: 0 !important;
+        padding: 8px !important;
+        min-width: 230px !important;
+        background: #ffffff !important;
+        border: 1px solid rgba(42, 132, 155, 0.22) !important;
+        border-radius: 14px !important;
+        box-shadow: 0 16px 36px rgba(10, 77, 96, 0.18) !important;
+        z-index: 2600 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany .oh-dropdown__items {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 4px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        list-style: none !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany .oh-dropdown__item {
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        border-radius: 10px !important;
+        background: transparent !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany .oh-dropdown__link {
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        min-height: 42px !important;
+        padding: 8px 10px !important;
+        border: 1px solid transparent !important;
+        border-radius: 10px !important;
+        background: #ffffff !important;
+        color: #173f50 !important;
+        font-size: 0.82rem !important;
+        font-weight: 650 !important;
+        text-decoration: none !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany .oh-dropdown__link:hover,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany .oh-dropdown__link:focus-visible {
+        background: #e8f5f7 !important;
+        border-color: rgba(42, 132, 155, 0.2) !important;
+        color: #176d83 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany .oh-dropdown__lang-icon {
+        flex: 0 0 28px !important;
+        width: 28px !important;
+        height: 28px !important;
+        margin: 0 !important;
+        object-fit: cover !important;
+        border: 1px solid rgba(42, 132, 155, 0.18) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany .oh-dropdown__link ion-icon {
+        margin-left: auto !important;
+        color: #176d83 !important;
+        font-size: 18px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #main,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #main-section,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #main-section-data,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard {
+        background: #ffffff !important;
+        color: #173f50 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar__wrapper {
+        background: #ffffff !important;
+        border-color: rgba(42, 132, 155, 0.18) !important;
+        box-shadow: 0 8px 24px rgba(23, 109, 131, 0.08) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard-card {
+        background: #c7e5eb !important;
+        border: 1px solid rgba(42, 132, 155, 0.2) !important;
+        border-radius: 22px !important;
+        box-shadow: 0 14px 30px rgba(24, 91, 109, 0.12) !important;
+        color: #173f50 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard:hover,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card:hover,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard-card:hover {
+        border-color: rgba(42, 132, 155, 0.38) !important;
+        box-shadow: 0 16px 32px rgba(24, 91, 109, 0.16) !important;
+        transform: translateY(-2px);
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__cards > [class*="col-"] .oh-card-dashboard,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__right > .oh-dashboard__events + .oh-card-dashboard {
+        background: linear-gradient(112deg, #0a4d60 0%, #176d83 55%, #2b90a8 100%) !important;
+        border-color: rgba(42, 132, 155, 0.28) !important;
+        color: #ffffff !important;
+        box-shadow: 0 14px 30px rgba(24, 91, 109, 0.16) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__cards > [class*="col-"] .oh-card-dashboard *,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__right > .oh-dashboard__events + .oh-card-dashboard * {
+        color: #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard__header,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard__header--divider {
+        background: transparent !important;
+        border-color: rgba(23, 63, 80, 0.16) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard__title,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard__count,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard__subtitle,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard__body,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard label,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard p,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard small {
+        color: #173f50 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-empty,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .empty-state,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-empty-state {
+        background: rgba(255, 255, 255, 0.42) !important;
+        color: #173f50 !important;
+        border-radius: 16px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-empty *,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .empty-state *,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-empty-state * {
+        color: #173f50 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-sticky-table__th,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-sticky-table__td,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-sticky-table__tr,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .table,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .table th,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .table td {
+        background: transparent !important;
+        border-color: rgba(23, 63, 80, 0.14) !important;
+        color: #173f50 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard {
+        position: relative !important;
+        overflow: hidden !important;
+        border-radius: 20px !important;
+        transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard::before {
+        content: "" !important;
+        position: absolute !important;
+        inset: 0 0 auto !important;
+        height: 4px !important;
+        background: linear-gradient(90deg, #0a4d60, #278da0, #b8dfe6) !important;
+        opacity: 0.85 !important;
+        pointer-events: none !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__cards > [class*="col-"] .oh-card-dashboard::before,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__right > .oh-dashboard__events + .oh-card-dashboard::before {
+        background: linear-gradient(90deg, #c7e5eb, #ffffff, #76c5d3) !important;
+        opacity: 0.9 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard__header {
+        min-height: 42px !important;
+        margin-bottom: 14px !important;
+        padding: 8px 4px 12px !important;
+        border-bottom: 1px solid rgba(23, 63, 80, 0.14) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard__title {
+        font-size: 0.76rem !important;
+        font-weight: 750 !important;
+        letter-spacing: 0.045em !important;
+        line-height: 1.35 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard__count {
+        font-size: clamp(1.65rem, 2.2vw, 2.15rem) !important;
+        font-weight: 800 !important;
+        line-height: 1.1 !important;
+        letter-spacing: -0.035em !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard__body {
+        border-radius: 14px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__movable-cards > [class*="col-"] {
+        padding-bottom: 18px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__movable-cards .oh-card-dashboard__body {
+        padding: 12px !important;
+        background: rgba(255, 255, 255, 0.38) !important;
+        border: 1px solid rgba(42, 132, 155, 0.12) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__movable-cards canvas {
+        max-width: 100% !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__movable-cards .chart_close_button {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 30px !important;
+        height: 30px !important;
+        border: 1px solid rgba(42, 132, 155, 0.18) !important;
+        border-radius: 9px !important;
+        background: rgba(255, 255, 255, 0.62) !important;
+        color: #176d83 !important;
+        transition: background 160ms ease, transform 160ms ease !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__movable-cards .chart_close_button:hover {
+        background: #ffffff !important;
+        transform: scale(1.04) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-empty,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .empty-state,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-empty-state {
+        border: 1px solid rgba(42, 132, 155, 0.14) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.58) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__right > .oh-card-dashboard {
+        margin-bottom: 18px !important;
+        padding: 18px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #announcementListCard > * {
+        border-radius: 12px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__right .oh-card-dashboard hr {
+        margin: 12px 0 16px !important;
+        border-color: rgba(255, 255, 255, 0.28) !important;
+        opacity: 1 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__events {
+        margin-bottom: 16px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .birthday-slider {
+        padding: 10px !important;
+        border: 1px solid rgba(42, 132, 155, 0.2) !important;
+        border-radius: 24px !important;
+        background: linear-gradient(145deg, #e8f5f7, #ffffff 58%, #c7e5eb) !important;
+        box-shadow: 0 12px 26px rgba(24, 91, 109, 0.1) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .birthday-card {
+        grid-template-columns: 72px minmax(0, 1fr) !important;
+        align-items: center !important;
+        gap: 14px !important;
+        min-height: 142px !important;
+        padding: 16px !important;
+        border: 1px solid rgba(199, 229, 235, 0.42) !important;
+        border-radius: 18px !important;
+        background: linear-gradient(118deg, #0a4d60 0%, #176d83 58%, #278da0 100%) !important;
+        box-shadow: 0 12px 24px rgba(10, 77, 96, 0.2) !important;
+        color: #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .birthday-card__avatar {
+        width: 68px !important;
+        height: 68px !important;
+        border: 2px solid rgba(255, 255, 255, 0.78) !important;
+        box-shadow: 0 6px 16px rgba(4, 39, 52, 0.24) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .birthday-card__content {
+        min-width: 0 !important;
+        color: #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .birthday-card__label {
+        margin-bottom: 4px !important;
+        color: #c7e5eb !important;
+        font-size: 0.66rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.12em !important;
+        text-transform: uppercase !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .birthday-card__name {
+        margin: 0 0 4px !important;
+        overflow: hidden !important;
+        color: #ffffff !important;
+        font-size: 0.95rem !important;
+        font-weight: 750 !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .birthday-card__meta {
+        overflow: hidden !important;
+        color: rgba(255, 255, 255, 0.86) !important;
+        font-size: 0.7rem !important;
+        line-height: 1.45 !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .birthday-card__meta--highlight {
+        display: inline-flex !important;
+        width: fit-content !important;
+        margin: 3px 0 !important;
+        padding: 2px 8px !important;
+        border: 1px solid rgba(199, 229, 235, 0.24) !important;
+        border-radius: 999px !important;
+        background: rgba(199, 229, 235, 0.16) !important;
+        color: #e8f5f7 !important;
+        font-weight: 700 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .birthday-card__badge {
+        top: 10px !important;
+        right: 10px !important;
+        width: 28px !important;
+        height: 28px !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        background: rgba(255, 255, 255, 0.14) !important;
+        color: #ffffff !important;
+        font-size: 0.85rem !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .birthday-dots {
+        justify-content: center !important;
+        gap: 7px !important;
+        margin-top: 10px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .birthday-dots > * {
+        border-color: rgba(23, 109, 131, 0.22) !important;
+        background: #c7e5eb !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .birthday-dots > *.active,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .birthday-dots > *[aria-current="true"] {
+        background: #176d83 !important;
+        border-color: #176d83 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-announcement-list {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        border: 0 !important;
+        border-radius: 14px !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-announcement-list .oh-sticky-table__table,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-announcement-list .oh-sticky-table__tbody,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-announcement-list .oh-sticky-table__tr {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        background: transparent !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-announcement-list .oh-sticky-table__tr {
+        margin: 0 0 8px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-announcement-item {
+        display: flex !important;
+        align-items: center !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        min-height: 58px !important;
+        margin: 0 !important;
+        padding: 10px 12px !important;
+        overflow: hidden !important;
+        border: 1px solid rgba(199, 229, 235, 0.22) !important;
+        border-radius: 12px !important;
+        background: rgba(232, 245, 247, 0.12) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+        transition: background 160ms ease, border-color 160ms ease, transform 160ms ease !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-announcement-item:hover {
+        border-color: rgba(199, 229, 235, 0.45) !important;
+        background: rgba(232, 245, 247, 0.2) !important;
+        transform: translateY(-1px) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-announcement-item .oh-profile {
+        display: flex !important;
+        align-items: center !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        gap: 10px !important;
+        overflow: hidden !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-announcement-item__avatar {
+        flex: 0 0 34px !important;
+        width: 34px !important;
+        height: 34px !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+        border: 1px solid rgba(199, 229, 235, 0.42) !important;
+        border-radius: 50% !important;
+        background: rgba(199, 229, 235, 0.22) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-announcement-item__avatar img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-announcement-item__content {
+        display: flex !important;
+        flex: 1 1 auto !important;
+        flex-direction: column !important;
+        min-width: 0 !important;
+        overflow: hidden !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-announcement-item__title {
+        display: block !important;
+        overflow: hidden !important;
+        color: #ffffff !important;
+        font-size: 0.78rem !important;
+        font-weight: 700 !important;
+        line-height: 1.35 !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-announcement-item__date {
+        display: block !important;
+        margin-top: 2px !important;
+        color: #c7e5eb !important;
+        font-size: 0.67rem !important;
+        line-height: 1.3 !important;
+    }
+
+    /* Announcement content sits on a light card in the super-admin theme. */
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #announcementListCard .employee-announcement-item {
+        border: 1px solid rgba(23, 111, 128, 0.14) !important;
+        background: #f4fbfc !important;
+        box-shadow: 0 4px 12px rgba(23, 111, 128, 0.06) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #announcementListCard .employee-announcement-item:hover {
+        border-color: rgba(23, 111, 128, 0.28) !important;
+        background: #e8f5f7 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #announcementListCard .employee-announcement-item__title,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #announcementListCard .employee-announcement-item__title * {
+        color: #173f50 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #announcementListCard .employee-announcement-item__date {
+        color: #557b84 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #announcementListCard .employee-announcement-item__avatar {
+        border-color: rgba(23, 111, 128, 0.2) !important;
+        background: #d9eef2 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #announcementListCard .employee-announcement-item .oh-profile__info-value {
+        background: #176f80 !important;
+        color: #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__right > .oh-card-dashboard:has(#announcementListCard) > div:first-child .oh-card-dashboard__title {
+        color: #173f50 !important;
+        font-size: 0.84rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.01em !important;
+        line-height: 1.3 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__right > .oh-card-dashboard:has(#announcementListCard) > div:first-child {
+        color: #173f50 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-dropdown__menu {
+        position: absolute !important;
+        top: calc(100% + 10px) !important;
+        right: 0 !important;
+        left: auto !important;
+        min-width: 236px !important;
+        padding: 8px !important;
+        border: 1px solid rgba(42, 132, 155, 0.22) !important;
+        border-radius: 16px !important;
+        background: #ffffff !important;
+        box-shadow: 0 18px 42px rgba(10, 77, 96, 0.2) !important;
+        color: #173f50 !important;
+        z-index: 2600 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-dropdown__items {
+        margin: 0 !important;
+        padding: 0 !important;
+        list-style: none !important;
+        background: #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-dropdown__item {
+        margin: 0 !important;
+        padding: 2px !important;
+        border: 0 !important;
+        border-radius: 10px !important;
+        background: transparent !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-dropdown__link {
+        display: flex !important;
+        align-items: center !important;
+        min-height: 40px !important;
+        padding: 9px 11px !important;
+        border: 1px solid transparent !important;
+        border-radius: 9px !important;
+        background: #ffffff !important;
+        color: #173f50 !important;
+        font-size: 0.84rem !important;
+        font-weight: 650 !important;
+        text-decoration: none !important;
+        transition: background 150ms ease, color 150ms ease, border-color 150ms ease !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-dropdown__link:hover,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-dropdown__link:focus-visible {
+        border-color: rgba(42, 132, 155, 0.18) !important;
+        background: #e8f5f7 !important;
+        color: #176d83 !important;
+        outline: none !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-dropdown__menu hr {
+        margin: 7px 4px !important;
+        border-color: rgba(42, 132, 155, 0.18) !important;
+        opacity: 1 !important;
+    }
+
+    @media (max-width: 850px) {
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #allNotifications.oh-activity-sidebar {
+            width: min(520px, 100vw) !important;
+            padding: 16px !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #allNotifications .oh-activity-sidebar__header {
+            margin: -16px -16px 12px !important;
+            padding: 12px 16px !important;
+        }
+    }
+
+    @media (max-width: 850px) {
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar,
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar__wrapper {
+            min-height: 64px !important;
+            height: 64px !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar__wrapper {
+            padding-right: 12px !important;
+            padding-left: 12px !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar__systray,
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar__systray > *,
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar__notifications,
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar__action-icons,
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #mainNavProfile {
+            height: 64px !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .employee-navbar-apply-leave {
+            display: none !important;
+        }
+    }
+
+    /* Super-admin dashboard: one continuous teal canvas with calm white surfaces. */
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active > #main,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #main-section,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #main-section-data,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-wrapper,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-dashboard,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard {
+        background: #e8f5f7 !important;
+        color: #173f50 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar__wrapper {
+        background: #e8f5f7 !important;
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-dashboard {
+        padding: 18px 18px 120px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__cards {
+        row-gap: 18px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard {
+        overflow: hidden !important;
+        border: 1px solid rgba(23, 111, 128, 0.14) !important;
+        border-radius: 18px !important;
+        background: #ffffff !important;
+        box-shadow: 0 8px 22px rgba(23, 111, 128, 0.09) !important;
+        color: #173f50 !important;
+        transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard:hover {
+        border-color: rgba(23, 111, 128, 0.28) !important;
+        box-shadow: 0 14px 30px rgba(23, 111, 128, 0.14) !important;
+        transform: translateY(-2px) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard.tile {
+        min-height: 132px !important;
+        padding: 0 !important;
+        border-top: 4px solid #176f80 !important;
+        background: #ffffff !important;
+        background-image: none !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard--success,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard--warning,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard--neutral {
+        background: #ffffff !important;
+        background-image: none !important;
+        border-color: rgba(23, 111, 128, 0.18) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__cards > [class*="col-"] .oh-card-dashboard.tile,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__right > .oh-dashboard__events + .oh-card-dashboard {
+        background: #ffffff !important;
+        background-image: none !important;
+        border-color: rgba(23, 111, 128, 0.18) !important;
+        color: #173f50 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard.tile a {
+        display: flex !important;
+        min-height: 128px !important;
+        flex-direction: column !important;
+        color: inherit !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard.tile .oh-card-dashboard__header {
+        margin: 0 !important;
+        padding: 20px 20px 0 !important;
+        background: transparent !important;
+        border: 0 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard.tile .oh-card-dashboard__title {
+        color: #527b86 !important;
+        font-size: 0.72rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.06em !important;
+        text-transform: uppercase !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard.tile .oh-card-dashboard__body {
+        flex: 1 !important;
+        padding: 8px 20px 18px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-card-dashboard.tile .oh-card-dashboard__count {
+        color: #0a4d60 !important;
+        font-size: 2.35rem !important;
+        font-weight: 800 !important;
+        line-height: 1 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__movable-cards > div {
+        padding-right: 9px !important;
+        padding-left: 9px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__movable-cards .oh-card-dashboard,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__right > .oh-card-dashboard {
+        padding: 18px !important;
+        background: #ffffff !important;
+        background-image: none !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__right > .oh-card-dashboard--transparent {
+        background: #ffffff !important;
+        background-image: none !important;
+        color: #173f50 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__movable-cards .oh-card-dashboard__header,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__right .oh-card-dashboard__header {
+        margin-bottom: 14px !important;
+        padding: 0 0 12px !important;
+        background: transparent !important;
+        border-bottom: 1px solid rgba(23, 111, 128, 0.12) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__movable-cards .oh-card-dashboard__title,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__right .oh-card-dashboard__title {
+        color: #245b6b !important;
+        font-size: 0.82rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.01em !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__movable-cards .oh-card-dashboard__body,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__right .oh-card-dashboard__body {
+        border-radius: 12px !important;
+        background: #f4fbfc !important;
+        background-image: none !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__right > .oh-card-dashboard {
+        box-shadow: 0 8px 22px rgba(23, 111, 128, 0.08) !important;
+    }
+
+    /* Remaining dashboard widgets: keep loaded tables, empty states and
+       work-information content on the same readable teal theme. */
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__movable-cards .oh-card-dashboard__body,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-dashboard__right .oh-card-dashboard__body {
+        color: #173f50 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-empty,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-404 {
+        min-height: 240px !important;
+        padding: 2rem 1rem !important;
+        border: 1px solid rgba(23, 111, 128, 0.12) !important;
+        border-radius: 14px !important;
+        background: linear-gradient(145deg, #fafdfe, #eef8f8) !important;
+        color: #173f50 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-empty__title,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-empty__subtitle {
+        color: #245b6b !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-empty__title {
+        font-size: 0.92rem !important;
+        font-weight: 800 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-empty__subtitle {
+        font-size: 0.78rem !important;
+        line-height: 1.5 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-404__image {
+        opacity: 0.78 !important;
+        filter: sepia(18%) saturate(55%) hue-rotate(145deg) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-sticky-table {
+        overflow: auto !important;
+        border: 1px solid rgba(23, 111, 128, 0.14) !important;
+        border-radius: 14px !important;
+        background: #ffffff !important;
+        color: #173f50 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-sticky-table__table,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-sticky-table__thead,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-sticky-table__tbody,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-sticky-table__tr,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-sticky-table__td,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-sticky-table__sd {
+        background: #ffffff !important;
+        background-image: none !important;
+        color: #173f50 !important;
+        border-color: rgba(23, 111, 128, 0.12) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-sticky-table__thead,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-sticky-table__th {
+        background: #e8f5f7 !important;
+        color: #0a4d60 !important;
+        font-size: 0.72rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.02em !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-sticky-table__tbody .oh-sticky-table__tr:nth-child(even),
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-table tbody tr:nth-child(even) {
+        background: #f8fcfd !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-sticky-table__tbody .oh-sticky-table__tr:hover,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-table tbody tr:hover {
+        background: #e8f5f7 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-profile__name,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-profile__name.oh-text--dark,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-sticky-table__td,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-sticky-table__td * {
+        color: #173f50 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-profile__avatar {
+        border: 1px solid rgba(23, 111, 128, 0.18) !important;
+        background: #d8edf1 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-sticky-table .oh-btn,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-sticky-table button {
+        min-height: 30px !important;
+        padding: 0.35rem 0.7rem !important;
+        border: 1px solid #176f80 !important;
+        border-radius: 8px !important;
+        background: #176f80 !important;
+        background-image: none !important;
+        color: #ffffff !important;
+        font-size: 0.72rem !important;
+        font-weight: 800 !important;
+        box-shadow: 0 3px 8px rgba(23, 111, 128, 0.16) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-sticky-table .oh-btn:hover,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-sticky-table button:hover {
+        border-color: #0a4d60 !important;
+        background: #0a4d60 !important;
+        color: #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-sticky-table .oh-btn *,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table .oh-btn * {
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__td:last-child a.oh-btn,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__td:last-child a.oh-btn *,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-sticky-table__td:last-child a.oh-btn,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-sticky-table__td:last-child a.oh-btn * {
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+        text-shadow: none !important;
+    }
+
+    /* Approval tables stay inside their cards without the inherited dark
+       720px-wide table forcing a horizontal scroll for three columns. */
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-sticky-table,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table {
+        width: 100% !important;
+        max-width: 100% !important;
+        scrollbar-color: #7fc4cf #e8f5f7 !important;
+        scrollbar-width: thin !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-sticky-table::-webkit-scrollbar,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table::-webkit-scrollbar {
+        width: 9px !important;
+        height: 9px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-sticky-table::-webkit-scrollbar-track,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table::-webkit-scrollbar-track {
+        border-radius: 999px !important;
+        background: #e8f5f7 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-sticky-table::-webkit-scrollbar-thumb,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table::-webkit-scrollbar-thumb {
+        border: 2px solid #e8f5f7 !important;
+        border-radius: 999px !important;
+        background: #7fc4cf !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-sticky-table__table,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__table {
+        width: 100% !important;
+        min-width: 100% !important;
+        table-layout: fixed !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-sticky-table__th,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-sticky-table__td,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__th,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__td {
+        width: auto !important;
+        max-width: none !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-sticky-table__th:first-child,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-sticky-table__td:first-child,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__th:first-child,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__td:first-child {
+        width: 46% !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-sticky-table__th:nth-child(2),
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-sticky-table__td:nth-child(2),
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__th:nth-child(2),
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__td:nth-child(2) {
+        width: 24% !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-sticky-table__th:last-child,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-sticky-table__td:last-child,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__th:last-child,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__td:last-child {
+        width: 30% !important;
+        text-align: center !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-profile__name,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-profile__name {
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .chart_close_button {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 28px !important;
+        height: 28px !important;
+        border: 1px solid rgba(23, 111, 128, 0.2) !important;
+        border-radius: 50% !important;
+        background: #f4fbfc !important;
+        color: #176f80 !important;
+        cursor: pointer !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .chart_close_button:hover {
+        background: #176f80 !important;
+        color: #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-select {
+        min-height: 32px !important;
+        padding: 0.35rem 1.8rem 0.35rem 0.65rem !important;
+        border: 1px solid rgba(23, 111, 128, 0.2) !important;
+        border-radius: 8px !important;
+        background: #ffffff !important;
+        color: #173f50 !important;
+        font-size: 0.72rem !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-workinfo-widget .oh-search-bar {
+        margin-bottom: 12px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-workinfo-widget .oh-search-bar input,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #employeeSearch {
+        width: 100% !important;
+        min-height: 38px !important;
+        padding: 0.55rem 0.8rem !important;
+        border: 1px solid rgba(23, 111, 128, 0.2) !important;
+        border-radius: 10px !important;
+        background: #ffffff !important;
+        color: #173f50 !important;
+        box-shadow: none !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #employeeSearch::placeholder {
+        color: #6b929b !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-workinfo-widget .oh-table {
+        overflow: auto !important;
+        max-height: 290px !important;
+        border: 1px solid rgba(23, 111, 128, 0.14) !important;
+        border-radius: 12px !important;
+        background: #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-workinfo-widget .oh-table th {
+        background: #e8f5f7 !important;
+        color: #0a4d60 !important;
+        font-weight: 800 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-workinfo-widget .oh-table td {
+        background: #ffffff !important;
+        color: #173f50 !important;
+        border-color: rgba(23, 111, 128, 0.1) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-workinfo-widget .oh-table td a,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-workinfo-widget .oh-table td a:visited {
+        display: block !important;
+        color: #173f50 !important;
+        font-size: 0.76rem !important;
+        font-weight: 700 !important;
+        line-height: 1.4 !important;
+        text-decoration: none !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-workinfo-widget .oh-table th {
+        padding: 0.65rem 0.75rem !important;
+        color: #0a4d60 !important;
+        -webkit-text-fill-color: #0a4d60 !important;
+        font-size: 0.73rem !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-workinfo-widget .oh-table td {
+        padding: 0.7rem 0.75rem !important;
+        vertical-align: middle !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-workinfo-widget .progress-text {
+        display: block !important;
+        margin-top: 0.25rem !important;
+        color: #557b84 !important;
+        -webkit-text-fill-color: #557b84 !important;
+        font-size: 0.68rem !important;
+        font-weight: 700 !important;
+        line-height: 1.2 !important;
+        text-align: right !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-workinfo-widget .oh-table tr:hover td {
+        background: #e8f5f7 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-workinfo-widget .progress {
+        height: 8px !important;
+        width: 100% !important;
+        border: 0 !important;
+        border-radius: 99px !important;
+        background: #d8edf1 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-workinfo-widget .progress-bar {
+        border-radius: inherit !important;
+        background: linear-gradient(90deg, #176f80, #63b8c4) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-workinfo-widget .oh-table {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        scrollbar-width: thin !important;
+        scrollbar-color: #7fc4cf #e8f5f7 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-workinfo-widget .oh-table::-webkit-scrollbar {
+        width: 7px !important;
+        height: 0 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-workinfo-widget .oh-table::-webkit-scrollbar-horizontal {
+        display: none !important;
+        height: 0 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-workinfo-widget .oh-table table {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        table-layout: fixed !important;
+        border-collapse: collapse !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-workinfo-widget .oh-table th,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-workinfo-widget .oh-table td {
+        max-width: 0 !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    @media (max-width: 768px) {
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-empty {
+            min-height: 190px !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .oh-sticky-table {
+            font-size: 0.74rem !important;
+        }
+    }
+
+    @media (max-width: 768px) {
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-dashboard {
+            padding: 12px 10px 110px !important;
+        }
+    }
+</style>
+<script>
+    document.addEventListener("click", function (event) {
+        if (!(event.target instanceof Element)) return;
+
+        const trigger = event.target.closest("#viewallnotification");
+        if (trigger) {
+            const targetSelector = trigger.getAttribute("data-target");
+            const sidebar = targetSelector ? document.querySelector(targetSelector) : null;
+            sidebar?.classList.add("oh-activity-sidebar--show");
+            return;
+        }
+
+        if (event.target.closest("#allNotifications #notificationClose")) {
+            document.getElementById("allNotifications")?.classList.remove("oh-activity-sidebar--show");
+        }
+    });
+</script>
 {% endif %}
 </body>
 

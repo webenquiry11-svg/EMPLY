@@ -240,6 +240,509 @@
         border-color: #176d83 !important;
         color: #ffffff !important;
     }
+
+    #objectDetailsModalTarget .oh-modal__dialog-body {
+        background: #e8f5f7 !important;
+        color: #173f50 !important;
+    }
+
+    #objectDetailsModalTarget .oh-modal__dialog--navigation .oh-modal__diaglog-nav {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 38px !important;
+        height: 38px !important;
+        border: 1px solid rgba(23, 111, 128, 0.2) !important;
+        border-radius: 50% !important;
+        background: #ffffff !important;
+        color: #176f80 !important;
+        box-shadow: 0 6px 14px rgba(10, 77, 96, 0.14) !important;
+    }
+
+    #objectDetailsModalTarget .oh-modal__dialog--navigation .oh-modal__diaglog-nav:hover {
+        background: #176f80 !important;
+        color: #ffffff !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .oh-dropdown > .oh-btn {
+        border: 1px solid rgba(23, 111, 128, 0.18) !important;
+        border-radius: 10px !important;
+        background: rgba(232, 245, 247, 0.18) !important;
+        color: #d5f0f2 !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .oh-dropdown__menu {
+        border: 1px solid rgba(23, 111, 128, 0.18) !important;
+        border-radius: 12px !important;
+        background: #ffffff !important;
+        box-shadow: 0 14px 30px rgba(10, 77, 96, 0.18) !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .oh-dropdown__link {
+        color: #173f50 !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .oh-dropdown__link:hover {
+        background: #e8f5f7 !important;
+        color: #176f80 !important;
+    }
+
+    /* Keep the detail view as one composed dialog instead of separate floating
+       header, card, and navigation surfaces. */
+    #objectDetailsModalTarget {
+        position: relative !important;
+        width: min(640px, calc(100vw - 32px)) !important;
+        max-width: 640px !important;
+        max-height: min(760px, calc(100vh - 48px)) !important;
+        overflow: hidden !important;
+        padding: 0 !important;
+        border: 1px solid rgba(23, 111, 128, 0.2) !important;
+        border-radius: 24px !important;
+        background: #e8f5f7 !important;
+        box-shadow: 0 26px 70px rgba(7, 47, 61, 0.32) !important;
+    }
+
+    #objectDetailsModalTarget > .announcement-detail-modal-header {
+        min-height: 66px !important;
+        padding: 0.85rem 1.15rem !important;
+        border: 0 !important;
+        background: linear-gradient(120deg, #0a4d60, #176f80 58%, #278da0) !important;
+    }
+
+    #objectDetailsModalTarget > .announcement-detail-modal-header .announcement-detail-modal-label {
+        font-size: 0.78rem !important;
+        letter-spacing: 0.1em !important;
+    }
+
+    #objectDetailsModalTarget > .announcement-detail-modal-header .announcement-detail-modal-label ion-icon {
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 12px !important;
+        background: rgba(255, 255, 255, 0.14) !important;
+    }
+
+    #objectDetailsModalTarget > .announcement-detail-modal-header .oh-modal__close {
+        width: 34px !important;
+        height: 34px !important;
+        border: 1px solid rgba(255, 255, 255, 0.24) !important;
+        border-radius: 50% !important;
+        background: rgba(255, 255, 255, 0.12) !important;
+    }
+
+    #objectDetailsModalTarget > .announcement-detail-modal-header .oh-modal__close:hover {
+        background: rgba(255, 255, 255, 0.24) !important;
+    }
+
+    #objectDetailsModalTarget > .oh-modal__dialog-body {
+        position: relative !important;
+        max-height: calc(100vh - 114px) !important;
+        overflow-y: auto !important;
+        padding: 18px !important;
+        background: #e8f5f7 !important;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(23, 111, 128, 0.35) transparent;
+    }
+
+    #objectDetailsModalTarget > .oh-modal__dialog-body > .oh-modal__dialog--navigation {
+        position: absolute !important;
+        inset: 0 !important;
+        z-index: 3 !important;
+        width: 100% !important;
+        height: 100% !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        pointer-events: none !important;
+    }
+
+    #objectDetailsModalTarget > .oh-modal__dialog-body > .oh-modal__dialog--navigation .oh-modal__diaglog-nav {
+        position: absolute !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        pointer-events: auto !important;
+        width: 38px !important;
+        height: 38px !important;
+        border: 1px solid rgba(23, 111, 128, 0.18) !important;
+        border-radius: 50% !important;
+        background: #ffffff !important;
+        color: #176f80 !important;
+        box-shadow: 0 7px 16px rgba(10, 77, 96, 0.14) !important;
+    }
+
+    #objectDetailsModalTarget > .oh-modal__dialog-body > .oh-modal__dialog--navigation .oh-modal__nav-prev {
+        left: 0 !important;
+    }
+
+    #objectDetailsModalTarget > .oh-modal__dialog-body > .oh-modal__dialog--navigation .oh-modal__nav-next {
+        right: 0 !important;
+    }
+
+    #objectDetailsModalTarget > .oh-modal__dialog-body > .oh-modal__dialog--navigation .oh-modal__diaglog-nav:hover {
+        transform: translateY(-50%) scale(1.05) !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card {
+        position: relative !important;
+        max-width: none !important;
+        margin: 0 !important;
+        border: 1px solid rgba(23, 111, 128, 0.16) !important;
+        border-radius: 18px !important;
+        box-shadow: 0 12px 28px rgba(10, 77, 96, 0.1) !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown {
+        position: absolute !important;
+        top: 14px !important;
+        right: 14px !important;
+        z-index: 2 !important;
+        float: none !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown > .oh-btn {
+        width: 34px !important;
+        height: 34px !important;
+        padding: 0 !important;
+        border-color: rgba(255, 255, 255, 0.24) !important;
+        border-radius: 50% !important;
+        background: rgba(255, 255, 255, 0.14) !important;
+        color: #ffffff !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-header {
+        margin: 0 !important;
+        padding: 1.55rem 1.5rem 1.25rem !important;
+        padding-right: 4.2rem !important;
+        border: 0 !important;
+        background: linear-gradient(120deg, #0a4d60, #176f80 58%, #278da0) !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-title {
+        margin-bottom: 0.55rem !important;
+        font-size: clamp(1.2rem, 3vw, 1.65rem) !important;
+        line-height: 1.22 !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-body {
+        min-height: 0 !important;
+        padding: 1.45rem 1.5rem !important;
+        background: #ffffff !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-text {
+        font-size: 0.96rem !important;
+        line-height: 1.7 !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card > .card-footer:not(:has(.oh-announcement__comment-view)):not(:has(a, img, i)) {
+        display: none !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card > .card-footer:last-child {
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0.85rem 1.5rem !important;
+        border-top: 1px solid rgba(23, 111, 128, 0.12) !important;
+        background: #f4fbfc !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .oh-announcement__comment-view {
+        min-height: 38px !important;
+        align-items: center !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .oh-announcement__comment-view .oh-btn {
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 10px !important;
+        background: #e8f5f7 !important;
+        color: #176f80 !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .oh-announcement__comment-view .oh-btn.oh-activity-sidebar__open {
+        min-width: 108px !important;
+        height: 36px !important;
+        border-radius: 10px !important;
+        background: #176f80 !important;
+        box-shadow: 0 6px 14px rgba(23, 111, 128, 0.2) !important;
+    }
+
+    @media (max-width: 620px) {
+        #objectDetailsModalTarget {
+            width: calc(100vw - 20px) !important;
+            border-radius: 20px !important;
+        }
+
+        #objectDetailsModalTarget > .oh-modal__dialog-body {
+            padding: 12px !important;
+        }
+
+        #objectDetailsModalTarget .announcement-detail-card .card-header,
+        #objectDetailsModalTarget .announcement-detail-card .card-body {
+            padding-left: 1.1rem !important;
+            padding-right: 1.1rem !important;
+        }
+    }
+
+    /* Final contrast pass for the announcement detail controls and content. */
+    #objectDetailsModalTarget .announcement-detail-card .card-header {
+        position: relative !important;
+        min-height: 142px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-title {
+        max-width: 100% !important;
+        padding-right: 2.5rem !important;
+        overflow-wrap: anywhere !important;
+        text-shadow: 0 1px 1px rgba(4, 39, 52, 0.18) !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-title > .oh-checkpoint-badge {
+        margin-top: 0.1rem !important;
+        border-color: rgba(255, 255, 255, 0.3) !important;
+        background: rgba(255, 255, 255, 0.16) !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 10px rgba(4, 39, 52, 0.12) !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-title > .oh-checkpoint-badge ion-icon {
+        color: #d5f0f2 !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .announcement-detail-date,
+    #objectDetailsModalTarget .announcement-detail-card .announcement-detail-date small {
+        color: #d5f0f2 !important;
+        font-size: 0.74rem !important;
+        letter-spacing: 0.01em !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-body {
+        min-height: 112px !important;
+        display: flex !important;
+        align-items: flex-start !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-text,
+    #objectDetailsModalTarget .announcement-detail-card .card-text * {
+        color: #173f50 !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown > .oh-btn:focus-visible,
+    #objectDetailsModalTarget .announcement-detail-modal-header .oh-modal__close:focus-visible,
+    #objectDetailsModalTarget .announcement-detail-card .oh-announcement__comment-view .oh-btn:focus-visible,
+    #objectDetailsModalTarget .oh-modal__dialog--navigation .oh-modal__diaglog-nav:focus-visible {
+        outline: 3px solid rgba(199, 229, 235, 0.95) !important;
+        outline-offset: 2px !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown > .oh-btn:hover {
+        background: rgba(255, 255, 255, 0.25) !important;
+        transform: translateY(-1px) !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown .oh-dropdown__items {
+        min-width: 150px !important;
+        margin: 0 !important;
+        padding: 5px !important;
+        list-style: none !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown .oh-dropdown__item {
+        margin: 0 !important;
+        padding: 2px !important;
+        background: transparent !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown .oh-dropdown__link,
+    #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown button.oh-dropdown__link {
+        display: flex !important;
+        align-items: center !important;
+        width: 100% !important;
+        min-height: 34px !important;
+        padding: 7px 10px !important;
+        border: 0 !important;
+        border-radius: 8px !important;
+        background: #ffffff !important;
+        color: #173f50 !important;
+        font-size: 0.78rem !important;
+        font-weight: 700 !important;
+        text-decoration: none !important;
+        box-shadow: none !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown .oh-dropdown__link:hover,
+    #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown button.oh-dropdown__link:hover {
+        background: #e8f5f7 !important;
+        color: #176f80 !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown .oh-dropdown__link--danger {
+        color: #b14b5d !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown .oh-dropdown__link--danger:hover {
+        background: #fff1f3 !important;
+        color: #9c3045 !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-footer:has(a, img, i) {
+        padding: 0.85rem 1.5rem !important;
+        border-top: 1px solid rgba(23, 111, 128, 0.12) !important;
+        background: #f8fcfd !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-footer:has(a, img, i) hr {
+        margin: 0 0 0.7rem !important;
+        border-color: rgba(23, 111, 128, 0.14) !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-footer:has(a, img, i) img {
+        display: block !important;
+        max-height: 180px !important;
+        margin: 0 auto !important;
+        border: 1px solid rgba(23, 111, 128, 0.12) !important;
+        border-radius: 12px !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-footer:has(a, img, i) a {
+        color: #176f80 !important;
+        font-weight: 700 !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card > .card-footer:last-child {
+        display: block !important;
+        padding: 0.8rem 1.5rem !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .oh-announcement__comment-view {
+        justify-content: flex-end !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .oh-announcement__comment-view .oh-btn.oh-activity-sidebar__open ion-icon {
+        color: #ffffff !important;
+    }
+
+    @media (max-width: 620px) {
+        #objectDetailsModalTarget .announcement-detail-card .card-header {
+            min-height: 132px !important;
+        }
+
+        #objectDetailsModalTarget .announcement-detail-card .card-title {
+            font-size: 1.18rem !important;
+        }
+    }
+
+    /* Distinct control treatment: no dark transparent buttons on the teal
+       header, and clear separation between the modal's content zones. */
+    #objectDetailsModalTarget > .announcement-detail-modal-header {
+        position: relative !important;
+        box-shadow: inset 0 -1px 0 rgba(213, 240, 242, 0.24) !important;
+    }
+
+    #objectDetailsModalTarget > .announcement-detail-modal-header::after {
+        content: "" !important;
+        position: absolute !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        height: 3px !important;
+        background: linear-gradient(90deg, #8ed3dc, #d5f0f2, #8ed3dc) !important;
+        opacity: 0.7 !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown > .oh-btn,
+    #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown > .oh-btn.oh-btn--transparent {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 36px !important;
+        height: 36px !important;
+        padding: 0 !important;
+        border: 1px solid rgba(213, 240, 242, 0.68) !important;
+        border-radius: 50% !important;
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.25), rgba(199, 229, 235, 0.1)) !important;
+        color: #ffffff !important;
+        box-shadow: 0 5px 12px rgba(4, 39, 52, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.24) !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown > .oh-btn ion-icon {
+        color: #ffffff !important;
+        font-size: 17px !important;
+        filter: drop-shadow(0 1px 1px rgba(4, 39, 52, 0.28)) !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown > .oh-btn:hover,
+    #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown > .oh-btn:focus-visible {
+        border-color: #ffffff !important;
+        background: #d5f0f2 !important;
+        color: #0a4d60 !important;
+        box-shadow: 0 7px 16px rgba(4, 39, 52, 0.25) !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown > .oh-btn:hover ion-icon,
+    #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown > .oh-btn:focus-visible ion-icon {
+        color: #0a4d60 !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-header {
+        background:
+            radial-gradient(circle at 95% 10%, rgba(199, 229, 235, 0.22), transparent 28%),
+            linear-gradient(120deg, #0a4d60, #176f80 58%, #278da0) !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .card-body {
+        background: linear-gradient(180deg, #ffffff 0%, #fafdfe 100%) !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card > .card-footer:last-child {
+        background: #e8f5f7 !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .oh-announcement__comment-view .oh-btn.oh-activity-sidebar__open {
+        gap: 0.5rem !important;
+        border: 1px solid #0a4d60 !important;
+        background: linear-gradient(110deg, #0a4d60, #176f80) !important;
+        color: #ffffff !important;
+        box-shadow: 0 7px 16px rgba(10, 77, 96, 0.22) !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .oh-announcement__comment-view .oh-btn.oh-activity-sidebar__open:hover {
+        border-color: #0a4d60 !important;
+        background: linear-gradient(110deg, #073b4a, #0f5e6d) !important;
+        transform: translateY(-1px) !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .oh-announcement__comment-view .oh-btn.oh-announcement-btn {
+        border: 1px solid rgba(23, 111, 128, 0.22) !important;
+        background: #ffffff !important;
+        color: #176f80 !important;
+        box-shadow: 0 4px 10px rgba(23, 111, 128, 0.1) !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .oh-announcement__comment-view .oh-btn.oh-announcement-btn:hover {
+        background: #d5f0f2 !important;
+        color: #0a4d60 !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .oh-dropdown__link--danger,
+    #objectDetailsModalTarget .announcement-detail-card button.oh-dropdown__link--danger {
+        color: #b14b5d !important;
+    }
+
+    #objectDetailsModalTarget .announcement-detail-card .oh-dropdown__link--danger:hover,
+    #objectDetailsModalTarget .announcement-detail-card button.oh-dropdown__link--danger:hover {
+        background: #fff1f3 !important;
+        color: #9c3045 !important;
+    }
+
+    html body #objectDetailsModalTarget .announcement-detail-card form button[data-action="delete"].oh-dropdown__link--danger {
+        color: #b14b5d !important;
+        -webkit-text-fill-color: #b14b5d !important;
+    }
 </style>
 {% if messages %}
     <script>
@@ -370,7 +873,7 @@
                 </span>
             </div>
             <div class="card-body">
-                <p class="card-text" style="color: #31443a !important;">{{ announcement.description|safe }}</p>
+                <p class="card-text" style="color: #173f50 !important;">{{ announcement.description|safe }}</p>
             </div>
             <div class="card-footer">
                 {% for attachment in announcement.attachments.all %}

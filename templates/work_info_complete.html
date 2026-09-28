@@ -7,7 +7,6 @@
       <thead>
         <tr>
           <th style="font-weight:bold; font-size:15px; color:black;">{% trans "Employee" %}</th>
-          <th style="font-weight:bold; font-size:15px; color:black;">{% trans "Progress" %}</th>
         </tr>
       </thead>
       <tbody>
@@ -18,24 +17,9 @@
               <a href="{% url 'employee-view-update' employee_info.employee.employee_id.id %}">
                 {{ employee_info.employee.employee_id }}</a>
             </td>
-            <td style="position: relative;">
-              <a href="{% url 'employee-view-update' employee_info.employee.employee_id.id %}">
-                <div class="progress">
-                  <div class="progress-bar" role="progressbar" style="width: {{ employee_info.completed_field_count }}%;"></div>
-                </div>
-                <div class="progress-text">{{ employee_info.completed_field_count }}% {% trans "Completed" %}</div>
-              </a>
-            </td>
           {% else %}
             <td>
-                {{ employee_info.employee.employee_id }}</a>
-            </td>
-            <td style="position: relative;">
-                <div class="progress">
-                  <div class="progress-bar" role="progressbar" style="width: {{ employee_info.completed_field_count }}%;"></div>
-                </div>
-                <div class="progress-text">{{ employee_info.completed_field_count }}% {% trans "Completed" %}</div>
-              </a>
+                {{ employee_info.employee.employee_id }}
             </td>
           {% endif %}
         </tr>

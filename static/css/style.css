@@ -2117,7 +2117,7 @@ body:has(.oh-wrapper-main.super-admin-panel-theme) .select2-results__option[aria
 }
 
 .oh-wrapper-main.super-admin-panel-theme .oh-btn,
-.oh-wrapper-main.super-admin-panel-theme button:not(.oh-modal_close):not(.close) {
+.oh-wrapper-main.super-admin-panel-theme button:not(.oh-modal__close):not(.close) {
     border: 1px solid var(--super-admin-accent) !important;
     border-radius: 11px !important;
     background: var(--super-admin-accent) !important;
@@ -2126,12 +2126,33 @@ body:has(.oh-wrapper-main.super-admin-panel-theme) .select2-results__option[aria
 
 .oh-wrapper-main.super-admin-panel-theme .oh-btn:hover,
 .oh-wrapper-main.super-admin-panel-theme .oh-btn:focus-visible,
-.oh-wrapper-main.super-admin-panel-theme button:not(.oh-modal_close):not(.close):hover,
-.oh-wrapper-main.super-admin-panel-theme button:not(.oh-modal_close):not(.close):focus-visible {
+.oh-wrapper-main.super-admin-panel-theme button:not(.oh-modal__close):not(.close):hover,
+.oh-wrapper-main.super-admin-panel-theme button:not(.oh-modal__close):not(.close):focus-visible {
     background: var(--super-admin-accent-hover) !important;
     border-color: var(--super-admin-accent-hover) !important;
     color: #ffffff !important;
     transform: translateY(-1px);
+}
+
+.oh-wrapper-main.super-admin-panel-theme .oh-modal__dialog-header {
+    padding-right: 4.25rem;
+}
+
+.oh-wrapper-main.super-admin-panel-theme .oh-modal__close {
+    top: 50%;
+    right: 1rem;
+    width: 2.25rem;
+    height: 2.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(-50%);
+    margin: 0;
+}
+
+.oh-wrapper-main.super-admin-panel-theme .oh-modal__close:hover,
+.oh-wrapper-main.super-admin-panel-theme .oh-modal__close:focus-visible {
+    transform: translateY(-50%);
 }
 
 .oh-wrapper-main.super-admin-panel-theme .oh-input,
@@ -2347,6 +2368,26 @@ html body .oh-wrapper-main.super-admin-panel-theme .employee-navbar-apply-leave:
 html body .oh-wrapper-main.super-admin-panel-theme .employee-navbar-apply-leave:focus-visible {
     background: linear-gradient(110deg, #083f50, #176f80) !important;
     color: #ffffff !important;
+}
+
+.employee-navbar-apply-leave,
+.employee-navbar-apply-leave:visited,
+.employee-navbar-apply-leave:hover,
+.employee-navbar-apply-leave:focus-visible,
+.employee-navbar-apply-leave:active {
+    text-decoration: none !important;
+}
+
+.employee-navbar-apply-leave .material-symbols-outlined {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff;
+    opacity: 1;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .employee-navbar-apply-leave .material-symbols-outlined,
+html body .oh-wrapper-main.employee-panel-theme .employee-navbar-apply-leave .material-symbols-outlined {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
 }
 
 html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__notification-beacon {
@@ -4699,4 +4740,440 @@ body .modal-dialog {
         max-width: 100%;
         flex: 1 1 12rem;
     }
+}
+
+html body .oh-modal,
+html body .modal,
+html body .modal-backdrop,
+html body .employee-payroll-login-modal,
+html body .swal2-container,
+html body .note-modal-backdrop,
+html body .note-modal {
+    z-index: 12000 !important;
+}
+
+html body .oh-modal__dialog,
+html body .modal-dialog,
+html body .note-modal-content {
+    position: relative;
+    z-index: 12001 !important;
+}
+
+html body .oh-wrapper-main.employee-bottom-nav-active .oh-modal,
+html body .oh-wrapper-main.admin-panel-theme .oh-modal,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-modal {
+    z-index: 12000 !important;
+}
+
+html body .oh-wrapper-main.employee-bottom-nav-active .oh-modal__dialog,
+html body .oh-wrapper-main.admin-panel-theme .oh-modal__dialog,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-modal__dialog {
+    z-index: 12001 !important;
+}
+
+html body:has(.oh-wrapper-main .oh-modal.oh-modal--show) .oh-wrapper-main {
+    position: relative !important;
+    z-index: 11999 !important;
+}
+
+html body:has(.oh-wrapper-main.employee-bottom-nav-active .oh-modal.oh-modal--show) .oh-wrapper-main.employee-bottom-nav-active .oh-modal.oh-modal--show {
+    z-index: 13000 !important;
+}
+
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .oh-modal,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .modal,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .employee-payroll-login-modal,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .swal2-container {
+    background-color: rgba(10, 77, 96, 0.38) !important;
+}
+
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .oh-modal__dialog,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .modal-content,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .employee-payroll-login-dialog,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .swal2-popup,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .note-modal-content {
+    background: #f4fbfc !important;
+    border: 1px solid rgba(42, 132, 155, 0.22) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 20px 48px rgba(10, 77, 96, 0.22) !important;
+    color: #173f50 !important;
+}
+
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .oh-modal__dialog-header,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .modal-header,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .note-modal-header {
+    background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+    border-color: rgba(42, 132, 155, 0.22) !important;
+    color: #ffffff !important;
+}
+
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .oh-modal__dialog-title,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .oh-modal__dialog-header *,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .modal-header *,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .note-modal-header * {
+    color: #ffffff !important;
+}
+
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .oh-modal__dialog-body,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .oh-modal__dialog-footer,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .modal-body,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .modal-footer,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .note-modal-body {
+    background: #f4fbfc !important;
+    border-color: rgba(42, 132, 155, 0.16) !important;
+    color: #285d6b !important;
+}
+
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .oh-modal .oh-profile-section {
+    background: #f4fbfc !important;
+    border-color: rgba(42, 132, 155, 0.16) !important;
+    color: #285d6b !important;
+}
+
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .oh-modal label,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .modal label,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .note-modal label {
+    color: #285d6b !important;
+}
+
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .oh-modal input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]),
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .oh-modal select,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .oh-modal textarea,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .oh-modal .select2-selection,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .modal input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]),
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .modal select,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .modal textarea,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .modal .select2-selection {
+    background: #ffffff !important;
+    border-color: #b9dce4 !important;
+    color: #173f50 !important;
+}
+
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .note-editor,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .note-toolbar,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .note-statusbar {
+    background: #e8f5f7 !important;
+    border-color: rgba(42, 132, 155, 0.2) !important;
+}
+
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .note-editing-area,
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .note-editable {
+    background: #ffffff !important;
+    color: #173f50 !important;
+}
+
+html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) .note-btn {
+    background: #176f80 !important;
+    border-color: #176f80 !important;
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) {
+    background: #e8f5f7 !important;
+    color: #173f50 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-main__topbar {
+    min-height: 76px;
+    align-items: center;
+    margin-top: 1rem !important;
+    margin-bottom: 0.75rem !important;
+    padding: 1rem 1.15rem !important;
+    border: 1px solid #c7e5eb;
+    border-radius: 16px;
+    background: linear-gradient(115deg, #ffffff 0%, #f0fafb 100%) !important;
+    box-shadow: 0 8px 22px rgba(10, 77, 96, 0.07);
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-main__titlebar-title {
+    color: #173f50 !important;
+    margin: 0 !important;
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.015em;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-main__titlebar {
+    display: flex;
+    align-items: center;
+    min-height: 0;
+    margin: 0 !important;
+}
+
+@media (max-width: 575.98px) {
+    html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-main__topbar {
+        min-height: 64px;
+        margin-top: 0.75rem !important;
+        padding: 0.85rem 1.15rem !important;
+        border-radius: 12px;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-main__titlebar-title {
+        font-size: 1.2rem;
+    }
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) > #main > .oh-wrapper,
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-card {
+    background: #ffffff !important;
+    border-color: #c7e5eb !important;
+    color: #173f50 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-inner-sidebar {
+    padding: 1rem;
+    border: 1px solid #d5e9ed;
+    border-radius: 14px;
+    background: #f5fbfc;
+    color: #173f50 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-accordion-header,
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-accordion-header *,
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-inner-sidebar__link {
+    color: #285d6b !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-inner-sidebar__link {
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-inner-sidebar__link:hover,
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-inner-sidebar__link:focus-visible {
+    background: #e8f5f7 !important;
+    color: #0a4d60 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-inner-sidebar__link--active {
+    background: #176f80 !important;
+    border: 1px solid #176f80 !important;
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-inner-sidebar__link--active:hover,
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-inner-sidebar__link--active:focus-visible {
+    background: #0a4d60 !important;
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-card label,
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-card .oh-label,
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-card .settings-label,
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-card .oh-accordion-meta__title {
+    color: #173f50 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-card .select2-container .select2-selection,
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-card .select2-container .select2-selection__rendered,
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-card .select2-container .select2-selection__placeholder,
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-card .select2-container .select2-search__field {
+    background-color: #ffffff !important;
+    color: #173f50 !important;
+    -webkit-text-fill-color: #173f50 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-card .select2-container .select2-selection {
+    border-color: #c7e5eb !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .select2-dropdown,
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .select2-results__option {
+    background: #ffffff !important;
+    color: #173f50 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .select2-results__option--highlighted,
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .select2-results__option[aria-selected="true"] {
+    background: #e8f5f7 !important;
+    color: #0a4d60 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(.oh-inner-sidebar) .oh-card hr {
+    border-color: #d5e9ed;
+    opacity: 1;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #searchContainer {
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+@media (min-width: 1001px) {
+    html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #searchContainer {
+        display: flex !important;
+        align-items: center;
+        position: relative;
+        top: auto;
+        right: auto;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #searchContainer .oh-input {
+        width: 240px;
+    }
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #searchContainer .oh-input-group__icon {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: 0.85rem;
+    margin: 0;
+    transform: translateY(-50%);
+    color: #176f80 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #searchContainer .oh-input {
+    min-height: 42px;
+    width: 100%;
+    max-width: 100%;
+    padding: 0.55rem 0.85rem 0.55rem 2.45rem !important;
+    border: 1px solid #c7e5eb !important;
+    border-radius: 11px !important;
+    background: #ffffff !important;
+    color: #173f50 !important;
+    box-shadow: 0 2px 8px rgba(10, 77, 96, 0.04) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #searchContainer .oh-input::placeholder {
+    color: #64858e !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) .oh-inner-sidebar-content__title {
+    color: #173f50 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .oh-user_permission-list_item {
+    border: 1px solid #d5e9ed !important;
+    border-radius: 11px;
+    background: #ffffff !important;
+    color: #173f50 !important;
+    box-shadow: 0 3px 10px rgba(10, 77, 96, 0.04);
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .oh-user_permission-list_item:hover,
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .oh-user_permission-list_item.perm-accordion-active {
+    background: #f0fafb !important;
+    border-color: #a9d5de !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .oh-user_permission-list_item .oh-card__title,
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .oh-user_permission-list_item .oh-user_permission_list-text {
+    color: #173f50 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .oh-user_permssion-dropdownbtn {
+    flex: 0 0 44px;
+    width: 44px;
+    min-width: 44px;
+    height: 40px;
+    min-height: 40px;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 0 !important;
+    border: 1px solid #176f80 !important;
+    border-radius: 10px !important;
+    background: #176f80 !important;
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .oh-user_permssion-dropdownbtn:hover,
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .oh-user_permssion-dropdownbtn:focus-visible {
+    background: #0a4d60 !important;
+    border-color: #0a4d60 !important;
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .oh-user_permssion-dropdownbtn ion-icon {
+    display: block !important;
+    width: 20px;
+    height: 20px;
+    color: #ffffff !important;
+    font-size: 1.2rem;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .panel.view-employees {
+    margin: -0.15rem 0 0.75rem;
+    padding: 0.85rem;
+    border: 1px solid #c7e5eb;
+    border-top: 0;
+    border-radius: 0 0 11px 11px;
+    background: #f5fbfc !important;
+    color: #173f50 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .panel.view-employees > .oh-general__tab-target {
+    padding: 0.75rem;
+    border: 1px solid #d5e9ed;
+    border-radius: 10px;
+    background: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .panel.view-employees .oh-user_permission-list_item.app-permissions {
+    background: #e8f5f7 !important;
+    border-color: #c7e5eb !important;
+    color: #0a4d60 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .panel.view-employees .oh-user_permission-list_item.app-permissions *,
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .panel.view-employees .oh-sticky-table__th *,
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .panel.view-employees .oh-sticky-table__td *,
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .panel.view-employees .oh-sticky-table__sd * {
+    color: #173f50 !important;
+    -webkit-text-fill-color: #173f50 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .panel.view-employees .oh-user_permission-list_item.app-permissions:hover,
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .panel.view-employees .oh-user_permission-list_item.app-permissions.perm-accordion-active {
+    background: #dff2f5 !important;
+    border-color: #a9d5de !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .panel.view-employees .oh-badge {
+    background: #176f80 !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .panel.view-employees .app-permissions .oh-badge {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .panel.view-employees .oh-sticky-table {
+    border-color: #c7e5eb !important;
+    border-radius: 10px;
+    background: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .panel.view-employees .oh-sticky-table__table,
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .panel.view-employees .oh-sticky-table__thead,
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .panel.view-employees .oh-sticky-table__tbody {
+    background: #ffffff !important;
+    color: #173f50 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .panel.view-employees .oh-sticky-table__th {
+    background: #e8f5f7 !important;
+    border-color: #c7e5eb !important;
+    color: #0a4d60 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .panel.view-employees .oh-sticky-table__td,
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .panel.view-employees .oh-sticky-table__sd {
+    background: #ffffff !important;
+    border-color: #e1eef0 !important;
+    color: #173f50 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .panel.view-employees .oh-sticky-table__tr:hover > .oh-sticky-table__td,
+html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .panel.view-employees .oh-sticky-table__tr:hover > .oh-sticky-table__sd {
+    background: #f0fafb !important;
 }
