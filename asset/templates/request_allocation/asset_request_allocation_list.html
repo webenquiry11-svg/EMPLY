@@ -17,7 +17,7 @@
     <div class="oh-tabs__content" id="tab_3">
         {% if assets %}
             <!-- Sticky Table  for own objective-->
-            <div class="oh-table_sticky--wrapper">
+            <div class="oh-table_sticky--wrapper employee-asset-table">
                 <div class="oh-sticky-dropdown--header">
                     <div class="oh-dropdown" x-data="{open: false}">
                         <button class="oh-sticky-dropdown_btn p-2" @click="open = !open">
@@ -38,7 +38,7 @@
                     </div>
                 </div>
             </div>
-            <div id="ownAsset-table" data-table-name="ownAsset_tab">
+            <div id="ownAsset-table" class="employee-asset-table" data-table-name="ownAsset_tab">
                 <div class="oh-sticky-table">
                     <div class="oh-sticky-table__table">
                         <div class="oh-sticky-table__thead">

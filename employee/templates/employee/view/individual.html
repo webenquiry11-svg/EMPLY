@@ -1,4 +1,4 @@
-{% extends 'index.html' %}{% load static %}
+﻿{% extends 'index.html' %}{% load static %}
 {% block content %}
     {% load i18n %}
     {% load static %}
@@ -118,7 +118,7 @@
         </div>
     </div>
 
-    <div class="oh-wrapper" id="view-container">
+    <div class="oh-wrapper employee-profile-theme" id="view-container">
         <div class="oh-card mt-4 mb-5">
             <div class="d-flex flex-row-reverse align-items-center">
                 <div class="oh-dropdown" x-data="{open: false}">
@@ -219,7 +219,7 @@
                         href="{% url 'employee-view-individual' next %}"
                         title='{% trans "Next Employee" %}'
                         data-action="next"
-                        style="color: hsl(8, 77%, 56%)"
+                        style="color: #01231a"
                         class="ms-1 fw-bold"
                     >
                         <ion-icon name="arrow-forward-circle-outline" style="font-size: 35px"></ion-icon>
@@ -235,7 +235,7 @@
                         href="{% url 'employee-view-individual' previous %}"
                         title='{% trans "Previous Employee" %}'
                         data-action="previous"
-                        style="color: hsl(8, 77%, 56%)"
+                        style="color: #01231a"
                         class="ms-1 me-2 fw-bold"
                     >
                         <ion-icon name="arrow-back-circle-outline" style="font-size: 35px"></ion-icon>

@@ -99,11 +99,14 @@ def view_policy(request):
     """
     instance_id = request.GET["instance_id"]
     policy = Policy.objects.filter(id=instance_id).first()
+    # Pass a one-item attachments queryset so the template shows only the latest attachment
+    attachments_qs = policy.attachments.order_by('-created_at', '-id')[:1] if policy else []
     return render(
         request,
         "policies/view_policy.html",
         {
             "policy": policy,
+            "attachments": attachments_qs,
         },
     )
 
@@ -143,7 +146,12 @@ def add_attachment(request):
     policy = Policy.objects.get(id=policy_id)
     policy.attachments.add(*attachments)
     messages.success(request, _("Attachments added"))
-    return render(request, "policies/attachments.html", {"policy": policy})
+    attachments_qs = policy.attachments.order_by('-created_at', '-id')[:1]
+    return render(
+        request,
+        "policies/attachments.html",
+        {"policy": policy, "attachments": attachments_qs},
+    )
 
 
 @login_required
@@ -156,7 +164,12 @@ def remove_attachment(request):
     policy_id = request.GET["policy_id"]
     policy = Policy.objects.get(id=policy_id)
     PolicyMultipleFile.objects.filter(id__in=ids).delete()
-    return render(request, "policies/attachments.html", {"policy": policy})
+    attachments_qs = policy.attachments.order_by('-created_at', '-id')[:1]
+    return render(
+        request,
+        "policies/attachments.html",
+        {"policy": policy, "attachments": attachments_qs},
+    )
 
 
 @login_required
@@ -166,7 +179,12 @@ def get_attachments(request):
     """
     policy = request.GET["policy_id"]
     policy = Policy.objects.get(id=policy)
-    return render(request, "policies/attachments.html", {"policy": policy})
+    attachments_qs = policy.attachments.order_by('-created_at', '-id')[:1]
+    return render(
+        request,
+        "policies/attachments.html",
+        {"policy": policy, "attachments": attachments_qs},
+    )
 
 
 @login_required

@@ -14,8 +14,8 @@
       transition: 0s;
     }
     .oh-general__tab-link--active {
-      background-color: #e54f38;
-      border: 1px solid #e54f38;
+      background-color: #01231a;
+      border: 1px solid #01231a;
       color: #fff;
       padding: 5px 12px;
       border-radius: 23px;
@@ -137,7 +137,7 @@
   .oh-kanban-card-action__checkbox:checked
     + .oh-kanban-card-action__checkbox-label {
     &::before {
-      background: #e54f38;
+      background: #01231a;
       border-radius: 12px;
     }
   }

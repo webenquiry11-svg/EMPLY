@@ -1,7 +1,86 @@
 {% extends 'index.html' %}
 {% block content %}
-{% include 'attendance/own_attendance/nav.html' %}
-<div id="attendance-container" class='oh-wrapper'>
-  {% include 'attendance/own_attendance/attendances.html' %}
+<style>
+  .employee-attendance-page {
+    min-height: calc(100vh - 2px);
+    width: 100%;
+    padding: 28px 32px 120px;
+    background: #f5f7f3;
+    color: #123d2c;
+  }
+  .employee-attendance-page .oh-main__topbar {
+    max-width: none;
+    margin: 0 0 20px;
+    padding: 0;
+  }
+  .employee-attendance-page .oh-main__titlebar-title {
+    color: #123d2c !important;
+    font-size: 1.65rem;
+    font-weight: 800;
+  }
+  .employee-attendance-page .oh-main__titlebar-button-container .oh-btn {
+    border: 0;
+    border-radius: 12px;
+    background: #2f5752;
+    color: #fff;
+  }
+  .employee-attendance-content {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+  .employee-attendance-page .oh-sticky-table__table {
+    min-width: 1080px;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #2f5752;
+    box-shadow: 0 14px 32px rgba(47, 87, 82, .16);
+  }
+  .employee-attendance-page .oh-sticky-table__th {
+    background: #244942 !important;
+    color: #fff !important;
+    border-color: rgba(255,255,255,.08);
+  }
+  .employee-attendance-page .oh-sticky-table__td,
+  .employee-attendance-page .oh-sticky-table__sd {
+    background: #2f5752;
+    color: #f4faf7 !important;
+    border-color: rgba(255,255,255,.08);
+  }
+  .employee-attendance-page .oh-sticky-table__tr:hover > * {
+    background: #39685f !important;
+    color: #fff !important;
+  }
+  /* Keep the existing data, sorting and row actions intact while showing
+     only the employee-facing attendance columns. */
+  .employee-attendance-page .oh-sticky-table__thead .oh-sticky-table__tr > :nth-child(5),
+  .employee-attendance-page .oh-sticky-table__thead .oh-sticky-table__tr > :nth-child(7),
+  .employee-attendance-page .oh-sticky-table__thead .oh-sticky-table__tr > :nth-child(8),
+  .employee-attendance-page .oh-sticky-table__thead .oh-sticky-table__tr > :nth-child(10),
+  .employee-attendance-page .oh-sticky-table__thead .oh-sticky-table__tr > :nth-child(12),
+  .employee-attendance-page .oh-sticky-table__thead .oh-sticky-table__tr > :nth-child(13),
+  .employee-attendance-page .oh-sticky-table__tbody .oh-sticky-table__tr > :nth-child(5),
+  .employee-attendance-page .oh-sticky-table__tbody .oh-sticky-table__tr > :nth-child(7),
+  .employee-attendance-page .oh-sticky-table__tbody .oh-sticky-table__tr > :nth-child(8),
+  .employee-attendance-page .oh-sticky-table__tbody .oh-sticky-table__tr > :nth-child(10),
+  .employee-attendance-page .oh-sticky-table__tbody .oh-sticky-table__tr > :nth-child(12),
+  .employee-attendance-page .oh-sticky-table__tbody .oh-sticky-table__tr > :nth-child(13) {
+    display: none !important;
+  }
+  .employee-attendance-page .oh-table_sticky--wrapper,
+  .employee-attendance-page .oh-sticky-table {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+  @media (max-width: 767px) {
+    .employee-attendance-page { padding: 20px 14px 105px; }
+  }
+</style>
+<div class="employee-attendance-page">
+  {% include 'attendance/own_attendance/nav.html' %}
+  <div id="attendance-container" class="employee-attendance-content">
+    {% include 'attendance/own_attendance/attendances.html' %}
+  </div>
 </div>
 {% endblock content %}

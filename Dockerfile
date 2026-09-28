@@ -23,5 +23,5 @@ RUN chmod +x /app/entrypoint.sh
 
 EXPOSE 8000
 
-# CMD ["python3", "manage.py", "runserver"]
-CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "horilla.wsgi:application"]
+# ENTRYPOINT set karne se entrypoint.sh automatic execute hoga
+ENTRYPOINT ["/app/entrypoint.sh"]

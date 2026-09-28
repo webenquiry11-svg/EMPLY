@@ -111,11 +111,14 @@
   justify-content: center;
   margin-bottom: 0px;
 }
+.oh-navbar__notification-link .oh-navbar__icon {
+  color: #DC3545;
+}
 .oh-navbar__notification-beacon {
   min-width: 18px;
   min-height: 18px;
   border-radius: 30px;
-  background-color: $secondary-color;
+  background-color: #DC3545;
   color: $white;
   display: flex;
   align-items: center;

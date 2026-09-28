@@ -21,6 +21,11 @@ from .views import views
 
 urlpatterns = [
     path(
+        "attendance-activity-component",
+        views.attendance_activity_component,
+        name="attendance-activity-component",
+    ),
+    path(
         "profile-attendance-tab",
         views.profile_attendance_tab,
         name="profile-attendance-tab",

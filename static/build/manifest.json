@@ -4,8 +4,8 @@
     "description": "Free and Open Source HR Software",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "orangered",
-    "theme_color": "orangered",
+    "background_color": "#10b981",
+    "theme_color": "#043927",
     "icons": [
       {
         "src": "/static/favicons/apple-touch-icon.png",

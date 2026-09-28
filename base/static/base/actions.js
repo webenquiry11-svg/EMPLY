@@ -75,6 +75,21 @@ var rowMessages = {
   fr: " Sélectionné",
 };
 
+window.toggleHighlight = window.toggleHighlight || function toggleHighlight(ids) {
+  if (typeof $ === 'undefined') return;
+  var selectedIds = Array.isArray(ids) ? ids : ids ? [ids] : [];
+  $.each(selectedIds, function (_, id) {
+    if (!id) return;
+    const $target = $(`#${id}`);
+    const $row = $target.closest('.oh-sticky-table__tr, tr');
+    if (!$row.length) return;
+    $row.removeClass('highlight-selected');
+    if ($target.is(':checked')) {
+      $row.addClass('highlight-selected');
+    }
+  });
+};
+
 tickShiftCheckboxes();
 function makeShiftListUnique(list) {
   return Array.from(new Set(list));

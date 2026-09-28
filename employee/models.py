@@ -18,6 +18,7 @@ from django.db.models.query import QuerySet
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.templatetags.static import static
+from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as trans
 from PIL import Image
@@ -109,12 +110,23 @@ class Employee(models.Model):
     is_suspended = models.BooleanField(default=False)
     # Timestamp when the employee was suspended
     suspended_at = models.DateTimeField(null=True, blank=True)
+    # Indicates whether the employee is currently serving their notice period
+    notice_period = models.BooleanField(default=False)
     additional_info = models.JSONField(null=True, blank=True)
     is_from_onboarding = models.BooleanField(
         default=False, null=True, blank=True, editable=False
     )
     is_directly_converted = models.BooleanField(
         default=False, null=True, blank=True, editable=False
+    )
+    attendance_source = models.CharField(
+        max_length=25,
+        choices=[
+            ("emply_portal", trans("EMPLY Portal")),
+            ("biometric_machine", trans("Biometric Machine")),
+        ],
+        default="emply_portal",
+        verbose_name=_("Attendance Source"),
     )
     objects = HorillaCompanyManager(
         related_company_field="employee_work_info__company_id"
@@ -324,6 +336,43 @@ class Employee(models.Model):
         else:
             return {}
 
+    def get_current_attendance_session_seconds(self):
+        """Return elapsed seconds for the employee's currently open activity."""
+        if not apps.is_installed("attendance"):
+            return 0
+
+        attendance = self.employee_attendances.order_by(
+            "-attendance_date", "-id"
+        ).first()
+        if not attendance:
+            return 0
+
+        activity = (
+            self.employee_attendance_activities.filter(
+                attendance_date=attendance.attendance_date,
+                clock_out__isnull=True,
+            )
+            .order_by("-id")
+            .first()
+        )
+        if not activity:
+            return 0
+
+        current_time = timezone.now()
+        if activity.in_datetime:
+            started_at = activity.in_datetime
+            if timezone.is_naive(started_at):
+                started_at = timezone.make_aware(
+                    started_at, timezone.get_current_timezone()
+                )
+        else:
+            started_at = timezone.make_aware(
+                datetime.combine(activity.clock_in_date, activity.clock_in),
+                timezone.get_current_timezone(),
+            )
+
+        return max(0, (current_time - started_at).total_seconds())
+
     def get_today_attendance(self):
         """
         This method will returns employees todays attendance
@@ -524,13 +573,19 @@ class Employee(models.Model):
         super().clean()
 
         file = self.employee_profile
-        if not file:
+        if not file or not getattr(file, "name", None):
             return
 
         try:
-            file.seek(0)
-            content = file.read()
+            if hasattr(file, "file"):
+                file.file.seek(0)
+                content = file.file.read()
+            else:
+                file.seek(0)
+                content = file.read()
         except Exception:
+            if getattr(file, "_committed", False):
+                return
             raise ValidationError({"employee_profile": "Unable to read uploaded file."})
 
         is_svg = False
@@ -544,8 +599,12 @@ class Employee(models.Model):
 
         if not is_svg:
             try:
-                file.seek(0)
-                Image.open(file).verify()
+                if hasattr(file, "file"):
+                    file.file.seek(0)
+                    Image.open(file.file).verify()
+                else:
+                    file.seek(0)
+                    Image.open(file).verify()
             except Exception:
                 raise ValidationError(
                     {"employee_profile": "Invalid image or SVG file."}

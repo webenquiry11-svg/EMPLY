@@ -63,6 +63,11 @@ class EmployeeLeaveRequestGetCreateAPIView(APIView):
         return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
+        # Backend enforcement: block leave creation by the employee if they are on notice period
+        employee = request.user.employee_get
+        if getattr(employee, "notice_period", False):
+            return Response({"error": "You are currently serving your notice period and cannot apply for leave."}, status=403)
+
         employee_id = request.user.employee_get.id
         data = request.data
         if isinstance(data, QueryDict):
@@ -71,7 +76,7 @@ class EmployeeLeaveRequestGetCreateAPIView(APIView):
         data["end_date"] = (
             data.get("start_date") if not data.get("end_date") else data.get("end_date")
         )
-        serializer = LeaveRequestCreateUpdateSerializer(data=data)
+        serializer = LeaveRequestCreateUpdateSerializer(data=data, context={"request": request})
         if serializer.is_valid():
             leave_request = serializer.save()
             with contextlib.suppress(Exception):
@@ -112,6 +117,10 @@ class EmployeeLeaveRequestUpdateDeleteAPIView(APIView):
     def put(self, request, pk):
         leave_request = self.get_leave_request(request, pk)
         employee_id = request.user.employee_get
+        # Backend enforcement: block leave update by the employee if they are on notice period
+        if getattr(leave_request.employee_id, "notice_period", False) and employee_id == leave_request.employee_id:
+            raise serializers.ValidationError({"error": "You are currently serving your notice period and cannot apply for leave."})
+
         if (
             leave_request.status == "requested"
             and leave_request.employee_id == employee_id
@@ -125,7 +134,7 @@ class EmployeeLeaveRequestUpdateDeleteAPIView(APIView):
                 if not data.get("end_date")
                 else data.get("end_date")
             )
-            serializer = LeaveRequestCreateUpdateSerializer(leave_request, data=data)
+            serializer = LeaveRequestCreateUpdateSerializer(leave_request, data=data, context={"request": request})
             if serializer.is_valid():
                 leave_request = serializer.save()
                 return Response(
@@ -137,6 +146,10 @@ class EmployeeLeaveRequestUpdateDeleteAPIView(APIView):
     def delete(self, request, pk):
         leave_request = self.get_leave_request(request, pk)
         employee_id = request.user.employee_get
+        # Backend enforcement: block leave delete by the employee if they are on notice period
+        if getattr(leave_request.employee_id, "notice_period", False) and employee_id == leave_request.employee_id:
+            raise serializers.ValidationError({"error": "You are currently serving your notice period and cannot apply for leave."})
+
         if (
             leave_request.status == "requested"
             and leave_request.employee_id == employee_id

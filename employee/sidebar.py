@@ -48,14 +48,6 @@ SUBMENUS = [
         "accessibility": "employee.sidebar.rotating_work_type_accessibility",
     },
     {
-        "menu": trans("Disciplinary Actions"),
-        "redirect": reverse("disciplinary-actions"),
-    },
-    {
-        "menu": trans("Policies"),
-        "redirect": reverse("view-policies"),
-    },
-    {
         "menu": trans("Organization Chart"),
         "redirect": reverse("organisation-chart"),
     },

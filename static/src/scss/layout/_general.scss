@@ -118,3 +118,89 @@
 .oh-empty__subtitle{
   color: $light-text-color;
 }
+/* Minimal text colour consolidation: force common copy elements to use $text-color to reduce distinct text colours */
+.oh-card-dashboard__title,
+.oh-card-dashboard__header,
+.oh-card-dashboard__body,
+.oh-card-dashboard__counts,
+.oh-card-dashboard__count,
+.oh-card-dashboard__subtitle,
+.oh-profile__name,
+.oh-main__titlebar-title,
+.oh-card-dashboard__title,
+.oh-empty__title,
+.oh-empty__subtitle {
+  color: $text-color;
+}
+
+/* Employee search target height improvement */
+#employeeSearch {
+  height: 36px;
+  min-height: 36px;
+  padding: 6px 10px;
+  box-sizing: border-box;
+  font-size: 0.95rem;
+}
+
+/* Empty-state image override: use a single neutral no-records illustration */
+.oh-404__image {
+  display: block;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 12px;
+  object-fit: contain;
+}
+
+/* Dashboard card alignment: keep top summary cards equal height */
+.oh-dashboard__cards > [class*="col-"] {
+  display: flex;
+  align-items: stretch;
+}
+.oh-dashboard__cards .oh-card-dashboard {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Dashboard-specific color consolidation (dashboard scoped only) */
+.oh-dashboard .oh-card-dashboard__title,
+.oh-dashboard .oh-card-dashboard__count,
+.oh-dashboard .oh-card-dashboard__subtitle,
+.oh-dashboard .oh-profile__name,
+.oh-dashboard .oh-main__titlebar-title,
+.oh-dashboard .oh-empty__title,
+.oh-dashboard .oh-empty__subtitle {
+  color: $text-color;
+}
+
+/* Dashboard empty-state compact styling (only affects dashboard widgets) */
+.dashboardChart .oh-empty {
+  padding: 0.5rem 0.75rem;
+  text-align: center;
+}
+.dashboardChart .oh-empty .oh-404__image,
+.dashboardChart .oh-empty img.oh-404__image {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 6px;
+}
+.dashboardChart .oh-empty .oh-empty__title {
+  font-size: 1rem;
+  margin-top: 0.25rem;
+}
+.dashboardChart .oh-empty .oh-empty__subtitle {
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+  color: $light-text-color;
+}
+
+/* Align the Overall Leave select within its card header */
+#movable1 .oh-card-dashboard__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+#movable1 .oh-card-dashboard__header #overAllLeaveSelect {
+  margin-left: auto;
+}
+

@@ -1,4 +1,42 @@
-{% extends "index.html" %} {% load i18n %} {% block content %} {% include 'work_type_request/work_type_request_nav.html' %}
+{% extends "index.html" %} {% load i18n %} {% block content %}
+<style>
+    html:has(#view-container),
+    body:has(#view-container),
+    body:has(#view-container) #main,
+    body:has(#view-container) .oh-wrapper-main {
+        background: #f5faf9 !important;
+    }
+
+    body:has(#view-container) #view-container {
+        min-height: calc(100vh - 235px);
+        background: #f5faf9;
+    }
+
+    body:has(#view-container) #view-container > .oh-wrapper {
+        background: transparent;
+        padding-bottom: 110px;
+    }
+
+    body:has(#view-container) #view-container .oh-empty {
+        min-height: 420px;
+        border: 1px solid #d6e9e6;
+        border-radius: 18px;
+        background: #ffffff;
+        box-shadow: 0 10px 26px rgba(29, 86, 79, .07);
+    }
+
+    @media (max-width: 640px) {
+        body:has(#view-container) #view-container {
+            min-height: calc(100vh - 185px);
+        }
+
+        body:has(#view-container) #view-container .oh-empty {
+            min-height: 330px;
+            margin: 0 12px;
+        }
+    }
+</style>
+{% include 'work_type_request/work_type_request_nav.html' %}
 <div
     class="oh-checkpoint-badge mb-2"
     id="selectedWorktypes"

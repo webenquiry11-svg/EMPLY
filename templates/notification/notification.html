@@ -31,7 +31,7 @@
         class="oh-navbar__notification-tray"
         x-data="{markRead: false, visible: true}"
         x-show="open"
-        style="display: none"
+        style="display: none; position: absolute !important; right: -12px !important; bottom: calc(100% + 12px) !important; width: min(370px, calc(100vw - 34px)) !important; min-height: 360px !important; max-height: 620px !important; background: #ffffff !important; border: 1px solid rgba(42, 132, 155, 0.25) !important; border-radius: 20px !important; box-shadow: 0 24px 52px rgba(23, 109, 131, 0.18) !important; overflow: hidden !important; z-index: 2200 !important;"
         @click.outside="open = false"
     >
         <div id="notificationContainer">
@@ -53,52 +53,6 @@
     </div>
 </div>
 
-<script>
-    var staticUrl = $("#statiUrl").attr("data-url");
-    var notification_sound = {{request.user.employee_get.notification_sound.sound_enabled|yesno:"true,false"}};
-    function fill_notification_badge(data) {
-        var badges = document.getElementsByClassName(notify_badge_class);
-        let previousUnreadCount = parseInt(localStorage.getItem('previousUnreadCount')) || 0;
-        if (notification_sound) {
-            if (
-                previousUnreadCount !== null &&
-                previousUnreadCount < data.unread_count
-            ) {
-                const audio = new Audio(
-                    `${staticUrl}static/audio/notification-sound.wav`
-                );
-                audio.play();
-            }
-        }
+<div id="notificationConfig" data-notification-sound="{{ request.user.employee_get.notification_sound.sound_enabled|yesno:'true,false'|default:'false' }}" style="display:none"></div>
 
-        if (badges) {
-            for (var i = 0; i < badges.length; i++) {
-                badges[i].innerHTML = data.unread_count;
-            }
-        }
-        localStorage.setItem('previousUnreadCount', data.unread_count);
-    }
-</script>
-<script
-    src="{% static 'notifications/notify.js' %}"
-    type="text/javascript"
-></script>
-{% register_notify_callbacks callbacks='fill_notification_list,fill_notification_badge' %}
-<script>
-    function markAsRead(notificationId) {
-        fetch("/notifications/mark-as-read/" + notificationId + "/").then(
-            (response) => {
-                if (response.ok) {
-                    // Reload the page to update the notifications
-                    location.reload();
-                } else {
-                    console.error("Failed to mark notification as read");
-                }
-            }
-        );
-    }
-
-    $("#viewallnotification").click(function () {
-        $("#showallnotificationbtn").toggle();
-    });
-</script>
+<script src="{% static 'notifications/notify.js' %}" type="text/javascript"></script>

@@ -4,6 +4,224 @@
     {% load i18n %}
     {% include 'payroll/reimbursement/nav.html' %}
     <style>
+        html:has(#reimbursementContainer),
+        body:has(#reimbursementContainer),
+        .oh-wrapper-main:has(#reimbursementContainer),
+        .oh-wrapper-main:has(#reimbursementContainer) > #main {
+            background: #f5f7f3 !important;
+        }
+        #reimbursementContainer {
+            margin: 0 38px;
+            padding-bottom: 100px;
+            color: #263b30;
+        }
+        #reimbursementContainer #filterTagContainerSectionNav {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 0 0 8px !important;
+            padding: 0;
+        }
+        #reimbursementContainer #filterTagContainerSectionNav .oh-titlebar__tag {
+            margin: 0;
+        }
+        #reimbursementContainer > .d-flex {
+            align-items: center;
+            gap: 14px;
+            margin: 0 0 12px !important;
+            padding: 0 4px;
+        }
+        #reimbursementContainer > .d-flex > span {
+            margin: 0 !important;
+            white-space: nowrap;
+        }
+        #reimbursementContainer *,
+        .employee-reimbursement-head * {
+            color: #263b30;
+        }
+        #reimbursementContainer .oh-tabs__tablist,
+        #reimbursementContainer .oh-tabs__contents,
+        #reimbursementContainer .oh-sticky-table__table {
+            color: #263b30;
+        }
+        #reimbursementContainer .oh-tabs,
+        #reimbursementContainer .oh-sticky-table,
+        #reimbursementContainer .oh-faq-cards,
+        #reimbursementContainer .oh-empty {
+            background: #ffffff;
+            border: 1px solid #dce8df;
+            border-radius: 18px;
+            box-shadow: 0 8px 24px rgba(22, 52, 37, 0.07);
+        }
+        #reimbursementContainer .oh-tabs::before {
+            content: "";
+            display: block;
+            height: 4px;
+            background: linear-gradient(90deg, #6cae95, #2f5752, #8ac4ad);
+        }
+        #reimbursementContainer .oh-tabs {
+            overflow: hidden;
+            box-shadow: 0 12px 30px rgba(22, 52, 37, 0.09);
+        }
+        #reimbursementContainer .oh-tabs__tablist {
+            display: flex;
+            gap: 8px;
+            background: #eaf4ed;
+            border-bottom: 1px solid #dce8df;
+            padding: 10px 12px;
+        }
+        #reimbursementContainer .oh-tabs__tab {
+            color: #315244;
+            font-weight: 700;
+            padding: 13px 18px;
+            white-space: nowrap;
+            border: 0;
+            border-radius: 10px;
+            transition: background .18s ease, color .18s ease;
+        }
+        #reimbursementContainer .oh-tabs__tab--active,
+        #reimbursementContainer .oh-tabs__tab.active {
+            color: #0b754b;
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(22, 52, 37, 0.08);
+        }
+        #reimbursementContainer .oh-tabs__tab:hover {
+            color: #0b754b;
+            background: rgba(255,255,255,.7);
+        }
+        #reimbursementContainer .oh-sticky-table__thead {
+            background: #eaf4ed;
+            color: #234d39;
+        }
+        #reimbursementContainer .oh-sticky-table__th {
+            color: #234d39 !important;
+            font-weight: 800;
+            font-size: 0.78rem;
+        }
+        #reimbursementContainer .oh-sticky-table__td,
+        #reimbursementContainer .oh-sticky-table__sd {
+            color: #3f5147 !important;
+            font-size: 0.82rem;
+            line-height: 1.45;
+        }
+        #reimbursementContainer .oh-sticky-table__td strong,
+        #reimbursementContainer .oh-sticky-table__td b {
+            color: #17241d !important;
+        }
+        #reimbursementContainer .oh-tabs__content {
+            background: #ffffff;
+        }
+        #reimbursementContainer .oh-checkpoint-badge,
+        #reimbursementContainer .oh-filter-tag,
+        #reimbursementContainer .oh-dropdown__link,
+        #reimbursementContainer button,
+        #reimbursementContainer a {
+            color: #315244;
+        }
+        #reimbursementContainer .oh-btn--secondary,
+        #reimbursementContainer .oh-btn--secondary * {
+            color: #ffffff !important;
+        }
+        #reimbursementContainer .oh-dot + * {
+            color: #3f5147 !important;
+        }
+        .oh-wrapper-main:has(#reimbursementContainer) .oh-checkpoint-badge {
+            border-color: #cfe6d6;
+            color: #216344 !important;
+            background: #eaf7ee;
+            border-radius: 999px;
+        }
+        .oh-wrapper-main:has(#reimbursementContainer) .oh-checkpoint-badge--danger,
+        .oh-wrapper-main:has(#reimbursementContainer) .oh-checkpoint-badge.text-danger {
+            color: #a04444 !important;
+            background: #fff1f1;
+            border-color: #f0d0d0;
+        }
+        #reimbursementContainer .oh-sticky-table__tr {
+            border-color: #e7efe9;
+        }
+        #reimbursementContainer .oh-sticky-table__tbody .oh-sticky-table__tr:hover {
+            background: #f3faf5;
+        }
+        #reimbursementContainer .oh-dot {
+            box-shadow: 0 0 0 3px rgba(255,255,255,.85);
+        }
+        #reimbursementContainer .oh-empty {
+            min-height: 300px;
+            padding: 54px 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        #reimbursementContainer .oh-empty__title {
+            color: #21392b !important;
+            font-size: 1.2rem;
+            margin-top: 10px;
+        }
+        #reimbursementContainer .oh-empty .oh-404__image {
+            display: block !important;
+            width: 110px !important;
+            height: 110px !important;
+            object-fit: contain;
+            margin: 0 auto 14px;
+            opacity: .72;
+        }
+        #reimbursementContainer .oh-empty__subtitle {
+            max-width: 420px;
+            text-align: center;
+        }
+        #reimbursementContainer .employee-reimbursement-status {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 82px;
+            padding: 5px 10px;
+            border: 1px solid transparent;
+            border-radius: 999px;
+            font-size: .76rem;
+            font-weight: 800;
+            line-height: 1.1;
+            white-space: nowrap;
+        }
+        #reimbursementContainer .employee-reimbursement-status--requested {
+            background: #e7f1fb !important;
+            border-color: #a9cce9 !important;
+            color: #1565a3 !important;
+        }
+        #reimbursementContainer .employee-reimbursement-status--approved {
+            background: #edf7d9 !important;
+            border-color: #c4df8d !important;
+            color: #557d16 !important;
+        }
+        #reimbursementContainer .employee-reimbursement-status--rejected {
+            background: #fde7e7 !important;
+            border-color: #efb2b2 !important;
+            color: #b42323 !important;
+        }
+        #reimbursementContainer .employee-reimbursement-status--cancelled {
+            background: #eef0f1 !important;
+            border-color: #c9ced1 !important;
+            color: #60686d !important;
+        }
+        #reimbursementContainer .oh-empty__subtitle {
+            color: #718078 !important;
+        }
+        #reimbursementContainer img.oh-404__image {
+            display: block !important;
+            width: 110px !important;
+            height: 110px !important;
+            max-width: 110px !important;
+            object-fit: contain !important;
+            margin: 0 auto 14px !important;
+        }
+        @media (max-width: 640px) {
+            #reimbursementContainer { margin: 0 14px; }
+            #reimbursementContainer .oh-tabs__tab { padding: 11px 10px; font-size: .76rem; }
+        }
         .toggle-highlight {
             background-color: gold;
             transition: background-color 0.5s ease;
@@ -30,11 +248,11 @@
             {% include "filter_tags.html" %}
             <div class="oh-empty">
                 <img
-                    src="{% static 'images/ui/search.svg' %}"
+                    src="{% static 'images/ui/no_records.svg' %}"
                     class="oh-404__image"
                     alt="{% trans 'Page not found. 404.' %}"
                 >
-                <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+                <h2 class="oh-empty__title">{% trans "No Records found." %}</h1>
                 <p class="oh-empty__subtitle">{% trans "There are currently no reimbursement to consider." %}</p>
             </div>
         {% endif %}

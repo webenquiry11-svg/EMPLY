@@ -41,7 +41,7 @@
     {% endif %}
     <!-- end of messages -->
 
-    <div class="oh-modal__dialog-header">
+    <div class="oh-modal__dialog-header employee-asset-update">
         {% if messages %}
             {% if asset_under == 'asset_filter' %}
                 <button
@@ -87,7 +87,7 @@
             <h5>{% trans "Update" %} {{ asset_form.verbose_name }}</h5>
         </span>
     </div>
-    <div class="oh-modal__dialog-body">
+    <div class="oh-modal__dialog-body employee-asset-update">
         <form
             hx-post="{%url 'asset-update' asset_id=asset_form.instance.id %}?requests_ids={{requests_ids}}&{{pg}}"
             hx-target="#objectUpdateModalTarget"

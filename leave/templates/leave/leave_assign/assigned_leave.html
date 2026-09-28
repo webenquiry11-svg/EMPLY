@@ -1,6 +1,83 @@
 {% load i18n %}
 {% load static %}
 {% load basefilters %}
+<style>
+    #ot-table,
+    #ot-table .oh-sticky-table,
+    #ot-table .oh-sticky-table__table,
+    #ot-table .oh-sticky-table__thead,
+    #ot-table .oh-sticky-table__tbody,
+    #ot-table .oh-sticky-table__tr,
+    #ot-table .oh-sticky-table__th,
+    #ot-table .oh-sticky-table__td,
+    #ot-table .oh-sticky-table__sd,
+    #ot-table .oh-pagination,
+    #ot-table .oh-pagination__item,
+    #ot-table .oh-pagination__link,
+    #ot-table .oh-pagination__input,
+    #ot-table .oh-pagination__nav,
+    #ot-table .oh-dropdown__menu,
+    #ot-table .oh-dropdown__item,
+    #ot-table .oh-sticky-dropdown_btn {
+        background: #161f18 !important;
+        background-color: #161f18 !important;
+        color: #ffffff !important;
+        border-color: rgba(255,255,255,0.08) !important;
+    }
+
+    #ot-table .oh-sticky-table__thead .oh-sticky-table__th,
+    #ot-table .oh-sticky-table__th:first-child,
+    #ot-table .oh-sticky-table__sd {
+        background: #1d2a22 !important;
+        background-color: #1d2a22 !important;
+        color: #d1e7dd !important;
+        font-weight: 700;
+    }
+
+    #ot-table .oh-sticky-table__td,
+    #ot-table .oh-sticky-table__tr,
+    #ot-table .oh-pagination__label,
+    #ot-table .oh-pagination__page,
+    #ot-table .oh-pagination__input,
+    #ot-table .oh-pagination__link,
+    #ot-table .oh-profile__name,
+    #ot-table .oh-dropdown__link,
+    #ot-table .oh-dropdown__items,
+    #ot-table .oh-dropdown__item {
+        color: #ffffff !important;
+    }
+
+    #ot-table .oh-sticky-table__tr:hover,
+    #ot-table .oh-pagination__link:hover,
+    #ot-table .oh-dropdown__item:hover {
+        background: rgba(45, 90, 63, 0.18) !important;
+    }
+
+    #ot-table .oh-btn,
+    #ot-table .oh-input,
+    #ot-table select,
+    #ot-table input,
+    #ot-table textarea,
+    #ot-table .oh-pagination__input,
+    #ot-table .oh-sticky-dropdown_btn {
+        background: rgba(22,31,24,0.85) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255,255,255,0.08) !important;
+        border-radius: 10px !important;
+    }
+
+    #ot-table .oh-btn-group .oh-btn,
+    #ot-table .oh-btn--light-bkg,
+    #ot-table .oh-btn--danger-outline {
+        background: rgba(22,31,24,0.85) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255,255,255,0.08) !important;
+    }
+
+    #ot-table .oh-sticky-table__tbody .oh-sticky-table__tr:nth-child(even) {
+        background: rgba(255,255,255,0.02) !important;
+    }
+</style>
 <!-- Sticky Table -->
 {% include 'filter_tags.html' %}
 {% if messages %}

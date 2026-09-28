@@ -64,7 +64,7 @@
                                         {{ req.get_type_display }}
                                     </div> {% endcomment %}
                                         <div
-                                            class="loan-type"
+                                            class="loan-type employee-reimbursement-status employee-reimbursement-status--{{ req.status }}"
                                             style='display: inline;
                                         {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "rejected" %}
                                         background:#ff45002e;{% endif %}'
@@ -354,7 +354,7 @@
                                         {{ req.get_type_display }}
                                     </div> {% endcomment %}
                                         <div
-                                            class="loan-type"
+                                            class="loan-type employee-reimbursement-status employee-reimbursement-status--{{ req.status }}"
                                             style='display: inline;
                                         {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "rejected" %}
                                         background:#ff45002e;{% endif %}'
@@ -641,7 +641,7 @@
                                         {{ req.get_type_display }}
                                     </div> {% endcomment %}
                                         <div
-                                            class="loan-type"
+                                            class="loan-type employee-reimbursement-status employee-reimbursement-status--{{ req.status }}"
                                             style='display: inline;
                                         {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "rejected" %}
                                         background:#ff45002e;{% endif %}'

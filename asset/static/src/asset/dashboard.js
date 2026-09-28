@@ -1,8 +1,22 @@
 staticUrl = $("#statiUrl").attr("data-url");
 $(document).ready(function () {
+    function themeAssetDataset(dataSet) {
+        const palette = ["#2d5a3f", "#8c9e90", "#d1e7dd", "#3f7654", "#6f8978"];
+        return {
+            ...dataSet,
+            dataset: dataSet.dataset.map((dataset) => ({
+                ...dataset,
+                backgroundColor: dataSet.labels.map((_, index) => palette[index % palette.length]),
+                borderColor: "#161f18",
+                borderWidth: 2,
+            })),
+        };
+    }
+
     function available_asset_chart(dataSet) {
         var Asset_available_chart = document.getElementById("assetAvailableChart");
         if (Asset_available_chart) {
+            dataSet = themeAssetDataset(dataSet);
             var assetAvailableChartChart = new Chart(Asset_available_chart, {
                 type: "pie",
                 data: {
@@ -23,6 +37,7 @@ $(document).ready(function () {
     function asset_category_chart(dataSet) {
         var Asset_category_chart = document.getElementById("assetCategoryChart");
         if (Asset_category_chart) {
+            dataSet = themeAssetDataset(dataSet);
             var assetCategoryChart = new Chart(Asset_category_chart, {
                 type: "bar",
                 data: {

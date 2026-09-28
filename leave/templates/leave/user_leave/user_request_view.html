@@ -1,7 +1,238 @@
-{% extends 'index.html' %}
+﻿{% extends 'index.html' %}
 {% block content %}
     {% load static %}
     {% load i18n %}
+    <style>
+        html:has(#userRequest),
+        body:has(#userRequest),
+        .oh-wrapper-main:has(#userRequest) {
+            background: #f5f7f3 !important;
+        }
+
+        .oh-wrapper-main:has(#userRequest) > #main {
+            background: #f5f7f3 !important;
+        }
+
+        .oh-wrapper-main:has(#userRequest) .employee-leave-status {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 92px;
+            padding: 6px 10px;
+            border: 1px solid transparent;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 800;
+            line-height: 1.1;
+            white-space: nowrap;
+        }
+
+        .oh-wrapper-main:has(#userRequest) .employee-leave-status--requested {
+            background: #e7f1fb;
+            border-color: #a9cce9;
+            color: #1565a3;
+        }
+
+        .oh-wrapper-main:has(#userRequest) .employee-leave-status--approved {
+            background: #edf7d9;
+            border-color: #c4df8d;
+            color: #557d16;
+        }
+
+        .oh-wrapper-main:has(#userRequest) .employee-leave-status--cancelled {
+            background: #eef0f1;
+            border-color: #c9ced1;
+            color: #60686d;
+        }
+
+        .oh-wrapper-main:has(#userRequest) .employee-leave-status--rejected {
+            background: #fde7e7;
+            border-color: #efb2b2;
+            color: #b42323;
+        }
+
+        .oh-wrapper-main:has(#userRequest) .oh-main__topbar,
+        .oh-wrapper-main:has(#userRequest) #userRequest,
+        .oh-wrapper-main:has(#userRequest) #userRequest .oh-sticky-table {
+            background: #ffffff;
+            border: 1px solid #d1e7dd;
+            border-radius: 18px;
+            box-shadow: 0 10px 26px rgba(18, 61, 44, 0.08);
+        }
+
+        .oh-wrapper-main:has(#userRequest) .oh-main__topbar {
+            margin-bottom: 16px;
+            padding: 18px 22px;
+        }
+
+        .oh-wrapper-main:has(#userRequest) #userRequest::before {
+            content: "";
+            display: block;
+            height: 4px;
+            margin: -18px -18px 16px;
+            background: linear-gradient(90deg, #6cae95, #2f5752, #8ac4ad);
+        }
+
+        .oh-wrapper-main:has(#userRequest) .oh-main__titlebar-search-toggle {
+            color: #2f5752 !important;
+        }
+
+        .oh-wrapper-main:has(#userRequest) .oh-input__search-group {
+            min-width: 230px;
+        }
+
+        .oh-wrapper-main:has(#userRequest) #userRequest > .d-flex {
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            margin: -2px 0 14px !important;
+            border: 1px solid #d1e7dd;
+            border-radius: 12px;
+            background: #f4faf6;
+        }
+
+        .oh-wrapper-main:has(#userRequest) #userRequest > .d-flex > span {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 9px;
+            border-radius: 999px;
+            color: #294b47;
+            font-size: 0.8rem;
+            font-weight: 700;
+            transition: background 160ms ease, transform 160ms ease;
+        }
+
+        .oh-wrapper-main:has(#userRequest) #userRequest > .d-flex > span:hover {
+            background: #e1f0e7;
+            transform: translateY(-1px);
+        }
+
+        .oh-wrapper-main:has(#userRequest) #userRequest .oh-checkpoint-badge {
+            border-radius: 999px;
+            font-weight: 700;
+        }
+
+        .oh-wrapper-main:has(#userRequest) .oh-main__titlebar-title {
+            color: #244943;
+            font-size: 1.45rem;
+        }
+
+        .oh-wrapper-main:has(#userRequest) .oh-btn {
+            border: 1px solid #2f5752 !important;
+            border-radius: 11px !important;
+            background: #2f5752 !important;
+            color: #ffffff !important;
+            font-weight: 700;
+            box-shadow: 0 6px 14px rgba(47, 87, 82, 0.16);
+        }
+
+        .oh-wrapper-main:has(#userRequest) .oh-btn:hover {
+            background: #244943 !important;
+            transform: translateY(-1px);
+        }
+
+        .oh-wrapper-main:has(#userRequest) .oh-input,
+        .oh-wrapper-main:has(#userRequest) .oh-select,
+        .oh-wrapper-main:has(#userRequest) input,
+        .oh-wrapper-main:has(#userRequest) select {
+            border-color: rgba(47, 87, 82, 0.2) !important;
+            border-radius: 10px !important;
+            background: #ffffff !important;
+            color: #123d2c !important;
+        }
+
+        .oh-wrapper-main:has(#userRequest) #userRequest {
+            padding: 18px;
+            color: #294b47;
+        }
+
+        .oh-wrapper-main:has(#userRequest) #userRequest .oh-sticky-table {
+            overflow: hidden;
+            border: 0;
+            box-shadow: none;
+            border-radius: 14px;
+        }
+
+        .oh-wrapper-main:has(#userRequest) #userRequest .oh-sticky-table__thead {
+            background: #2f5752;
+        }
+
+        .oh-wrapper-main:has(#userRequest) #userRequest .oh-sticky-table__th {
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .oh-wrapper-main:has(#userRequest) #userRequest .oh-sticky-table__tr {
+            border-bottom: 1px solid #e1eee7;
+        }
+
+        .oh-wrapper-main:has(#userRequest) #userRequest .oh-sticky-table__tbody .oh-sticky-table__tr {
+            background: #ffffff;
+            color: #294b47;
+            transition: background 160ms ease, transform 160ms ease;
+        }
+
+        .oh-wrapper-main:has(#userRequest) #userRequest .oh-sticky-table__tbody .oh-sticky-table__tr:hover {
+            background: #f0f8f3;
+            transform: translateX(2px);
+        }
+
+        .oh-wrapper-main:has(#userRequest) #userRequest .oh-sticky-table__td {
+            color: #294b47;
+            font-weight: 600;
+        }
+
+        .oh-wrapper-main:has(#userRequest) #userRequest .oh-sticky-table__td .oh-btn {
+            min-height: 38px;
+            padding: 7px 10px !important;
+            box-shadow: none;
+            font-size: 0.8rem;
+        }
+
+        .oh-wrapper-main:has(#userRequest) #userRequest .oh-sticky-table__td .oh-btn--light,
+        .oh-wrapper-main:has(#userRequest) #userRequest .oh-sticky-table__td .oh-btn--light-bkg {
+            border-color: #c5ddd1 !important;
+            background: #eef7f1 !important;
+            color: #294b47 !important;
+        }
+
+        .oh-wrapper-main:has(#userRequest) #userRequest .oh-profile__image {
+            border: 2px solid #d1e7dd;
+            box-shadow: 0 3px 8px rgba(18, 61, 44, 0.12);
+        }
+
+        .oh-wrapper-main:has(#userRequest) #userRequest .oh-text--dark,
+        .oh-wrapper-main:has(#userRequest) #userRequest .oh-sticky-table__sd {
+            color: #294b47 !important;
+        }
+
+        .oh-wrapper-main:has(#userRequest) #userRequest .oh-empty {
+            padding: 64px 24px;
+            border: 1px solid #d1e7dd;
+            border-radius: 18px;
+            background: #ffffff;
+            color: #294b47;
+        }
+
+        @media (max-width: 768px) {
+            .oh-wrapper-main:has(#userRequest) .oh-main__topbar {
+                padding: 14px;
+            }
+
+            .oh-wrapper-main:has(#userRequest) #userRequest {
+                padding: 10px;
+            }
+
+            .oh-wrapper-main:has(#userRequest) #userRequest > .d-flex {
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
+
+            .oh-wrapper-main:has(#userRequest) .oh-input__search-group {
+                min-width: 0;
+            }
+        }
+    </style>
     <style>
         .diff-cell {
             background: rgba(255, 166, 0, 0.158);
@@ -23,7 +254,7 @@
             overflow: hidden; /* Hides any overflowed content */
             transform: translateX(5%);
             border-radius: 6px;
-            background-color: hsl(8, 77%, 56%);
+            background-color: #01231a;
             color: white;
             font-size: 15px;
             text-align: center;
@@ -35,6 +266,316 @@
         .tooltip:hover .tooltiptext {
             visibility: visible;
             opacity: 1;
+        }
+
+        /* Final light teal theme for the complete My Leave Requests page. */
+        html:has(#userRequest),
+        body:has(#userRequest),
+        .oh-wrapper-main:has(#userRequest),
+        .oh-wrapper-main:has(#userRequest) > #main {
+            background: #e8f5f7 !important;
+        }
+
+        body:has(#userRequest) .oh-main__topbar,
+        body:has(#userRequest) #userRequest,
+        body:has(#userRequest) .oh-scrollable-container {
+            border: 1px solid rgba(39, 141, 160, 0.2) !important;
+            border-radius: 20px !important;
+            background: #f8fcfd !important;
+            box-shadow: 0 14px 32px rgba(10, 77, 96, 0.1) !important;
+        }
+
+        body:has(#userRequest) .oh-main__topbar {
+            padding: 20px 24px !important;
+        }
+
+        body:has(#userRequest) .oh-main__titlebar-title {
+            color: #0a4d60 !important;
+            font-size: 1.55rem !important;
+            font-weight: 800 !important;
+        }
+
+        body:has(#userRequest) .oh-main__titlebar-button-container .oh-btn,
+        body:has(#userRequest) .oh-main__topbar .oh-btn {
+            border: 1px solid #176f80 !important;
+            border-radius: 11px !important;
+            background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+            color: #ffffff !important;
+            box-shadow: 0 7px 16px rgba(10, 77, 96, 0.16) !important;
+        }
+
+        body:has(#userRequest) .oh-input__search-group,
+        body:has(#userRequest) .oh-input__search-group .oh-input {
+            border-color: rgba(39, 141, 160, 0.24) !important;
+            border-radius: 12px !important;
+            background: #ffffff !important;
+            color: #285d6b !important;
+        }
+
+        body:has(#userRequest) .oh-scrollable-container {
+            width: calc(100% - 40px) !important;
+            max-width: none !important;
+            margin: 18px 20px !important;
+            padding: 12px 14px !important;
+            overflow-x: auto;
+        }
+
+        body:has(#userRequest) .oh-scrollable-container .oh-layout--grid-3 {
+            display: flex !important;
+            gap: 16px;
+            width: 100%;
+            margin: 0 !important;
+        }
+
+        body:has(#userRequest) .oh-scrollable-container .oh-kanban-card {
+            flex: 1 1 0;
+            width: auto !important;
+            min-width: 0;
+            min-height: 164px;
+            margin: 0 !important;
+            padding: 16px !important;
+            border: 1px solid rgba(39, 141, 160, 0.2) !important;
+            border-top: 4px solid #278da0 !important;
+            border-radius: 17px !important;
+            background: #ffffff !important;
+            box-shadow: 0 8px 18px rgba(10, 77, 96, 0.08) !important;
+        }
+
+        body:has(#userRequest) .oh-kanban-card__profile-container {
+            border: 0 !important;
+            background: #d8edf1 !important;
+        }
+
+        body:has(#userRequest) .oh-kanban-card__profile-image {
+            border: 3px solid #ffffff !important;
+        }
+
+        body:has(#userRequest) .oh-kanban-card__title {
+            color: #173f50 !important;
+            font-weight: 800 !important;
+        }
+
+        body:has(#userRequest) .oh-kanban-card__subtitle {
+            color: #557b84 !important;
+            line-height: 1.35 !important;
+        }
+
+        body:has(#userRequest) #userRequest {
+            margin-top: 18px !important;
+            padding: 16px !important;
+            border-top: 5px solid #278da0 !important;
+        }
+
+        body:has(#userRequest) #userRequest::before {
+            display: none !important;
+            content: none !important;
+        }
+
+        body:has(#userRequest) #userRequest > .d-flex {
+            border-color: rgba(39, 141, 160, 0.18) !important;
+            background: #eef8f8 !important;
+        }
+
+        body:has(#userRequest) #userRequest > .d-flex > span {
+            color: #285d6b !important;
+        }
+
+        body:has(#userRequest) #userRequest .oh-checkpoint-badge {
+            border: 1px solid rgba(39, 141, 160, 0.3);
+            background: #ffffff;
+            color: #176f80 !important;
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table {
+            border: 1px solid rgba(39, 141, 160, 0.16) !important;
+            border-radius: 15px !important;
+            background: #ffffff !important;
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table__thead {
+            background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table__th {
+            border-color: rgba(199, 229, 235, 0.28) !important;
+            color: #ffffff !important;
+            font-weight: 750 !important;
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table__tbody .oh-sticky-table__tr {
+            border-color: rgba(39, 141, 160, 0.14) !important;
+            background: #ffffff !important;
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table__tbody .oh-sticky-table__tr:hover {
+            background: #f1fafb !important;
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table__td {
+            border-color: rgba(39, 141, 160, 0.12) !important;
+            color: #285d6b !important;
+        }
+
+        body:has(#userRequest) #userRequest .oh-profile__name,
+        body:has(#userRequest) #userRequest .oh-text--dark {
+            color: #173f50 !important;
+        }
+
+        body:has(#userRequest) #userRequest .oh-profile__image {
+            border: 2px solid #b9dce4 !important;
+        }
+
+        body:has(#userRequest) #userRequest .employee-leave-status--requested {
+            background: #e7f1fb !important;
+            border-color: #a9cce9 !important;
+            color: #1565a3 !important;
+        }
+
+        body:has(#userRequest) #userRequest .employee-leave-status--approved {
+            background: #edf7d9 !important;
+            border-color: #c4df8d !important;
+            color: #557d16 !important;
+        }
+
+        body:has(#userRequest) #userRequest .employee-leave-status--cancelled {
+            background: #eef0f1 !important;
+            border-color: #c9ced1 !important;
+            color: #60686d !important;
+        }
+
+        body:has(#userRequest) #userRequest .employee-leave-status--rejected {
+            background: #fde7e7 !important;
+            border-color: #efb2b2 !important;
+            color: #b42323 !important;
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table__td .oh-btn {
+            border-radius: 10px !important;
+            font-weight: 700 !important;
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table__td .oh-btn--light,
+        body:has(#userRequest) #userRequest .oh-sticky-table__td .oh-btn--light-bkg {
+            border-color: #b9dce4 !important;
+            background: #eef8f8 !important;
+            color: #176f80 !important;
+        }
+
+        body:has(#userRequest) .oh-btn,
+        body:has(#userRequest) #userRequest .oh-sticky-table__td .oh-btn {
+            transition: background 160ms ease, border-color 160ms ease, color 160ms ease,
+                box-shadow 160ms ease, transform 160ms ease !important;
+        }
+
+        body:has(#userRequest) .oh-btn:hover,
+        body:has(#userRequest) .oh-btn:focus-visible,
+        body:has(#userRequest) #userRequest .oh-sticky-table__td .oh-btn:hover,
+        body:has(#userRequest) #userRequest .oh-sticky-table__td .oh-btn:focus-visible {
+            border-color: #0a4d60 !important;
+            background: linear-gradient(110deg, #0a4d60, #176f80) !important;
+            color: #ffffff !important;
+            box-shadow: 0 8px 18px rgba(10, 77, 96, 0.22) !important;
+            transform: translateY(-1px);
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table__td .oh-btn--light:hover,
+        body:has(#userRequest) #userRequest .oh-sticky-table__td .oh-btn--light-bkg:hover {
+            border-color: #278da0 !important;
+            background: #d8edf1 !important;
+            color: #0a4d60 !important;
+            box-shadow: 0 5px 12px rgba(10, 77, 96, 0.12) !important;
+        }
+
+        body:has(#userRequest) .oh-main__topbar .oh-btn:hover,
+        body:has(#userRequest) .oh-main__topbar .oh-btn:focus-visible,
+        body:has(#userRequest) #userRequest .oh-sticky-table__td .oh-btn:hover,
+        body:has(#userRequest) #userRequest .oh-sticky-table__td .oh-btn:focus-visible {
+            border-color: #0a4d60 !important;
+            background: #0a4d60 !important;
+            color: #ffffff !important;
+            box-shadow: 0 8px 18px rgba(10, 77, 96, 0.28) !important;
+            transform: translateY(-2px);
+        }
+
+        body:has(#userRequest) #objectDetailsModalW25 .oh-modal__dialog {
+            overflow: hidden;
+            border: 1px solid rgba(39, 141, 160, 0.24) !important;
+            border-radius: 20px !important;
+            background: #f8fcfd !important;
+            box-shadow: 0 22px 50px rgba(10, 77, 96, 0.24) !important;
+        }
+
+        body:has(#userRequest) #objectDetailsModalW25Target > .oh-modal__dialog-header {
+            margin: 0 !important;
+            border: 0 !important;
+            background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+            color: #ffffff !important;
+        }
+
+        body:has(#userRequest) #objectDetailsModalW25Target > .oh-modal__dialog-header .oh-modal__dialog-title {
+            color: #ffffff !important;
+            font-weight: 800 !important;
+        }
+
+        body:has(#userRequest) #objectDetailsModalW25Target > .oh-modal__dialog-header .oh-modal__close,
+        body:has(#userRequest) #objectDetailsModalW25Target > .oh-modal__dialog-header .oh-modal__close--custom {
+            border: 1px solid rgba(255, 255, 255, 0.45) !important;
+            border-radius: 50% !important;
+            background: rgba(255, 255, 255, 0.12) !important;
+            color: #ffffff !important;
+        }
+
+        body:has(#userRequest) #objectDetailsModalW25Target > .oh-modal__dialog-header .oh-modal__close:hover,
+        body:has(#userRequest) #objectDetailsModalW25Target > .oh-modal__dialog-header .oh-modal__close--custom:hover {
+            background: #ffffff !important;
+            color: #0a4d60 !important;
+        }
+
+        body:has(#userRequest) #objectDetailsModalW25Target > .oh-modal__dialog-body {
+            padding: 18px !important;
+            background: #eef8f8 !important;
+        }
+
+        body:has(#userRequest) #objectDetailsModalW25Target > .oh-modal__dialog-body > .oh-modal__dialog-header {
+            margin: 0 0 14px !important;
+            padding: 0 !important;
+            border: 0 !important;
+            background: transparent !important;
+        }
+
+        body:has(#userRequest) #objectDetailsModalW25 .oh-timeoff-modal__profile-content {
+            display: block;
+            margin-bottom: 14px;
+            padding: 14px !important;
+            border: 1px solid #c7e5eb !important;
+            border-radius: 15px !important;
+            background: #ffffff !important;
+            box-shadow: 0 6px 14px rgba(10, 77, 96, 0.08) !important;
+        }
+
+        body:has(#userRequest) #objectDetailsModalW25 .oh-timeoff-modal__profile-info {
+            color: #285d6b !important;
+        }
+
+        body:has(#userRequest) #objectDetailsModalW25 .oh-timeoff-modal__stats-container {
+            gap: 14px !important;
+        }
+
+        body:has(#userRequest) #objectDetailsModalW25 .oh-timeoff-modal__stat {
+            border: 1px solid #c7e5eb !important;
+            border-radius: 14px !important;
+            background: #ffffff !important;
+            box-shadow: 0 5px 12px rgba(10, 77, 96, 0.06) !important;
+        }
+
+        body:has(#userRequest) #objectDetailsModalW25 .oh-timeoff-modal__stat-title {
+            color: #557b84 !important;
+            font-weight: 700 !important;
+        }
+
+        body:has(#userRequest) #objectDetailsModalW25 .oh-timeoff-modal__stat-count {
+            color: #173f50 !important;
+            font-weight: 800 !important;
         }
     </style>
 
@@ -289,7 +830,7 @@
                         class="oh-404__image"
                         alt="{% trans 'Page not found. 404.' %}"
                     >
-                    <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+                    <h2 class="oh-empty__title">{% trans "No Records found." %}</h1>
                     <p class="oh-empty__subtitle">{% trans "There are no leave requests at the moment." %}</p>
                 </div>
             </div>

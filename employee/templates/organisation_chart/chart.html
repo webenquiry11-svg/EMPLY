@@ -1,4 +1,202 @@
 {% load i18n %}
+<style>
+    html:has(#chart_target),
+    body:has(#chart_target),
+    .oh-wrapper-main:has(#chart_target),
+    .oh-wrapper-main:has(#chart_target) > #main {
+        background: #e8f5f7 !important;
+    }
+
+    .oh-wrapper-main:has(#chart_target) .oh-main__topbar {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        margin: 0 38px 20px;
+        padding: 24px 30px 22px;
+        background: linear-gradient(120deg, #f8fcfd, #ffffff);
+        border: 1px solid rgba(39, 141, 160, 0.2);
+        border-radius: 22px;
+        box-shadow: 0 14px 32px rgba(10, 77, 96, 0.1);
+        overflow: hidden;
+    }
+
+    .oh-wrapper-main:has(#chart_target) .oh-main__titlebar--left {
+        display: flex;
+        flex: 1 1 auto;
+        gap: 18px;
+        min-width: 0;
+        align-items: center;
+    }
+
+    .oh-wrapper-main:has(#chart_target) .oh-main__titlebar--right {
+        flex: 0 0 auto;
+        margin: 0;
+    }
+
+    .oh-wrapper-main:has(#chart_target) .oh-main__titlebar--left > div {
+        display: flex !important;
+        align-items: center;
+        gap: 18px;
+        min-width: 0;
+    }
+
+    .oh-wrapper-main:has(#chart_target) .oh-main__topbar::before {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto;
+        height: 5px;
+        background: linear-gradient(90deg, #0a4d60, #278da0, #8acbd5);
+    }
+
+    .oh-wrapper-main:has(#chart_target) .oh-main__titlebar-title {
+        margin: 0;
+        color: #0a4d60 !important;
+        font-size: 1.65rem;
+        font-weight: 800;
+        line-height: 1.2;
+        white-space: nowrap;
+    }
+
+    .oh-wrapper-main:has(#chart_target) #mangerSelect,
+    .oh-wrapper-main:has(#chart_target) #key-word {
+        min-height: 42px;
+        border: 1px solid rgba(39, 141, 160, 0.24) !important;
+        border-radius: 12px !important;
+        background: #ffffff !important;
+        color: #173f50 !important;
+        box-shadow: 0 4px 12px rgba(10, 77, 96, 0.05);
+    }
+
+    .oh-wrapper-main:has(#chart_target) #mangerSelect {
+        min-width: 205px;
+        margin: 0;
+        padding: 0 12px;
+    }
+
+    .oh-wrapper-main:has(#chart_target) #key-word {
+        width: 300px;
+        min-height: 42px;
+        border-radius: 10px !important;
+    }
+
+    .oh-wrapper-main:has(#chart_target) .oh-main__titlebar-search-toggle {
+        display: none;
+    }
+
+    .oh-wrapper-main:has(#chart_target) #chart_target {
+        margin: 0 38px;
+        padding: 0;
+    }
+
+    .oh-wrapper-main:has(#chart_target) #chart-container {
+        min-height: 560px;
+        margin: 0;
+        overflow: auto;
+        border: 1px solid rgba(39, 141, 160, 0.2);
+        border-radius: 22px;
+        background: #ffffff;
+        box-shadow: 0 14px 32px rgba(10, 77, 96, 0.1);
+    }
+
+    .oh-wrapper-main:has(#chart_target) #chart-container .orgchart {
+        background: #ffffff !important;
+        width: max-content !important;
+        min-width: 460px;
+        margin: 0 auto !important;
+        padding: 48px 54px 64px;
+    }
+
+    .oh-wrapper-main:has(#chart_target) #chart-container .node {
+        border: 1px solid rgba(39, 141, 160, 0.28) !important;
+        border-radius: 14px;
+        background: #ffffff !important;
+        box-shadow: 0 8px 18px rgba(10, 77, 96, 0.1);
+        overflow: hidden;
+    }
+
+    .oh-wrapper-main:has(#chart_target) #chart-container .node .title {
+        height: auto;
+        min-height: 28px;
+        padding: 6px 9px;
+        border-radius: 10px 10px 0 0;
+        background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+        color: #ffffff !important;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .oh-wrapper-main:has(#chart_target) #chart-container .node .content {
+        height: auto;
+        min-height: 30px;
+        padding: 7px 9px;
+        border: 0;
+        border-radius: 0 0 10px 10px;
+        background: #e8f5f7 !important;
+        color: #285d6b !important;
+        line-height: 1.25;
+    }
+
+    .oh-wrapper-main:has(#chart_target) #chart-container .node:hover {
+        border-color: #278da0 !important;
+        box-shadow: 0 10px 22px rgba(10, 77, 96, 0.18);
+    }
+
+    .oh-wrapper-main:has(#chart_target) #chart-container .orgchart .edge,
+    .oh-wrapper-main:has(#chart_target) #chart-container .orgchart .lines *,
+    .oh-wrapper-main:has(#chart_target) #chart-container .orgchart .topLine,
+    .oh-wrapper-main:has(#chart_target) #chart-container .orgchart .leftLine,
+    .oh-wrapper-main:has(#chart_target) #chart-container .orgchart .rightLine,
+    .oh-wrapper-main:has(#chart_target) #chart-container .orgchart .downLine {
+        color: #72b8c5 !important;
+        border-color: #72b8c5 !important;
+        background-color: #72b8c5 !important;
+    }
+
+    .oh-wrapper-main:has(#chart_target) #chart-container .lines,
+    .oh-wrapper-main:has(#chart_target) #chart-container .topLine,
+    .oh-wrapper-main:has(#chart_target) #chart-container .leftLine,
+    .oh-wrapper-main:has(#chart_target) #chart-container .rightLine,
+    .oh-wrapper-main:has(#chart_target) #chart-container .downLine {
+        border-color: #9bcfd7 !important;
+        background-color: #9bcfd7 !important;
+    }
+
+    @media (max-width: 768px) {
+        .oh-wrapper-main:has(#chart_target) .oh-main__topbar,
+        .oh-wrapper-main:has(#chart_target) #chart_target {
+            margin-left: 14px;
+            margin-right: 14px;
+        }
+
+        .oh-wrapper-main:has(#chart_target) .oh-main__topbar {
+            padding: 14px;
+            display: block;
+        }
+
+        .oh-wrapper-main:has(#chart_target) .oh-main__titlebar--left,
+        .oh-wrapper-main:has(#chart_target) .oh-main__titlebar--left > div {
+            display: block !important;
+        }
+
+        .oh-wrapper-main:has(#chart_target) .oh-main__titlebar-title {
+            margin-bottom: 12px;
+            white-space: normal;
+        }
+
+        .oh-wrapper-main:has(#chart_target) #mangerSelect {
+            width: 100%;
+        }
+
+        .oh-wrapper-main:has(#chart_target) #key-word {
+            width: 100%;
+        }
+
+        .oh-wrapper-main:has(#chart_target) .oh-main__titlebar--right {
+            margin-top: 14px;
+        }
+    }
+</style>
 <div class="oh-main__org-chart-container" id="chart-container"></div>
 </div >
 
@@ -49,7 +247,7 @@
         'data': datascource,
         'visibleLevel': 2,
         'nodeContent': 'title',
-        'direction': 'l2r'
+        'direction': 't2b'
     });
     $('#key-word').on('keyup', function (event) {
         if (event.which === 13) {

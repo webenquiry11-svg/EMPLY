@@ -2,8 +2,44 @@
 {% load static %}
 {% include 'filter_tags.html' %}
 <style>
+    .employee-attendance-status-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 18px;
+        justify-content: flex-start;
+        margin: 0 0 18px;
+        padding: 12px 16px;
+        border-radius: 14px;
+        background: #ffffff;
+        box-shadow: 0 6px 18px rgba(47, 87, 82, 0.1);
+    }
+    .employee-attendance-status-legend > span {
+        display: inline-flex;
+        align-items: center;
+        color: #244942;
+        font-size: 0.8rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+    .employee-attendance-status {
+        display: inline-flex;
+        align-items: center;
+        width: fit-content;
+        margin-top: 4px;
+        padding: 3px 8px;
+        border-radius: 999px;
+        color: #ffffff !important;
+        font-size: 0.66rem;
+        font-weight: 800;
+        line-height: 1.2;
+        white-space: nowrap;
+    }
+    .employee-attendance-status--approved { background: #182ee8; }
+    .employee-attendance-status--validated { background: #0b9b37; }
+    .employee-attendance-status--requested { background: #1565a3; }
+    .employee-attendance-status--not-validated { background: #e52b35; }
     .row-status--orange {
-        border-left: 4px solid orange;
+        border-left: 4px solid #1565A3;
         border-radius: 5px;
     }
     .row-status--red {
@@ -18,10 +54,98 @@
         border-left: 4px solid rgb(16, 56, 235);
         border-radius: 5px;
     }
+
+    /* Employee dashboard theme overrides for attendance surfaces. */
+    .oh-wrapper-main.employee-panel-theme .employee-attendance-status-legend {
+        background: #ffffff !important;
+        border: 1px solid rgba(42, 132, 155, 0.18) !important;
+        box-shadow: 0 6px 18px rgba(10, 77, 96, 0.1) !important;
+    }
+
+    .oh-wrapper-main.employee-panel-theme .employee-attendance-status-legend > span {
+        color: #285d6b !important;
+    }
+
+    .oh-wrapper-main.employee-panel-theme .employee-attendance-status--approved {
+        background: #4f67d8 !important;
+    }
+
+    .oh-wrapper-main.employee-panel-theme .employee-attendance-status--validated {
+        background: #278da0 !important;
+    }
+
+    .oh-wrapper-main.employee-panel-theme .employee-attendance-status--requested {
+        background: #d8892f !important;
+    }
+
+    .oh-wrapper-main.employee-panel-theme .employee-attendance-status--not-validated {
+        background: #c45167 !important;
+    }
+
+    .oh-wrapper-main.employee-panel-theme .oh-sticky-table__thead,
+    .oh-wrapper-main.employee-panel-theme .oh-sticky-table__thead > .oh-sticky-table__tr,
+    .oh-wrapper-main.employee-panel-theme .oh-sticky-table__thead .oh-sticky-table__th {
+        background: linear-gradient(110deg, #d8edf1, #b8dfe6) !important;
+        color: #173f50 !important;
+        border-color: rgba(23, 111, 128, 0.18) !important;
+    }
+
+    .oh-wrapper-main.employee-panel-theme .oh-sticky-table__thead .oh-sticky-table__th::before,
+    .oh-wrapper-main.employee-panel-theme .oh-sticky-table__thead .oh-sticky-table__th::after {
+        color: #176f80 !important;
+    }
+
+    .oh-wrapper-main.employee-panel-theme .row-status--blue {
+        border-left-color: #4f67d8 !important;
+    }
+
+    .oh-wrapper-main.employee-panel-theme .row-status--green {
+        border-left-color: #278da0 !important;
+    }
+
+    .oh-wrapper-main.employee-panel-theme .row-status--orange {
+        border-left-color: #d8892f !important;
+    }
+
+    .oh-wrapper-main.employee-panel-theme .row-status--red {
+        border-left-color: #c45167 !important;
+    }
+
+    .oh-wrapper-main.employee-panel-theme .employee-attendance-status-legend > span:nth-child(1) .oh-dot {
+        background-color: #4f67d8 !important;
+    }
+
+    .oh-wrapper-main.employee-panel-theme .employee-attendance-status-legend > span:nth-child(2) .oh-dot {
+        background-color: #d8892f !important;
+    }
+
+    .oh-wrapper-main.employee-panel-theme .employee-attendance-status-legend > span:nth-child(3) .oh-dot {
+        background-color: #c45167 !important;
+    }
+
+    .oh-wrapper-main.employee-panel-theme .employee-attendance-status-legend > span:nth-child(4) .oh-dot {
+        background-color: #278da0 !important;
+    }
+
+    .oh-wrapper-main.employee-panel-theme #objectDetailsModalW25Target,
+    .oh-wrapper-main.employee-panel-theme #objectDetailsModalW25Target .oh-modal__dialog-body,
+    .oh-wrapper-main.employee-panel-theme #objectDetailsModalW25Target .oh-modal__body,
+    .oh-wrapper-main.employee-panel-theme #objectDetailsModalW25Target .oh-modal__dialog-content {
+        background: #f4fbfc !important;
+        background-image: none !important;
+        color: #173f50 !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme #objectDetailsModalW25Target > .oh-modal__dialog-body > .oh-modal__dialog-header.pt-0 {
+        background: #f4fbfc !important;
+        background-image: none !important;
+        border: 0 !important;
+        color: #173f50 !important;
+    }
 </style>
 
 {% if attendances %}
-    <div class="d-flex flex-row-reverse mb-2">
+    <div class="employee-attendance-status-legend">
         <span
             class="me-3"
             style="cursor: pointer"
@@ -44,7 +168,7 @@
         >
             <span
                 class="oh-dot oh-dot--smallui-avatars.com me-1"
-                style="background-color: orange"
+                style="background-color: #1565A3"
             ></span>
             {% trans "Requested" %}
         </span>
@@ -219,7 +343,18 @@
                                             alt="{% trans 'Mary Magdalene' %}"
                                         >
                                     </div>
-                                    <span class="oh-profile__name oh-text--dark">{{ attendance.employee_id }}</span>
+                                    <div>
+                                        <span class="oh-profile__name oh-text--dark">{{ attendance.employee_id }}</span>
+                                        {% if attendance.is_validate_request_approved %}
+                                            <span class="employee-attendance-status employee-attendance-status--approved">{% trans "Approved request" %}</span>
+                                        {% elif attendance.attendance_validated %}
+                                            <span class="employee-attendance-status employee-attendance-status--validated">{% trans "Validated" %}</span>
+                                        {% elif attendance.is_validate_request %}
+                                            <span class="employee-attendance-status employee-attendance-status--requested">{% trans "Requested" %}</span>
+                                        {% else %}
+                                            <span class="employee-attendance-status employee-attendance-status--not-validated">{% trans "Not validated" %}</span>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
                             <div class="oh-sticky-table__td dateformat_changer">{{ attendance.attendance_date }}</div>

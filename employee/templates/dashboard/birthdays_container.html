@@ -1,35 +1,282 @@
 {% load i18n %}
+<style>
+    .birthday-surface {
+        width: 100%;
+    }
+
+    .birthday-slider {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+        border-radius: 22px;
+        background: linear-gradient(135deg, rgba(16, 102, 77, 0.12), rgba(255, 255, 255, 0.9));
+        border: 1px solid rgba(17, 93, 72, 0.1);
+        padding: 0.9rem;
+    }
+
+    .birthday-reel {
+        display: flex;
+        width: 100%;
+        transition: transform 0.4s ease;
+    }
+
+    .birthday-card {
+        min-width: 100%;
+        display: grid;
+        grid-template-columns: 86px minmax(0, 1fr);
+        gap: 0.9rem;
+        align-items: center;
+        padding: 1rem;
+        border-radius: 22px;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, #0f5d45, #1b8d73 40%, #f8b95d 100%);
+        box-shadow: 0 18px 25px rgba(15, 93, 69, 0.2);
+    }
+
+    .birthday-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at top right, rgba(255,255,255,0.26), transparent 40%);
+        pointer-events: none;
+    }
+
+    .birthday-card__badge {
+        position: absolute;
+        top: 0.8rem;
+        right: 0.8rem;
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255,255,255,0.28);
+        font-size: 1.05rem;
+    }
+
+    .birthday-card__avatar {
+        position: relative;
+        width: 86px;
+        height: 86px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 3px solid rgba(255,255,255,0.65);
+        background: rgba(255,255,255,0.18);
+        box-shadow: 0 10px 18px rgba(0,0,0,0.12);
+    }
+
+    .birthday-card__avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .birthday-card__content {
+        position: relative;
+        z-index: 1;
+        min-width: 0;
+    }
+
+    .birthday-card__label {
+        font-size: 0.68rem;
+        letter-spacing: 0.12em;
+        font-weight: 700;
+        text-transform: uppercase;
+        opacity: 0.92;
+    }
+
+    .birthday-card__name {
+        margin: 0.42rem 0 0.18rem;
+        font-size: 1.08rem;
+        line-height: 1.25;
+        font-weight: 800;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .birthday-card__meta {
+        font-size: 0.8rem;
+        opacity: 0.92;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .birthday-card__meta strong {
+        font-weight: 800;
+    }
+
+    .birthday-card__meta--highlight {
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin-top: 0.18rem;
+        opacity: 1;
+    }
+
+    .birthday-dots {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.45rem;
+        margin-top: 0.8rem;
+        list-style: none;
+        padding: 0;
+        margin-bottom: 0;
+    }
+
+    .birthday-dots li {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: rgba(12, 75, 58, 0.2);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .birthday-dots li.active {
+        width: 24px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #0d5d46, #46a480);
+    }
+
+    .birthday-empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 160px;
+        border-radius: 20px;
+        border: 1px dashed rgba(18, 88, 68, 0.26);
+        background: linear-gradient(135deg, rgba(18, 99, 75, 0.04), rgba(248, 185, 93, 0.06));
+        color: #3b5d52;
+        text-align: center;
+        font-weight: 600;
+        line-height: 1.6;
+        padding: 1rem;
+    }
+</style>
+
 {% if birthdays %}
-<div class="oh-dashboard__events w-100">
-    <div class="oh-dashbaord__events-reel w-100" id="birthdayContainer" style="transform: translateX(0%);">
-        {% for birthday in birthdays %}
-        <div class="oh-dashboard__event" style="background-color: rgb(231, 76, 60);">
-            <div class="oh-dasboard__event-photo">
-                <img onload="autoSlider()" src="{{birthday.profile}}"
-                    style="width: 100%;height: 100%;object-fit: cover;">
+<div class="birthday-surface">
+    <div class="birthday-slider">
+        <div class="birthday-reel" id="birthdayContainer" style="transform: translateX(0%);">
+            {% for birthday in birthdays %}
+            <div class="birthday-card">
+                <div class="birthday-card__badge">🎉</div>
+                <div class="birthday-card__avatar">
+                    <img src="{{ birthday.profile }}" alt="{{ birthday.name }}" onload="autoSlider()" />
+                </div>
+                <div class="birthday-card__content">
+                    <div class="birthday-card__label">{% trans "Birthday" %}</div>
+                    <h4 class="birthday-card__name" title="{{ birthday.name }}">{{ birthday.name|truncatechars:24 }}</h4>
+                    <div class="birthday-card__meta"><strong>{{ birthday.dob }}</strong></div>
+                    <div class="birthday-card__meta birthday-card__meta--highlight">{{ birthday.daysUntilBirthday }}</div>
+                    {% if birthday.job_position %}
+                        <div class="birthday-card__meta" title="{{ birthday.job_position }}">{{ birthday.job_position|truncatechars:24 }}</div>
+                    {% endif %}
+                    {% if birthday.department %}
+                        <div class="birthday-card__meta" title="{{ birthday.department }}">{{ birthday.department|truncatechars:24 }}</div>
+                    {% endif %}
+                </div>
             </div>
-            <div class="oh-dasboard__event-details">
-                <span class="oh-dashboard__event-title">{% trans "Birthday" %}</span>
-                <span class="oh-dashboard__event-main"
-                    title="{{birthday.name}}">{{birthday.name|truncatechars:24}}</span>
-                <span class="oh-dashboard__event-date">{{birthday.dob}}, {{birthday.daysUntilBirthday}}</span>
-                <span class="oh-dashboard__event-date" style="font-size:10px;" title="{{birthday.job_position}}">
-                    {{birthday.job_position|truncatechars:24}}
-                </span>
-                <span class="oh-dashboard__event-date" style="font-size:10px;" title="{{birthday.department}}"></span>
-                    {{birthday.department|truncatechars:24}}
-                </span>
-            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
-    <ul class="oh-dashboard__events-nav" id="birthdayDots">
+    <ul class="birthday-dots" id="birthdayDots">
         {% for birthday in birthdays %}
-        <li onclick="moveSlider(event)"
-            class="oh-dashboard__events-nav-item {% if forloop.first %}oh-dashboard__events-nav-item--active{% endif %}"
-            data-target="{{ forloop.counter0 }}">
-        </li>
+        <li class="{% if forloop.first %}active{% endif %}" data-target="{{ forloop.counter0 }}"></li>
         {% endfor %}
     </ul>
+</div>
+
+<script>
+(function(){
+    const reel = document.getElementById('birthdayContainer');
+    const dots = document.getElementById('birthdayDots');
+    if(!reel) return;
+
+    const slides = Array.prototype.slice.call(reel.children || []);
+    const dotEls = dots ? Array.prototype.slice.call(dots.querySelectorAll('li')) : [];
+    let idx = 0;
+    let interval = null;
+    const delay = 4000; // autoplay delay in ms
+
+    function go(i){
+        if(!reel) return;
+        if(i < 0) i = 0;
+        if(i >= slides.length) i = 0;
+        idx = i;
+        reel.style.transform = `translateX(-${i * 100}%)`;
+        dotEls.forEach(function(d,di){ d.classList.toggle('active', di === i); });
+    }
+
+    // Expose moveSlider globally for inline onclick compatibility
+    window.moveSlider = function(e){
+        var target = null;
+        if(e && e.currentTarget && e.currentTarget.getAttribute){
+            target = e.currentTarget.getAttribute('data-target');
+        }
+        if(!target && e && e.target){
+            // try to find closest li
+            var li = e.target.closest && e.target.closest('li');
+            if(li) target = li.getAttribute('data-target');
+        }
+        var n = parseInt(target, 10);
+        if(!isNaN(n)){
+            go(n);
+            resetAutoplay();
+        }
+    };
+
+    // Support a simple autoSlider trigger used by image onload
+    window.autoSlider = function(){
+        if(window.__birthdaySliderStarted) return; window.__birthdaySliderStarted = true; startAutoplay();
+    };
+
+    function startAutoplay(){
+        if(slides.length <= 1) return;
+        interval = setInterval(function(){
+            idx = (idx + 1) % slides.length;
+            go(idx);
+        }, delay);
+    }
+
+    function resetAutoplay(){
+        if(interval){ clearInterval(interval); }
+        startAutoplay();
+    }
+
+    // Attach click handlers to dots (progressive enhancement)
+    if(dotEls.length){
+        dotEls.forEach(function(d){
+            d.addEventListener('click', function(e){
+                var t = parseInt(d.getAttribute('data-target'),10);
+                if(!isNaN(t)){
+                    go(t);
+                    resetAutoplay();
+                }
+            });
+        });
+    }
+
+    // Start autoplay immediately if more than one slide
+    if(window.document.readyState === 'complete' || window.document.readyState === 'interactive'){
+        // delay to allow HTMX content to settle
+        setTimeout(function(){ window.autoSlider(); }, 250);
+    } else {
+        window.addEventListener('DOMContentLoaded', function(){ setTimeout(function(){ window.autoSlider(); }, 250); });
+    }
+})();
+</script>
+{% else %}
+<div class="birthday-empty">
+    {% trans "No birthdays scheduled yet." %}
 </div>
 {% endif %}

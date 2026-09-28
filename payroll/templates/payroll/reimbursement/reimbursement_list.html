@@ -1,4 +1,126 @@
-{% load i18n %} {% load static horillafilters %}{% include "filter_tags.html" %}
+{% load i18n %}
+<style>
+    html body .oh-wrapper-main.employee-panel-theme .employee-reimbursement-head {
+        background: #ffffff !important;
+        border: 1px solid rgba(42, 132, 155, 0.18) !important;
+        box-shadow: 0 10px 26px rgba(10, 77, 96, 0.08) !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme .employee-reimbursement-head::before {
+        background: linear-gradient(90deg, #0a4d60, #278da0, #b8dfe6) !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme .employee-reimbursement-head .oh-main__titlebar-title {
+        color: #173f50 !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme .employee-reimbursement-head .oh-input,
+    html body .oh-wrapper-main.employee-panel-theme .employee-reimbursement-head .oh-dropdown .oh-btn,
+    html body .oh-wrapper-main.employee-panel-theme .employee-reimbursement-head .oh-view-types {
+        border-color: rgba(42, 132, 155, 0.22) !important;
+        background: #ffffff !important;
+        color: #285d6b !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme .employee-reimbursement-head .oh-btn--secondary,
+    html body .oh-wrapper-main.employee-panel-theme .employee-reimbursement-head .oh-main__titlebar-button-container > .oh-btn,
+    html body .oh-wrapper-main.employee-panel-theme .employee-reimbursement-head .oh-dropdown > .oh-btn,
+    html body .oh-wrapper-main.employee-panel-theme .employee-reimbursement-head .oh-btn--view-active {
+        background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+        border-color: #176f80 !important;
+        color: #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme .employee-reimbursement-head .oh-btn--view:not(.oh-btn--view-active) {
+        background: #e8f5f7 !important;
+        color: #176f80 !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme .employee-reimbursement-head .oh-view-types,
+    html body .oh-wrapper-main.employee-panel-theme .employee-reimbursement-head .oh-view-type,
+    html body .oh-wrapper-main.employee-panel-theme .employee-reimbursement-head button.oh-btn--view,
+    html body .oh-wrapper-main.employee-panel-theme .employee-reimbursement-head a.oh-btn--view {
+        border: none !important;
+        outline: 0 !important;
+        box-shadow: none !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme .employee-reimbursement-head .oh-view-types,
+    html body .oh-wrapper-main.employee-panel-theme .employee-reimbursement-head .oh-view-type {
+        background: transparent !important;
+        border: 0 !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme .employee-reimbursement-head .oh-btn--view:not(.oh-btn--view-active) ion-icon {
+        color: #176f80 !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme .employee-reimbursement-head .oh-btn--view-active ion-icon,
+    html body .oh-wrapper-main.employee-panel-theme .employee-reimbursement-head .oh-btn--secondary ion-icon {
+        color: #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme .employee-reimbursement-head + .oh-wrapper {
+        color: #285d6b !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme .employee-reimbursement-head + .oh-wrapper .oh-dot {
+        box-shadow: 0 0 0 3px rgba(39, 141, 160, 0.12);
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme .oh-tabs {
+        background: #ffffff !important;
+        border: 0 !important;
+        border-top: none !important;
+        border-radius: 18px !important;
+        box-shadow: 0 12px 28px rgba(10, 77, 96, 0.08) !important;
+        overflow: hidden;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme .oh-tabs__tablist {
+        background: #e8f5f7 !important;
+        border-top: 3px solid #278da0 !important;
+        border-bottom: 0 !important;
+        box-shadow: none !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme .oh-tabs__tab {
+        color: #285d6b !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme .oh-tabs__tab:hover,
+    html body .oh-wrapper-main.employee-panel-theme .oh-tabs__tab--active {
+        background: #ffffff !important;
+        color: #176f80 !important;
+        box-shadow: 0 5px 14px rgba(10, 77, 96, 0.1) !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme .oh-tabs__contents,
+    html body .oh-wrapper-main.employee-panel-theme .oh-tabs__content {
+        background: #ffffff !important;
+        color: #285d6b !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme .oh-empty {
+        background: #ffffff !important;
+        color: #285d6b !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme .employee-reimbursement-status--requested {
+        background: #e6a552 !important;
+        color: #173f50 !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme .employee-reimbursement-status--approved {
+        background: #278da0 !important;
+        color: #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme .employee-reimbursement-status--rejected {
+        background: #c45167 !important;
+        color: #ffffff !important;
+    }
+</style> {% load static horillafilters %}{% include "filter_tags.html" %}
 <div class="d-flex flex-row-reverse oh-wrapper mb-2">
     <span
         class="me-3"
@@ -164,7 +286,7 @@
                                         {{req.amount}}
                                         </div>
                                         <div data-cell-index="4" class="oh-sticky-table__td">
-                                        {{req.get_status_display}}
+                                        <span class="employee-reimbursement-status employee-reimbursement-status--{{ req.status }}">{{req.get_status_display}}</span>
                                         </div>
                                         <div data-cell-index="5" class="oh-sticky-table__td">
                                         {{req.description}}
@@ -504,7 +626,7 @@
                                                 {{req.cfd_to_encash}}
                                             </div>
                                             <div data-cell-index="17" class="oh-sticky-table__td">
-                                                {{req.get_status_display}}
+                                                <span class="employee-reimbursement-status employee-reimbursement-status--{{ req.status }}">{{req.get_status_display}}</span>
                                             </div>
                                             <div data-cell-index="18" class="oh-sticky-table__td">
                                                 {{req.description}}
@@ -831,7 +953,7 @@
                                                 {{req.bonus_to_encash}}
                                             </div>
                                             <div data-cell-index="25" class="oh-sticky-table__td">
-                                                {{req.get_status_display}}
+                                                <span class="employee-reimbursement-status employee-reimbursement-status--{{ req.status }}">{{req.get_status_display}}</span>
                                             </div>
                                             <div data-cell-index="26" class="oh-sticky-table__td">
                                                 {{req.description}}

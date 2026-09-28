@@ -1,5 +1,178 @@
 {% load i18n %}
-<section class="oh-wrapper oh-main__topbar">
+<section class="oh-wrapper oh-main__topbar employee-reimbursement-head">
+    <style>
+        .employee-reimbursement-head {
+            background: #ffffff;
+            border: 1px solid #d1e7dd;
+            border-radius: 18px;
+            margin: 0 38px 12px;
+            padding: 18px 22px;
+            box-shadow: 0 10px 26px rgba(18, 61, 44, 0.08);
+            align-items: center;
+            display: flex;
+            gap: 24px;
+        }
+        .employee-reimbursement-head::before {
+            content: "";
+            display: block;
+            height: 4px;
+            margin: -18px -22px 16px;
+            background: linear-gradient(90deg, #6cae95, #2f5752, #8ac4ad);
+        }
+        .employee-reimbursement-head .oh-main__titlebar-title {
+            color: #244943 !important;
+            font-size: 1.45rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .employee-reimbursement-head > form {
+            flex: 1;
+            min-width: 0;
+        }
+        .employee-reimbursement-head > form > .oh-main__titlebar {
+            justify-content: flex-end;
+            gap: 12px;
+            margin-bottom: 0 !important;
+        }
+        .employee-reimbursement-head .oh-input-group {
+            margin-right: 0 !important;
+        }
+        .employee-reimbursement-head .oh-input__search-group {
+            width: 265px;
+            min-width: 0;
+        }
+        .employee-reimbursement-head * {
+            color: #315244;
+        }
+        .employee-reimbursement-head .oh-main__titlebar-title {
+            color: #17241d !important;
+        }
+        .employee-reimbursement-head .oh-input::placeholder {
+            color: #849088;
+        }
+        .employee-reimbursement-head .oh-input {
+            border-color: rgba(47, 87, 82, 0.2) !important;
+            border-radius: 10px;
+            background: #ffffff;
+            color: #123d2c !important;
+            min-height: 40px;
+            box-shadow: none;
+        }
+        .employee-reimbursement-head .oh-btn--secondary {
+            background: #2f5752;
+            border-color: #2f5752;
+            color: #fff;
+            border-radius: 11px;
+            min-height: 42px;
+            font-weight: 700;
+            box-shadow: 0 6px 14px rgba(47, 87, 82, 0.16);
+        }
+        .employee-reimbursement-head .oh-btn--secondary:hover {
+            background: #244942;
+            border-color: #244942;
+        }
+        .employee-reimbursement-head .oh-btn--secondary ion-icon,
+        .employee-reimbursement-head .oh-dropdown > .oh-btn ion-icon,
+        .employee-reimbursement-head .oh-main__titlebar-button-container > .oh-btn ion-icon {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            font-size: 18px;
+            line-height: 18px;
+            color: #ffffff !important;
+            opacity: 1 !important;
+            vertical-align: middle;
+        }
+        .employee-reimbursement-head .oh-view-types {
+            display: flex;
+            overflow: hidden;
+            border: 0;
+            border-radius: 12px;
+            background: #ffffff;
+        }
+        .employee-reimbursement-head .oh-dropdown .oh-btn,
+        .employee-reimbursement-head .oh-main__titlebar-button-container .oh-btn {
+            border-radius: 11px;
+            min-height: 42px;
+            border-color: #d4e1da;
+            color: #315244;
+            background: #ffffff;
+        }
+        .employee-reimbursement-head .oh-dropdown .oh-btn:hover {
+            background: #eaf7ee;
+            color: #0b754b;
+        }
+        .employee-reimbursement-head .oh-main__titlebar-button-container > .oh-btn,
+        .employee-reimbursement-head .oh-dropdown > .oh-btn {
+            background: #2f5752 !important;
+            border-color: #2f5752 !important;
+            color: #ffffff !important;
+            border-radius: 12px;
+        }
+        .employee-reimbursement-head .oh-main__titlebar-button-container > .oh-btn:hover,
+        .employee-reimbursement-head .oh-dropdown > .oh-btn:hover {
+            background: #244942 !important;
+            border-color: #244942 !important;
+        }
+        .employee-reimbursement-head .oh-main__titlebar-button-container > .oh-main__titlebar-button-container .oh-btn {
+            color: #ffffff !important;
+            background: #2f5752 !important;
+            border-color: #2f5752 !important;
+            border-radius: 12px;
+        }
+        .employee-reimbursement-head .oh-view-type {
+            margin: 0;
+        }
+        .employee-reimbursement-head .oh-btn--view {
+            min-width: 48px;
+            min-height: 42px;
+            border: 0;
+            border-radius: 0;
+            color: #2f5752 !important;
+            background: #eef7f1 !important;
+            box-shadow: none !important;
+        }
+        .employee-reimbursement-head .oh-btn--view:hover {
+            color: #ffffff !important;
+            background: #39685f !important;
+        }
+        .employee-reimbursement-head .oh-btn--view ion-icon {
+            display: inline-block;
+            width: 17px;
+            height: 17px;
+            font-size: 17px;
+            line-height: 17px;
+            color: #2f5752 !important;
+            opacity: 1 !important;
+            vertical-align: middle;
+        }
+        .employee-reimbursement-head .oh-btn--view.oh-btn--view-active {
+            color: #ffffff !important;
+            background: #2f5752 !important;
+            box-shadow: none !important;
+        }
+        .employee-reimbursement-head .oh-btn--view.oh-btn--view-active ion-icon {
+            color: #ffffff !important;
+        }
+        @media (max-width: 768px) {
+            .employee-reimbursement-head {
+                margin: 0 14px 12px;
+                padding: 14px;
+                display: block;
+            }
+            .employee-reimbursement-head::before {
+                margin: -14px -14px 14px;
+            }
+            .employee-reimbursement-head > form {
+                margin-top: 12px;
+            }
+        }
+        .employee-reimbursement-head .oh-btn--view-active {
+            color: #ffffff !important;
+            background: #2f5752 !important;
+            box-shadow: none;
+        }
+    </style>
     <div class="oh-main__titlebar oh-main__titlebar--left oh-d-flex-column--resp oh-mb-3--small">
         <h1 class="oh-main__titlebar-title fw-bold">{% trans 'Reimbursements' %}</h1>
     </div>

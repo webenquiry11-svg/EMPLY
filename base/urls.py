@@ -36,6 +36,7 @@ from horilla_audit.models import AuditTag
 
 urlpatterns = [
     path("", views.home, name="home-page"),
+    path("global-search", views.global_search, name="global-search"),
     path("initialize-database", views.initialize_database, name="initialize-database"),
     path("load-demo-database", views.load_demo_database, name="load-demo-database"),
     path(
@@ -933,6 +934,11 @@ urlpatterns = [
         name="pagination-settings-view",
     ),
     path("announcement-list", announcement.announcement_list, name="announcement-list"),
+    path(
+        "announcement-notifications",
+        announcement.announcement_notifications,
+        name="announcement-notifications",
+    ),
     path(
         "create-announcement",
         announcement.create_announcement,

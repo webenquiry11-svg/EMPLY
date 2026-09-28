@@ -82,6 +82,135 @@
             width: 100%;
             overflow-x: auto;
         }
+
+        html:has(.oh-helpdesk),
+        body:has(.oh-helpdesk),
+        body:has(.oh-helpdesk) #main {
+            background: #f5faf9 !important;
+        }
+
+        .oh-helpdesk {
+            gap: 18px;
+            padding: 24px 30px 110px;
+            color: #245b63;
+        }
+
+        .oh-helpdesk__left,
+        .oh-helpdesk__right {
+            border: 1px solid #d6e9e6;
+            border-radius: 18px;
+            background: #ffffff;
+            box-shadow: 0 10px 26px rgba(29, 86, 79, .08);
+            overflow: hidden;
+        }
+
+        .oh-helpdesk__header,
+        .oh-helpdesk__right-header {
+            background: linear-gradient(135deg, #e9f7f5, #d9efed);
+            border-bottom: 1px solid #c9e2df;
+            color: #174f4b;
+        }
+
+        .oh-helpdesk__header-title,
+        .oh-helpdesk__right-header,
+        .oh-helpdesk__card-title {
+            color: #174f4b !important;
+            font-weight: 700;
+        }
+
+        .oh-helpdesk__body,
+        .oh-helpdesk__right-body {
+            background: #ffffff;
+        }
+
+        .oh-helpdesk__chat-container {
+            background: #f8fcfb;
+            border: 1px solid #e1efed;
+            border-radius: 14px;
+            padding: 14px;
+        }
+
+        .oh-helpdesk__bubble {
+            border: 1px solid #d4e8e5;
+            border-radius: 15px;
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(29, 86, 79, .05);
+        }
+
+        .oh-helpdesk__bubble--comment {
+            background: #e5f4f1;
+            border-color: #c6e3df;
+        }
+
+        .oh-helpdesk__bubble--reply {
+            background: #ffffff;
+        }
+
+        .oh-helpdesk__bubble-username,
+        .oh-helpdesk__bubble-body,
+        .oh-helpdesk__comment {
+            color: #245b63 !important;
+        }
+
+        .oh-helpdesk__bubble-timestamp {
+            color: #6a8a88 !important;
+        }
+
+        .oh-helpdesk__chatbox,
+        .oh-helpdesk__card,
+        .oh-helpdesk__subcard {
+            border: 1px solid #d6e9e6;
+            border-radius: 14px;
+            background: #ffffff;
+            box-shadow: 0 5px 14px rgba(29, 86, 79, .05);
+        }
+
+        .oh-helpdesk__card-header,
+        .oh-helpdesk__subcard-header {
+            background: #f0faf8;
+            border-bottom: 1px solid #dcece9;
+            color: #245b63;
+        }
+
+        .oh-helpdesk__card-body,
+        .oh-helpdesk__subcard-body {
+            color: #4d716d;
+        }
+
+        .oh-helpdesk .oh-select,
+        .oh-helpdesk .oh-input,
+        .oh-helpdesk textarea,
+        .oh-helpdesk input {
+            border: 1px solid #cfe2e0 !important;
+            border-radius: 10px !important;
+            background: #ffffff !important;
+            color: #245b63 !important;
+        }
+
+        .oh-helpdesk .oh-select:focus,
+        .oh-helpdesk .oh-input:focus,
+        .oh-helpdesk textarea:focus,
+        .oh-helpdesk input:focus {
+            border-color: #238da0 !important;
+            box-shadow: 0 0 0 3px rgba(35, 141, 160, .13) !important;
+            outline: none;
+        }
+
+        .oh-helpdesk .oh-btn {
+            border: 0;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #155f6d, #238da0);
+            color: #ffffff;
+            box-shadow: 0 6px 14px rgba(21, 95, 109, .16);
+            transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+        }
+
+        .oh-helpdesk .oh-btn:hover {
+            background: linear-gradient(135deg, #0d5362, #167b8d);
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 9px 18px rgba(21, 95, 109, .23);
+        }
     </style>
 
     <div id="main">
@@ -153,6 +282,13 @@
                             </div>
                             <div class="oh-helpdesk__bubble-body">
                                 <p>{{ ticket.description|safe }}</p>
+                                {% if ticket.support_image %}
+                                    <div class="mt-2">
+                                        <a href="{{ ticket.support_image.url }}" target="_blank">
+                                            <img src="{{ ticket.support_image.url }}" alt="Ticket image" style="max-width: 320px; border-radius:8px; border:1px solid rgba(148,163,184,0.2);" />
+                                        </a>
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
 

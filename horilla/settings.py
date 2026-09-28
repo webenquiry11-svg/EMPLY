@@ -260,3 +260,12 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Ngrok CSRF Trust Fix
+CSRF_TRUSTED_ORIGINS = [
+    'https://defraud-gumming-mummified.ngrok-free.dev',
+    'https://*.ngrok-free.dev',
+    'https://*.ngrok-free.app',
+    'https://*.ngrok.io',
+    'http://localhost:8000',
+]

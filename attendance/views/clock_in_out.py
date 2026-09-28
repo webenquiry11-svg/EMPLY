@@ -13,6 +13,7 @@ from datetime import date, datetime, timedelta
 from django.contrib import messages
 from django.db.models import Q
 from django.http import HttpResponse
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from attendance.methods.utils import (
@@ -52,6 +53,7 @@ def clock_in_attendance_and_activity(
     start_time,
     end_time,
     in_datetime,
+    attendance_source,
 ):
     """
     This method is used to create attendance activity or attendance when an employee clocks-in
@@ -96,15 +98,17 @@ def clock_in_attendance_and_activity(
             'shift_id': shift,
             'work_type_id': employee.employee_work_info.work_type_id,
             'attendance_day': day,
-            'attendance_clock_in': now,
+            'attendance_clock_in': in_datetime.time(),
             'attendance_clock_in_date': date_today,
-            'minimum_hour': minimum_hour
+            'minimum_hour': minimum_hour,
+            'attendance_source': attendance_source,
         }
     )
 
     if not created:
         attendance.attendance_clock_out = None
         attendance.attendance_clock_out_date = None
+        attendance.attendance_source = attendance.attendance_source or attendance_source
         attendance.save()
         # delete if the attendance marked the early out
         early_out_instance = attendance.late_come_early_out.filter(type="early_out")
@@ -165,10 +169,24 @@ def clock_in(request):
                 return HttpResponse(_("You cannot mark attendance from this network"))
 
         employee, work_info = employee_exists(request)
-        datetime_now = datetime.now()
+        datetime_now = timezone.now()
         if request.__dict__.get("datetime"):
             datetime_now = request.datetime
+            if timezone.is_naive(datetime_now):
+                datetime_now = timezone.make_aware(datetime_now)
         if employee and work_info is not None:
+            is_biometric_request = bool(request.__dict__.get("datetime"))
+            expected_source = (
+                "biometric_machine" if is_biometric_request else "emply_portal"
+            )
+            if employee.attendance_source != expected_source:
+                messages.error(
+                    request,
+                    _(
+                        "This attendance source is not enabled for this employee."
+                    ),
+                )
+                return HorillaRedirect(request)
             shift = work_info.shift_id
             date_today = date.today()
             if request.__dict__.get("date"):
@@ -201,6 +219,11 @@ def clock_in(request):
                     )
                     attendance_date = date_yesterday
                     day = day_yesterday
+            attendance_source = (
+                "Biometric Machine"
+                if request.__dict__.get("datetime")
+                else "EMPLY Portal"
+            )
             attendance = clock_in_attendance_and_activity(
                 employee=employee,
                 date_today=date_today,
@@ -212,6 +235,7 @@ def clock_in(request):
                 start_time=start_time_sec,
                 end_time=end_time_sec,
                 in_datetime=datetime_now,
+                attendance_source=attendance_source,
             )
             script = ""
             hidden_label = ""
@@ -226,9 +250,7 @@ def clock_in(request):
                         at_work_seconds = {at_work_seconds_forecasted};
                     </script>
                     """.format(
-                    at_work_seconds_forecasted=employee.get_forecasted_at_work()[
-                        "forecasted_at_work_seconds"
-                    ]
+                    at_work_seconds_forecasted=employee.get_current_attendance_session_seconds()
                 )
                 hidden_label = """
                 style="display:none"
@@ -471,9 +493,11 @@ def clock_out(request):
         and attendance_general_settings.enable_check_in
         or request.__dict__.get("datetime")
     ):
-        datetime_now = datetime.now()
+        datetime_now = timezone.now()
         if request.__dict__.get("datetime"):
             datetime_now = request.datetime
+            if timezone.is_naive(datetime_now):
+                datetime_now = timezone.make_aware(datetime_now)
         employee, work_info = employee_exists(request)
         shift = work_info.shift_id
         date_today = date.today()
@@ -492,6 +516,18 @@ def clock_out(request):
                 attendance.attendance_day = EmployeeShiftDay.objects.get(day=day_name)
                 attendance.save(update_fields=["attendance_day"])
             day = attendance.attendance_day
+        is_biometric_request = bool(request.__dict__.get("datetime"))
+        expected_source = (
+            "biometric_machine" if is_biometric_request else "emply_portal"
+        )
+        if employee.attendance_source != expected_source:
+            messages.error(
+                request,
+                _(
+                    "This attendance source is not enabled for this employee."
+                ),
+            )
+            return HorillaRedirect(request)
         now = datetime.now().strftime("%H:%M")
         if request.__dict__.get("time"):
             now = request.time.strftime("%H:%M")
@@ -529,50 +565,18 @@ def clock_out(request):
                         shift=shift,
                     )
 
-        script = ""
-        hidden_label = ""
-        time_runner_enabled = timerunner_enabled(request)["enabled_timerunner"]
-        mouse_in = ""
-        mouse_out = ""
-        if time_runner_enabled:
-            script = """
-                <script>
-                $(document).ready(function () {{
-                    $('.at-work-seconds').html(secondsToDuration({at_work_seconds_forecasted}))
-                }});
-                run = 0;
-                at_work_seconds = {at_work_seconds_forecasted};
-                </script>
-            """.format(
-                at_work_seconds_forecasted=employee.get_forecasted_at_work()[
-                    "forecasted_at_work_seconds"
-                ],
-            )
-            hidden_label = """
-            style="display:none"
-            """
-            mouse_in = """ onmouseenter="$(this).find('div.at-work-seconds').hide();$(this).find('span').show();" """
-            mouse_out = """onmouseleave="$(this).find('div.at-work-seconds').show();$(this).find('span').hide();" """
         return HttpResponse(
             """
                 <button class="oh-btn oh-btn--success-outline mr-2"
-                {mouse_in}
-                {mouse_out}
                 hx-get="/attendance/clock-in"
                 hx-target='#attendance-activity-container'
                 hx-swap='innerHTML'>
                 <ion-icon class="oh-navbar__clock-icon mr-2 text-success"
                 name="enter-outline"></ion-icon>
-                <span class="hr-check-in-out-text" {hidden_label} >{check_in}</span>
-                <div class="at-work-seconds"></div>
+                <span class="hr-check-in-out-text">{check_in}</span>
                 </button>
-                {script}
                 """.format(
                 check_in=_("Check-In"),
-                script=script,
-                hidden_label=hidden_label,
-                mouse_in=mouse_in,
-                mouse_out=mouse_out,
             )
         )
     else:

@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -77,6 +77,40 @@ def announcement_list(request):
         "instance_ids": instance_ids,
     }
     return render(request, "announcement/announcements_list.html", context)
+
+
+@login_required
+def announcement_notifications(request):
+    """Return active announcements visible to the logged-in employee."""
+    if (
+        not request.user.is_authenticated
+        or request.user.is_staff
+        or request.user.is_superuser
+    ):
+        return JsonResponse({"announcements": []})
+
+    employee = getattr(request.user, "employee_get", None)
+    if employee is None:
+        return JsonResponse({"announcements": []})
+
+    announcements = Announcement.objects.filter(
+        Q(expire_date__isnull=True) | Q(expire_date__gte=datetime.today().date())
+    )
+    if not request.user.has_perm("base.view_announcement"):
+        announcements = announcements.filter(
+            Q(employees=employee) | Q(employees__isnull=True)
+        )
+
+    data = [
+        {
+            "id": announcement.id,
+            "title": announcement.title,
+            "description": announcement.description or "",
+            "created_at": announcement.created_at.isoformat(),
+        }
+        for announcement in announcements.order_by("-created_at")
+    ]
+    return JsonResponse({"announcements": data})
 
 
 BLOCKED_EXTENSIONS = {

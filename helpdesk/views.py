@@ -11,9 +11,10 @@ from django.contrib import messages
 from django.core import serializers
 from django.db.models import ProtectedError
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_http_methods
@@ -43,6 +44,9 @@ from helpdesk.forms import (
     DepartmentManagerCreateForm,
     FAQCategoryForm,
     FAQForm,
+    SupportTicketAssignForm,
+    SupportTicketForm,
+    SupportTicketMessageForm,
     TicketAssigneesForm,
     TicketForm,
     TicketRaisedOnForm,
@@ -392,6 +396,269 @@ def faq_delete(request, id):
     return HorillaRedirect(request)
 
 
+def get_current_support_ticket_resolver():
+    resolver_ticket = (
+        Ticket.objects.filter(is_support_ticket=True, resolver__isnull=False)
+        .order_by("-created_at")
+        .first()
+    )
+    return resolver_ticket.resolver if resolver_ticket else None
+
+
+@login_required
+def support_ticket_create(request):
+    form = SupportTicketForm()
+    if request.method == "POST":
+        form = SupportTicketForm(request.POST, request.FILES)
+        if form.is_valid():
+            employee = request.user.employee_get
+            ticket_type = TicketType.objects.filter(title__icontains="support").first()
+            if not ticket_type:
+                ticket_type = TicketType.objects.filter(type="complaint").first()
+            if not ticket_type:
+                ticket_type = TicketType.objects.create(
+                    title="Support",
+                    type="complaint",
+                    prefix="SUP",
+                )
+            complaint = form.cleaned_data["complaint"].strip()
+            ticket = Ticket.objects.create(
+                title=form.cleaned_data["title"].strip() or "Support Ticket",
+                employee_id=employee,
+                ticket_type=ticket_type,
+                description=complaint,
+                complaint=complaint,
+                priority="medium",
+                assigning_type="individual",
+                raised_on=str(employee.id),
+                status="new",
+                is_support_ticket=True,
+                support_image=form.cleaned_data.get("support_image"),
+                resolver=get_current_support_ticket_resolver(),
+            )
+            recipients = list(
+                Employee.objects.filter(employee_user_id__is_superuser=True)
+                .exclude(employee_user_id__isnull=True)
+                .values_list("employee_user_id", flat=True)
+            )
+            if ticket.resolver and ticket.resolver.employee_user_id:
+                recipients.append(ticket.resolver.employee_user_id)
+            recipients = list(dict.fromkeys(user for user in recipients if user))
+            if recipients:
+                notify.send(
+                    employee,
+                    recipient=recipients,
+                    verb=f"New support ticket raised: {ticket.title}",
+                    verb_ar="تم رفع تذكرة دعم جديدة.",
+                    verb_de="Ein neues Support-Ticket wurde eröffnet.",
+                    verb_es="Se ha creado un nuevo ticket de soporte.",
+                    verb_fr="Un nouveau ticket d'assistance a été créé.",
+                    icon="infinite",
+                    redirect=reverse(
+                        "support-ticket-detail", kwargs={"ticket_id": ticket.id}
+                    ),
+                )
+            messages.success(request, _("Your support ticket has been created successfully."))
+            return redirect("support-ticket-list")
+    return render(request, "helpdesk/support_ticket_form.html", {"form": form})
+
+
+@login_required
+def support_ticket_list(request):
+    employee = getattr(request.user, "employee_get", None)
+    all_tickets = Ticket.objects.filter(is_support_ticket=True).order_by("-created_at")
+
+    if request.user.is_superuser:
+        active_tickets = all_tickets.filter(status="new")
+        tickets = all_tickets
+        resolver_tickets = all_tickets.none()
+    elif employee:
+        tickets = all_tickets.filter(employee_id=employee)
+        resolver_tickets = all_tickets.filter(resolver=employee, closed=False).exclude(
+            status__in=["rejected", "resolved", "closed", "canceled"]
+        )
+        active_tickets = resolver_tickets
+    else:
+        tickets = all_tickets.none()
+        active_tickets = all_tickets.none()
+        resolver_tickets = all_tickets.none()
+
+    context = {
+        "tickets": tickets.distinct(),
+        "active_tickets": active_tickets.distinct(),
+        "assigned_tickets": resolver_tickets.distinct(),
+        "employee": employee,
+        "is_superuser": request.user.is_superuser,
+        "has_resolver_assignment": bool(employee and resolver_tickets.exists()),
+    }
+    return render(request, "helpdesk/support_ticket_list.html", context)
+
+
+@login_required
+def support_ticket_resolver_update(request):
+    if not request.user.is_superuser:
+        return handle_no_permission(request)
+
+    form = SupportTicketAssignForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        resolver = form.cleaned_data["resolver"]
+        Ticket.objects.filter(is_support_ticket=True).update(resolver=resolver)
+        messages.success(request, _("The support ticket resolver was updated."))
+        return redirect("ticket-view")
+
+    return redirect("ticket-view")
+
+
+@login_required
+def support_ticket_detail(request, ticket_id):
+    ticket = get_object_or_404(Ticket, id=ticket_id, is_support_ticket=True)
+    employee = getattr(request.user, "employee_get", None)
+    if not ticket.can_user_access(employee):
+        return handle_no_permission(request)
+    message_form = SupportTicketMessageForm()
+    if request.method == "POST":
+        action = request.POST.get("action")
+        is_super_admin = request.user.is_superuser
+        is_resolver = employee and ticket.resolver_id == employee.id
+
+        if action == "accept":
+            if not (is_super_admin or is_resolver):
+                return handle_no_permission(request)
+            ticket.status = "accepted"
+            ticket.closed = False
+            ticket.closed_at = None
+            if is_resolver:
+                ticket.resolver = employee
+            ticket.save(update_fields=["status", "resolver", "closed", "closed_at"])
+            if ticket.employee_id and ticket.employee_id.employee_user_id:
+                notify.send(
+                    request.user.employee_get,
+                    recipient=ticket.employee_id.employee_user_id,
+                    verb=f"Your support ticket was accepted: {ticket.title}",
+                    verb_ar="تم قبول تذكرة الدعم الخاصة بك.",
+                    verb_de="Ihr Support-Ticket wurde akzeptiert.",
+                    verb_es="Su ticket de soporte fue aceptado.",
+                    verb_fr="Votre ticket d'assistance a été accepté.",
+                    icon="infinite",
+                    redirect=reverse(
+                        "support-ticket-detail", kwargs={"ticket_id": ticket.id}
+                    ),
+                )
+            messages.success(request, _("The ticket was accepted."))
+        elif action == "reject":
+            if not is_super_admin and not is_resolver:
+                return handle_no_permission(request)
+            ticket.status = "rejected"
+            ticket.closed = True
+            ticket.closed_at = timezone.now()
+            ticket.save(update_fields=["status", "closed", "closed_at"])
+            if ticket.employee_id and ticket.employee_id.employee_user_id:
+                notify.send(
+                    request.user.employee_get,
+                    recipient=ticket.employee_id.employee_user_id,
+                    verb=f"Your support ticket was rejected: {ticket.title}",
+                    verb_ar="تم رفض تذكرة الدعم الخاصة بك.",
+                    verb_de="Ihr Support-Ticket wurde abgelehnt.",
+                    verb_es="Su ticket de soporte fue rechazado.",
+                    verb_fr="Votre ticket d'assistance a été rejeté.",
+                    icon="infinite",
+                    redirect=reverse(
+                        "support-ticket-detail", kwargs={"ticket_id": ticket.id}
+                    ),
+                )
+            messages.info(request, _("The ticket was rejected and closed."))
+        elif action == "resolve":
+            if not is_resolver and not is_super_admin:
+                return handle_no_permission(request)
+            ticket.status = "resolved"
+            ticket.closed = True
+            ticket.closed_at = timezone.now()
+            ticket.save(update_fields=["status", "closed", "closed_at"])
+            if ticket.employee_id and ticket.employee_id.employee_user_id:
+                notify.send(
+                    request.user.employee_get,
+                    recipient=ticket.employee_id.employee_user_id,
+                    verb=f"Your support ticket has been resolved: {ticket.title}",
+                    verb_ar="تم حل تذكرة الدعم الخاصة بك.",
+                    verb_de="Ihr Support-Ticket wurde gelöst.",
+                    verb_es="Su ticket de soporte ha sido resuelto.",
+                    verb_fr="Votre ticket d'assistance a été résolu.",
+                    icon="infinite",
+                    redirect=reverse(
+                        "support-ticket-detail", kwargs={"ticket_id": ticket.id}
+                    ),
+                )
+            messages.success(request, _("The support ticket was marked as resolved."))
+        else:
+            message_form = SupportTicketMessageForm(request.POST, request.FILES)
+            if ticket.closed:
+                messages.error(request, _("This ticket is closed and no further messages are allowed."))
+            elif message_form.is_valid():
+                comment_text = (message_form.cleaned_data.get("text") or "").strip()
+                if comment_text or message_form.cleaned_data.get("image"):
+                    if ticket.status in ["new", "accepted"]:
+                        ticket.status = "in_progress"
+                        ticket.save(update_fields=["status"])
+                    comment = Comment.objects.create(
+                        ticket=ticket,
+                        employee_id=employee,
+                        comment=comment_text,
+                    )
+                    image = message_form.cleaned_data.get("image")
+                    if image:
+                        attachment = Attachment(file=image, ticket=ticket, comment=comment)
+                        attachment.save()
+                    recipient = None
+                    if employee == ticket.employee_id:
+                        if ticket.resolver and ticket.resolver.employee_user_id:
+                            recipient = ticket.resolver.employee_user_id
+                    elif employee == ticket.resolver:
+                        if ticket.employee_id and ticket.employee_id.employee_user_id:
+                            recipient = ticket.employee_id.employee_user_id
+                    if recipient:
+                        notify.send(
+                            employee,
+                            recipient=recipient,
+                            verb=f"New message on support ticket: {ticket.title}",
+                            verb_ar="رسالة جديدة على تذكرة الدعم.",
+                            verb_de="Neue Nachricht zu Ihrem Support-Ticket.",
+                            verb_es="Nuevo mensaje en su ticket de soporte.",
+                            verb_fr="Nouveau message sur votre ticket d'assistance.",
+                            icon="infinite",
+                            redirect=reverse(
+                                "support-ticket-detail", kwargs={"ticket_id": ticket.id}
+                            ),
+                        )
+                    if comment_text:
+                        messages.success(request, _("Message sent."))
+                    else:
+                        messages.success(request, _("Image sent."))
+                else:
+                    messages.error(request, _("Please enter a message or attach an image."))
+        return redirect("support-ticket-detail", ticket_id=ticket.id)
+    context = {
+        "ticket": ticket,
+        "messages": Comment.objects.filter(ticket=ticket).order_by("date"),
+        "message_form": message_form,
+    }
+    return render(request, "helpdesk/support_ticket_detail.html", context)
+
+
+
+@login_required
+def support_ticket_close(request, ticket_id):
+    ticket = get_object_or_404(Ticket, id=ticket_id, is_support_ticket=True)
+    employee = getattr(request.user, "employee_get", None)
+    if not ticket.can_user_access(employee):
+        return handle_no_permission(request)
+    ticket.status = "closed"
+    ticket.closed = True
+    ticket.closed_at = timezone.now()
+    ticket.save(update_fields=["status", "closed", "closed_at"])
+    messages.success(request, _("The chat was closed."))
+    return redirect("support-ticket-detail", ticket_id=ticket.id)
+
+
 @login_required
 def ticket_view(request):
     """
@@ -438,6 +705,10 @@ def ticket_view(request):
 
     data_dict = parse_qs(previous_data)
     get_key_instances(Ticket, data_dict)
+    current_support_resolver = get_current_support_ticket_resolver()
+    support_resolver_form = SupportTicketAssignForm(
+        initial={"resolver": current_support_resolver}
+    )
     template = "helpdesk/ticket/ticket_view.html"
     context = {
         "my_tickets": paginator_qry(my_tickets, my_page_number),
@@ -449,6 +720,8 @@ def ticket_view(request):
         "view": view,
         "today": datetime.today().date(),
         "filter_dict": data_dict,
+        "support_resolver_form": support_resolver_form,
+        "current_support_resolver": current_support_resolver,
     }
 
     return render(request, template, context=context)
@@ -898,14 +1171,50 @@ def ticket_detail(request, ticket_id, **kwargs):
         sorted_activity_list = sorted(activity_list, key=itemgetter("date"))
 
         color = "success"
-        remaining_days = ticket.deadline - today
-        remaining = f"Due in {remaining_days.days} days"
-        if remaining_days.days < 0:
-            remaining = f"{abs(remaining_days.days)} days overdue"
-            color = "danger"
-        elif remaining_days.days == 0:
-            remaining = "Due Today"
-            color = "warning"
+        # If a deadline exists, show remaining time until deadline. For tickets without a deadline
+        # (e.g., support tickets), show elapsed time since creation (Raised X ago) to avoid errors
+        # when ticket.deadline is None.
+        if getattr(ticket, "deadline", None):
+            try:
+                remaining_days = ticket.deadline - today
+                remaining = f"Due in {remaining_days.days} days"
+                if remaining_days.days < 0:
+                    remaining = f"{abs(remaining_days.days)} days overdue"
+                    color = "danger"
+                elif remaining_days.days == 0:
+                    remaining = "Due Today"
+                    color = "warning"
+            except Exception:
+                # Fallback in case of unexpected types
+                remaining = ""
+                color = "secondary"
+        else:
+            # Compute elapsed time since ticket.created_at and display it as "Raised X ago"
+            created_at = getattr(ticket, "created_at", None)
+            if created_at:
+                try:
+                    # Ensure created_at is a datetime; if it's a date, convert to datetime
+                    if not isinstance(created_at, datetime):
+                        created_dt = datetime.combine(created_at, datetime.min.time())
+                    else:
+                        created_dt = created_at
+                    # Use timezone-aware now() for subtraction
+                    delta = timezone.now() - created_dt
+                    seconds = int(delta.total_seconds())
+                    if seconds < 60:
+                        remaining = f"Raised {seconds} seconds ago"
+                    elif seconds < 3600:
+                        remaining = f"Raised {seconds // 60} minutes ago"
+                    elif seconds < 86400:
+                        remaining = f"Raised {seconds // 3600} hours ago"
+                    else:
+                        remaining = f"Raised {seconds // 86400} days ago"
+                except Exception:
+                    remaining = ""
+                color = "info"
+            else:
+                remaining = ""
+                color = "secondary"
 
         rating = ""
         if ticket.priority == "low":

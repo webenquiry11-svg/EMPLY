@@ -519,6 +519,7 @@ class Request:
         self.date = date
         self.time = time
         self.datetime = datetime
+        self.headers = {}
         self.META = META()
 
 

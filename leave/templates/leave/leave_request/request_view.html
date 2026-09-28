@@ -1,4 +1,4 @@
-{% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %} {% load basefilters %}
+﻿{% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %} {% load basefilters %}
 <style>
     .diff-cell {
         background: #d7d7d7 !important;
@@ -30,7 +30,7 @@
         /* Allow the tooltip width to adjust based on content */
         max-width: auto;
         /* Limit the maximum width of the tooltip to prevent it from overflowing */
-        background-color: hsl(8, 77%, 56%);
+        background-color: #01231a;
         color: white;
         text-align: center;
         border-radius: 6px;
@@ -192,7 +192,7 @@
     {% else %}
         <div class="oh-empty">
             <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="{% trans 'Page not found. 404.' %}" />
-            <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+            <h2 class="oh-empty__title">{% trans "No Records found." %}</h1>
             <p class="oh-empty__subtitle">{% trans "There are no leave requests at the moment." %}</p>
         </div>
     {% endif %}
@@ -381,3 +381,4 @@
 
 </script>
 {% endblock %}
+

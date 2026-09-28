@@ -5,7 +5,7 @@ including leave type, leave request, leave allocation request, holidays and comp
 
 import re
 import uuid
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from typing import Any
 
 from django import forms
@@ -19,6 +19,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.forms import ModelForm as BaseModelForm
 from base.methods import filtersubordinatesemployeemodel, reload_queryset
+from base.models import Holidays
 from employee.filters import EmployeeFilter
 from employee.forms import MultipleFileField
 from employee.models import Employee
@@ -40,6 +41,95 @@ from leave.models import (
 
 CHOICES = [("yes", _("Yes")), ("no", _("No"))]
 LEAVE_MAX_LIMIT = 1e5
+
+
+def _policy_leave_validation(cleaned_data, instance=None):
+    employee = cleaned_data.get("employee_id")
+    leave_type = cleaned_data.get("leave_type_id")
+    start_date = cleaned_data.get("start_date")
+    end_date = cleaned_data.get("end_date") or start_date
+    attachment = cleaned_data.get("attachment")
+    if not employee or not leave_type or not start_date:
+        return
+
+    name = str(leave_type.name).strip().lower()
+    work_info = getattr(employee, "employee_work_info", None)
+    category = str(
+        getattr(getattr(work_info, "employee_type_id", None), "employee_type", "")
+    ).lower()
+    requested_days = (end_date - start_date).days + 1
+    advance_days = (start_date - date.today()).days
+
+    if name in {"cl", "casual leave"} and advance_days < 4:
+        raise ValidationError(_("Casual Leave must be requested at least 4 days in advance."))
+    if name in {"al", "annual leave"} and advance_days < 7:
+        raise ValidationError(_("Annual Leave must be requested at least 7 days in advance."))
+    if name in {"al", "annual leave"} and leave_type.require_approval != "yes":
+        requested_dates = (
+            start_date + timedelta(days=offset)
+            for offset in range(requested_days)
+        )
+        holiday_dates = set(
+            Holidays.objects.filter(
+                company_id=getattr(work_info, "company_id", None),
+                start_date__lte=end_date,
+                end_date__gte=start_date,
+            ).values_list("start_date", "end_date")
+        )
+        spans_holiday_or_weekend = any(
+            current.weekday() >= 5
+            or any(
+                holiday_start <= current <= (holiday_end or holiday_start)
+                for holiday_start, holiday_end in holiday_dates
+            )
+            for current in requested_dates
+        )
+        if spans_holiday_or_weekend:
+            raise ValidationError(
+                _("Annual Leave cannot extend through weekends or holidays without approval.")
+            )
+    if name in {"cl", "casual leave"} and requested_days > 2 and leave_type.require_approval != "yes":
+        raise ValidationError(_("Casual Leave longer than 2 days requires approval."))
+    if any(term in category for term in ("contract", "intern", "probation")) and name in {
+        "cl", "casual leave", "sl", "sick leave", "al", "annual leave"
+    }:
+        raise ValidationError(_("This employee category has no paid entitlement for this leave type."))
+
+    is_ccl = leave_type.is_compensatory_leave or name in {"ccl", "compensatory casual leave"}
+    if is_ccl:
+        from django.apps import apps
+
+        compensatory_model = apps.get_model("leave", "CompensatoryLeaveRequest")
+        if not compensatory_model.objects.filter(
+            employee_id=employee,
+            leave_type_id=leave_type,
+            status="approved",
+            requested_date__lte=start_date,
+            requested_date__gte=start_date - timedelta(days=90),
+        ).filter(
+            attendance_id__attendance_validated=True,
+        ).filter(
+            Q(attendance_id__is_holiday=True)
+            | Q(attendance_id__attendance_date__week_day__in=[1, 7])
+        ).exists():
+            raise ValidationError(_("Compensatory Leave is valid only within 90 days of approved compensatory work."))
+
+    existing = LeaveRequest.objects.filter(
+        employee_id=employee,
+        start_date__lte=end_date,
+        end_date__gte=start_date,
+    )
+    if instance is not None:
+        existing = existing.exclude(pk=instance.pk)
+    if existing.exclude(status__in=["cancelled", "rejected"]).exists():
+        raise ValidationError(_("Leave types cannot overlap or be combined for the same dates."))
+
+
+class PolicyLeaveRequestMixin:
+    def clean(self):
+        cleaned_data = super().clean()
+        _policy_leave_validation(cleaned_data, self.instance)
+        return cleaned_data
 
 
 def get_allocatable_leave_type_queryset():
@@ -235,7 +325,7 @@ class UpdateLeaveTypeForm(ConditionForm):
         leave_type = super().save(*args, **kwargs)
 
 
-class LeaveRequestCreationForm(BaseModelForm):
+class LeaveRequestCreationForm(PolicyLeaveRequestMixin, BaseModelForm):
 
     def __init__(self, *args, **kwargs):
 
@@ -286,11 +376,12 @@ class LeaveRequestCreationForm(BaseModelForm):
             "end_date_breakdown",
             "requested_minutes",
             "attachment",
+            "doctor_certificate",
             "description",
         ]
 
 
-class LeaveRequestUpdationForm(BaseModelForm):
+class LeaveRequestUpdationForm(PolicyLeaveRequestMixin, BaseModelForm):
 
     def __init__(self, *args, **kwargs):
 
@@ -355,6 +446,7 @@ class LeaveRequestUpdationForm(BaseModelForm):
             "end_date_breakdown",
             "requested_minutes",
             "attachment",
+            "doctor_certificate",
             "description",
         ]
 
@@ -445,7 +537,7 @@ class AvailableLeaveUpdateForm(BaseModelForm):
         fields = ["available_days", "carryforward_days", "is_active"]
 
 
-class UserLeaveRequestForm(BaseModelForm):
+class UserLeaveRequestForm(PolicyLeaveRequestMixin, BaseModelForm):
     description = forms.CharField(label=_("Description"), widget=forms.Textarea)
 
     def __init__(self, *args, **kwargs):
@@ -484,6 +576,7 @@ class UserLeaveRequestForm(BaseModelForm):
             "end_date_breakdown",
             "requested_minutes",
             "attachment",
+            "doctor_certificate",
             "description",
         ]
         widgets = {
@@ -560,7 +653,7 @@ class RejectForm(forms.Form):
         fields = ["reject_reason"]
 
 
-class UserLeaveRequestCreationForm(BaseModelForm):
+class UserLeaveRequestCreationForm(PolicyLeaveRequestMixin, BaseModelForm):
 
     def as_p(self, *args, **kwargs):
         """

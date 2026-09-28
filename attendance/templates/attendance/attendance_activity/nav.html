@@ -1,9 +1,62 @@
 {% load i18n %}
 {% load basefilters %}
+<style>
+    .attendance-activity-page .oh-main__topbar,
+    .attendance-activity-page .oh-main__titlebar,
+    .attendance-activity-page .oh-main__titlebar-button-container,
+    .attendance-activity-page .oh-input-group,
+    .attendance-activity-page .oh-dropdown__menu,
+    .attendance-activity-page .oh-btn,
+    .attendance-activity-page .oh-input,
+    .attendance-activity-page .oh-select,
+    .attendance-activity-page .oh-sticky-table,
+    .attendance-activity-page .oh-sticky-table__table,
+    .attendance-activity-page .oh-sticky-table__thead,
+    .attendance-activity-page .oh-sticky-table__tbody,
+    .attendance-activity-page .oh-sticky-table__tr,
+    .attendance-activity-page .oh-sticky-table__th,
+    .attendance-activity-page .oh-sticky-table__td {
+        background: #161f18 !important;
+        color: #ffffff !important;
+        border-color: rgba(255,255,255,0.08) !important;
+    }
+
+    .attendance-activity-page .oh-main__titlebar-title,
+    .attendance-activity-page .oh-main__titlebar-title a,
+    .attendance-activity-page .oh-main__titlebar-search-toggle,
+    .attendance-activity-page .oh-input-group__icon,
+    .attendance-activity-page .oh-sticky-table__th,
+    .attendance-activity-page .oh-sticky-table__td,
+    .attendance-activity-page .oh-dropdown__link,
+    .attendance-activity-page .oh-dropdown__items li,
+    .attendance-activity-page .oh-dropdown__menu .oh-dropdown__link,
+    .attendance-activity-page .oh-input,
+    .attendance-activity-page .oh-select,
+    .attendance-activity-page .oh-btn {
+        color: #ffffff !important;
+    }
+
+    .attendance-activity-page .oh-main__titlebar-title a {
+        text-decoration: none !important;
+    }
+
+    .attendance-activity-page .oh-input,
+    .attendance-activity-page .oh-select,
+    .attendance-activity-page .oh-btn,
+    .attendance-activity-page .oh-dropdown__menu {
+        border: 1px solid rgba(255,255,255,0.08) !important;
+        border-radius: 12px !important;
+    }
+
+    .attendance-activity-page .oh-btn:hover,
+    .attendance-activity-page .oh-dropdown__menu a:hover {
+        background: rgba(45, 90, 63, 0.18) !important;
+    }
+</style>
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
     <div class="oh-main__titlebar oh-main__titlebar--left">
         <h1 class="oh-main__titlebar-title fw-bold">
-            <a href="{% url 'attendance-activity-view' %}" class="text-dark">
+            <a href="{% url 'attendance-activity-view' %}" class="text-white">
                 {% trans "Attendance Activity" %}
             </a>
         </h1>

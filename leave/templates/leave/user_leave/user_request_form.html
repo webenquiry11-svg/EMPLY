@@ -33,6 +33,49 @@
 >
     <div class="oh-modal__dialog-body">{{ form.as_p }}</div>
 </form>
+<style>
+    html body:has(.oh-wrapper-main.employee-bottom-nav-active) #objectCreateModal #userLeaveForm .select2-selection,
+    html body:has(.oh-wrapper-main.employee-bottom-nav-active) #objectCreateModal #userLeaveForm .select2-selection--single {
+        min-height: 46px !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        border: 1px solid rgba(42, 132, 155, 0.24) !important;
+        border-radius: 12px !important;
+        color: #285d6b !important;
+        box-shadow: none !important;
+    }
+
+    html body:has(.oh-wrapper-main.employee-bottom-nav-active) #objectCreateModal #userLeaveForm .select2-selection__rendered {
+        padding: 0.78rem 2.4rem 0.78rem 0.9rem !important;
+        color: #285d6b !important;
+        line-height: 1.2 !important;
+    }
+
+    html body:has(.oh-wrapper-main.employee-bottom-nav-active) #objectCreateModal #userLeaveForm .select2-container--open .select2-selection,
+    html body:has(.oh-wrapper-main.employee-bottom-nav-active) #objectCreateModal #userLeaveForm .select2-container--focus .select2-selection {
+        border-color: #278da0 !important;
+        box-shadow: 0 0 0 3px rgba(39, 141, 160, 0.16) !important;
+    }
+
+    html body:has(.oh-wrapper-main.employee-bottom-nav-active) > .select2-container .select2-search__field {
+        border: 1px solid rgba(42, 132, 155, 0.26) !important;
+        border-color: rgba(42, 132, 155, 0.26) !important;
+        background: #ffffff !important;
+        color: #285d6b !important;
+    }
+
+    html body:has(.oh-wrapper-main.employee-bottom-nav-active) > .select2-container .select2-results__option {
+        background: #ffffff !important;
+        color: #285d6b !important;
+        border-radius: 9px !important;
+    }
+
+    html body:has(.oh-wrapper-main.employee-bottom-nav-active) > .select2-container .select2-results__option--highlighted,
+    html body:has(.oh-wrapper-main.employee-bottom-nav-active) > .select2-container .select2-results__option[aria-selected="true"] {
+        background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+        color: #ffffff !important;
+    }
+</style>
 <script>
    (function () {
        var minuteLeaveTypeIds = {{ minute_leave_type_ids|default:'[]'|safe }};

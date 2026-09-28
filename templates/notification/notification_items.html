@@ -10,16 +10,17 @@
     </div>
 {% endif %}
 
-<div class="oh-navbar__notification-head">
-    <span class="oh-navbar__notification-head-title">{% trans "Notifications" %}</span>
+<div class="oh-navbar__notification-head" style="display: flex; align-items: center; justify-content: space-between; gap: 0.7rem; padding: 0.9rem 0.9rem 0.7rem; border-bottom: 1px solid rgba(42,132,155,0.18); background: #e8f5f7;">
+    <span class="oh-navbar__notification-head-title" style="color: #173f50; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.01em;">{% trans "Notifications" %}</span>
     {% if notifications %}
-        <div class="oh-navbar__notification-links" x-show="visible">
+        <div class="oh-navbar__notification-links" x-show="visible" style="display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; justify-content: flex-end;">
             <a
                 class="oh-navbar__notification-tray-link mr-2"
                 hx-get="{% url 'read-notifications' %}"
                 hx-target="#notificationContainer"
                 x-show="!markRead"
                 @click="markRead = true"
+                style="display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 0.35rem !important; padding: 0.46rem 0.7rem !important; border-radius: 10px !important; background: #176d83 !important; border: 1px solid #176d83 !important; color: #ffffff !important; font-size: 0.69rem !important; font-weight: 700 !important; text-decoration: none !important; line-height: 1.2 !important;"
             >
                 <ion-icon name="checkmark-done-outline" class="mr-1"></ion-icon> {% trans "Mark as read" %}
             </a>
@@ -27,6 +28,7 @@
                 class="oh-navbar__notification-tray-link oh-navbar__notification-tray-link--danger"
                 hx-get="{% url 'clear-notifications' %}"
                 hx-target="#notificationContainer"
+                style="display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 0.35rem !important; padding: 0.46rem 0.7rem !important; border-radius: 10px !important; background: #fff1f1 !important; border: 1px solid #f1caca !important; color: #b94a48 !important; font-size: 0.69rem !important; font-weight: 700 !important; text-decoration: none !important; line-height: 1.2 !important;"
             >
                 <ion-icon name="close-outline" class="mr-1"></ion-icon> {% trans "Clear" %}
             </a>
@@ -34,21 +36,23 @@
     {% endif %}
 </div>
 
-<div class="oh-navbar__notification-body" x-show="visible">
+<div class="oh-navbar__notification-body" x-show="visible" style="padding: 0.55rem 0.55rem 0.2rem; background: #ffffff;">
     {% if notifications %}
-        <ul class="oh-navbar__nofication-list">
+        <ul class="oh-navbar__notification-list" style="display: flex; flex-direction: column; gap: 0.48rem; margin: 0; padding: 0; list-style: none;">
             {% for notification in notifications %}
                 <a
                     class="oh-navbar__notification-item"
                     href="{{notification.data.redirect}}#"
                     id="notificationItem{{notification.id}}"
                     data-id="{{notification.id}}"
+                    style="display: grid !important; grid-template-columns: 10px minmax(0, 1fr) 30px !important; align-items: center !important; gap: 0.6rem !important; padding: 0.74rem 0.72rem !important; border-radius: 12px !important; background: #e8f5f7 !important; border: 1px solid rgba(42,132,155,0.2) !important; text-decoration: none !important; color: #173f50 !important; box-shadow: 0 4px 12px rgba(23,109,131,0.08) !important;"
                 >
                     <div>
                         {% if notification.unread %}
                             <span
                                 class="oh-navbar__notification-dot oh-navbar__notification-dot--green"
                                 :class="markRead ? '': 'oh-navbar__notification-dot--unread'"
+                                style="display: block !important; width: 8px !important; height: 8px !important; border-radius: 50% !important; background: #278da0 !important; opacity: 1 !important; box-shadow: 0 0 0 2px rgba(39,141,160,0.18) !important;"
                             >
                             </span>
                         {% endif %}
@@ -58,6 +62,7 @@
                             <p
                                 class="oh-navbar__notification-text"
                                 :class="markRead ? '' : 'oh-navbar__notification-text--unread' "
+                                style="margin: 0 0 0.18rem; color: #173f50; font-size: 0.76rem; line-height: 1.4; font-weight: 700;"
                             >
                                 {{ notification.data.verb_ar }}
                             </p>
@@ -65,6 +70,7 @@
                             <p
                                 class="oh-navbar__notification-text"
                                 :class="markRead ? '' : 'oh-navbar__notification-text--unread' "
+                                style="margin: 0 0 0.18rem; color: #173f50; font-size: 0.76rem; line-height: 1.4; font-weight: 700;"
                             >
                                 {{ notification.data.verb_de }}
                             </p>
@@ -72,6 +78,7 @@
                             <p
                                 class="oh-navbar__notification-text"
                                 :class="markRead ? '' : 'oh-navbar__notification-text--unread' "
+                                style="margin: 0 0 0.18rem; color: #173f50; font-size: 0.76rem; line-height: 1.4; font-weight: 700;"
                             >
                                 {{ notification.data.verb_fr }}
                             </p>
@@ -79,6 +86,7 @@
                             <p
                                 class="oh-navbar__notification-text"
                                 :class="markRead ? '' : 'oh-navbar__notification-text--unread' "
+                                style="margin: 0 0 0.18rem; color: #173f50; font-size: 0.76rem; line-height: 1.4; font-weight: 700;"
                             >
                                 {{ notification.data.verb_es }}
                             </p>
@@ -86,11 +94,12 @@
                             <p
                                 class="oh-navbar__notification-text"
                                 :class="markRead ? '' : 'oh-navbar__notification-text--unread' "
+                                style="margin: 0 0 0.18rem; color: #173f50; font-size: 0.76rem; line-height: 1.4; font-weight: 700;"
                             >
                                 {{ notification.verb }}
                             </p>
                         {% endif %}
-                        <span class="oh-navbar__notification-date">
+                        <span class="oh-navbar__notification-date" style="display: block; color: #557b84; font-size: 0.66rem; line-height: 1.3;">
                             {{ notification.timesince }} {% trans "ago by" %}
                             {% if notification.actor.employee_first_name %}
                                 {{ notification.actor.employee_first_name }}
@@ -112,7 +121,7 @@
                             {% endcomment %}
                             <div
                                 class="oh-navbar__notification-image"
-                                style="margin-left: 5px"
+                                style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 10px; background: #d8edf1; color: #176d83; border: 1px solid rgba(42,132,155,0.28); margin-left: 5px;"
                                 onclick="event.stopPropagation();event.preventDefault()"
                                 hx-target="#notificationItem{{notification.id}}"
                                 hx-post="{% url 'mark-as-read-notification' notification.id %}"
@@ -142,71 +151,31 @@
         </div>
     {% endif %}
 </div>
-<div class="oh-navbar__notification-footer" x-show="visible" style="position: relative">
+<div class="oh-navbar__notification-footer" x-show="visible" style="padding: 0.68rem 0.8rem 0.8rem; border-top: 1px solid rgba(42,132,155,0.16); background: #ffffff; position: relative;">
     <a
         id="viewallnotification"
         data-target="#allNotifications"
         hx-get="{% url 'all-notifications' %}"
         hx-target="#allNotificationBody"
         class="oh-navbar__notification-tray-link oh-activity-sidebar__open"
+        style="display: block; width: 100%; padding: 0.72rem 0.8rem; border-radius: 12px; background: #176d83; color: #ffffff; text-align: center; border: 1px solid #176d83; text-decoration: none;"
     >{% trans "View all notifications" %}
     </a>
     <div
         class="oh-navbar__volume-icon"
         title="{% trans 'Notification Sound' %}"
-        style="position: absolute; right: 25px"
+        style="position: absolute; right: 25px; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.04); color: #dfece8;"
         hx-get="{% url 'notifications:notification-sound' %}"
         hx-swap="none"
     >
         {% if request.user.employee_get.notification_sound.sound_enabled %}
-            <span class="material-symbols-outlined text-danger">
+            <span class="material-symbols-outlined text-danger" style="font-size: 16px; color: #dfece8;">
                 volume_up
             </span>
         {% else %}
-            <span class="material-symbols-outlined text-danger">
+            <span class="material-symbols-outlined text-danger" style="font-size: 16px; color: #dfece8;">
                 volume_off
             </span>
         {% endif %}
     </div>
 </div>
-<script>
-    $(document).ready(function () {
-        $(".oh-navbar__notification-item").on("click", function (event) {
-            event.preventDefault();
-            var notificationLink = $(this);
-            var notificationId = notificationLink.data("id");
-            $.ajax({
-                type: "post",
-                url: "/mark-as-read-notification-json/",
-                data: {
-                    csrfmiddlewaretoken: getCookie("csrftoken"),
-                    notification_id: notificationId,
-                },
-                success: function (response) {
-                    if (response.success) {
-                        window.location.href = notificationLink.attr("href");
-                    } else {
-                        window.location.href = notificationLink.attr("href");
-                        console.error("Failed to mark notification as read");
-                        if (response.error) {
-                            console.error("Error:", response.error);
-                        }
-                    }
-                },
-                error: function (xhr, status, error) {
-                    window.location.href = notificationLink.attr("href");
-                    console.error("Error:", status, error);
-                },
-            });
-        });
-    });
-
-    function updateNotificationCount() {
-        var unreadCount = $(".oh-navbar__notification-item .oh-navbar__notification-dot--unread").length;
-
-        var $badge = $(".live_notify_badge");
-        if ($badge.length) {
-            $badge.text(unreadCount);
-        }
-    }
-</script>

@@ -116,6 +116,7 @@ from base.methods import (
     generate_colors,
     generate_otp,
     get_key_instances,
+    get_subordinate_employee_ids,
     is_reportingmanager,
     paginator_qry,
     sortby,
@@ -123,6 +124,7 @@ from base.methods import (
 from base.models import (
     WEEK_DAYS,
     WEEKS,
+    Announcement,
     AnnouncementExpire,
     BaserequestFile,
     BiometricAttendance,
@@ -191,6 +193,276 @@ def custom404(request):
     Custom 404 method
     """
     return render(request, "404.html")
+
+
+@login_required
+@require_http_methods(["GET"])
+def global_search(request):
+    """Permission-aware grouped search across the main HR modules."""
+    query = (request.GET.get("q") or "").strip()
+    current_employee = getattr(request.user, "employee_get", None)
+    results = {
+        "employees": [],
+        "departments": [],
+        "jobs": [],
+        "attendance": [],
+        "leave": [],
+        "announcements": [],
+        "pages": [],
+    }
+
+    def filter_queryset_for_user(queryset, employee_field="employee_id"):
+        if request.user.has_perm("employee.view_employee") or request.user.is_superuser:
+            return queryset
+        if not current_employee:
+            return queryset.none()
+        subordinate_ids = get_subordinate_employee_ids(request, nested=True)
+        field_name = f"{employee_field}__id__in"
+        filter_ids = list(subordinate_ids)
+        if current_employee.id not in filter_ids:
+            filter_ids.append(current_employee.id)
+        return queryset.filter(**{field_name: filter_ids})
+
+    def match_priority_for_name(value, query_text):
+        if not value:
+            return 0
+        value_text = str(value).strip()
+        query_lower = (query_text or "").strip().lower()
+        if not query_lower:
+            return 0
+        value_lower = value_text.lower()
+        if value_lower == query_lower:
+            return 100
+        if value_lower.startswith(query_lower):
+            return 90
+        if query_lower in value_lower:
+            return 70
+        return 0
+
+    def employee_search_priority(employee, query_text):
+        full_name = employee.get_full_name() if hasattr(employee, "get_full_name") else ""
+        score = match_priority_for_name(full_name, query_text)
+        score = max(
+            score,
+            match_priority_for_name(getattr(employee, "employee_first_name", ""), query_text),
+            match_priority_for_name(getattr(employee, "employee_last_name", ""), query_text),
+            match_priority_for_name(getattr(employee, "email", ""), query_text),
+            match_priority_for_name(getattr(employee, "badge_id", ""), query_text),
+            match_priority_for_name(
+                getattr(getattr(employee, "employee_user_id", None), "username", ""),
+                query_text,
+            ),
+        )
+        return score
+
+    if not query:
+        suggestions = [
+            {"title": "Employees", "subtitle": "Employee directory", "url": reverse("employee-view")},
+            {"title": "Attendance", "subtitle": "Attendance records", "url": reverse("attendance-view")},
+            {"title": "Leave", "subtitle": "Leave requests", "url": reverse("request-view")},
+            {"title": "Departments", "subtitle": "Department overview", "url": reverse("department-view")},
+            {"title": "Recruitment", "subtitle": "Job roles", "url": reverse("job-position-view")},
+        ]
+        return JsonResponse({"results": [], "suggestions": suggestions})
+
+    query_terms = [term for term in query.split() if term]
+    employee_filter = Q(employee_first_name__icontains=query) | Q(employee_last_name__icontains=query)
+    for term in query_terms:
+        employee_filter |= Q(employee_first_name__icontains=term)
+        employee_filter |= Q(employee_last_name__icontains=term)
+        employee_filter |= Q(email__icontains=term)
+        employee_filter |= Q(phone__icontains=term)
+        employee_filter |= Q(badge_id__icontains=term)
+        employee_filter |= Q(employee_user_id__username__icontains=term)
+
+    employee_queryset = Employee.objects.filter(employee_filter)
+    if request.user.has_perm("employee.view_employee") or request.user.is_superuser:
+        employee_queryset = employee_queryset
+    elif current_employee:
+        subordinate_ids = get_subordinate_employee_ids(request, nested=True)
+        filter_ids = list(subordinate_ids)
+        if current_employee.id not in filter_ids:
+            filter_ids.append(current_employee.id)
+        employee_queryset = employee_queryset.filter(id__in=filter_ids)
+    else:
+        employee_queryset = Employee.objects.none()
+
+    for employee in sorted(
+        employee_queryset,
+        key=lambda emp: (
+            -employee_search_priority(emp, query),
+            emp.employee_first_name.lower(),
+            (emp.employee_last_name or "").lower(),
+        ),
+    )[:5]:
+        results["employees"].append(
+            {
+                "type": "Employee",
+                "module": "employee",
+                "id": employee.id,
+                "title": employee.get_full_name(),
+                "subtitle": employee.email or employee.phone or "Employee",
+                "url": reverse("employee-view-individual", args=[employee.id]),
+            }
+        )
+
+    department_queryset = Department.objects.filter(department__icontains=query)[:5]
+    for department in department_queryset:
+        results["departments"].append(
+            {
+                "type": "Department",
+                "module": "department",
+                "id": department.id,
+                "title": department.department,
+                "subtitle": "Department",
+                "url": reverse("department-view"),
+            }
+        )
+
+    job_queryset = JobPosition.objects.select_related("department_id").filter(
+        Q(job_position__icontains=query) | Q(department_id__department__icontains=query)
+    )[:5]
+    for job in job_queryset:
+        results["jobs"].append(
+            {
+                "type": "Job",
+                "module": "job",
+                "id": job.id,
+                "title": job.job_position,
+                "subtitle": job.department_id.department if getattr(job, "department_id", None) else "Job position",
+                "url": reverse("job-position-view"),
+            }
+        )
+
+    attendance_model = apps.get_model("attendance", "Attendance")
+    if attendance_model and apps.is_installed("attendance"):
+        attendance_queryset = attendance_model.objects.select_related("employee_id")
+        attendance_filter = Q(employee_id__employee_first_name__icontains=query) | Q(
+            employee_id__employee_last_name__icontains=query
+        )
+        for term in query_terms:
+            attendance_filter |= Q(employee_id__employee_first_name__icontains=term)
+            attendance_filter |= Q(employee_id__employee_last_name__icontains=term)
+            attendance_filter |= Q(employee_id__email__icontains=term)
+            attendance_filter |= Q(employee_id__phone__icontains=term)
+            attendance_filter |= Q(attendance_date__icontains=term)
+        attendance_queryset = attendance_queryset.filter(attendance_filter)
+        attendance_queryset = filter_queryset_for_user(attendance_queryset, "employee_id")
+        attendance_results = sorted(
+            attendance_queryset,
+            key=lambda item: (
+                -(
+                    employee_search_priority(item.employee_id, query)
+                    if getattr(item, "employee_id", None)
+                    else 0
+                ),
+                -item.attendance_date.toordinal() if getattr(item, "attendance_date", None) else 0,
+            ),
+        )[:5]
+        for attendance in attendance_results:
+            employee_name = (
+                attendance.employee_id.get_full_name()
+                if getattr(attendance, "employee_id", None)
+                else "Employee"
+            )
+            attendance_url = reverse("user-request-one-view", args=[attendance.id])
+            attendance_ids = [item.id for item in attendance_results]
+            if attendance_ids:
+                attendance_url = f"{attendance_url}?{urlencode({'instances_ids': json.dumps(attendance_ids)})}"
+            results["attendance"].append(
+                {
+                    "type": "Attendance",
+                    "module": "attendance",
+                    "id": attendance.id,
+                    "title": f"{employee_name} — {attendance.attendance_date}",
+                    "subtitle": getattr(attendance, "attendance_clock_in", None) or "Attendance record",
+                    "url": attendance_url,
+                }
+            )
+
+    leave_model = apps.get_model("leave", "LeaveRequest")
+    if leave_model and apps.is_installed("leave"):
+        leave_queryset = leave_model.objects.select_related("employee_id", "leave_type_id")
+        leave_filter = Q(employee_id__employee_first_name__icontains=query) | Q(
+            employee_id__employee_last_name__icontains=query
+        )
+        for term in query_terms:
+            leave_filter |= Q(employee_id__employee_first_name__icontains=term)
+            leave_filter |= Q(employee_id__employee_last_name__icontains=term)
+            leave_filter |= Q(leave_type_id__name__icontains=term)
+            leave_filter |= Q(status__icontains=term)
+        leave_queryset = leave_queryset.filter(leave_filter)
+        leave_queryset = filter_queryset_for_user(leave_queryset, "employee_id")
+        leave_results = sorted(
+            leave_queryset,
+            key=lambda item: (
+                -(employee_search_priority(item.employee_id, query) if getattr(item, "employee_id", None) else 0),
+                -(item.requested_date.toordinal() if getattr(item, "requested_date", None) else 0),
+            ),
+        )[:5]
+        for leave_request in leave_results:
+            employee_name = (
+                leave_request.employee_id.get_full_name()
+                if getattr(leave_request, "employee_id", None)
+                else "Employee"
+            )
+            leave_type = (
+                leave_request.leave_type_id.name
+                if getattr(leave_request, "leave_type_id", None)
+                and getattr(leave_request.leave_type_id, "name", None)
+                else "Leave"
+            )
+            leave_url = reverse("request-view") + f"?id={leave_request.id}"
+            results["leave"].append(
+                {
+                    "type": "Leave",
+                    "module": "leave",
+                    "id": leave_request.id,
+                    "title": f"{employee_name} — {leave_type}",
+                    "subtitle": str(leave_request.status or "Leave request"),
+                    "url": leave_url,
+                }
+            )
+
+    announcement_queryset = Announcement.objects.filter(
+        Q(title__icontains=query) | Q(description__icontains=query)
+    )[:5]
+    for announcement in announcement_queryset:
+        results["announcements"].append(
+            {
+                "type": "Announcement",
+                "module": "announcement",
+                "id": announcement.id,
+                "title": announcement.title,
+                "subtitle": (announcement.description[:80] if announcement.description else "Announcement"),
+                "url": reverse("announcement-list"),
+            }
+        )
+
+    pages = [
+        {"type": "Page", "title": "Employee Directory", "subtitle": "Employees", "url": reverse("employee-view")},
+        {"type": "Page", "title": "Attendance", "subtitle": "Attendance records", "url": reverse("attendance-view")},
+        {"type": "Page", "title": "Leave Requests", "subtitle": "Leave records", "url": reverse("request-view")},
+        {"type": "Page", "title": "Departments", "subtitle": "Departments", "url": reverse("department-view")},
+        {"type": "Page", "title": "Recruitment", "subtitle": "Job positions", "url": reverse("job-position-view")},
+        {"type": "Page", "title": "Announcements", "subtitle": "Announcements", "url": reverse("announcement-list")},
+        {"type": "Page", "title": "Dashboard", "subtitle": "Overview", "url": reverse("home-page")},
+    ]
+    search_term = query.lower()
+    for page in pages:
+        if search_term in page["title"].lower() or search_term in page["subtitle"].lower():
+            results["pages"].append(page)
+
+    return JsonResponse(
+        {
+            "results": [
+                {"group": key, "items": value}
+                for key, value in results.items()
+                if value
+            ],
+            "suggestions": [],
+        }
+    )
 
 
 # Create your views here.
@@ -567,6 +839,7 @@ def login_user(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
+        login_mode = request.POST.get("login_mode", "emply").lower()
         next_url = request.GET.get("next", "/")
         query_params = request.GET.dict()
         query_params.pop("next", None)
@@ -609,6 +882,26 @@ def login_user(request):
             return redirect("login")
 
         login(request, user)
+        if request.POST.get("remember"):
+            request.session.set_expiry(None)
+        else:
+            request.session.set_expiry(0)
+
+        if login_mode == "payroll":
+            work_info = getattr(employee, "employee_work_info", None)
+            salary_value = getattr(work_info, "basic_salary", None)
+            if salary_value is None or salary_value <= 0:
+                logout(request)
+                messages.error(
+                    request,
+                    _(
+                        "Payroll access is unavailable because salary information "
+                        "has not been configured for your employee profile."
+                    ),
+                )
+                return redirect(f"{reverse('login')}?login_mode=payroll")
+            messages.success(request, _("Login successful."))
+            return redirect("payroll-dashboard")
 
         messages.success(request, _("Login successful."))
 
@@ -622,8 +915,16 @@ def login_user(request):
             next_url += f"?{params}"
         return redirect(next_url)
 
+    login_mode = request.GET.get("login_mode", "emply").lower()
+    if login_mode not in {"emply", "payroll"}:
+        login_mode = "emply"
     return render(
-        request, "login.html", {"initialize_database": initialize_database_condition()}
+        request,
+        "login.html",
+        {
+            "initialize_database": initialize_database_condition(),
+            "login_mode": login_mode,
+        },
     )
 
 
@@ -1509,7 +1810,7 @@ def mail_server_conf(request):
 def mail_server_test_email(request):
     instance_id = request.GET.get("instance_id")
     white_labelling = getattr(horilla_apps, "WHITE_LABELLING", False)
-    image_path = path.join(settings.STATIC_ROOT, "images/ui/horilla-logo.png")
+    image_path = path.join(settings.STATIC_ROOT, "images/ui/emply-logo.png")
     company_name = "Horilla"
 
     if white_labelling:
@@ -7174,6 +7475,18 @@ def holiday_info_export(request):
     )
 
 
+def holiday_queryset_unique_by_date(queryset):
+    """Return one holiday per start_date while preserving the latest record for a date."""
+    unique_holidays = []
+    seen_dates = set()
+    for holiday in queryset.order_by("start_date", "-id"):
+        if holiday.start_date in seen_dates:
+            continue
+        seen_dates.add(holiday.start_date)
+        unique_holidays.append(holiday)
+    return unique_holidays
+
+
 @login_required
 def holiday_view(request):
     """
@@ -7185,7 +7498,14 @@ def holiday_view(request):
     Returns:
     GET : return holiday view  template
     """
-    queryset = Holidays.objects.all()[::-1]
+    queryset = Holidays.objects.all()
+    filter_type = request.GET.get("filter_type", "all")
+    today = timezone.localdate()
+    if filter_type == "upcoming":
+        queryset = queryset.filter(start_date__gte=today)
+    elif filter_type == "past":
+        queryset = queryset.filter(start_date__lt=today)
+    queryset = holiday_queryset_unique_by_date(queryset)
     previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
     page_obj = paginator_qry(queryset, page_number)
@@ -7198,6 +7518,7 @@ def holiday_view(request):
             "holidays": page_obj,
             "form": holiday_filter.form,
             "pd": previous_data,
+            "filter_type": filter_type,
         },
     )
 
@@ -7215,18 +7536,30 @@ def holiday_filter(request):
     GET : return holiday view template
     """
     queryset = Holidays.objects.all()
+    filter_type = request.GET.get("filter_type", "all")
+    today = timezone.localdate()
+    if filter_type == "upcoming":
+        queryset = queryset.filter(start_date__gte=today)
+    elif filter_type == "past":
+        queryset = queryset.filter(start_date__lt=today)
     previous_data = request.GET.urlencode()
     holiday_filter = HolidayFilter(request.GET, queryset).qs
     if request.GET.get("sortby"):
         holiday_filter = sortby(request, holiday_filter, "sortby")
+    holiday_filter = holiday_queryset_unique_by_date(holiday_filter)
     page_number = request.GET.get("page")
-    page_obj = paginator_qry(holiday_filter[::-1], page_number)
+    page_obj = paginator_qry(holiday_filter, page_number)
     data_dict = parse_qs(previous_data)
     get_key_instances(Holidays, data_dict)
     return render(
         request,
         "holiday/holiday.html",
-        {"holidays": page_obj, "pd": previous_data, "filter_dict": data_dict},
+        {
+            "holidays": page_obj,
+            "pd": previous_data,
+            "filter_dict": data_dict,
+            "filter_type": filter_type,
+        },
     )
 
 
@@ -7311,10 +7644,12 @@ def holiday_select(request):
     page_number = request.GET.get("page")
 
     if page_number == "all":
-        employees = Holidays.objects.all()
+        employees = holiday_queryset_unique_by_date(Holidays.objects.all())
+    else:
+        employees = holiday_queryset_unique_by_date(Holidays.objects.all())
 
     employee_ids = [str(emp.id) for emp in employees]
-    total_count = employees.count()
+    total_count = len(employee_ids)
 
     context = {"employee_ids": employee_ids, "total_count": total_count}
 
@@ -7330,11 +7665,10 @@ def holiday_select_filter(request):
     if page_number == "all":
         employee_filter = HolidayFilter(filters, queryset=Holidays.objects.all())
 
-        # Get the filtered queryset
-        filtered_employees = employee_filter.qs
+        filtered_employees = holiday_queryset_unique_by_date(employee_filter.qs)
 
         employee_ids = [str(emp.id) for emp in filtered_employees]
-        total_count = filtered_employees.count()
+        total_count = len(employee_ids)
 
         context = {"employee_ids": employee_ids, "total_count": total_count}
 
@@ -7575,4 +7909,3 @@ def protected_media(request, path):
         response["Content-Disposition"] = f'inline; filename="{filename}"'
 
     return response
-

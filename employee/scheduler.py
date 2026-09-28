@@ -1,8 +1,11 @@
 import datetime
+import os
 import sys
 from datetime import timedelta
 
 from apscheduler.schedulers.background import BackgroundScheduler
+from django.conf import settings
+from django.db import close_old_connections
 
 
 def update_experience():
@@ -16,6 +19,17 @@ def update_experience():
     for instance in queryset:
         instance.experience_calculator()
     return
+
+
+def _database_job(job):
+    def run(*args, **kwargs):
+        close_old_connections()
+        try:
+            return job(*args, **kwargs)
+        finally:
+            close_old_connections()
+
+    return run
 
 
 def block_unblock_disciplinary():
@@ -132,7 +146,10 @@ def block_unblock_disciplinary():
     return
 
 
-if not any(
+if (
+    not settings.DEBUG
+    or os.environ.get("RUN_MAIN") == "true"
+) and not any(
     cmd in sys.argv
     for cmd in ["makemigrations", "migrate", "compilemessages", "flush", "shell"]
 ):
@@ -140,6 +157,6 @@ if not any(
     Initializes and starts background tasks using APScheduler when the server is running.
     """
     scheduler = BackgroundScheduler()
-    scheduler.add_job(update_experience, "interval", hours=4)
-    scheduler.add_job(block_unblock_disciplinary, "interval", seconds=25)
+    scheduler.add_job(_database_job(update_experience), "interval", hours=4)
+    scheduler.add_job(_database_job(block_unblock_disciplinary), "interval", seconds=25)
     scheduler.start()

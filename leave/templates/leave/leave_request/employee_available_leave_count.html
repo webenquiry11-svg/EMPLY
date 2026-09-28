@@ -1,93 +1,81 @@
-{% load i18n %} {% load static %}
-<div
-    id="{{hx_target}}"
-    class="d-flex"
-    style="{% if leave_type_id %}height: 40px;{% else %}height: 1px; display:none;{% endif %}"
->
+{% load i18n %}{% load static %}
+<style>
+    .leave-balance-summary {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+        gap: 8px;
+        width: 100%;
+        margin-top: 16px;
+    }
+    .leave-balance-chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 42px;
+        max-width: 100%;
+        padding: 9px 14px;
+        border: 1px solid #b9d9bb;
+        border-radius: 10px;
+        color: #245b31;
+        background: #edf8e9;
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 1.35;
+        white-space: normal;
+    }
+    .leave-balance-chip--pending {
+        border-color: #d8c98c;
+        color: #6d5819;
+        background: #fff9df;
+    }
+    .leave-balance-chip--empty,
+    .leave-balance-chip--unassigned {
+        border-color: #d7c4c4;
+        color: #754b4b;
+        background: #fff4f4;
+    }
+    .leave-balance-chip img {
+        width: 17px;
+        height: 17px;
+        margin-left: 8px;
+        cursor: help;
+    }
+    @media (max-width: 600px) {
+        .leave-balance-summary { margin-top: 12px; }
+        .leave-balance-chip { width: 100%; }
+    }
+</style>
+<div id="{{hx_target}}" class="leave-balance-summary"
+    {% if not leave_type_id %}style="display:none"{% endif %}>
     {% if not leave_type_id %}
         <div id="messageDiv" style="display: none"></div>
         {% elif leave_unit == 'minute' %}
-        <div
-            id="messageDiv"
-            style="
-                    background-color: #dff0d8;
-                    border: 2px solid #3c763d;
-                border-radius: 18px;
-                padding: 10px;
-                font-weight: bold;
-                    width: 35%;
-                    display: flex;
-                "
-            >
-                {% trans "Available Leaves" %} : {{ total_leave_minutes }} min
-            </div>
+        <div id="messageDiv" class="leave-balance-chip">
+                {% trans "Available Leaves" %} : {{ total_leave_minutes }} {% trans "minutes" %}
+        </div>
         {% elif not available_leave %}
-            <div
-                id="messageDiv"
-                style="
-                    background-color: rgba(229, 79, 56, 0.17);
-                    border: 2px solid hsl(8, 77%, 56%);
-                    border-radius: 18px;
-                    padding: 10px;
-                    font-weight: bold;
-                    width: auto;
-                "
-            >
-                {% trans "Leave type is not assigned for the selected employee." %}
-            </div>
+                <div id="messageDiv" class="leave-balance-chip leave-balance-chip--unassigned">
+                    {% trans "Leave type is not assigned for the selected employee." %}
+                </div>
         {% elif total_leave_days == 0.0 %}
-            <div
-                id="messageDiv"
-                style="
-                    background-color: rgba(229, 79, 56, 0.17);
-                    border: 2px solid hsl(8, 77%, 56%);
-                    border-radius: 18px;
-                    padding: 10px;
-                    font-weight: bold;
-                    width: 35%;
-            "
-        >
-            {% trans "Available Leaves" %} : {{ total_leave_days }}
-            </div>
+        <div id="messageDiv" class="leave-balance-chip leave-balance-chip--empty">
+                {% trans "Available Leaves" %} : {{ total_leave_days }} {% trans "days" %}
+        </div>
         {% else %}
-            <div
-                id="messageDiv"
-                style="
-                    background-color: #dff0d8;
-                    border: 2px solid #3c763d;
-                    border-radius: 18px;
-                    padding: 10px;
-                    font-weight: bold;
-                    width: 35%;
-                    display: flex;
-                "
-            >
-                {% trans "Available Leaves" %} : {{ total_leave_days }}
+        <div id="messageDiv" class="leave-balance-chip">
+                {% trans "Available Leaves" %} : {{ total_leave_days }} {% trans "days" %}
                 {% if forcasted_days and forcasted_days > 0 %}
                     <img
-                        style="width: 20px; height: 20px; cursor: pointer"
                         src="{% static 'images/ui/info.png' %}"
-                        class="ml-2"
                         title="{% trans 'Forecasted available days added to this Available Days (Carryforward Max. + Forcasted Days)' %}"
+                        alt="{% trans 'Available leave forecast information' %}"
                     />
                 {% endif %}
-            </div>
+        </div>
         {% endif %}
     {% if pending_requests %}
-        <div
-            id="pendingDiv"
-            class="ms-2"
-            style="
-                background-color: rgba(229, 79, 56, 0.17);
-                border: 2px solid hsl(8, 77%, 56%);
-                border-radius: 18px;
-                padding: 10px;
-                font-weight: bold;
-                width: 40%;
-                display: flex;
-            "
-        >
-            {% trans "Pending Leaves Requests" %} : {{ pending_requests }}
+        <div id="pendingDiv" class="leave-balance-chip leave-balance-chip--pending">
+                {% trans "Pending Leave Requests" %} : {{ pending_requests }}
         </div>
     {% endif %}
 </div>

@@ -225,6 +225,42 @@ class TicketAssigneesForm(ModelForm):
         ]
 
 
+class SupportTicketForm(forms.ModelForm):
+    class Meta:
+        model = Ticket
+        fields = ["title", "complaint", "support_image"]
+        widgets = {
+            "complaint": forms.Textarea(attrs={"rows": 5, "required": True}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["title"].required = True
+        self.fields["complaint"].required = True
+        self.fields["support_image"].required = False
+
+
+class SupportTicketAssignForm(forms.Form):
+    resolver = forms.ModelChoiceField(
+        queryset=Employee.objects.none(),
+        label=_("Resolver"),
+        required=True,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        qs = Employee.objects.filter(is_active=True)
+        if request and request.user.is_authenticated:
+            qs = qs.filter(employee_user_id__isnull=False)
+        self.fields["resolver"].queryset = qs
+
+
+class SupportTicketMessageForm(forms.Form):
+    text = forms.CharField(widget=forms.Textarea(attrs={"rows": 3}), required=False)
+    image = forms.ImageField(required=False)
+
+
 class FAQCategoryForm(ModelForm):
     class Meta:
         model = FAQCategory

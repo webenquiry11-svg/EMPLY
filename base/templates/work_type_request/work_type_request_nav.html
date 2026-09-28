@@ -3,9 +3,46 @@
 {% load static %}
 
 <section
-    class="oh-wrapper oh-main__topbar"
+    class="oh-wrapper oh-main__topbar work-type-request-nav"
     x-data="{searchShow: false}"
 >
+    <style>
+        .work-type-request-nav {
+            width: auto;
+            max-width: none;
+            background: #ffffff;
+            border: 1px solid #d6e9e6;
+            border-radius: 18px;
+            margin: 24px 28px 16px;
+            padding: 18px 22px !important;
+            box-shadow: 0 8px 22px rgba(29, 86, 79, .07);
+        }
+
+        .work-type-request-nav .oh-main__titlebar-title {
+            color: #174f4b !important;
+        }
+
+        .work-type-request-nav .oh-input {
+            border: 1px solid #cfe2e0;
+            border-radius: 10px;
+            background: #f8fcfb;
+        }
+
+        .work-type-request-nav .oh-btn {
+            border: 0;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #155f6d, #238da0);
+            color: #ffffff;
+            box-shadow: 0 6px 14px rgba(21, 95, 109, .16);
+        }
+
+        @media (max-width: 640px) {
+            .work-type-request-nav {
+                margin: 14px 12px 12px;
+                padding: 14px !important;
+            }
+        }
+    </style>
     <div class="oh-main__titlebar oh-main__titlebar--left">
         <a
             href='{% url "work-type-request-view" %}'

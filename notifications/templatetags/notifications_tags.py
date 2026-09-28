@@ -8,6 +8,7 @@ from distutils.version import (  # pylint: disable=no-name-in-module,import-erro
 from django import get_version
 from django.template import Library
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 
 try:
     from django.urls import reverse
@@ -83,7 +84,7 @@ def register_notify_callbacks(
     for callback in callbacks.split(","):
         script += "register_notifier(" + callback + ");"
     script += "</script>"
-    return format_html(script)
+    return mark_safe(script)
 
 
 @register.simple_tag(takes_context=True)

@@ -1,0 +1,253 @@
+{% extends 'index.html' %}
+{% block content %}
+<style>
+  html:has(.support-ticket-list),
+  body:has(.support-ticket-list),
+  body:has(.support-ticket-list) .oh-wrapper-main,
+  body:has(.support-ticket-list) #main {
+    background: #f5f7f3 !important;
+  }
+
+  .support-ticket-list {
+    --bg-main: #f5f7f3;
+    --card-bg-dark: #ffffff;
+    --nav-bg: #ffffff;
+    --accent-green: #155f6d;
+    --accent-light-green: #d9efed;
+    --text-main-dark: #245b63;
+    --text-muted-dark: #6a8a88;
+    --border-color: #d6e9e6;
+    min-height: 100vh;
+    width: 100%;
+    max-width: none !important;
+    padding: 28px 18px 135px !important;
+    color: var(--text-main-dark);
+    background: radial-gradient(circle at 8% 10%, rgba(224,244,242,.7), transparent 26%), var(--bg-main);
+  }
+
+  .support-ticket-list .oh-card {
+    width: 100%;
+    background: var(--card-bg-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 22px;
+    box-shadow: 0 16px 36px rgba(29,86,79,0.10);
+    color: var(--text-main-dark);
+  }
+
+  .support-ticket-list .oh-card__header {
+    position: relative;
+    background: linear-gradient(135deg, #ffffff 0%, #f1faf8 100%);
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-main-dark);
+    min-height: 84px;
+    padding: 1.35rem 1.6rem !important;
+  }
+
+  .support-ticket-list .oh-card__body {
+    background: #f8fcfb;
+    color: var(--text-main-dark);
+    padding: 1.55rem !important;
+  }
+
+  .support-ticket-list .oh-card__title {
+    letter-spacing: -.02em;
+  }
+
+  .support-ticket-list .oh-card__header:before {
+    content: "";
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    width: 7px;
+    height: 34px;
+    border-radius: 99px;
+    background: linear-gradient(180deg, #155f6d, #53b7b2);
+    transform: translateY(-50%);
+  }
+
+  .support-ticket-list .oh-card__header .oh-card__title {
+    margin-left: 14px !important;
+  }
+
+  .support-ticket-list .ticket-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.05rem 1.2rem 1.05rem 1.35rem;
+    border: 1px solid #d9ebe8;
+    border-radius: 15px;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(29,86,79,0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    text-decoration: none;
+    color: var(--text-main-dark);
+  }
+
+  .support-ticket-list .ticket-row:hover {
+    background: #ffffff;
+    border-color: #8ecbc7;
+    box-shadow: 0 10px 24px rgba(21,95,109,0.13);
+    transform: translateY(-2px);
+    text-decoration: none;
+  }
+
+  .support-ticket-list .ticket-row:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 13px;
+    bottom: 13px;
+    width: 4px;
+    border-radius: 0 8px 8px 0;
+    background: #238da0;
+  }
+
+  .support-ticket-list .ticket-row > div:first-child {
+    color: #245b63;
+  }
+
+  .support-ticket-list .ticket-row > div:first-child > div:nth-child(2),
+  .support-ticket-list .ticket-row > div:first-child > div:nth-child(3),
+  .support-ticket-list .ticket-row > div:first-child > small,
+  .support-ticket-list .ticket-row > div:first-child > div:last-child {
+    color: var(--text-muted-dark) !important;
+  }
+
+  .support-ticket-list .ticket-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 110px;
+    padding: 0.45rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    border: 1px solid #d8ebe8;
+    white-space: nowrap;
+  }
+
+  .support-ticket-list .ticket-status--warning { background: #fff1d6; color: #93601b; }
+  .support-ticket-list .ticket-status--success { background: #dcefe3; color: #17653a; }
+  .support-ticket-list .ticket-status--neutral { background: #e8efeb; color: #244942; }
+
+  .support-ticket-list h4,
+  .support-ticket-list h3,
+  .support-ticket-list .text-muted,
+  .support-ticket-list p,
+  .support-ticket-list .mb-0 {
+    color: var(--text-main-dark) !important;
+  }
+
+  .support-ticket-list .ticket-row > div:first-child > div:first-child {
+    font-size: .96rem;
+    letter-spacing: -.01em;
+  }
+
+  .support-ticket-list .ticket-row > div:first-child > div:nth-child(2) {
+    line-height: 1.45;
+  }
+
+  @media (max-width: 767px) {
+    .support-ticket-list {
+      padding: 22px 14px 120px !important;
+    }
+
+    .support-ticket-list .ticket-row {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+</style>
+
+<div class="oh-wrapper support-ticket-list">
+  <div class="oh-card" style="padding: 0; overflow: hidden;">
+    <div class="oh-card__header d-flex justify-content-between align-items-center" style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color);">
+      <h3 class="oh-card__title mb-0" style="margin: 0; font-size: 1.4rem; font-weight: 600; color: var(--text-main-dark);">Support Tickets</h3>
+      {% if not is_superuser %}
+        <a href="{% url 'support-ticket-create' %}" class="oh-btn oh-btn--secondary oh-btn--shadow">Create Ticket</a>
+      {% endif %}
+    </div>
+    <div class="oh-card__body" style="padding: 1.5rem; background: var(--bg-main);">
+      {% if is_superuser %}
+        <div class="mb-4">
+          <h4 class="mb-3" style="font-size: 1.05rem; font-weight: 600;">All Tickets</h4>
+          {% if tickets %}
+            <div class="d-flex flex-column gap-3">
+              {% for ticket in tickets %}
+                <a href="{% url 'support-ticket-detail' ticket.id %}" class="ticket-row">
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="font-weight: 600; margin-bottom: 0.35rem;">{{ ticket.title }}</div>
+                    <div style="color: #64748b; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ ticket.get_support_complaint|truncatechars:180 }}</div>
+                    <div style="color: #64748b; margin-top: 0.4rem; font-size: 0.8rem;">{{ ticket.created_at|date:'Y-m-d H:i' }} • {{ ticket.employee_id.get_full_name }}</div>
+                  </div>
+                  <span class="ticket-status ticket-status--neutral">{{ ticket.get_status_display }}</span>
+                </a>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="text-muted mb-0">No tickets found.</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <h4 class="mb-3" style="font-size: 1.05rem; font-weight: 600;">Active Tickets</h4>
+          {% if active_tickets %}
+            <div class="d-flex flex-column gap-3">
+              {% for ticket in active_tickets %}
+                <a href="{% url 'support-ticket-detail' ticket.id %}" class="ticket-row">
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="font-weight: 600; margin-bottom: 0.35rem;">{{ ticket.title }}</div>
+                    <div style="color: #64748b; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ ticket.get_support_complaint|truncatechars:180 }}</div>
+                    <small style="color: #64748b;">{{ ticket.created_at|date:'Y-m-d H:i' }} • {{ ticket.employee_id.get_full_name }}</small>
+                  </div>
+                  <span class="ticket-status ticket-status--warning">{{ ticket.get_status_display }}</span>
+                </a>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="text-muted mb-0">No active tickets.</p>
+          {% endif %}
+        </div>
+      {% else %}
+        {% if tickets %}
+          <div class="d-flex flex-column gap-3">
+            {% for ticket in tickets %}
+              <a href="{% url 'support-ticket-detail' ticket.id %}" class="ticket-row">
+                <div style="flex: 1; min-width: 0;">
+                  <div style="font-weight: 600; margin-bottom: 0.35rem;">{{ ticket.title }}</div>
+                  <div style="color: #64748b; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ ticket.get_support_complaint|truncatechars:180 }}</div>
+                  <div style="color: #64748b; margin-top: 0.4rem; font-size: 0.8rem;">{{ ticket.created_at|date:'Y-m-d H:i' }} • {{ ticket.employee_id.get_full_name }}</div>
+                </div>
+                <span class="ticket-status ticket-status--neutral">{{ ticket.get_status_display }}</span>
+              </a>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-muted mb-0">No support tickets found.</p>
+        {% endif %}
+
+        {% if has_resolver_assignment and assigned_tickets %}
+          <div class="mt-4">
+            <h4 class="mb-3" style="font-size: 1.05rem; font-weight: 600;">Assigned Tickets</h4>
+            <div class="d-flex flex-column gap-3">
+              {% for ticket in assigned_tickets %}
+                <a href="{% url 'support-ticket-detail' ticket.id %}" class="ticket-row">
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="font-weight: 600; margin-bottom: 0.35rem;">{{ ticket.title }}</div>
+                    <div style="color: #64748b; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ ticket.get_support_complaint|truncatechars:180 }}</div>
+                    <div style="color: #64748b; margin-top: 0.4rem; font-size: 0.8rem;">{{ ticket.created_at|date:'Y-m-d H:i' }} • {{ ticket.employee_id.get_full_name }}</div>
+                  </div>
+                  <span class="ticket-status ticket-status--success">{{ ticket.get_status_display }}</span>
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

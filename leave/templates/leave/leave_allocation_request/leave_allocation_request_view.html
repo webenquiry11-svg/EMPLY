@@ -16,8 +16,138 @@
         .diff-cell {
             background: rgba(255, 166, 0, 0.158);
         }
+
+        .leave-allocation-employee-theme {
+            min-height: calc(100vh - 32px);
+            padding: 18px 18px 110px;
+            background: #f5f7f3;
+            color: #123d2c;
+        }
+
+        .leave-allocation-employee-theme .oh-main__topbar,
+        .leave-allocation-employee-theme .oh-tabs,
+        .leave-allocation-employee-theme .oh-sticky-table {
+            background: #ffffff;
+            border: 1px solid rgba(209, 231, 221, 0.95);
+            border-radius: 18px;
+            box-shadow: 0 10px 26px rgba(18, 61, 44, 0.08);
+        }
+
+        .leave-allocation-employee-theme .oh-main__topbar {
+            margin-bottom: 16px;
+            padding: 18px 22px;
+        }
+
+        .leave-allocation-employee-theme .oh-main__titlebar-title {
+            color: #244943;
+            font-size: 1.45rem;
+        }
+
+        .leave-allocation-employee-theme .oh-btn {
+            border: 1px solid #2f5752 !important;
+            border-radius: 11px !important;
+            background: #2f5752 !important;
+            color: #ffffff !important;
+            font-weight: 700;
+            box-shadow: 0 6px 14px rgba(47, 87, 82, 0.16);
+        }
+
+        .leave-allocation-employee-theme .oh-btn:hover {
+            background: #244943 !important;
+            transform: translateY(-1px);
+        }
+
+        .leave-allocation-employee-theme .oh-input,
+        .leave-allocation-employee-theme .oh-select,
+        .leave-allocation-employee-theme input,
+        .leave-allocation-employee-theme select {
+            border-color: rgba(47, 87, 82, 0.2) !important;
+            border-radius: 10px !important;
+            background: #ffffff !important;
+            color: #123d2c !important;
+        }
+
+        .leave-allocation-employee-theme .oh-tabs {
+            overflow: hidden;
+            padding: 0;
+        }
+
+        .leave-allocation-employee-theme .oh-tabs__tablist {
+            gap: 8px;
+            padding: 12px 16px 0;
+            background: #eef7f1;
+            border-bottom: 1px solid #d1e7dd;
+        }
+
+        .leave-allocation-employee-theme .oh-tabs__tab {
+            border-radius: 11px 11px 0 0;
+            color: #52736a;
+            font-weight: 700;
+        }
+
+        .leave-allocation-employee-theme .oh-tabs__tab--active {
+            background: #ffffff;
+            color: #244943;
+        }
+
+        .leave-allocation-employee-theme .oh-sticky-table {
+            overflow: hidden;
+            border: 0;
+            box-shadow: none;
+        }
+
+        .leave-allocation-employee-theme .oh-sticky-table__thead {
+            background: #2f5752;
+            color: #ffffff;
+        }
+
+        .leave-allocation-employee-theme .oh-sticky-table__th {
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .leave-allocation-employee-theme .oh-sticky-table__tr {
+            border-bottom: 1px solid #e1eee7;
+        }
+
+        .leave-allocation-employee-theme .oh-sticky-table__tbody .oh-sticky-table__tr {
+            background: #ffffff;
+            color: #294b47;
+            transition: background 160ms ease, transform 160ms ease;
+        }
+
+        .leave-allocation-employee-theme .oh-sticky-table__tbody .oh-sticky-table__tr:hover {
+            background: #f0f8f3;
+            transform: translateX(2px);
+        }
+
+        .leave-allocation-employee-theme .oh-profile__name,
+        .leave-allocation-employee-theme .oh-sticky-table__sd {
+            color: #294b47 !important;
+        }
+
+        .leave-allocation-employee-theme .oh-empty {
+            margin-top: 18px;
+            padding: 64px 24px;
+            border: 1px solid #d1e7dd;
+            border-radius: 18px;
+            background: #ffffff;
+            color: #294b47;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .leave-allocation-employee-theme {
+                padding: 12px 10px 100px;
+            }
+
+            .leave-allocation-employee-theme .oh-main__topbar {
+                padding: 14px;
+            }
+        }
     </style>
 
+    <div class="leave-allocation-employee-theme">
     <!-- start of messages  -->
     {% if messages %}
         <div class="oh-wrapper">
@@ -284,11 +414,11 @@
         {% else %}
             <div class="oh-empty">
                 <img
-                    src="{% static 'images/ui/search.svg' %}"
+                    src="{% static 'images/ui/no_records.svg' %}"
                     class="oh-404__image"
                     alt="{% trans 'Page not found. 404.' %}"
                 >
-                <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+                <h2 class="oh-empty__title">{% trans "No Records found." %}</h1>
                 <p class="oh-empty__subtitle">{% trans "There are no leave allocation requests at the moment." %}</p>
             </div>
         {% endif %}
@@ -382,4 +512,5 @@
         nomodule
         src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
     ></script>
+    </div>
 {% endblock %}
