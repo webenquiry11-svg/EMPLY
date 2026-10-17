@@ -14,11 +14,14 @@
         </div>
     {% endif %}
 
-    <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+    <section class="oh-wrapper oh-main__topbar leave-type-view-header" x-data="{searchShow: false}">
         <div class="oh-main__titlebar oh-main__titlebar--left">
-            <h1 class="oh-main__titlebar-title fw-bold mb-0">
-                {% trans "Leave Types" %}
-            </h1>
+            <div class="leave-type-view-heading">
+                <h1 class="oh-main__titlebar-title fw-bold mb-0">
+                    {% trans "Leave Types" %}
+                </h1>
+                <p>{% trans "Manage paid, unpaid, and compensatory leave policies." %}</p>
+            </div>
             <a
                 class="oh-main__titlebar-search-toggle"
                 role="button"
@@ -73,9 +76,9 @@
                 </div>
             </form>
             {% if perms.leave.add_leavetype %}
-                <div class="oh-btn-group ml-2">
+                <div class="oh-btn-group ml-2 leave-type-create">
                     <form action="{% url 'type-creation' %}">
-                        <button class="oh-btn oh-btn--secondary oh-btn--shadow">
+                        <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
                             <ion-icon name="add-outline" class="me-1"></ion-icon>
                             {% trans "Create" %}
                         </button>
@@ -85,25 +88,25 @@
         </div>
     </section>
 
-    <div class="oh-wrapper">
+    <div class="oh-wrapper leave-type-content">
         <!-- start of Quick filters  -->
-        <div class="d-flex flex-row-reverse mb-2">
-            <span
-                class="me-3"
+        <div class="d-flex mb-2 leave-type-quick-filters">
+            <button
+                type="button"
+                class="leave-type-quick-filter"
                 onclick="$('[name=payment]').val('paid');$('.filterButton').click()"
-                style="cursor: pointer"
             >
                 <span class="oh-dot oh-dot--small me-1" style="background-color: yellowgreen"></span>
                 {% trans "Paid" %}
-            </span>
-            <span
-                class="me-3"
-                style="cursor: pointer"
+            </button>
+            <button
+                type="button"
+                class="leave-type-quick-filter"
                 onclick="$('[name=payment]').val('unpaid');$('.filterButton').click()"
             >
                 <span class="oh-dot oh-dot--small me-1" style="background-color: #1565A3"></span>
                 {% trans "Unpaid" %}
-            </span>
+            </button>
         </div>
         <!-- end of quick filters  -->
         <div id="leaveTypes">{% include 'leave/leave_type/leave_types.html' %}</div>

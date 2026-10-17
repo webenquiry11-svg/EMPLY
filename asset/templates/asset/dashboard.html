@@ -2,6 +2,7 @@
 {% block content %}
 {% load static i18n %}
 {% load i18n %}
+<link rel="stylesheet" href="{% static 'asset/asset-dashboard.css' %}?v=3">
 <style>
     .oh-sticky-table{
         max-height:100% !important;
@@ -9,7 +10,7 @@
 </style>
 
 <!-- End of Navigation -->
-<main class="employee-asset-surface" :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+<main id="assetDashboard" class="employee-asset-surface asset-dashboard" :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
     <div class="oh-wrapper">
         <div class="d-none mt-5" id="back_button" style="width:10%">
             <a href=""
@@ -25,9 +26,9 @@
         </div>
         <div class="oh-dashboard row" id="dashboard">
             <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="oh-dashboard__cards row">
+                <div class="oh-dashboard__cards row asset-dashboard__metrics">
                     <div class="col-12 col-sm-12 col-md-6 col-lg-4 filter">
-                        <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--success" >
+                        <div class="oh-card-dashboard oh-card-dashboard--neutral asset-dashboard__metric-card">
                             <a href="#" class="text-decoration-none recruitment">
                                 <div class="oh-card-dashboard__header">
                                     <span class="oh-card-dashboard__title">{% trans "Assets" %}</span>
@@ -39,7 +40,7 @@
                         </div>
                     </div>
                     <div class="col-12 col-sm-12 col-md-6 col-lg-4 filter">
-                        <div class="oh-card-dashboard oh-card-dashboard--warning"
+                        <div class="oh-card-dashboard oh-card-dashboard--warning asset-dashboard__metric-card"
                             {% comment %} hx-get="{% url 'asset-request-allocation-view-search-filter' %}?asset_request_status=Requested"
                             hx-target="#dashboard" {% endcomment %}
                             onclick = 'localStorage.setItem("activeTabAsset", "#tab_1");
@@ -55,7 +56,7 @@
                         </div>
                     </div>
                     <div class="col-12 col-sm-12 col-md-6 col-lg-4 filter">
-                        <div class="oh-card-dashboard oh-card-dashboard--success"
+                        <div class="oh-card-dashboard oh-card-dashboard--success asset-dashboard__metric-card"
                             onclick=" window.location.href = `{%url 'asset-category-view' %}?dashboard=true`"
                             hx-target="#dashboard"
                             id="hired_candidate"
@@ -74,23 +75,23 @@
             </div>
             <div class="oh-dashboard__movable-cards row mt-4 mb-4">
 
-                <div class="col-12 col-sm-12 col-md-12 col-lg-3 mt-2">
-                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                <div class="col-12 col-sm-12 col-md-12 col-lg-4 mt-2">
+                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent asset-dashboard__panel">
                         <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                            <span class="oh-card-dashboard__title" >{% trans "Asset Chart" %}</span>
+                            <span class="oh-card-dashboard__title">{% trans "Asset Chart" %}</span>
                         </div>
                         <div class="oh-card-dashboard__body" id="assetAvailableChartContainer">
-                            <canvas id="assetAvailableChart" ></canvas>
+                            <canvas id="assetAvailableChart"></canvas>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-12 col-sm-12 col-md-12 col-lg-9">
-                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                <div class="col-12 col-sm-12 col-md-12 col-lg-8">
+                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent asset-dashboard__panel">
                         <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                             <span class="oh-card-dashboard__title">{% trans "Asset Requests To Approve" %}</span>
                         </div>
-                        <div class="oh-card-dashboard__body" id="dashboardAssetRequests" style="height:330px;overflow-y:auto"
+                        <div class="oh-card-dashboard__body asset-dashboard__panel-body asset-dashboard__requests-body" id="dashboardAssetRequests"
                             hx-get="{% url 'asset-dashboard-requests' %}" hx-trigger="load">
                             <div class="animated-background"></div>
                         </div>
@@ -98,22 +99,22 @@
                 </div>
 
                 <div class="col-12 col-sm-12 col-md-12 col-lg-6 mt-3">
-                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent asset-dashboard__panel">
                         <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                            <span class="oh-card-dashboard__title" >{% trans "Assets In Use" %}</span>
+                            <span class="oh-card-dashboard__title">{% trans "Assets In Use" %}</span>
                         </div>
                         <div class="oh-card-dashboard__body" id="assetCategoryChartContainer">
-                            <canvas id="assetCategoryChart" ></canvas>
+                            <canvas id="assetCategoryChart"></canvas>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-12 col-sm-12 col-md-12 col-lg-6 mt-3">
-                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent asset-dashboard__panel">
                         <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                             <span class="oh-card-dashboard__title">{% trans "Allocated Assets" %}</span>
                         </div>
-                        <div class="oh-card-dashboard__body" id="dashboardAssetAllocates" style="height:350px;overflow-y:auto">
+                        <div class="oh-card-dashboard__body asset-dashboard__panel-body asset-dashboard__allocations-body" id="dashboardAssetAllocates">
                             <span hx-get="{% url 'asset-dashboard-allocates' %}" hx-trigger="load" hx-swap="outerHTML">
                                 <div class="animated-background"></div>
                             </span>

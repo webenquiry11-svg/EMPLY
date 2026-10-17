@@ -1,5 +1,5 @@
 {% load i18n %}
-<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+<section class="oh-wrapper oh-main__topbar onboarding-head" x-data="{searchShow: false}">
     <div class="oh-main__titlebar oh-main__titlebar--left">
         <h1 class="oh-main__titlebar-title fw-bold">{% trans "Onboarding" %}</h1>
         <a
@@ -26,7 +26,7 @@
                 placeholder="{% trans 'Search' %}"
             >
         </div>
-        <ul class="oh-view-types ml-2" style="margin-bottom: 0">
+        <ul class="oh-view-types onboarding-head__view-types ml-2" style="margin-bottom: 0">
             <li class="oh-view-type candidate-view-type" data-view="list" title='{% trans "List" %}'>
                 <a
                     href="{% url 'onboarding-view' %}?{{request.GET.urlencode}}"
@@ -54,8 +54,9 @@
         </ul>
         <div class="oh-main__titlebar-button-container">
             <div class="oh-dropdown" x-data="{open: false}">
-                <button type="button" class="oh-btn ml-2" @click="open = !open">
-                    <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+                <button type="button" class="oh-btn oh-btn--secondary onboarding-head__filter" @click="open = !open">
+                    <span class="material-symbols-outlined" aria-hidden="true">filter_list</span>
+                    <span>{% trans "Filter" %}</span>
                 </button>
                 <div
                     class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
@@ -69,19 +70,21 @@
     </form>
 </section>
 {% include "filter_tags.html" %}
-<div class="d-flex flex-row-reverse oh-wrapper">
-    <span
+<div class="d-flex flex-row-reverse oh-wrapper onboarding-status-legend">
+    <button
+        type="button"
+        class="onboarding-status-legend__item onboarding-status-legend__item--closed"
         onclick="$('[name=closed]').val('true'); $('[name=closed]').first().change(); $('.filterButton').click()"
-        style="cursor: pointer; margin-left: 10px; margin-right: 10px"
     >
-        <span class="oh-dot oh-dot--small me-1" style="background-color: #1565A3"></span>
+        <span class="oh-dot oh-dot--small me-1"></span>
         {% trans "Closed" %}
-    </span>
-    <span
+    </button>
+    <button
+        type="button"
+        class="onboarding-status-legend__item onboarding-status-legend__item--open"
         onclick="$('[name=closed]').val('false');$('[name=closed]').first().change(); $('.filterButton').click()"
-        style="cursor: pointer; margin-left: 10px; margin-right: 10px"
     >
-        <span class="oh-dot oh-dot--small me-1" style="background-color: yellowgreen"></span>
+        <span class="oh-dot oh-dot--small me-1"></span>
         {% trans "Open" %}
-    </span>
+    </button>
 </div>

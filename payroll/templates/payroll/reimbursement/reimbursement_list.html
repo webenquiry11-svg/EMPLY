@@ -335,9 +335,10 @@
 
                                         {% if perms.payroll.change_reimbursement %}
                                             <div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
-                                                <form
+                                                <form method="post"
                                                     action="{% url 'approve-reimbursements' %}"
                                                 >
+                                                    {% csrf_token %}
                                                     <div class="oh-btn-group" onclick="event.stopPropagation();">
 
                                                         {% if req.status == 'requested' %}
@@ -675,10 +676,11 @@
                                             </div>
                                             {% if perms.payroll.change_reimbursement %}
                                                 <div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
-                                                    <form
+                                                    <form method="post"
                                                         action="{% url 'approve-reimbursements' %}"
 
                                                     >
+                                                        {% csrf_token %}
                                                         <input type="hidden" name="ids" value="{{ req.id }}" />
                                                         <input type="hidden" name="status" />
                                                         <input type="hidden" name="amount" default="0" min="0" />
@@ -1001,9 +1003,10 @@
                                             </div>
                                             {% if perms.payroll.change_reimbursement %}
                                                 <div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
-                                                    <form
+                                                    <form method="post"
                                                         action="{% url 'approve-reimbursements' %}"
                                                     >
+                                                        {% csrf_token %}
                                                         <input type="hidden" name="ids" value="{{ req.id }}" />
                                                         <input type="hidden" name="status" />
                                                         <input type="hidden" name="amount" default="0" min="0" {% if req.status == "approved" %}disabled{% endif %} {% if req.amount %}

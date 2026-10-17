@@ -18,6 +18,12 @@
         }
 
         .compensatory-leave-employee-theme {
+            --leave-ink: #173f50;
+            --leave-text: #315d69;
+            --leave-muted: #718c94;
+            --leave-teal: #176f80;
+            --leave-border: #c7e5eb;
+            --leave-soft: #f1f9fa;
             min-height: calc(100vh - 32px);
             padding: 18px 18px 110px;
             background: #f5f7f3;
@@ -150,7 +156,7 @@
 
     <div class="compensatory-leave-employee-theme">
     <!-- start of nav bar -->
-    <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+    <section class="oh-wrapper oh-main__topbar employee-subsection-head" x-data="{searchShow: false}">
         <div class="oh-main__titlebar oh-main__titlebar--left">
             <h1 class="oh-main__titlebar-title fw-bold">
                 {% trans "Compensatory Leave Requests" %}
@@ -343,7 +349,7 @@
     </section>
 
     <!-- start of request view  -->
-    <div class="oh-wrapper" id="userRequest">
+    <div class="oh-wrapper compensatory-leave-content" id="userRequest">
         {% if comp_leave_requests or my_comp_leave_requests %}
             <!-- start of Quick filters  -->
             <div class="d-flex flex-row-reverse mb-2">

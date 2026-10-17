@@ -1,6 +1,7 @@
 {% load i18n %}
 {% load basefilters %}
-<div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+<div class="attendance-validation-request">
+<div class="attendance-validation-request__navigation">
     <button
         hx-get="{% url 'validate-attendance-request' previous %}?requests_ids={{requests_ids}}"
         hx-target="#validateAttendanceRequestModalBody"
@@ -30,115 +31,129 @@
     </button>
 </div>
 <a
-    class="oh-timeoff-modal__profile-content pt-4"
-    style="text-decoration: none"
+    class="attendance-validation-request__profile"
     href="{% url 'employee-view-individual' attendance.employee_id.id %}"
 >
-    <div class="oh-profile mb-2">
+    <div class="attendance-validation-request__avatar">
         <div class="oh-profile__avatar">
             <img
                 src="{{attendance.employee_id.get_avatar}}"
-                class="oh-profile__image me-2"
-                alt="{% trans 'Mary Magdalene' %}"
+                class="oh-profile__image"
+                alt="{{ attendance.employee_id.get_full_name }}"
             >
         </div>
-        <div class="oh-timeoff-modal__profile-info">
-            <span class="oh-timeoff-modal__user fw-bold m-0">{{ attendance.employee_id.get_full_name }}</span>
-            <span class="oh-timeoff-modal__user m-0" style="font-size: 18px; color: #4d4a4a">
+        <div class="attendance-validation-request__profile-info">
+            <span class="attendance-validation-request__employee">{{ attendance.employee_id.get_full_name }}</span>
+            <span class="attendance-validation-request__role">
                 {{ attendance.employee_id.employee_work_info.department_id }} /
                 {{ attendance.employee_id.employee_work_info.job_position_id }}</span>
         </div>
     </div>
 </a>
 
-<table class="table w-100 mt-3 mb-5">
-    <tr>
-        <th>{% trans "Field" %}</th>
-        <th style="border-bottom: solid #1565A3 4px">{% trans "Current Value" %}</th>
-        <th style="border-bottom: solid green 4px">
-            {% trans "Requested Value" %}
-        </th>
-    </tr>
-    {% for key, diff in data.items %}
-        <tr>
-            <td class="pt-2 pb-2">{{ key }}</td>
-            {% if key == 'Check-Out Date' or key == 'Attendance date' or key == 'Check-In Date' %}
-                {% if diff.0 == 'None' %}
-                    <td class="p-2 ml-2 dateformat_changer">{% if diff.0 %}{{ diff.0 }}{% endif %}</td>
-                    <td class="p-2 ml-2 dateformat_changer">{{ diff.1 }},</td>
-                {% endif %}
-                {% if diff.1 == 'None' %}
-                    <td class="p-2 ml-2 dateformat_changer">{% if diff.0 %}{{ diff.0 }},{% endif %}</td>
-                    <td class="p-2 ml-2 dateformat_changer">{{ diff.1 }}</td>
-                {% endif %}
-                {% if diff.0 == 'None' and diff.1 == 'None' %}
-                    <td class="p-2 ml-2 dateformat_changer">{% if diff.0 %}{{ diff.0 }}{% endif %}</td>
-                    <td class="p-2 ml-2 dateformat_changer">{{ diff.1 }}</td>
-                {% endif %}
-                {% if diff.0 != 'None' and diff.1 != 'None' %}
-                    <td class="p-2 ml-2 dateformat_changer">{% if diff.0 %}{{ diff.0 }},{% endif %}</td>
-                    <td class="p-2 ml-2 dateformat_changer">{{ diff.1 }},</td>
-                {% endif %}
-            {% elif key == 'Check-Out' or key == 'Check-In' %}
-                {% if diff.0 == 'None' %}
-                    <td class="p-2 ml-2 timeformat_changer">{% if diff.0 %}{{ diff.0 }}{% endif %}</td>
-                    <td class="p-2 ml-2 timeformat_changer">{{ diff.1 }},</td>
-                {% endif %}
-                {% if diff.1 == 'None' %}
-                    <td class="p-2 ml-2 timeformat_changer">{% if diff.0 %}{{ diff.0 }},{% endif %}</td>
-                    <td class="p-2 ml-2 timeformat_changer">{{ diff.1 }}</td>
-                {% endif %}
-                {% if diff.0 == 'None' and diff.1 == 'None' %}
-                    <td class="p-2 ml-2 timeformat_changer">{% if diff.0 %}{{ diff.0 }}{% endif %}</td>
-                    <td class="p-2 ml-2 timeformat_changer">{{ diff.1 }}</td>
-                {% endif %}
-                {% if diff.0 != 'None' and diff.1 != 'None' %}
-                    <td class="p-2 ml-2 timeformat_changer">{% if diff.0 %}{{ diff.0 }},{% endif %}</td>
-                    <td class="p-2 ml-2 timeformat_changer">{{ diff.1 }},</td>
-                {% endif %}
-            {% else %}
-                <td class="p-2 ml-2">{% if diff.0 %}{{ diff.0 }}{% endif %}</td>
-                <td class="p-2 ml-2">{{ diff.1 }}</td>
-            {% endif %}
-        </tr>
-    {% endfor %}
-    <tr>
-        <th>{% trans "Description" %}</th>
-    </tr>
-    <tr>
-        <td>{{ attendance.request_description }}</td>
-    </tr>
-</table>
-<div class="oh-modal__button-container text-center">
-    <div class="oh-btn-group d-flex flex-row-reverse">
-        <a
-            href="{% url 'cancel-validate-attendance-request' attendance.id %}"
-            data-toggle="oh-modal-toggle"
-            class="oh-btn oh-btn--secondary w-100"
-        >
-            <ion-icon name="close-circle-outline"></ion-icon>
-            {% trans "Reject" %}
-        </a>
-        {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
-            <a
-                href="{% url 'approve-validate-attendance-request' attendance.id %}"
-                class="oh-btn oh-btn--success w-100"
-            >
-                <ion-icon name="checkmark-outline"></ion-icon>
-                {% trans "Approve" %}
-            </a>
-        {% endif %}
+<section class="attendance-validation-request__comparison" aria-label="{% trans 'Attendance changes' %}">
+    <div class="attendance-validation-request__comparison-heading">
+        <div>
+            <h3>{% trans "Attendance Changes" %}</h3>
+            <p>{% trans "Compare the current record with the requested update." %}</p>
+        </div>
+        <div class="attendance-validation-request__comparison-legend" aria-hidden="true">
+            <span class="attendance-validation-request__legend-current">{% trans "Current" %}</span>
+            <span class="attendance-validation-request__legend-requested">{% trans "Requested" %}</span>
+        </div>
+    </div>
+    <div class="attendance-validation-request__changes">
+        {% for key, diff in data.items %}
+            <article class="attendance-validation-request__change">
+                <h4 class="attendance-validation-request__change-title">
+                    <span class="attendance-validation-request__change-icon" aria-hidden="true">
+                        {% if key == 'Employee' %}
+                            <ion-icon name="person-outline"></ion-icon>
+                        {% elif 'Date' in key or 'date' in key %}
+                            <ion-icon name="calendar-outline"></ion-icon>
+                        {% elif key == 'Check-Out' or key == 'Check-In' %}
+                            <ion-icon name="time-outline"></ion-icon>
+                        {% elif key == 'Shift' or key == 'Work Type' %}
+                            <ion-icon name="briefcase-outline"></ion-icon>
+                        {% elif key == 'Worked Hours' or key == 'Overtime' or key == 'Minimum Hour' %}
+                            <ion-icon name="hourglass-outline"></ion-icon>
+                        {% else %}
+                            <ion-icon name="list-outline"></ion-icon>
+                        {% endif %}
+                    </span>
+                    <span>{{ key }}</span>
+                </h4>
+                <div class="attendance-validation-request__change-values">
+                    <div class="attendance-validation-request__change-value">
+                        <span class="attendance-validation-request__value-label">{% trans "Current" %}</span>
+                        <span class="attendance-validation-request__value-text">
+                            {% if diff.0 and diff.0 != 'None' %}
+                                {% if key == 'Check-Out Date' or key == 'Attendance date' or key == 'Check-In Date' %}
+                                    <span class="dateformat_changer">{{ diff.0 }}</span>
+                                {% elif key == 'Check-Out' or key == 'Check-In' %}
+                                    <span class="timeformat_changer">{{ diff.0 }}</span>
+                                {% else %}
+                                    {{ diff.0 }}
+                                {% endif %}
+                            {% else %}
+                                <span class="attendance-validation-request__empty-value">—</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="attendance-validation-request__change-value attendance-validation-request__change-value--requested">
+                        <span class="attendance-validation-request__value-label">{% trans "Requested" %}</span>
+                        <span class="attendance-validation-request__value-text">
+                            {% if diff.1 and diff.1 != 'None' %}
+                                {% if key == 'Check-Out Date' or key == 'Attendance date' or key == 'Check-In Date' %}
+                                    <span class="dateformat_changer">{{ diff.1 }}</span>
+                                {% elif key == 'Check-Out' or key == 'Check-In' %}
+                                    <span class="timeformat_changer">{{ diff.1 }}</span>
+                                {% else %}
+                                    {{ diff.1 }}
+                                {% endif %}
+                            {% else %}
+                                <span class="attendance-validation-request__empty-value">—</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+<div class="attendance-validation-request__description">
+    <span class="attendance-validation-request__description-label">{% trans "Description" %}</span>
+    <p>{{ attendance.request_description|default:"—" }}</p>
+</div>
+</div>
+<div class="attendance-validation-request__actions">
+    <div class="attendance-validation-request__action-group">
         {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
             <a
                 hx-get="{% url 'edit-validate-attendance' attendance.id %}"
                 hx-target="#editValidateAttendanceRequestModalBody"
                 data-target="#editValidateAttendanceRequest"
                 data-toggle="oh-modal-toggle"
-                class="oh-btn oh-btn--info w-100"
+                class="oh-btn attendance-validation-request__action attendance-validation-request__action--edit"
             >
                 <ion-icon name="create-outline"></ion-icon>
                 {% trans "Edit" %}
             </a>
+            <a
+                href="{% url 'approve-validate-attendance-request' attendance.id %}"
+                class="oh-btn attendance-validation-request__action attendance-validation-request__action--approve"
+            >
+                <ion-icon name="checkmark-outline"></ion-icon>
+                {% trans "Approve" %}
+            </a>
         {% endif %}
+        <a
+            href="{% url 'cancel-validate-attendance-request' attendance.id %}"
+            data-toggle="oh-modal-toggle"
+            class="oh-btn attendance-validation-request__action attendance-validation-request__action--reject"
+        >
+            <ion-icon name="close-circle-outline"></ion-icon>
+            {% trans "Reject" %}
+        </a>
     </div>
 </div>

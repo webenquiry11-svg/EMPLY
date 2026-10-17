@@ -11,7 +11,7 @@
     <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
     </button>
-    <span class="oh-modal__dialog-title ml-5" id="addEmployeeObjectiveModalLabel">
+    <span class="oh-modal__dialog-title asset-category-form__title" id="addEmployeeObjectiveModalLabel">
         <h5>
             {% if form.instance.id %}
                 {% trans "Update" %}{% else %}{% trans "Create" %}{% endif %}
@@ -21,6 +21,7 @@
 </div>
 <div class="oh-modal__dialog-body">
     <form
+        class="asset-category-form"
         hx-post="{% if form.instance.id %}{% url 'asset-category-update' cat_id=form.instance.id %}?{{pg}}{% else %}{%url 'asset-category-creation' %}{% endif %}"
         hx-target="{% if form.instance.id %}#objectUpdateModalTarget{% else %}#objectCreateModalTarget{% endif %}"
     >

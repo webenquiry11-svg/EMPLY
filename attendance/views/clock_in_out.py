@@ -238,46 +238,41 @@ def clock_in(request):
                 attendance_source=attendance_source,
             )
             script = ""
-            hidden_label = ""
             time_runner_enabled = timerunner_enabled(request)["enabled_timerunner"]
-            mouse_in = ""
-            mouse_out = ""
             if time_runner_enabled:
                 script = """
                 <script>
-                        $(".time-runner").removeClass("stop-runner");
-                        run = 1;
-                        at_work_seconds = {at_work_seconds_forecasted};
-                    </script>
-                    """.format(
+                    $(".time-runner").removeClass("stop-runner");
+                    run = 1;
+                    at_work_seconds = {at_work_seconds_forecasted};
+                    $(".employee-attendance-action .time-runner").text(secondsToDuration(at_work_seconds));
+                </script>
+                """.format(
                     at_work_seconds_forecasted=employee.get_current_attendance_session_seconds()
                 )
-                hidden_label = """
-                style="display:none"
-                """
-                mouse_in = """ onmouseenter = "$(this).find('span').show();$(this).find('.time-runner').hide();" """
-                mouse_out = """ onmouseleave = "$(this).find('span').hide();$(this).find('.time-runner').show();" """
 
             return HttpResponse(
                 """
-                <button class="oh-btn oh-btn--warning-outline check-in mr-2"
-                {mouse_in}
-                {mouse_out}
+                <button class="oh-btn oh-btn--warning-outline mr-2 employee-attendance-action employee-attendance-action--clocked-in"
                     hx-get="/attendance/clock-out"
-                        hx-target='#attendance-activity-container'
-                        hx-swap='innerHTML'><ion-icon class="oh-navbar__clock-icon mr-2
-                        text-warning"
-                            name="exit-outline"></ion-icon>
-                <span {hidden_label} class="hr-check-in-out-text">{check_out}</span>
-                    <div class="time-runner"></div>
+                    hx-target="#attendance-activity-container"
+                    hx-swap="innerHTML"
+                    aria-label="{check_out}">
+                    <ion-icon class="oh-navbar__clock-icon" name="exit-outline" aria-hidden="true"></ion-icon>
+                    <span class="hr-Check-In-out-text">{check_out}</span>
+                    {time_runner}
                 </button>
                 {script}
                 """.format(
                     check_out=_("Check-Out"),
+                    time_runner=(
+                        '<span class="time-runner" role="timer" aria-label="{}"></span>'.format(
+                            _("Time since check-in")
+                        )
+                        if time_runner_enabled
+                        else ""
+                    ),
                     script=script,
-                    hidden_label=hidden_label,
-                    mouse_in=mouse_in,
-                    mouse_out=mouse_out,
                 )
             )
         return HttpResponse(
@@ -567,17 +562,23 @@ def clock_out(request):
 
         return HttpResponse(
             """
-                <button class="oh-btn oh-btn--success-outline mr-2"
+                <button class="oh-btn oh-btn--success-outline mr-2 employee-attendance-action"
                 hx-get="/attendance/clock-in"
                 hx-target='#attendance-activity-container'
-                hx-swap='innerHTML'>
-                <ion-icon class="oh-navbar__clock-icon mr-2 text-success"
-                name="enter-outline"></ion-icon>
-                <span class="hr-check-in-out-text">{check_in}</span>
+                hx-swap='innerHTML'
+                aria-label="{check_in}">
+                <ion-icon class="oh-navbar__clock-icon" name="time-outline" aria-hidden="true"></ion-icon>
+                <span class="hr-Check-In-out-text">{check_in}</span>
                 </button>
                 """.format(
                 check_in=_("Check-In"),
             )
+            + """
+            <script>
+                run = 0;
+                document.title = document.title.replace(/ \\| [0-9]{2}:[0-9]{2}:[0-9]{2}$/, "");
+            </script>
+            """
         )
     else:
         messages.error(request, _("Check in/Check out feature is not enabled."))

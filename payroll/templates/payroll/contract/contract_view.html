@@ -2,7 +2,636 @@
 {% block content %}
     {% load static %}
     {% load i18n %}
-    <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    <style>
+        .contract-page {
+            --contract-ink: #173f50;
+            --contract-teal: #176f80;
+            --contract-teal-dark: #0a4d60;
+            --contract-border: #d2e8ec;
+            --contract-surface: #f3fafb;
+        }
+
+        .contract-page .oh-main__topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin: 1.25rem auto 0.75rem;
+            padding: 1rem 1.25rem;
+            border: 1px solid var(--contract-border);
+            border-radius: 18px;
+            background: linear-gradient(110deg, #ffffff, #f1fafb);
+            box-shadow: 0 10px 28px rgba(10, 77, 96, 0.08);
+        }
+
+        .contract-page .oh-main__titlebar-title {
+            margin: 0;
+            color: var(--contract-ink);
+            font-size: 1.1rem;
+            letter-spacing: -0.01em;
+        }
+
+        .contract-page .oh-main__titlebar--right,
+        .contract-page #filterForm {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .contract-page #filterForm .oh-input__search-group {
+            width: clamp(170px, 19vw, 260px);
+        }
+
+        .contract-page #filterForm .oh-input__search-group .oh-input {
+            min-height: 42px;
+            border-color: var(--contract-border);
+            border-radius: 11px;
+            background: #fff;
+        }
+
+        .contract-page .oh-main__titlebar--right .oh-btn,
+        .contract-page .oh-main__titlebar--right .oh-btn--dropdown {
+            min-height: 42px;
+            padding: 0.65rem 1rem;
+            border-radius: 11px;
+            background: linear-gradient(110deg, var(--contract-teal-dark), #278da0);
+            box-shadow: 0 5px 12px rgba(10, 77, 96, 0.13);
+        }
+
+        .contract-page .oh-main__titlebar--right .oh-btn:hover {
+            background: linear-gradient(110deg, #083f50, var(--contract-teal));
+        }
+
+        .contract-page .oh-main__titlebar--right .oh-btn-group {
+            margin-left: 0.25rem;
+        }
+
+        .contract-page .contract-status-legend {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+            margin: 0 0.75rem 0.75rem;
+        }
+
+        .contract-page .contract-status-legend > span {
+            display: inline-flex;
+            align-items: center;
+            margin: 0 !important;
+            padding: 0.45rem 0.7rem;
+            color: #315d69;
+            border: 1px solid var(--contract-border);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.8);
+            font-size: 0.78rem;
+            font-weight: 600;
+            transition: background 0.18s ease, border-color 0.18s ease;
+        }
+
+        .contract-page .contract-status-legend > span:hover {
+            border-color: #9bcbd3;
+            background: #fff;
+        }
+
+        .contract-page .contract-status-legend .oh-dot {
+            width: 8px;
+            height: 8px;
+            box-shadow: 0 0 0 3px rgba(39, 141, 160, 0.1);
+        }
+
+        .contract-page .oh-tabs {
+            overflow: hidden;
+            padding: 1rem;
+            border: 1px solid var(--contract-border);
+            border-radius: 18px;
+            background: #fff;
+            box-shadow: 0 12px 30px rgba(10, 77, 96, 0.08);
+        }
+
+        .contract-page .oh-tabs__content--active {
+            padding: 0.25rem;
+        }
+
+        .contract-page #selectAllContracts,
+        .contract-page #unselectAllContracts,
+        .contract-page #exportContracts,
+        .contract-page #selectedShow {
+            display: inline-flex;
+            align-items: center;
+            min-height: 36px;
+            margin: 0 0.4rem 0.75rem 0 !important;
+            padding: 0.45rem 0.8rem;
+            border: 1px solid var(--contract-border);
+            border-radius: 9px;
+            background: #f6fbfc;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .contract-page #selectAllContracts {
+            color: var(--contract-teal) !important;
+            border-color: #b8dce2;
+        }
+
+        .contract-page #exportContracts {
+            color: #287d63 !important;
+        }
+
+        .contract-page #selectedShow:empty {
+            display: none;
+        }
+
+        .contract-page #payroll-contract-container .oh-table_sticky--wrapper {
+            margin-bottom: 0.25rem;
+        }
+
+        .contract-page #payroll-contract-container .oh-sticky-dropdown_btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px !important;
+            height: 36px !important;
+            color: var(--contract-teal) !important;
+            border: 1px solid #c8e2e7 !important;
+            border-radius: 9px;
+            background: #f3fafb !important;
+        }
+
+        .contract-page #payroll-contract-container .oh-sticky-dropdown_btn:hover {
+            border-color: #91c5ce;
+            background: #e5f4f6;
+        }
+
+        .contract-page #payroll-contract-container .oh-sticky-dropdown_btn ion-icon {
+            color: var(--contract-teal) !important;
+        }
+
+        .contract-page #payroll-contract-container #contract-table {
+            overflow-x: auto;
+            border: 1px solid var(--contract-border);
+            border-radius: 12px;
+            scrollbar-color: #a7cbd1 #f0f7f8;
+            scrollbar-width: thin;
+        }
+
+        .contract-page #payroll-contract-container .oh-sticky-table__thead {
+            background: #eaf5f7;
+        }
+
+        .contract-page #payroll-contract-container .oh-sticky-table__th {
+            min-height: 46px;
+            padding: 0.8rem 0.75rem;
+            color: var(--contract-ink) !important;
+            border-color: #d5e9ec;
+            font-size: 0.77rem;
+            font-weight: 750;
+            white-space: nowrap;
+        }
+
+        .contract-page #payroll-contract-container .oh-sticky-table__td,
+        .contract-page #payroll-contract-container .oh-sticky-table__sd {
+            min-height: 50px;
+            padding: 0.7rem 0.75rem;
+            color: #315d69 !important;
+            border-color: #e3eff1;
+            font-size: 0.79rem;
+            line-height: 1.4;
+        }
+
+        .contract-page #payroll-contract-container .oh-sticky-table__tr {
+            transition: background 0.16s ease;
+        }
+
+        .contract-page #payroll-contract-container .oh-sticky-table__tbody .oh-sticky-table__tr:hover {
+            background: #f2fafb;
+        }
+
+        .contract-page #payroll-contract-container .oh-sticky-table__tr.highlight-selected {
+            background: #eaf7f8;
+        }
+
+        .contract-page #payroll-contract-container .oh-input__checkbox {
+            accent-color: var(--contract-teal);
+        }
+
+        .contract-page #payroll-contract-container .oh-sticky-table__right .oh-btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 0.35rem;
+        }
+
+        .contract-page #payroll-contract-container .oh-sticky-table__right .oh-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px !important;
+            min-width: 36px;
+            height: 36px;
+            padding: 0;
+            color: var(--contract-teal) !important;
+            border: 1px solid #c8e2e7;
+            border-radius: 9px;
+            background: #f3fafb !important;
+            box-shadow: none;
+        }
+
+        .contract-page #payroll-contract-container .oh-sticky-table__right .oh-btn:hover {
+            border-color: #91c5ce;
+            background: #e5f4f6 !important;
+        }
+
+        .contract-page #payroll-contract-container .oh-sticky-table__right ion-icon {
+            color: var(--contract-teal) !important;
+            font-size: 1.05rem;
+        }
+
+        .contract-page #payroll-contract-container .oh-table__editable-input {
+            min-height: 34px;
+            padding: 0.35rem 0.55rem;
+            color: var(--contract-teal-dark);
+            border: 1px solid #c8e2e7;
+            border-radius: 999px;
+            background: #fff;
+            font-size: 0.76rem;
+        }
+
+        .contract-page #payroll-contract-container .oh-sticky-table__td:has(> select[name="status"]) {
+            vertical-align: middle;
+        }
+
+        .contract-page #payroll-contract-container .oh-sticky-table__td > select[name="status"] {
+            display: block;
+            width: min(100%, 126px) !important;
+            min-height: 34px;
+            margin: 0 auto;
+            padding: 0.35rem 1.6rem 0.35rem 0.65rem;
+            border: 1px solid #c8e2e7;
+            border-radius: 999px;
+            background-color: #fff;
+            color: var(--contract-teal-dark);
+            font-size: 0.76rem;
+            line-height: 1.2;
+            text-align: left;
+        }
+
+        .contract-page #payroll-contract-container .oh-sticky-table__td > select[name="status"]:focus {
+            border-color: #7fb8c2;
+            box-shadow: 0 0 0 3px rgba(39, 141, 160, 0.12);
+            outline: none;
+        }
+
+        .contract-page #payroll-contract-container .oh-pagination {
+            margin-top: 0.75rem;
+            padding: 0.75rem 0.25rem 0;
+            border-top: 1px solid #e5eff1;
+        }
+
+        @media (max-width: 900px) {
+            .contract-page .oh-main__topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .contract-page .oh-main__titlebar--right {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .contract-page #filterForm {
+                flex: 1 1 auto;
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .contract-page .oh-main__topbar {
+                margin-top: 0.75rem;
+                padding: 0.9rem;
+                border-radius: 14px;
+            }
+
+            .contract-page .oh-main__titlebar--right,
+            .contract-page #filterForm {
+                align-items: stretch;
+            }
+
+            .contract-page #filterForm .oh-input__search-group {
+                width: 100%;
+                flex: 1 1 100%;
+            }
+
+            .contract-page .oh-tabs {
+                padding: 0.55rem;
+                border-radius: 14px;
+            }
+
+            .contract-page .contract-status-legend {
+                justify-content: flex-start;
+                margin-inline: 0.25rem;
+            }
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__topbar {
+            justify-content: space-between;
+            gap: 24px;
+            margin: 26px 28px 18px;
+            padding: 20px 24px;
+            background: #ffffff !important;
+            border: 1px solid #b9dce4 !important;
+            border-radius: 20px;
+            box-shadow: 0 10px 26px rgba(10, 77, 96, 0.12);
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--left,
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar-title {
+            color: #173f50 !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar-title {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--right {
+            display: flex;
+            flex: 0 1 auto;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+            margin: 0;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page #filterForm {
+            gap: 10px;
+            margin: 0;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page #filterForm .oh-input__search-group {
+            flex: 0 1 240px;
+            min-width: 180px;
+            margin: 0;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page #filterForm .oh-input {
+            width: 100%;
+            color: #173f50 !important;
+            border-color: #c7e5eb !important;
+            background: #ffffff !important;
+            box-shadow: none;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page #filterForm .oh-input::placeholder {
+            color: #557b84;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--right .oh-btn,
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--right .oh-btn--dropdown {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            min-height: 42px;
+            color: #ffffff !important;
+            border: 1px solid #176f80 !important;
+            background: linear-gradient(135deg, #0a596b, #177f91) !important;
+            box-shadow: 0 5px 12px rgba(10, 77, 96, 0.13);
+            transition: background .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--right .oh-btn ion-icon,
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--right .oh-btn--dropdown ion-icon {
+            flex: 0 0 auto;
+            color: #ffffff !important;
+            font-size: 17px;
+            line-height: 1;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--right .oh-btn:hover,
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--right .oh-btn--dropdown:hover,
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--right .oh-btn:focus-visible,
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--right .oh-btn--dropdown:focus-visible {
+            color: #ffffff !important;
+            border-color: #0a4d60 !important;
+            background: #0a4d60 !important;
+            box-shadow: 0 7px 16px rgba(10, 77, 96, 0.2);
+            transform: translateY(-1px);
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--right .oh-btn:hover ion-icon,
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--right .oh-btn--dropdown:hover ion-icon,
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--right .oh-btn:focus-visible ion-icon,
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--right .oh-btn--dropdown:focus-visible ion-icon {
+            color: #ffffff !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--right .oh-btn--secondary {
+            min-width: 112px;
+            background: linear-gradient(135deg, #0a596b, #177f91) !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--right .oh-btn--secondary ion-icon {
+            margin: 0;
+            font-size: 19px;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page #payroll-contract-container .oh-pagination {
+            display: flex;
+            min-height: 48px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px 16px;
+            margin: 16px 0 0;
+            padding: 8px 14px;
+            color: #173f50 !important;
+            border: 1px solid #c7e5eb !important;
+            border-radius: 12px;
+            background: #eef8f8 !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page #payroll-contract-container .oh-pagination * {
+            color: #456b76 !important;
+            border-color: #c7e5eb !important;
+            background-color: transparent !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page #payroll-contract-container .oh-pagination__nav,
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page #payroll-contract-container .oh-pagination__items {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 0;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page #payroll-contract-container .oh-pagination__input {
+            min-height: 34px;
+            color: #173f50 !important;
+            border: 1px solid #c7e5eb !important;
+            border-radius: 9px;
+            background: #ffffff !important;
+            transition: border-color .18s ease, box-shadow .18s ease;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page #payroll-contract-container .oh-pagination__input:hover,
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page #payroll-contract-container .oh-pagination__input:focus {
+            color: #173f50 !important;
+            border-color: #71b8c4 !important;
+            background: #ffffff !important;
+            box-shadow: 0 0 0 3px rgba(23, 111, 128, .12);
+            outline: none;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page #payroll-contract-container .oh-pagination__item {
+            overflow: hidden;
+            border: 1px solid #c7e5eb !important;
+            border-radius: 8px;
+            background: #ffffff !important;
+            transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page #payroll-contract-container .oh-pagination__link {
+            display: block;
+            padding: 6px 10px;
+            color: #176f80 !important;
+            background: #ffffff !important;
+            opacity: 1;
+            visibility: visible;
+            transition: color .18s ease, background .18s ease;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page #payroll-contract-container .oh-pagination__item:hover,
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page #payroll-contract-container .oh-pagination__item:focus-within {
+            border-color: #71b8c4 !important;
+            background: #dceff2 !important;
+            box-shadow: 0 2px 8px rgba(23, 111, 128, .12);
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page #payroll-contract-container .oh-pagination__item:hover .oh-pagination__link,
+        html body .oh-wrapper-main.super-admin-panel-theme .contract-page #payroll-contract-container .oh-pagination__item:focus-within .oh-pagination__link {
+            color: #0a4d60 !important;
+            background: #dceff2 !important;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        @media (max-width: 900px) {
+            html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__topbar {
+                align-items: stretch;
+                margin-inline: 20px;
+            }
+
+            html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--right {
+                justify-content: flex-start;
+            }
+        }
+
+        @media (max-width: 640px) {
+            html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__topbar {
+                gap: 14px;
+                margin: 14px 12px;
+                padding: 16px !important;
+                border-radius: 16px;
+            }
+
+            html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--right {
+                display: grid !important;
+                width: 100%;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                align-items: stretch;
+                gap: 8px;
+            }
+
+            html body .oh-wrapper-main.super-admin-panel-theme .contract-page #filterForm {
+                display: grid !important;
+                grid-column: 1 / -1;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                width: 100%;
+                gap: 8px;
+            }
+
+            html body .oh-wrapper-main.super-admin-panel-theme .contract-page #filterForm .oh-input__search-group {
+                grid-column: 1 / -1;
+                grid-row: 1;
+                display: flex !important;
+                position: relative !important;
+                flex: 1 1 100% !important;
+                width: 100% !important;
+                max-width: none !important;
+                min-width: 0 !important;
+                order: 0 !important;
+                top: auto !important;
+                right: auto !important;
+                bottom: auto !important;
+                left: auto !important;
+                transform: none !important;
+            }
+
+            html body .oh-wrapper-main.super-admin-panel-theme .contract-page #filterForm > .oh-dropdown:nth-of-type(2),
+            html body .oh-wrapper-main.super-admin-panel-theme .contract-page #filterForm > .oh-dropdown:nth-of-type(3) {
+                grid-row: 2;
+                order: 0 !important;
+            }
+
+            html body .oh-wrapper-main.super-admin-panel-theme .contract-page #filterForm > .oh-dropdown:nth-of-type(2) {
+                grid-column: 1;
+            }
+
+            html body .oh-wrapper-main.super-admin-panel-theme .contract-page #filterForm > .oh-dropdown:nth-of-type(3) {
+                grid-column: 2;
+            }
+
+            html body .oh-wrapper-main.super-admin-panel-theme .contract-page #filterForm > .oh-dropdown,
+            html body .oh-wrapper-main.super-admin-panel-theme .contract-page #filterForm > .oh-dropdown .oh-btn {
+                width: 100%;
+                min-width: 0;
+                margin: 0 !important;
+            }
+
+            html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--right > .oh-btn-group,
+            html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--right > .oh-main__titlebar-button-container {
+                width: 100%;
+                min-width: 0;
+                margin: 0 !important;
+            }
+
+            html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--left {
+                padding-left: 26px;
+            }
+
+            html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--right > .oh-btn-group .oh-dropdown,
+            html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--right > .oh-btn-group .oh-btn,
+            html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--right > .oh-main__titlebar-button-container .oh-btn-group,
+            html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--right > .oh-main__titlebar-button-container .oh-btn-group > div,
+            html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-main__titlebar--right > .oh-main__titlebar-button-container .oh-btn {
+                width: 100%;
+                margin: 0 !important;
+            }
+
+            html body .oh-wrapper-main.super-admin-panel-theme .contract-page .oh-tabs {
+                margin-inline: 12px;
+            }
+
+            html body .oh-wrapper-main.super-admin-panel-theme .contract-page #payroll-contract-container .oh-pagination {
+                align-items: flex-start;
+                padding: 10px;
+            }
+
+            html body .oh-wrapper-main.super-admin-panel-theme .contract-page #payroll-contract-container .oh-pagination__nav {
+                flex-wrap: wrap;
+                gap: 8px;
+                margin: 0;
+            }
+
+            html body .oh-wrapper-main.super-admin-panel-theme .contract-page #payroll-contract-container .oh-pagination__items {
+                gap: 4px;
+            }
+        }
+    </style>
+    <main class="contract-page" :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
         <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
             <div class="oh-main__titlebar oh-main__titlebar--left">
                 <h1 class="oh-main__titlebar-title fw-bold">
@@ -195,7 +824,7 @@
         >
             {% trans "Selected Employees" %}
         </div>
-        <div class="d-flex flex-row-reverse oh-wrapper mb-2">
+        <div class="d-flex flex-row-reverse oh-wrapper mb-2 contract-status-legend">
             <span
                 class="me-3"
                 onclick="$('[name=contract_status]').val('terminated'); $('[name=contract_status]').first().change(); $('.filterButton').click()"

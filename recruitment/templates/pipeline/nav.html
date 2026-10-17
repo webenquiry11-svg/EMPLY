@@ -94,7 +94,7 @@
         </div>
     </div>
 {% endif %}
-<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+<section class="oh-wrapper oh-main__topbar recruitment-pipeline-head" x-data="{searchShow: false}">
     <div class="oh-main__titlebar oh-main__titlebar--left">
         <div
             class="oh-main__titlebar-title fw-bold mb-0 text-dark"
@@ -164,10 +164,11 @@
                 >
                     <button
                         type="button"
-                        class="oh-btn ml-2"
+                        class="oh-btn recruitment-pipeline-filter"
                         @click="open = !open"
                     >
-                        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+                        <span class="material-symbols-outlined" aria-hidden="true">filter_list</span>
+                        <span>{% trans "Filter" %}</span>
                         <div id="filterCount"></div>
                     </button>
                     <div

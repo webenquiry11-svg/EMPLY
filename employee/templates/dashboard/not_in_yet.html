@@ -8,11 +8,11 @@
                         <div class="oh-sticky-table__sd">
                             <div class="oh-profile oh-profile--md">
                                 <div class="oh-profile__avatar mr-1">
-                                    <img src="{{ emp.get_avatar }}" class="oh-profile__image">
+                                    <img src="{{ emp.get_avatar }}" class="oh-profile__image" alt="{{ emp.get_full_name }}">
                                 </div>
-                                <span class="oh-profile__name oh-text--dark">
-                                    {{ emp.get_full_name }}
-                                    <span class="oh-recuritment_tag" style="font-size: 0.5rem">
+                                <span class="oh-profile__name offline-employee-widget__name oh-text--dark">
+                                    <span class="offline-employee-widget__employee-name">{{ emp.get_full_name }}</span>
+                                    <span class="oh-recuritment_tag offline-employee-widget__status">
                                         {{ emp.get_leave_status }}
                                     </span>
                                 </span>

@@ -1,0 +1,38 @@
+{% load static i18n %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% trans "Super Admin" %}{% endblock %} | EMPLY</title>
+    <link rel="stylesheet" href="{% static 'build/css/style.min.css' %}">
+    <style>
+        .super-admin-shell { max-width:1280px; margin:28px auto; padding:0 18px 42px; }
+        .super-admin-nav, .super-admin-actions { display:flex; flex-wrap:wrap; gap:9px; }
+        .super-admin-nav { margin-bottom:20px; }
+        .super-admin-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; }
+        .super-admin-card { min-width:0; }
+        .super-admin-table-wrap { overflow-x:auto; }
+        .super-admin-table { min-width:680px; }
+        @media(max-width:640px) { .super-admin-shell { margin-top:14px; padding:0 10px 28px; } }
+    </style>
+</head>
+<body>
+<main class="super-admin-shell">
+    <nav class="super-admin-nav" aria-label="{% trans 'Super Admin navigation' %}">
+        <a class="oh-btn oh-btn--secondary" href="{% url 'super-admin-dashboard' %}">{% trans "Overview" %}</a>
+        <a class="oh-btn oh-btn--secondary" href="{% url 'super-admin-users' %}">{% trans "Admin accounts" %}</a>
+        <a class="oh-btn oh-btn--secondary" href="{% url 'super-admin-groups' %}">{% trans "Groups and permissions" %}</a>
+        <a class="oh-btn oh-btn--secondary" href="{% url 'super-admin-companies' %}">{% trans "Companies" %}</a>
+        <a class="oh-btn oh-btn--secondary" href="{% url 'super-admin-payroll-settings' %}">{% trans "Payroll configuration" %}</a>
+        <a class="oh-btn oh-btn--secondary" href="{% url 'payroll-run-list' %}">{% trans "Payroll runs" %}</a>
+        <a class="oh-btn oh-btn--secondary" href="{% url 'super-admin-audit' %}">{% trans "Audit history" %}</a>
+        <a class="oh-btn oh-btn--secondary" href="{% url 'logout' %}">{% trans "Log out" %}</a>
+    </nav>
+    {% if messages %}
+        <div aria-live="polite">{% for message in messages %}<div class="oh-alert oh-alert--{{ message.tags }}">{{ message }}</div>{% endfor %}</div>
+    {% endif %}
+    {% block content %}{% endblock %}
+</main>
+</body>
+</html>

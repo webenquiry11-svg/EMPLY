@@ -14,15 +14,15 @@
     >
     </span>
 {% endif %}
-<div class="oh-modal__dialog-header">
-    <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label="{% trans 'Close' %}">
-        <ion-icon name="close-outline"></ion-icon>
-    </button>
+<div class="oh-modal__dialog-header employee-asset-modal-header">
     <span class="oh-modal__dialog-title ml-5" id="addEmployeeObjectiveModalLabel">
         <h5>{{ asset_allocation_form.verbose_name }}</h5>
     </span>
+    <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label="{% trans 'Close' %}">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
 </div>
-<div class="oh-modal__dialog-body">
+<div class="oh-modal__dialog-body employee-asset-modal-body">
     <form
         hx-post="{%url 'asset-allocate-creation' %}"
         hx-target="#objectCreateModalTarget"

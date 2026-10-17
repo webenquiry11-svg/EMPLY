@@ -1,0 +1,39 @@
+{% extends "payroll/workflow_base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Payroll runs" %}{% endblock %}
+{% block content %}
+<section class="oh-card">
+    <div class="oh-card__header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <h1 class="oh-card__title">{% trans "Payroll runs" %}</h1>
+        {% if perms.payroll.add_payslip or request.user.is_superuser %}
+            <a class="oh-btn oh-btn--secondary" href="{% url 'payroll-run-create' %}">{% trans "Create payroll preview" %}</a>
+        {% endif %}
+    </div>
+    <div class="oh-card__body payroll-workflow__table-wrap">
+        {% if payroll_runs %}
+            <table class="oh-table payroll-workflow__table">
+                <thead><tr>
+                    <th>{% trans "Company" %}</th><th>{% trans "Period" %}</th>
+                    <th>{% trans "Attempt" %}</th><th>{% trans "Status" %}</th>
+                    <th>{% trans "Employees" %}</th><th>{% trans "Updated" %}</th><th></th>
+                </tr></thead>
+                <tbody>
+                {% for run in payroll_runs %}
+                    <tr>
+                        <td>{{ run.company }}</td>
+                        <td>{{ run.start_date }} – {{ run.end_date }}</td>
+                        <td>{{ run.attempt }}</td>
+                        <td><span class="oh-badge oh-badge--secondary">{{ run.get_status_display }}</span></td>
+                        <td>{{ run.items.count }}</td>
+                        <td>{{ run.updated_at }}</td>
+                        <td><a class="oh-btn oh-btn--x-small oh-btn--secondary" href="{% url 'payroll-run-detail' run.pk %}">{% trans "Review" %}</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>{% trans "No payroll runs have been created in your company scope." %}</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

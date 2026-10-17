@@ -5,6 +5,7 @@ from datetime import date, timedelta
 from decimal import Decimal, ROUND_HALF_UP
 
 from django.apps import apps
+from django.db import transaction
 from django.db.models import Q
 from django.utils import timezone
 
@@ -92,27 +93,36 @@ def _eligible_paid_leave(leave, category):
 def calculate_employee_payroll(employee, start_date=None, end_date=None):
     """Calculate one deterministic monthly payroll result for an employee.
 
-    Existing contract configuration controls the daily salary divisor. If no
-    active contract exists, the project's monthly-working-day convention is
-    used. No tax, PF, ESI, overtime, bonus, or other unspecified rule is
-    invented here.
+    Existing contract configuration controls whether a fixed deduction rate is
+    used. Otherwise, daily salary is the basic salary divided by every calendar
+    day in the payroll period. No tax, PF, ESI, overtime, bonus, or other
+    unspecified rule is invented here.
     """
     start_date, end_date = (
         monthly_period() if start_date is None or end_date is None else (start_date, end_date)
     )
-    calculation_end = min(end_date, timezone.localdate())
+    today = timezone.localdate()
+    calculation_end = min(end_date, today)
     work_info = getattr(employee, "employee_work_info", None)
     salary = Decimal(str(getattr(work_info, "basic_salary", 0) or 0))
     working_dates = _working_dates(start_date, calculation_end)
     working_set = set(working_dates)
-    working_days = len(working_dates)
-    daily_rate = (salary / Decimal(working_days)) if working_days else Decimal("0")
+    period_days = (end_date - start_date).days + 1
+    daily_rate = (salary / Decimal(period_days)) if period_days else Decimal("0")
 
     contract = employee.contract_set.filter(
         is_active=True, contract_status="active"
     ).first()
     if contract and not contract.calculate_daily_leave_amount:
         daily_rate = Decimal(str(contract.deduction_for_one_leave_amount or 0))
+        daily_rate_basis = (
+            f"Contract-configured deduction rate: ₹{daily_rate:,.2f} per day."
+        )
+    else:
+        daily_rate_basis = (
+            f"Basic salary ₹{salary:,.2f} ÷ {period_days} calendar days "
+            f"= ₹{daily_rate:,.2f} per deduction day."
+        )
 
     category = _employee_category(employee)
     approved_paid = set()
@@ -171,7 +181,14 @@ def calculate_employee_payroll(employee, start_date=None, end_date=None):
 
     unpaid_dates = (approved_unpaid | pending_or_unapproved) & working_set
     paid_dates = (approved_paid & working_set) - unpaid_dates
-    absence_dates = (working_set - attendance_dates - approved_paid - approved_unpaid - pending_or_unapproved)
+    absence_working_set = {day for day in working_set if day < today}
+    absence_dates = (
+        absence_working_set
+        - attendance_dates
+        - approved_paid
+        - approved_unpaid
+        - pending_or_unapproved
+    )
     unpaid_dates.update(absence_dates)
 
     lwp_period_dates = approved_lwp & working_set
@@ -208,11 +225,16 @@ def calculate_employee_payroll(employee, start_date=None, end_date=None):
         day,
         reason,
         policy,
-        calculation,
         leave_type=None,
         rate_label="Normal",
     ):
         affected_dates = [day]
+        multiplier = 2 if rate_label == "Double" else 1
+        if contract and not contract.calculate_daily_leave_amount:
+            rate_formula = f"Contract rate ₹{daily_rate:,.2f}"
+        else:
+            rate_formula = f"₹{salary:,.2f} ÷ {period_days} calendar days"
+        multiplier_formula = " × 2 (double rate)" if multiplier == 2 else ""
         return {
             "deduction_type": deduction_type,
             "type": deduction_type,
@@ -228,7 +250,10 @@ def calculate_employee_payroll(employee, start_date=None, end_date=None):
             "rate_label": rate_label,
             "reason": reason,
             "policy": policy,
-            "calculation": calculation,
+            "calculation": (
+                f"{rate_formula}{multiplier_formula} × 1 day "
+                f"= {display_money(amount)}"
+            ),
         }
 
     deduction_details = []
@@ -237,7 +262,7 @@ def calculate_employee_payroll(employee, start_date=None, end_date=None):
             "Absence deduction", daily_rate, day,
             "No validated attendance and no approved leave covered this working day.",
             "Absent working days are unpaid.",
-            "1 × daily salary", "Absence",
+            "Absence",
         ))
     for day in sorted(normal_lwp_dates):
         ordinal = sorted(lwp_dates_year).index(day) + 1
@@ -245,7 +270,7 @@ def calculate_employee_payroll(employee, start_date=None, end_date=None):
             "LWP deduction", daily_rate, day,
             f"{ordinal}th LWP day in the leave year. Within the annual 12-day allowance, so normal deduction applies.",
             "LWP allowance = 12 days/year; days 1–12 use normal deduction.",
-            "1 × daily salary", "LWP", "Normal",
+            "LWP", "Normal",
         ))
     for day in sorted(double_lwp_dates):
         ordinal = sorted(lwp_dates_year).index(day) + 1
@@ -253,21 +278,21 @@ def calculate_employee_payroll(employee, start_date=None, end_date=None):
             "Double-LWP deduction", daily_rate * 2, day,
             f"{ordinal}th LWP day in the leave year. The first 12 LWP days are exhausted, so double deduction applies.",
             "LWP days 1–12 = normal deduction; LWP day 13+ = double deduction.",
-            "1 × daily salary × 2", "LWP", "Double",
+            "LWP", "Double",
         ))
     for day in sorted(other_unpaid_dates):
         deduction_details.append(deduction_detail(
             "Other unpaid leave", daily_rate, day,
             "Leave was not approved or was not an eligible paid leave type.",
             "Unapproved or ineligible leave is treated as unpaid.",
-            "1 × daily salary", "Unpaid leave",
+            "Unpaid leave",
         ))
     for day in sorted(sandwich_dates):
         deduction_details.append(deduction_detail(
             "Sandwich deduction", daily_rate, day,
             "Saturday and Monday leave caused this Sunday to be deducted under the sandwich rule.",
             "Saturday plus Monday leave causes Sunday deduction.",
-            "1 × daily salary", "Sandwich Sunday",
+            "Sandwich Sunday",
         ))
     total_deductions = sum(
         (item["amount"] for item in deduction_details),
@@ -315,6 +340,8 @@ def calculate_employee_payroll(employee, start_date=None, end_date=None):
         "double_lwp_deduction": money(double_lwp_deduction),
         "sandwich_deduction": money(sandwich_deduction),
         "total_affected_days": len(deduction_details),
+        "daily_rate_basis": daily_rate_basis,
+        "current_day_pending": start_date <= today <= end_date,
         "total_deductions": money(total_deductions),
         "net_pay": money(net_pay),
         "net_pay_display": display_money(net_pay),
@@ -341,6 +368,7 @@ def create_current_payslip(employee):
         for detail in result["deduction_details"]
     ]
     pay_head_data = {
+        "snapshot_source": "employee_dashboard_estimate",
         "start_date": result["start_date"].isoformat(),
         "end_date": result["end_date"].isoformat(),
         "basic_pay": float(result["basic_salary"]),
@@ -365,18 +393,22 @@ def create_current_payslip(employee):
         "sandwich_days": result["sandwich_days"],
         "deduction_details": snapshot_deductions,
     }
-    payslip, _ = Payslip.objects.get_or_create(
-        employee_id=employee,
-        start_date=result["start_date"],
-        end_date=result["end_date"],
-        defaults={
-            "pay_head_data": pay_head_data,
-            "contract_wage": result["basic_salary"],
-            "basic_pay": result["basic_salary"],
-            "gross_pay": result["basic_salary"],
-            "deduction": result["total_deductions"],
-            "net_pay": result["net_pay"],
-            "status": "draft",
-        },
-    )
+    with transaction.atomic():
+        employee_manager = getattr(employee.__class__, "_base_manager", None)
+        if employee_manager is not None:
+            employee_manager.select_for_update().filter(pk=employee.pk).first()
+        payslip, _ = Payslip.objects.get_or_create(
+            employee_id=employee,
+            start_date=result["start_date"],
+            end_date=result["end_date"],
+            defaults={
+                "pay_head_data": pay_head_data,
+                "contract_wage": result["basic_salary"],
+                "basic_pay": result["basic_salary"],
+                "gross_pay": result["basic_salary"],
+                "deduction": result["total_deductions"],
+                "net_pay": result["net_pay"],
+                "status": "draft",
+            },
+        )
     return payslip

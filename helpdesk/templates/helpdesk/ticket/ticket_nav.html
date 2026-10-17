@@ -1,20 +1,9 @@
 {% load i18n %}
-<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+<section class="oh-wrapper oh-main__topbar ticket-section-toolbar" x-data="{searchShow: false}">
     <div class="oh-main__titlebar oh-main__titlebar--left">
         <h1 class="oh-main__titlebar-title fw-bold">
             {% trans "Tickets" %}
         </h1>
-        <a
-            class="oh-main__titlebar-search-toggle"
-            role="button"
-            aria-label="{% trans 'Toggle Search' %}"
-            @click="searchShow = !searchShow"
-        >
-            <ion-icon
-                name="search-outline"
-                class="oh-main__titlebar-serach-icon"
-            ></ion-icon>
-        </a>
     </div>
     <div class="oh-main__titlebar oh-main__titlebar--right">
         {% include "helpdesk/ticket/ticket_filter.html" %}
@@ -110,7 +99,7 @@
     aria-hidden="true"
 >
     <div class="oh-modal__dialog">
-        <div class="oh-modal__dialog-header">
+        <div class="oh-modal__dialog-header ticket-modal-header">
             <h2 class="oh-modal__dialog-title" id="createTitle">
                 {% trans "Create Ticket" %}
             </h2>
@@ -130,7 +119,7 @@
     aria-hidden="true"
 >
     <div class="oh-modal__dialog">
-        <div class="oh-modal__dialog-header">
+        <div class="oh-modal__dialog-header ticket-modal-header">
             <h2 class="oh-modal__dialog-title" id="editTitle">
                 {% trans "Update Ticket" %}
             </h2>

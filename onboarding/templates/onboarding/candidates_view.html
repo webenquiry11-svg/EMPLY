@@ -17,7 +17,7 @@
         }
     }
 </script>
-<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+<section class="oh-wrapper oh-main__topbar onboarding-candidates-head" x-data="{searchShow: false}">
     <div class="oh-main__titlebar oh-main__titlebar--left">
         <h1 class="oh-main__titlebar-title fw-bold mb-0">
             {% trans "Hired Candidates" %}
@@ -263,7 +263,7 @@
         {% include 'onboarding/candidates.html' %}
     </div>
 {% else %}
-    <div class="oh-empty">
+    <div class="oh-empty onboarding-candidates-empty">
         <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
         <h2 class="oh-empty__title">{% trans "No Records found." %}</h1>
         <p class="oh-empty__subtitle">{% trans "At present, There are no Candidates onboarding." %}</p>

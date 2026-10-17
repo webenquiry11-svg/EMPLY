@@ -13,51 +13,38 @@
     <span hx-trigger="load" hx-get="{% url 'leave-allocation-request-filter' %}" hx-target="#view-container"></span>
 {% endif %}
 {% if instances_ids and leave_allocation_request %}
-    <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+    <div class="oh-modal__dialog oh-modal__dialog--navigation leave-allocation-request-detail__navigation m-0 p-0">
         <button
             hx-get="{% url 'leave-allocation-request-single-view' previous %}?instances_ids={{instances_ids}}&my_request={{my_request}}&dashboard={{dashboard}}"
             hx-target="#objectDetailsModalW25Target"
             class="oh-modal__diaglog-nav oh-modal__nav-prev"
             data-action="previous"
+            aria-label="{% trans 'Previous request' %}"
         >
-            <ion-icon
-                name="chevron-back-outline"
-                class="md hydrated"
-                role="img"
-                aria-label="{% trans 'chevron back outline' %}"
-            ></ion-icon>
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m15 18-6-6 6-6"></path></svg>
         </button>
         <button
             hx-get="{% url 'leave-allocation-request-single-view' next %}?instances_ids={{instances_ids}}&my_request={{my_request}}&dashboard={{dashboard}}"
             hx-target="#objectDetailsModalW25Target"
             class="oh-modal__diaglog-nav oh-modal__nav-next"
             data-action="next"
+            aria-label="{% trans 'Next request' %}"
         >
-            <ion-icon
-                name="chevron-forward-outline"
-                class="md hydrated"
-                role="img"
-                aria-label="{% trans 'chevron forward outline' %}"
-            ></ion-icon>
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9 18 6-6-6-6"></path></svg>
         </button>
     </div>
 {% endif %}
 </div>
-<div class="oh-modal__dialog-header">
+<div class="oh-modal__dialog-header leave-allocation-request-detail__header">
     <h2 class="oh-modal__dialog-title" id="objectDetailsModalLabel">
         {% trans "Details" %}
     </h2>
     <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
-        <ion-icon
-            name="close-outline"
-            role="img"
-            class="md hydrated"
-            aria-label="{% trans 'close outline' %}"
-        ></ion-icon>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m18 6-12 12M6 6l12 12"></path></svg>
     </button>
 </div>
 {% if leave_allocation_request %}
-    <div class="oh-modal__dialog-body">
+    <div class="oh-modal__dialog-body leave-allocation-request-detail__body">
         <a
             class="oh-timeoff-modal__profile-content"
             style="text-decoration: none"
@@ -82,7 +69,7 @@
                 </div>
             </div>
         </a>
-        <div class="oh-modal__dialog-header pt-0">
+        <div class="oh-modal__dialog-header leave-allocation-request-detail__content pt-0">
             <div class="oh-timeoff-modal__stats-container mt-3">
                 <div class="oh-timeoff-modal__stat">
                     <span class="oh-timeoff-modal__stat-title">{% trans "Requested Days" %}</span>

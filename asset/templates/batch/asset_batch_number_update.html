@@ -21,7 +21,7 @@
     </div>
 {% endif %}
 
-<div class="oh-modal__dialog-header">
+<div class="oh-modal__dialog-header employee-asset-modal-header">
     <h5 class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
         {% trans "Update" %}
         {{ asset_batch_update_form.verbose_name }}
@@ -30,7 +30,7 @@
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
-<div class="oh-modal__dialog-body">
+<div class="oh-modal__dialog-body employee-asset-modal-body">
     <form
         hx-post="{%url 'asset-batch-update' batch_id=asset_batch_update_form.instance.id %}"
         hx-target="#objectUpdateModalTarget"

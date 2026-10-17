@@ -3,8 +3,6 @@ middleware.py
 """
 
 from django.apps import apps
-from django.contrib import messages
-from django.contrib.auth import logout
 from django.core.cache import cache
 from django.db.models import Q
 from django.shortcuts import redirect
@@ -26,6 +24,7 @@ from horilla.methods import get_horilla_model_class
 from horilla_documents.models import DocumentRequest
 
 CACHE_KEY = "horilla_company_models_cache_key"
+NO_COMPANY_SCOPE = -1
 
 
 class CompanyMiddleware:
@@ -41,37 +40,63 @@ class CompanyMiddleware:
         Retrieve the company ID from the request or session.
         """
         if getattr(request, "user", False) and not request.user.is_anonymous:
-            try:
-                if com_id := request.session.get("selected_company", None):
-                    return (
-                        Company.objects.filter(id=com_id).first()
-                        if com_id != "all"
-                        else None
-                    )
-                else:
-                    return getattr(
-                        request.user.employee_get.employee_work_info, "company_id", None
-                    )
-            except AttributeError:
-                pass
+            user = request.user
+            employee = getattr(user, "employee_get", None)
+            own_company = getattr(
+                getattr(employee, "employee_work_info", None),
+                "company_id",
+                None,
+            )
+            can_change_company = user.is_superuser or user.has_perm(
+                "base.change_company"
+            )
+            selected_company = request.session.get("selected_company")
+            if selected_company == "none":
+                return None if can_change_company else NO_COMPANY_SCOPE
+            if selected_company == "all":
+                return None if can_change_company else own_company or NO_COMPANY_SCOPE
+            if selected_company:
+                selected = Company.objects.filter(id=selected_company).first()
+                if selected and (
+                    can_change_company
+                    or selected.pk == getattr(own_company, "pk", None)
+                ):
+                    return selected
+                return own_company or NO_COMPANY_SCOPE
+            if can_change_company:
+                return None
+            return own_company or NO_COMPANY_SCOPE
         return None
 
     def _set_company_session(self, request, company_id):
         """
         Set the company session data based on the company ID.
         """
-        try:
-            user = request.user.employee_get
-        except Exception:
-            logout(request)
-            messages.error(
-                request,
-                _("An employee related to this user's credentials does not exist."),
-            )
-            return redirect("login")
+        user = getattr(request.user, "employee_get", None)
+        can_change_company = request.user.is_superuser or request.user.has_perm(
+            "base.change_company"
+        )
+        if user is None and not can_change_company:
+            request.session["selected_company"] = "none"
+            request.session["selected_company_instance"] = {
+                "company": str(_("No company access")),
+                "icon": AllCompany.Urls.url,
+                "text": str(_("No company access")),
+                "id": None,
+            }
+            return
         user_company_id = getattr(
             getattr(user, "employee_work_info", None), "company_id", None
         )
+        if company_id == NO_COMPANY_SCOPE:
+            request.session["selected_company"] = "none"
+            request.session["selected_company_instance"] = {
+                "company": str(_("No company access")),
+                "icon": AllCompany.Urls.url,
+                "text": str(_("No company access")),
+                "id": None,
+            }
+            return
         if company_id and request.session.get("selected_company") != "all":
             if company_id == "all":
                 text = str(_("All companies"))

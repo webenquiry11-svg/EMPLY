@@ -105,7 +105,11 @@
                                 <div class="oh-sticky-table__td">
                                     {{ leave_allocation_request.created_by.employee_get }}
                                 </div>
-                                <div class="oh-sticky-table__td">{{ leave_allocation_request.get_status_display }}</div>
+                                <div class="oh-sticky-table__td">
+                                    <span class="leave-allocation-status-badge" data-status="{{ leave_allocation_request.status }}">
+                                        {{ leave_allocation_request.get_status_display }}
+                                    </span>
+                                </div>
                                 <div class="oh-sticky-table__td">
                                     {{ leave_allocation_request.description|truncatechars:25 }}
                                 </div>
@@ -116,17 +120,13 @@
                                         hx-get="{% url 'allocation-request-view-comment' leave_allocation_request.id %}"
                                         hx-target="#commentContainer"
                                         data-target="#allocationactivitySidebar"
-                                        title="{% trans 'View Comment' %}"
-                                        class="oh-btn oh-btn--light oh-activity-sidebar__open w-100"
                                         title="{% trans 'Add / View Comment' %}"
-                                        style="flex: 1 0 auto; width: 20px; height: 40.68px; padding: 0"
+                                        class="oh-btn oh-btn--light oh-activity-sidebar__open leave-allocation-comment-button"
                                     >
-                                        <ion-icon
-                                            name="newspaper-outline"
-                                            role="img"
-                                            class="md hydrated"
-                                            aria-label="{% trans 'newspaper outline' %}"
-                                        ></ion-icon>
+                                        <svg class="leave-allocation-comment-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                            <path d="M20 11.5a7.5 7.5 0 0 1-8 7.5 8.4 8.4 0 0 1-3.3-.67L4 20l1.25-3.7A7 7 0 0 1 4 11.5 7.5 7.5 0 0 1 12 4a7.5 7.5 0 0 1 8 7.5Z"></path>
+                                            <path d="M8.5 11h7M8.5 14.5h4"></path>
+                                        </svg>
                                     </button>
                                 </div>
 
@@ -340,7 +340,9 @@
                                         {{ leave_allocation_request.created_by.employee_get }}
                                     </div>
                                     <div class="oh-sticky-table__td">
-                                        {{ leave_allocation_request.get_status_display }}
+                                        <span class="leave-allocation-status-badge" data-status="{{ leave_allocation_request.status }}">
+                                            {{ leave_allocation_request.get_status_display }}
+                                        </span>
                                     </div>
                                     <div class="oh-sticky-table__td">
                                         {{ leave_allocation_request.description|truncatechars:20 }}
@@ -353,17 +355,13 @@
                                                 hx-get="{% url 'allocation-request-view-comment' leave_allocation_request.id %}"
                                                 hx-target="#commentContainer"
                                                 data-target="#allocationactivitySidebar"
-                                                title="{% trans 'View Comment' %}"
-                                                class="oh-btn oh-btn--light oh-activity-sidebar__open w-100"
                                                 title="{% trans 'Add / View Comment' %}"
-                                                style="flex: 1 0 auto; width: 20px; height: 40.68px; padding: 0"
+                                                class="oh-btn oh-btn--light oh-activity-sidebar__open leave-allocation-comment-button"
                                             >
-                                                <ion-icon
-                                                    name="newspaper-outline"
-                                                    role="img"
-                                                    class="md hydrated"
-                                                    aria-label="{% trans 'newspaper outline' %}"
-                                                ></ion-icon>
+                                                <svg class="leave-allocation-comment-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                                    <path d="M20 11.5a7.5 7.5 0 0 1-8 7.5 8.4 8.4 0 0 1-3.3-.67L4 20l1.25-3.7A7 7 0 0 1 4 11.5 7.5 7.5 0 0 1 12 4a7.5 7.5 0 0 1 8 7.5Z"></path>
+                                                    <path d="M8.5 11h7M8.5 14.5h4"></path>
+                                                </svg>
                                             </button>
                                         {% endif %}
                                     </div>

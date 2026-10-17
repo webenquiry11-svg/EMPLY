@@ -176,7 +176,7 @@
                                 <li class="oh-pagination__item oh-pagination__item--wide">
                                     <a
                                         hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page={{ assets.next_page_number }}"
-                                        class="btn btn-outline-secondary"
+                                        class="oh-pagination__link"
                                         hx-target="#asset_request_allocation_list"
                                     >{% trans "Next" %}</a>
                                 </li>
@@ -424,7 +424,7 @@
                                 <li class="oh-pagination__item oh-pagination__item--wide">
                                     <a
                                         hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page={{ asset_requests.next_page_number }}"
-                                        class="btn btn-outline-secondary"
+                                        class="oh-pagination__link"
                                         hx-target="#asset_request_allocation_list"
                                     >{% trans "Next" %}</a>
                                 </li>
@@ -645,7 +645,7 @@
                                 <li class="oh-pagination__item oh-pagination__item--wide">
                                     <a
                                         hx-get="{% url 'asset-request-allocation-view-search-filter' %}?{{pg}}&page={{ asset_allocations.next_page_number }}"
-                                        class="btn btn-outline-secondary"
+                                        class="oh-pagination__link"
                                         hx-target="#asset_request_allocation_list"
                                     >{% trans "Next" %}</a>
                                 </li>

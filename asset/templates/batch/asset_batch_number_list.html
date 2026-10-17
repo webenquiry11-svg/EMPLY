@@ -42,10 +42,10 @@
                         </div>
                         {% if perms.asset.change_assetlot or perms.asset.delete_assetlot %}
                             <div class="oh-sticky-table__td">
-                                <div class="oh-btn-group">
+                                <div class="oh-btn-group employee-asset-icon-actions">
                                     {% if perms.asset.change_assetlot %}
                                         <a
-                                            class="oh-btn oh-btn--light-bkg w-100"
+                                            class="oh-btn employee-asset-icon-action"
                                             title="{% trans 'Update' %}"
                                             data-toggle="oh-modal-toggle"
                                             data-target="#objectUpdateModal"
@@ -69,7 +69,7 @@
                                         >
                                             {% csrf_token %}
                                             <button
-                                                class="oh-btn oh-btn--danger-outline w-100"
+                                                class="oh-btn employee-asset-icon-action employee-asset-icon-action--danger"
                                                 title="{% trans 'Delete' %}"
                                             >
                                                 <ion-icon
@@ -129,7 +129,7 @@
                     <li class="oh-pagination__item oh-pagination__item--wide">
                         <a
                             hx-get="{% url 'asset-batch-number-search' %}?{{pg}}&page={{ batch_numbers.next_page_number }}"
-                            class="btn btn-outline-secondary"
+                            class="oh-pagination__link"
                             hx-target="#AssetBatchList"
                         >
                             {% trans "Next" %}

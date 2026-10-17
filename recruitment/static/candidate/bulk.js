@@ -43,7 +43,7 @@ var rowMessages = {
   fr: " Sélectionné",
 };
 
-tickCandidateCheckboxes();
+$(document).ready(tickCandidateCheckboxes);
 
 function getCookie(name) {
   let cookieValue = null;

@@ -31,11 +31,12 @@
     <meta name="theme-color" content="#ffffff">
     <link rel="stylesheet" href="{% static 'build/css/style.min.css' %}" />
     <link rel="stylesheet" href="{% static 'build/css/sweetalert2.min.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}?v=dashboard-loader-6">
     <link rel="stylesheet" href="{% static 'build/css/summernote-lite.min.css' %}" />
     <link rel="stylesheet" href="{% static 'build/css/orgChart.css' %}" />
     <link rel="stylesheet" href="{% static '/jquery/jqueryui.css' %}">
     <link rel="stylesheet" href="{% static 'build/css/pivottable.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/emply-alerts.css' %}?v=20261013">
     <script src="{% static '/jquery/ajax.js' %}"></script>
     <script src="{% static '/jquery/jquery.min.js' %}"></script>
     <script src="{% static '/jquery/jqueryui.js' %}"></script>
@@ -49,13 +50,27 @@
     <!-- Popper.JS -->
     <!-- Bootstrap JS -->
     {% block styles %}
+        {% if request.path|slice:":13" == "/recruitment/" or request.resolver_match.url_name == "attendance-dashboard" or request.resolver_match.url_name == "offboarding-dashboard" or request.resolver_match.url_name == "offboarding-pipeline" or request.resolver_match.url_name == "resignation-request-view" %}
+            <link rel="stylesheet" href="{% static 'recruitment/recruitment-theme.css' %}?v=30">
+        {% elif request.path|slice:":12" == "/onboarding/" %}
+            <link rel="stylesheet" href="{% static 'onboarding/onboarding-theme.css' %}?v=4">
+        {% elif request.resolver_match.url_name == "shift-request-view" or request.resolver_match.url_name == "work-type-request-view" or request.resolver_match.url_name == "rotating-shift-assign" or request.resolver_match.url_name == "rotating-work-type-assign" or request.resolver_match.url_name == "organisation-chart" or request.resolver_match.url_name == "document-request-view" or request.resolver_match.url_name == "view-biometric-devices" or request.resolver_match.url_name == "attendance-view" or request.resolver_match.url_name == "request-attendance-view" or request.resolver_match.url_name == "attendance-overtime-view" or request.resolver_match.url_name == "attendance-activity-view" or request.resolver_match.url_name == "view-my-attendance" or request.resolver_match.url_name == "work-records" %}
+            <link rel="stylesheet" href="{% static 'employee/employee-directory-theme.css' %}?v=28">
+        {% elif request.resolver_match.url_name == "type-view" or request.resolver_match.url_name == "type-creation" or request.resolver_match.url_name == "assign-view" or request.resolver_match.url_name == "leave-allocation-request-view" or request.resolver_match.url_name == "view-compensatory-leave" %}
+            <link rel="stylesheet" href="{% static 'leave/leave-management-theme.css' %}?v=4">
+        {% elif request.path|slice:":23" == "/employee/employee-view" or request.path|slice:":30" == "/employee/suspended-employees/" %}
+            <link rel="stylesheet" href="{% static 'employee/employee-directory-theme.css' %}?v=11">
+        {% endif %}
     {% endblock styles %}
 </head>
 
 
 <div hidden id="statiUrl" data-url='{% static "" %}'></div>
 
-<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+<body
+    {% if request.path|slice:":13" == "/recruitment/" or request.resolver_match.url_name == "attendance-dashboard" or request.resolver_match.url_name == "offboarding-dashboard" or request.resolver_match.url_name == "offboarding-pipeline" or request.resolver_match.url_name == "resignation-request-view" %}class="recruitment-theme"{% elif request.path|slice:":12" == "/onboarding/" %}class="onboarding-theme"{% elif request.resolver_match.url_name == "shift-request-view" or request.resolver_match.url_name == "work-type-request-view" or request.resolver_match.url_name == "rotating-shift-assign" or request.resolver_match.url_name == "rotating-work-type-assign" or request.resolver_match.url_name == "organisation-chart" or request.resolver_match.url_name == "document-request-view" %}class="employee-subsection-theme"{% elif request.path|slice:":23" == "/employee/employee-view" or request.path|slice:":30" == "/employee/suspended-employees/" %}class="employee-directory-theme"{% endif %}
+    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+>
     <span class="logged-in" data-user-id="{{request.user.id}}"></span>
     {% if request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser %}
         <div id="announcementNotificationPrompt" class="announcement-notification-prompt" hidden>
@@ -86,50 +101,55 @@
             .announcement-notification-prompt {
                 position: fixed; right: 22px; bottom: 22px; z-index: 2000;
                 display: flex; align-items: center; gap: 14px; max-width: 440px;
-                padding: 16px 18px; border: 1px solid rgba(45,90,63,.22);
-                border-radius: 16px; background: #fff; color: #17231b;
-                box-shadow: 0 18px 45px rgba(7,25,14,.2);
+                padding: 16px 18px; border: 1px solid rgba(42,132,155,.22);
+                border-radius: 16px; background: #fff; color: #173f50;
+                box-shadow: 0 18px 45px rgba(10,77,96,.18);
             }
             .announcement-notification-prompt__icon {
                 display: grid; place-items: center; flex: 0 0 42px; height: 42px;
-                border-radius: 12px; background: #e4f1e9; color: #2d5a3f; font-size: 22px;
+                border-radius: 12px; background: #e8f5f7; color: #176f80; font-size: 22px;
             }
             .announcement-notification-prompt__content { display: grid; gap: 4px; font-size: 12px; }
             .announcement-notification-prompt__content strong { font-size: 14px; }
-            .announcement-notification-prompt__content span { color: #637067; line-height: 1.35; }
+            .announcement-notification-prompt__content span { color: #63838d; line-height: 1.35; }
             .announcement-notification-prompt__actions { display: grid; gap: 5px; margin-left: auto; }
             .announcement-notification-prompt__actions .oh-btn { min-width: 74px; padding: 7px 12px; }
+            .announcement-notification-prompt__actions .oh-btn--secondary {
+                border: 1px solid #176d83;
+                background: linear-gradient(110deg, #0d7183, #16899a);
+                color: #fff;
+            }
             .announcement-notification-prompt__reject {
-                border: 0; background: transparent; color: #637067; cursor: pointer; font-size: 11px;
+                border: 0; background: transparent; color: #63838d; cursor: pointer; font-size: 11px;
             }
             .announcement-popup {
                 position: fixed; top: 50%; left: 50%; width: min(560px, calc(100vw - 32px));
                 transform: translate(-50%, -50%); z-index: 1999; padding: 32px 36px;
-                border: 1px solid rgba(141,209,183,.42); border-radius: 24px;
-                background: linear-gradient(145deg, #214d40 0%, #17372d 54%, #10251e 100%);
+                border: 1px solid rgba(143,201,212,.46); border-radius: 24px;
+                background: linear-gradient(145deg, #0d7183 0%, #0a596b 54%, #0a4d60 100%);
                 color: #fff; overflow: hidden; isolation: isolate;
-                box-shadow: 0 28px 80px rgba(0,0,0,.4), 0 0 0 9999px rgba(3,12,8,.25);
+                box-shadow: 0 28px 80px rgba(10,77,96,.32), 0 0 0 9999px rgba(8,35,46,.28);
                 animation: announcement-popup-in .35s ease-out;
             }
             .announcement-popup__glow {
                 position: absolute; top: -110px; right: -70px; width: 260px; height: 260px;
-                border-radius: 50%; background: rgba(169,229,201,.16); filter: blur(8px); z-index: -1;
+                border-radius: 50%; background: rgba(199,229,235,.22); filter: blur(8px); z-index: -1;
             }
             .announcement-popup__icon {
                 display: grid; place-items: center; width: 58px; height: 58px; margin-bottom: 20px;
-                border: 1px solid rgba(169,229,201,.35); border-radius: 18px;
-                background: rgba(169,229,201,.14); color: #b9efd3; font-size: 28px;
+                border: 1px solid rgba(199,229,235,.4); border-radius: 18px;
+                background: rgba(199,229,235,.16); color: #c7e5eb; font-size: 28px;
             }
             .announcement-popup__close {
                 position: absolute; top: 12px; right: 16px; border: 0; background: transparent;
                 color: rgba(255,255,255,.65); font-size: 27px; cursor: pointer;
             }
             .announcement-popup__eyebrow {
-                display: flex; align-items: center; gap: 8px; color: #a9e5c9; font-size: 12px;
+                display: flex; align-items: center; gap: 8px; color: #b9e4eb; font-size: 12px;
                 font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
             }
             .announcement-popup h2 { max-width: 450px; margin: 16px 0 12px; font-size: clamp(22px, 4vw, 32px); line-height: 1.18; letter-spacing: -.02em; }
-            .announcement-popup p { max-width: 470px; margin: 0; color: #d2e5db; line-height: 1.7; white-space: pre-line; font-size: 15px; }
+            .announcement-popup p { max-width: 470px; margin: 0; color: #d6edf1; line-height: 1.7; white-space: pre-line; font-size: 15px; }
             @keyframes announcement-popup-in { from { opacity: 0; transform: translate(-50%, -44%); } to { opacity: 1; transform: translate(-50%, -50%); } }
             @media (max-width: 620px) {
                 .announcement-notification-prompt { right: 12px; bottom: 12px; left: 12px; max-width: none; }
@@ -157,10 +177,18 @@
     {% endif %}
     <button id="reloadMessagesButton" hx-get="{% url 'reload-messages' %}" hx-swap="afterend" hidden hx-target="#reloadMessages"></button>
 
-    <div class="oh-wrapper-main{% if request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser %} employee-panel-theme{% endif %}{% if '/helpdesk/' in request.path %} helpdesk-panel-theme{% endif %}{% if '/employee/' in request.path %} employee-module-theme{% endif %}{% if request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser and request.path == '/' or request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser and request.path == '/dashboard-employee' %} employee-bottom-nav-active{% endif %}{% if request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser and request.path != '/' and request.path != '/dashboard-employee' %} employee-section-fullscreen{% endif %}{% if request.user.is_superuser and request.path == '/' %} employee-bottom-nav-active{% endif %}{% if request.user.is_superuser and request.path != '/' %} super-admin-section-fullscreen{% endif %}{% if request.user.is_staff and not request.user.is_superuser %} admin-panel-theme{% endif %}{% if request.user.is_superuser %} super-admin-panel-theme{% endif %}{% if request.user.is_authenticated %} no-left-sidebar-active{% endif %}">
+    <div class="oh-wrapper-main{% if request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser %} employee-panel-theme{% endif %}{% if '/helpdesk/' in request.path %} helpdesk-panel-theme{% endif %}{% if '/employee/' in request.path %} employee-module-theme{% endif %}{% if request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser and request.path == '/' or request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser and request.path == '/dashboard-employee' %} employee-bottom-nav-active{% endif %}{% if request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser and request.path != '/' and request.path != '/dashboard-employee' %} employee-section-fullscreen{% endif %}{% if request.user.is_superuser and request.path == '/' %} employee-bottom-nav-active{% endif %}{% if request.user.is_superuser %} super-admin-bottom-nav-active{% endif %}{% if request.user.is_superuser and request.path != '/' %} super-admin-section-fullscreen{% endif %}{% if request.user.is_staff and not request.user.is_superuser %} admin-panel-theme{% endif %}{% if request.user.is_staff and not request.user.is_superuser and request.path == '/' %} employee-bottom-nav-active{% endif %}{% if request.user.is_staff and not request.user.is_superuser %} super-admin-bottom-nav-active super-admin-panel-theme{% endif %}{% if request.user.is_staff and not request.user.is_superuser and request.path != '/' %} super-admin-section-fullscreen{% endif %}{% if request.user.is_superuser %} super-admin-panel-theme{% endif %}{% if request.user.is_authenticated %} no-left-sidebar-active{% endif %}">
         <style>
             .oh-wrapper-main.employee-section-fullscreen {
                 grid-template-columns: minmax(0, 1fr);
+            }
+
+            html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link:hover,
+            html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link:focus-visible {
+                background: linear-gradient(145deg, #0d7183, #0a4d60) !important;
+                border-color: #0d7183 !important;
+                color: #ffffff !important;
+                box-shadow: 0 9px 18px rgba(10,77,96,.22), 0 0 0 3px rgba(39,141,160,.12) !important;
             }
 
             .oh-wrapper-main.super-admin-section-fullscreen {
@@ -568,7 +596,7 @@
                     min-width: 0;
                 }
 
-                html body .oh-wrapper-main.employee-bottom-nav-active .oh-navbar__systray > :not(#attendance-activity-container):not(#mainNavProfile) {
+                html body .oh-wrapper-main.employee-bottom-nav-active .oh-navbar__systray > :not(#attendance-activity-container):not(#mainNavProfile):not(#notificationIcon) {
                     display: none !important;
                 }
 
@@ -621,7 +649,7 @@
                     display: none !important;
                 }
 
-                html body .oh-wrapper-main.employee-bottom-nav-active .oh-navbar__notifications {
+                html body .oh-wrapper-main.employee-bottom-nav-active:not(.super-admin-panel-theme) .oh-navbar__notifications {
                     display: none !important;
                     width: 36px;
                     height: 36px;
@@ -772,7 +800,7 @@
             <!-- End of Notifications activity bar -->
 
             <!-- Start of Nav bar -->
-            {% if request.user.is_superuser and request.path == '/' or not request.user.is_superuser and not request.user.employee_get or not request.user.is_superuser and request.user.is_staff or not request.user.is_superuser and request.path == '/' or not request.user.is_superuser and request.path == '/dashboard-employee' %}
+            {% if request.user.is_superuser and request.path == '/' or not request.user.is_superuser and not request.user.is_staff and not request.user.employee_get or request.user.is_staff and not request.user.is_superuser and request.path == '/' or not request.user.is_superuser and request.path == '/' or not request.user.is_superuser and request.path == '/dashboard-employee' %}
             <nav class="oh-navbar" style="width: -webkit-fill-available;;">
                 <div class="oh-wrapper oh-navbar__wrapper">
                     <div class="oh-navbar__toggle-container">
@@ -788,11 +816,11 @@
                         {% endif %}
                         </a>
                     </div>
-                    {% if request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser and request.path == '/' or request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser and request.path == '/dashboard-employee' or request.user.is_superuser and request.path == '/' %}
+                    {% if request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser and request.path == '/' or request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser and request.path == '/dashboard-employee' or request.user.is_superuser and request.path == '/' or request.user.is_staff and not request.user.is_superuser and request.path == '/' %}
                         <div class="employee-navbar-greeting">
                             <div class="employee-navbar-greeting__title">
                                 {% if now.hour < 13 %}{% trans "Good morning" %}{% elif now.hour < 17 %}{% trans "Good afternoon" %}{% elif now.hour < 21 %}{% trans "Good evening" %}{% else %}{% trans "Good night" %}{% endif %},
-                                {{ request.user.employee_get.get_full_name|default:request.user.username }} 👋
+                                {{ request.user.employee_get.get_full_name|default:request.user.username }}
                             </div>
                             <div class="employee-navbar-greeting__subtitle">
                                 {% now "M j" as navbar_date %}
@@ -821,7 +849,7 @@
                         <div id="globalSearchResults" class="oh-global-search__results" role="listbox" aria-live="polite" hidden></div>
                     </div>
                     <div class="oh-navbar__systray">
-                        {% if "attendance"|app_installed and request.user.employee_get %}
+                        {% if "attendance"|app_installed and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser %}
                             <!-- Start of check in/out button in nav bar -->
                             <div id="attendance-activity-container">
                                 {% include "attendance/components/in_out_component.html" %}
@@ -829,7 +857,7 @@
                             <!-- End of check in/out button in nav bar -->
                         {% endif %}
 
-                        {% if request.user.employee_get %}
+                        {% if request.user.employee_get and not request.user.is_staff and not request.user.is_superuser %}
                             <a href="#objectCreateModal"
                                 class="employee-navbar-apply-leave"
                                 data-toggle="oh-modal-toggle"
@@ -879,6 +907,21 @@
 
             <!-- Start of main section -->
             <div id='main-section'>
+                {% if request.path == '/' and request.user.is_authenticated %}
+                    <div id="dashboardLoadingScreen" class="dashboard-loading-screen" role="status" aria-live="polite" aria-label="{% trans 'Loading dashboard' %}">
+                        <div class="dashboard-loading-card">
+                            <div class="dashboard-loading-orbit" aria-hidden="true">
+                                <span class="dashboard-loading-orbit__glow"></span>
+                                <span class="dashboard-loading-orbit__ring"></span>
+                                <span class="dashboard-loading-orbit__satellite"></span>
+                                <span class="dashboard-loading-mark">E</span>
+                            </div>
+                            <div class="dashboard-loading-dots" aria-hidden="true">
+                                <span></span><span></span><span></span>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
                 {% comment %} <div id="tripple-loader-contaner"
                     class="d-flex justify-content-center align-items-center  tripple-loader-contaner--visible"
                     style="height:90vh;">
@@ -893,11 +936,28 @@
                     </div>
                     <div class="oh-modal" style="z-index: 100;" id="objectDetailsModal" role="dialog"
                         aria-labelledby="objectDetailsModalLabel" aria-hidden="true">
-                        <div class="oh-modal__dialog oh-modal__dialog-relative" style="max-width: 550px" id="objectDetailsModalTarget"> </div>
+                        <div class="oh-modal__dialog oh-modal__dialog-relative" style="max-width: 550px" id="objectDetailsModalTarget"
+                            hx-on::after-swap="if (this.querySelector('.announcement-detail-card')) { const modal = document.getElementById('objectDetailsModal'); modal?.classList.add('oh-modal--show'); modal?.setAttribute('aria-hidden', 'false'); }"></div>
                     </div>
                     <div class="oh-modal" style="z-index: 100;" id="objectDetailsModalW25" role="dialog"
                         aria-labelledby="objectDetailsModalW25Label" aria-hidden="true">
                         <div class="oh-modal__dialog oh-modal__dialog-relative" style="max-width: 410px" id="objectDetailsModalW25Target"> </div>
+                    </div>
+                    <div class="oh-modal viewed-by-modal" id="viewedBy" role="dialog" aria-labelledby="viewedByTitle" aria-hidden="true">
+                        <div class="oh-modal__dialog viewed-by-modal__dialog">
+                            <div class="oh-modal__dialog-header viewed-by-modal__header">
+                                <h2 class="oh-modal__dialog-title" id="viewedByTitle">{% trans "Viewed By" %}</h2>
+                                <button
+                                    type="button"
+                                    class="oh-modal__close viewed-by-modal__close"
+                                    aria-label="{% trans 'Close' %}"
+                                    onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
+                                >
+                                    <ion-icon name="close-outline"></ion-icon>
+                                </button>
+                            </div>
+                            <div class="oh-modal__dialog-body viewed-by-modal__body" id="viewedByBody"></div>
+                        </div>
                     </div>
                     <div class="oh-modal" id="objectCreateModal" role="dialog" aria-labelledby="objectCreateModalLabel" aria-hidden="true">
                         <div class="oh-modal__dialog" id="objectCreateModalTarget"></div>
@@ -922,6 +982,72 @@
             event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
         })
     </script>
+    {% if request.path == '/' and request.user.is_authenticated %}
+        <script>
+            (() => {
+                const loader = document.getElementById("dashboardLoadingScreen");
+                const content = document.getElementById("main-section-data");
+                const dashboard = document.getElementById("dashboard");
+                if (!loader || !content) return;
+
+                const startedAt = Date.now();
+                const pendingRequests = new Set();
+                let pageLoaded = document.readyState === "complete";
+                let contentRevealed = content.style.display !== "none";
+                let dismissed = false;
+                const minimumVisibleTime = 650;
+
+                function tryDismiss() {
+                    if (dismissed || !pageLoaded || !contentRevealed || pendingRequests.size) return;
+                    const wait = Math.max(0, minimumVisibleTime - (Date.now() - startedAt));
+                    window.setTimeout(() => {
+                        if (dismissed || !pageLoaded || !contentRevealed || pendingRequests.size) return;
+                        dismissed = true;
+                        loader.classList.add("is-leaving");
+                        window.setTimeout(() => loader.remove(), 240);
+                    }, wait);
+                }
+
+                function dashboardRequest(event) {
+                    const element = event.detail && event.detail.elt;
+                    return dashboard && element instanceof Element && dashboard.contains(element);
+                }
+
+                document.body.addEventListener("htmx:beforeRequest", (event) => {
+                    if (!dashboardRequest(event)) return;
+                    const xhr = event.detail && event.detail.xhr;
+                    if (xhr) pendingRequests.add(xhr);
+                });
+
+                document.body.addEventListener("htmx:afterRequest", (event) => {
+                    const xhr = event.detail && event.detail.xhr;
+                    if (xhr) pendingRequests.delete(xhr);
+                    tryDismiss();
+                });
+
+                window.addEventListener("load", () => {
+                    pageLoaded = true;
+                    tryDismiss();
+                }, { once: true });
+
+                const observer = new MutationObserver(() => {
+                    contentRevealed = getComputedStyle(content).display !== "none";
+                    if (contentRevealed) {
+                        observer.disconnect();
+                        tryDismiss();
+                    }
+                });
+                observer.observe(content, { attributes: true, attributeFilter: ["style", "class"] });
+
+                window.setTimeout(() => {
+                    pageLoaded = true;
+                    contentRevealed = getComputedStyle(content).display !== "none";
+                    pendingRequests.clear();
+                    tryDismiss();
+                }, 12000);
+            })();
+        </script>
+    {% endif %}
     <!-- this is the master js  -->
     <script src="{% static '/index/index.js' %}"></script>
     <script src="{% static '/index/saveFilters.js' %}"></script>
@@ -3363,7 +3489,7 @@
             window.history.replaceState({}, document.title, urlWithoutQuery);
         }
     </script>
-    {% if enabled_timerunner and request.user|is_clocked_in %}
+    {% if enabled_timerunner and request.user.employee_get %}
         <script>
             // time-runner
             function secondsToDuration(seconds) {
@@ -3384,7 +3510,7 @@
             setInterval(() => {
                 if (run) {
                     at_work_seconds = at_work_seconds + 1
-                    $("div.time-runner").html(secondsToDuration(at_work_seconds));
+                    $(".time-runner").not("title").html(secondsToDuration(at_work_seconds));
                     $("title").html("{{white_label_company_name}} | " + secondsToDuration(at_work_seconds));
                 }
             }, 1000);
@@ -6669,6 +6795,344 @@
             border: 1px solid #b9dce4 !important;
             color: #176f80 !important;
         }
+
+        html body .oh-wrapper-main.employee-panel-theme #main-section-data .employee-dashboard-shell .employee-dashboard-announcements.employee-dashboard-card {
+            min-height: 220px !important;
+            padding: 18px !important;
+            overflow: hidden !important;
+            background: #ffffff !important;
+            background-image: none !important;
+            border: 1px solid rgba(42, 132, 155, 0.16) !important;
+            border-top: 3px solid #278da0 !important;
+            color: #285d6b !important;
+            box-shadow: 0 12px 28px rgba(10, 77, 96, 0.08) !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .employee-dashboard-announcements .oh-card-dashboard__header {
+            flex: 0 0 auto !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            gap: 12px !important;
+            margin: 0 0 12px !important;
+            padding: 0 0 12px !important;
+            border-bottom: 1px solid rgba(42, 132, 155, 0.12) !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .employee-dashboard-announcements .oh-card-dashboard__title {
+            color: #0a4d60 !important;
+            font-size: 1rem !important;
+            font-weight: 750 !important;
+            letter-spacing: 0 !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .employee-announcement-add {
+            display: inline-grid !important;
+            place-items: center !important;
+            flex: 0 0 34px !important;
+            width: 34px !important;
+            height: 34px !important;
+            padding: 0 !important;
+            border: 1px solid rgba(39, 141, 160, 0.2) !important;
+            border-radius: 11px !important;
+            background: linear-gradient(135deg, #278da0, #176f80) !important;
+            color: #ffffff !important;
+            box-shadow: 0 5px 12px rgba(23, 111, 128, 0.2) !important;
+            cursor: pointer;
+            transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .employee-announcement-add ion-icon {
+            font-size: 20px !important;
+            color: inherit !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .employee-announcement-add:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.06);
+            box-shadow: 0 8px 16px rgba(23, 111, 128, 0.26) !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .employee-dashboard-announcements .oh-card-dashboard__body {
+            flex: 1 1 auto !important;
+            min-height: 0 !important;
+            height: auto !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            background: transparent !important;
+            color: #285d6b !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .employee-announcement-list {
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 0 !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            scrollbar-color: rgba(39, 141, 160, 0.35) transparent;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .employee-announcement-list .oh-sticky-table__table,
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .employee-announcement-list .oh-sticky-table__tbody {
+            width: 100% !important;
+            height: auto !important;
+            min-width: 0 !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .employee-announcement-list .oh-sticky-table__table {
+            background: transparent !important;
+            background-image: none !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .employee-announcement-list .oh-sticky-table__tbody {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 8px !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .employee-announcement-list .oh-sticky-table__tr,
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .employee-announcement-list .oh-sticky-table__tbody > .oh-sticky-table__tr:only-child,
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .employee-announcement-list .oh-sticky-table__tbody > .oh-sticky-table__tr:only-child .employee-announcement-item {
+            width: 100% !important;
+            height: auto !important;
+            min-height: 0 !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .employee-announcement-item {
+            flex: 0 0 auto !important;
+            min-width: 0 !important;
+            padding: 12px !important;
+            overflow: hidden !important;
+            border: 1px solid rgba(42, 132, 155, 0.13) !important;
+            border-radius: 14px !important;
+            background: #f2f9fa !important;
+            box-shadow: none !important;
+            transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .employee-announcement-item:hover {
+            transform: translateY(-1px);
+            border-color: rgba(39, 141, 160, 0.3) !important;
+            background: #eaf5f7 !important;
+            box-shadow: 0 6px 14px rgba(10, 77, 96, 0.08) !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .employee-announcement-item > a {
+            width: 100% !important;
+            min-width: 0 !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .employee-announcement-item__avatar {
+            flex-basis: 38px !important;
+            width: 38px !important;
+            height: 38px !important;
+            margin-right: 12px !important;
+            border: 1px solid rgba(39, 141, 160, 0.18) !important;
+            border-radius: 50% !important;
+            background: #d8edf1 !important;
+            color: #176f80 !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .employee-announcement-item__avatar .oh-profile__image {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .employee-announcement-item__content {
+            flex: 1 1 auto !important;
+            min-width: 0 !important;
+            gap: 4px !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .employee-announcement-item__title {
+            color: #173f50 !important;
+            font-size: 0.82rem !important;
+            font-weight: 700 !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .employee-announcement-item__date {
+            color: #6b8e98 !important;
+            font-size: 0.7rem !important;
+            font-weight: 550 !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .employee-announcement-item .oh-profile__info-value {
+            background: #d8edf1 !important;
+            color: #176f80 !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-announcements .oh-empty {
+            padding-top: 24px !important;
+            color: #557b84 !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme #main-section-data .employee-dashboard-shell .work-hours-card {
+            min-width: 0 !important;
+            padding: 18px !important;
+            background: #ffffff !important;
+            background-image: none !important;
+            border: 1px solid rgba(42, 132, 155, 0.16) !important;
+            border-top: 3px solid #278da0 !important;
+            color: #285d6b !important;
+            box-shadow: 0 12px 28px rgba(10, 77, 96, 0.08) !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .work-hours-card .oh-card-dashboard__header {
+            margin-bottom: 12px !important;
+            padding-bottom: 12px !important;
+            border-bottom: 1px solid rgba(42, 132, 155, 0.12) !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .work-hours-card .oh-card-dashboard__title {
+            color: #0a4d60 !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .work-hours-card .oh-card-dashboard__body,
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .work-hours-card .metric-value,
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .work-hours-card .work-hours-day__value,
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .work-hours-card .work-hours-day__label {
+            color: #173f50 !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .work-hours-card .metric-label {
+            color: #557b84 !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .work-hours-card .work-hours-chart {
+            border-top-color: rgba(42, 132, 155, 0.16) !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .work-hours-card .work-hours-day__bar-wrap {
+            background: #eaf5f7 !important;
+            border-color: rgba(42, 132, 155, 0.14) !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .work-hours-card .work-hours-day__bar {
+            background: linear-gradient(180deg, #5eb8c8, #24758a) !important;
+        }
+
+        @media (max-width: 767px) {
+            html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__wrapper {
+                justify-content: flex-end !important;
+                gap: 8px !important;
+                padding-right: 10px !important;
+                padding-left: 54px !important;
+            }
+
+            html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__toggle-container {
+                width: 36px !important;
+            }
+
+            html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__breadcrumb {
+                display: none !important;
+            }
+
+            html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__search {
+                display: none !important;
+            }
+
+            html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__systray {
+                flex: 0 0 auto !important;
+                width: auto !important;
+                max-width: none !important;
+                gap: 6px !important;
+                margin-left: auto !important;
+            }
+
+            html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__systray > :not(#attendance-activity-container):not(#mainNavProfile):not(#notificationIcon) {
+                display: none !important;
+            }
+
+            html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #attendance-activity-container,
+            html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon,
+            html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #mainNavProfile {
+                display: flex !important;
+                flex: 0 0 36px !important;
+                width: 36px !important;
+                min-width: 36px !important;
+                height: 36px !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+
+            html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon {
+                border-radius: 10px !important;
+                background: #e5f5f4 !important;
+            }
+
+            html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link {
+                display: inline-flex !important;
+                width: 36px !important;
+                height: 36px !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+
+            html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-navbar__user-info {
+                width: 36px !important;
+                height: 36px !important;
+            }
+
+            html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #attendance-activity-container .employee-attendance-action {
+                min-width: 36px !important;
+                width: 36px !important;
+                height: 36px !important;
+            }
+
+            html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .employee-dashboard-shell {
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                padding-right: 10px !important;
+                padding-left: 10px !important;
+                box-sizing: border-box !important;
+            }
+
+            html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .employee-dashboard-shell .employee-dashboard-hero {
+                width: 100% !important;
+                min-width: 0 !important;
+                height: auto !important;
+                min-height: 0 !important;
+            }
+
+            html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .employee-dashboard-shell .employee-dashboard-summary-row,
+            html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .employee-dashboard-shell .employee-dashboard-lower-grid {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 14px !important;
+                width: 100% !important;
+                min-width: 0 !important;
+            }
+
+            html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .employee-dashboard-shell .employee-dashboard-card,
+            html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .employee-dashboard-shell .employee-dashboard-lower-grid > .employee-dashboard-card {
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                height: auto !important;
+                margin: 0 !important;
+                box-sizing: border-box !important;
+            }
+
+            html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .employee-dashboard-shell .work-hours-chart {
+                grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+                gap: 6px !important;
+                min-width: 0 !important;
+            }
+
+            html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .employee-dashboard-shell .work-hours-day {
+                min-width: 0 !important;
+            }
+
+            html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .employee-dashboard-shell .work-hours-day__label,
+            html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .employee-dashboard-shell .work-hours-day__value {
+                font-size: clamp(9px, 2.6vw, 11px) !important;
+            }
+        }
     </style>
     {% endif %}
     {% include 'employee_bottom_nav.html' %}
@@ -6676,7 +7140,13 @@
 {% if request.user.is_superuser and request.path == '/' %}
     {% include 'employee_bottom_nav.html' %}
 {% endif %}
-{% if request.user.is_superuser and request.path == '/' %}
+{% if request.user.is_superuser and request.path != '/' %}
+    {% include 'employee_bottom_nav.html' %}
+{% endif %}
+{% if request.user.is_staff and not request.user.is_superuser %}
+    {% include 'employee_bottom_nav.html' %}
+{% endif %}
+{% if request.user.is_superuser and request.path == '/' or request.user.is_staff and not request.user.is_superuser and request.path == '/' %}
 <style>
     html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar {
         background: #e8f5f7 !important;
@@ -6771,6 +7241,26 @@
         height: 92px !important;
         padding: 0 !important;
         margin: 0 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #settingsMenu {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 50px !important;
+        height: 50px !important;
+        min-width: 50px !important;
+        min-height: 50px !important;
+        margin: 0 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #settingsMenu .oh-navbar__icon {
+        display: block !important;
+        width: 22px !important;
+        height: 22px !important;
+        margin: 0 !important;
+        font-size: 22px !important;
+        line-height: 1 !important;
     }
 
     html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #mainNavProfile {
@@ -6968,6 +7458,203 @@
         padding-right: 24px !important;
         padding-left: 24px !important;
         box-sizing: border-box !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-global-search__box {
+        min-height: 50px !important;
+        padding: 0 18px !important;
+        background: linear-gradient(110deg, #0a4d60, #176f80) !important;
+        border: 1px solid rgba(42, 132, 155, 0.35) !important;
+        box-shadow: 0 7px 16px rgba(10, 77, 96, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+        transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-global-search__box:hover {
+        border-color: rgba(42, 132, 155, 0.72) !important;
+        box-shadow: 0 9px 20px rgba(10, 77, 96, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+        transform: translateY(-1px);
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-global-search__box:focus-within {
+        border-color: #57bfd0 !important;
+        box-shadow: 0 0 0 3px rgba(39, 141, 160, 0.2), 0 9px 20px rgba(10, 77, 96, 0.16) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-global-search__icon {
+        flex: 0 0 auto !important;
+        color: rgba(255, 255, 255, 0.9) !important;
+        transition: transform 180ms ease, color 180ms ease !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-global-search__box:focus-within .oh-global-search__icon {
+        color: #ffffff !important;
+        transform: scale(1.08);
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #settingsMenu,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link {
+        outline: none !important;
+        transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .employee-navbar-period {
+        padding: 4px !important;
+        border: 1px solid #c7e5eb !important;
+        background: rgba(255, 255, 255, 0.72) !important;
+        box-shadow: 0 3px 10px rgba(10, 77, 96, 0.05) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .employee-navbar-period span {
+        min-height: 38px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 999px !important;
+        color: #3f7180 !important;
+        font-weight: 650 !important;
+        transition: color 160ms ease, background-color 160ms ease, box-shadow 160ms ease, transform 160ms ease !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .employee-navbar-period span:not(.is-active):hover {
+        background: #e8f5f7 !important;
+        color: #0a4d60 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .employee-navbar-period .is-active {
+        background: linear-gradient(120deg, #0d7183, #16899a) !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 10px rgba(13, 113, 131, 0.22) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-global-search__box {
+        min-height: 48px !important;
+        padding: 0 15px !important;
+        background: #f4fbfc !important;
+        border: 1px solid #c5e1e7 !important;
+        border-radius: 16px !important;
+        box-shadow: 0 4px 12px rgba(10, 77, 96, 0.06), inset 0 1px 0 #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-global-search__icon {
+        color: #11758a !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-global-search__input {
+        color: #173f50 !important;
+        caret-color: #11758a !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-global-search__input::placeholder {
+        color: #668994 !important;
+        opacity: 1 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-global-search__box:hover {
+        background: #f4fbfc !important;
+        border-color: #8fc9d4 !important;
+        box-shadow: 0 6px 15px rgba(10, 77, 96, 0.1), inset 0 1px 0 #ffffff !important;
+        transform: translateY(-1px) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-global-search__box:focus-within {
+        background: #ffffff !important;
+        border-color: #16899a !important;
+        box-shadow: 0 0 0 3px rgba(22, 137, 154, 0.16), 0 6px 15px rgba(10, 77, 96, 0.08) !important;
+        transform: none !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #settingsMenu,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link {
+        width: 46px !important;
+        min-width: 46px !important;
+        height: 46px !important;
+        min-height: 46px !important;
+        border: 1px solid #c5e1e7 !important;
+        border-radius: 15px !important;
+        background: #f4fbfc !important;
+        color: #11758a !important;
+        box-shadow: 0 4px 11px rgba(10, 77, 96, 0.07), inset 0 1px 0 #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #settingsMenu .oh-navbar__icon,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link .oh-navbar__icon,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link ion-icon {
+        color: #11758a !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #notificationIcon .oh-navbar__notification-beacon {
+        border-color: #f4fbfc !important;
+        background: #e16f5c !important;
+        box-shadow: 0 0 0 2px #f4fbfc !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #settingsMenu:hover,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #settingsMenu:focus-visible,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link:hover,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link:focus-visible,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link:hover,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link:focus-visible {
+        transform: translateY(-2px) !important;
+        background: linear-gradient(145deg, #0d7183, #0a4d60) !important;
+        border-color: #0d7183 !important;
+        box-shadow: 0 9px 18px rgba(10, 77, 96, 0.22), 0 0 0 3px rgba(39, 141, 160, 0.12) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #settingsMenu:hover .oh-navbar__icon,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #settingsMenu:focus-visible .oh-navbar__icon,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link:hover .oh-navbar__icon,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link:focus-visible .oh-navbar__icon,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link:hover ion-icon,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link:focus-visible ion-icon {
+        color: #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #settingsMenu:active,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link:active,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link:active {
+        transform: translateY(0) scale(0.96) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #settingsMenu .oh-navbar__icon,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link .oh-navbar__icon,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link ion-icon {
+        transition: transform 180ms ease !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #settingsMenu:hover .oh-navbar__icon {
+        transform: rotate(22deg);
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link:hover .oh-navbar__icon {
+        transform: rotate(-10deg);
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link:hover ion-icon {
+        transform: scale(1.08);
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-navbar__user-info {
+        transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-navbar__user-info:hover,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-navbar__user-info:focus-visible {
+        transform: translateY(-2px) !important;
+        border-color: #c7e5eb !important;
+        box-shadow: 0 9px 20px rgba(10, 77, 96, 0.24), 0 0 0 3px rgba(39, 141, 160, 0.14) !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-global-search__box,
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-global-search__icon,
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #settingsMenu,
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link,
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link,
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-navbar__user-info {
+            transition: none !important;
+        }
     }
 
     html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #allNotifications.oh-activity-sidebar--show {
@@ -7359,11 +8046,11 @@
     }
 
     html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .birthday-slider {
-        padding: 10px !important;
-        border: 1px solid rgba(42, 132, 155, 0.2) !important;
-        border-radius: 24px !important;
-        background: linear-gradient(145deg, #e8f5f7, #ffffff 58%, #c7e5eb) !important;
-        box-shadow: 0 12px 26px rgba(24, 91, 109, 0.1) !important;
+        padding: 9px !important;
+        border: 1px solid rgba(42, 132, 155, 0.24) !important;
+        border-radius: 26px !important;
+        background: linear-gradient(145deg, #e8f5f7 0%, #ffffff 56%, #c7e5eb 100%) !important;
+        box-shadow: 0 14px 30px rgba(24, 91, 109, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
     }
 
     html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .birthday-card {
@@ -7372,11 +8059,38 @@
         gap: 14px !important;
         min-height: 142px !important;
         padding: 16px !important;
-        border: 1px solid rgba(199, 229, 235, 0.42) !important;
+        border: 1px solid rgba(199, 229, 235, 0.48) !important;
         border-radius: 18px !important;
-        background: linear-gradient(118deg, #0a4d60 0%, #176d83 58%, #278da0 100%) !important;
-        box-shadow: 0 12px 24px rgba(10, 77, 96, 0.2) !important;
+        background: linear-gradient(122deg, #073f52 0%, #0d6075 52%, #21899a 100%) !important;
+        box-shadow: 0 12px 24px rgba(10, 77, 96, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
         color: #ffffff !important;
+        isolation: isolate !important;
+        transition: transform 180ms ease, box-shadow 180ms ease !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .birthday-card::before {
+        z-index: 0 !important;
+        background: radial-gradient(circle at 92% 8%, rgba(255, 255, 255, 0.22), transparent 34%),
+            linear-gradient(115deg, rgba(255, 255, 255, 0.04), transparent 54%) !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .birthday-card::after {
+        content: "" !important;
+        position: absolute !important;
+        right: -48px !important;
+        bottom: -76px !important;
+        width: 164px !important;
+        height: 164px !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 50% !important;
+        box-shadow: 0 0 0 16px rgba(255, 255, 255, 0.025), 0 0 0 34px rgba(255, 255, 255, 0.02) !important;
+        pointer-events: none !important;
+        z-index: 0 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .birthday-card:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 16px 28px rgba(10, 77, 96, 0.27), inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
     }
 
     html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .birthday-card__avatar {
@@ -7384,6 +8098,7 @@
         height: 68px !important;
         border: 2px solid rgba(255, 255, 255, 0.78) !important;
         box-shadow: 0 6px 16px rgba(4, 39, 52, 0.24) !important;
+        z-index: 1 !important;
     }
 
     html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .birthday-card__content {
@@ -7437,9 +8152,11 @@
         width: 28px !important;
         height: 28px !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        background: rgba(255, 255, 255, 0.14) !important;
+        background: rgba(255, 255, 255, 0.16) !important;
         color: #ffffff !important;
         font-size: 0.85rem !important;
+        box-shadow: 0 3px 10px rgba(4, 39, 52, 0.14) !important;
+        z-index: 2 !important;
     }
 
     html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .birthday-dots {
@@ -7449,14 +8166,19 @@
     }
 
     html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .birthday-dots > * {
+        width: 8px !important;
+        height: 8px !important;
         border-color: rgba(23, 109, 131, 0.22) !important;
         background: #c7e5eb !important;
+        transition: width 180ms ease, background-color 180ms ease, box-shadow 180ms ease !important;
     }
 
     html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .birthday-dots > *.active,
     html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .birthday-dots > *[aria-current="true"] {
+        width: 24px !important;
         background: #176d83 !important;
         border-color: #176d83 !important;
+        box-shadow: 0 2px 8px rgba(23, 109, 131, 0.22) !important;
     }
 
     html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .employee-announcement-list {
@@ -7696,6 +8418,7 @@
         html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .employee-navbar-apply-leave {
             display: none !important;
         }
+
     }
 
     /* Super-admin dashboard: one continuous teal canvas with calm white surfaces. */
@@ -8006,10 +8729,14 @@
 
     html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-sticky-table__th,
     html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-sticky-table__td,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-sticky-table__sd,
     html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__th,
-    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__td {
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__td,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__sd {
         width: auto !important;
-        max-width: none !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
         white-space: nowrap !important;
@@ -8017,8 +8744,10 @@
 
     html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-sticky-table__th:first-child,
     html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-sticky-table__td:first-child,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-sticky-table__sd:first-child,
     html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__th:first-child,
-    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__td:first-child {
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__td:first-child,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__sd:first-child {
         width: 46% !important;
     }
 
@@ -8037,11 +8766,64 @@
         text-align: center !important;
     }
 
-    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-profile__name,
-    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-profile__name {
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-profile__name {
+        display: block !important;
+        flex: 1 1 0% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
         white-space: nowrap !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-profile__name {
+        display: block !important;
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        overflow: visible !important;
+        overflow-wrap: anywhere !important;
+        text-overflow: clip !important;
+        white-space: normal !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-sticky-table__sd .oh-profile,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__sd .oh-profile {
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #attendanceValidateCardBody .oh-sticky-table__sd .oh-profile__avatar,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__sd .oh-profile__avatar {
+        flex: 0 0 auto !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__th,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__sd,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__td {
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        text-overflow: clip !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__th {
+        overflow: visible !important;
+        white-space: normal !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__sd {
+        overflow: visible !important;
+        white-space: normal !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__th:first-child,
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__sd:first-child {
+        width: 50% !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__th:nth-child(2),
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard #OTApproveBody .oh-sticky-table__td:nth-child(2) {
+        width: 20% !important;
     }
 
     html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #dashboard .chart_close_button {
@@ -8211,6 +8993,105 @@
             padding: 12px 10px 110px !important;
         }
     }
+
+    @media (max-width: 850px) {
+        html body:has(.oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active) #employeeMobileNavToggle {
+            position: fixed !important;
+            top: max(12px, env(safe-area-inset-top)) !important;
+            left: 12px !important;
+            right: auto !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 40px !important;
+            min-width: 40px !important;
+            height: 40px !important;
+            min-height: 40px !important;
+            margin: 0 !important;
+            transform: none !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar__wrapper {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            gap: 8px !important;
+            padding-right: 12px !important;
+            padding-left: 12px !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar__toggle-container {
+            display: none !important;
+            position: absolute !important;
+            width: 0 !important;
+            min-width: 0 !important;
+            height: 0 !important;
+            overflow: hidden !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar__search {
+            flex: 1 1 0 !important;
+            width: auto !important;
+            min-width: 0 !important;
+            max-width: none !important;
+            margin: 0 0 0 44px !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar__systray {
+            display: flex !important;
+            flex: 0 0 auto !important;
+            width: auto !important;
+            min-width: 0 !important;
+            max-width: none !important;
+            justify-content: flex-end !important;
+            gap: 6px !important;
+            margin: 0 !important;
+            overflow: visible !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar__systray > :not(#notificationIcon):not(#mainNavProfile) {
+            display: none !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #notificationIcon,
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #mainNavProfile {
+            display: flex !important;
+            flex: 0 0 auto !important;
+            align-items: center !important;
+            justify-content: center !important;
+            height: 64px !important;
+            margin: 0 !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #notificationIcon {
+            width: 44px !important;
+            min-width: 44px !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 42px !important;
+            height: 42px !important;
+            min-width: 42px !important;
+            min-height: 42px !important;
+            margin: 0 !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #mainNavProfile {
+            width: 48px !important;
+            min-width: 48px !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-navbar__user-info {
+            width: 44px !important;
+            min-width: 44px !important;
+            height: 44px !important;
+            min-height: 44px !important;
+        }
+    }
 </style>
 <script>
     document.addEventListener("click", function (event) {
@@ -8230,6 +9111,709 @@
     });
 </script>
 {% endif %}
+<style>
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar {
+        min-height: 92px !important;
+        height: 92px !important;
+        background: #e8f5f7 !important;
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__wrapper {
+        display: flex !important;
+        align-items: center !important;
+        gap: 14px !important;
+        width: 100% !important;
+        max-width: none !important;
+        min-height: 92px !important;
+        height: 92px !important;
+        margin: 0 !important;
+        padding: 0 24px !important;
+        box-sizing: border-box !important;
+        background: transparent !important;
+        border: 0 !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #main-section-data {
+        padding-top: 14px !important;
+        box-sizing: border-box !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #main-section,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #main-section-data,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .employee-home-wrapper,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #dashboard,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .employee-dashboard-shell {
+        background: #e8f5f7 !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .employee-dashboard-shell {
+        margin-top: -50px !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__toggle-container {
+        display: none !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .employee-navbar-greeting {
+        position: relative !important;
+        flex: 1 1 380px !important;
+        max-width: 520px !important;
+        min-width: 250px !important;
+        min-height: 66px !important;
+        margin: 0 !important;
+        padding: 11px 18px 11px 22px !important;
+        overflow: hidden !important;
+        border: 1px solid #d4e9ed !important;
+        border-radius: 16px !important;
+        background: linear-gradient(110deg, #ffffff 0%, #ffffff 76%, #f6fcfd 100%) !important;
+        box-shadow: 0 5px 16px rgba(10,77,96,.07), inset 0 1px 0 #ffffff !important;
+        box-sizing: border-box !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .employee-navbar-greeting::before {
+        content: "" !important;
+        position: absolute !important;
+        inset: 12px auto 12px 0 !important;
+        width: 4px !important;
+        border-radius: 0 999px 999px 0 !important;
+        background: linear-gradient(180deg, #16899a, #0a4d60) !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .employee-navbar-greeting__title {
+        color: #173f50 !important;
+        font-size: 1.2rem !important;
+        font-weight: 800 !important;
+        line-height: 1.2 !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .employee-navbar-greeting__subtitle {
+        margin-top: 5px !important;
+        color: #63838d !important;
+        font-size: .76rem !important;
+        line-height: 1.3 !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .employee-navbar-period {
+        display: inline-flex !important;
+        flex: 0 0 auto !important;
+        align-items: center !important;
+        gap: 4px !important;
+        padding: 4px !important;
+        border: 1px solid #c7e5eb !important;
+        border-radius: 999px !important;
+        background: rgba(255,255,255,.72) !important;
+        box-shadow: 0 3px 10px rgba(10,77,96,.05) !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .employee-navbar-period span {
+        display: inline-flex !important;
+        min-width: 76px !important;
+        min-height: 38px !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 1rem !important;
+        border-radius: 999px !important;
+        color: #3f7180 !important;
+        font-weight: 650 !important;
+        text-align: center !important;
+        white-space: nowrap !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .employee-navbar-period .is-active {
+        background: linear-gradient(120deg, #0d7183, #16899a) !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 10px rgba(13,113,131,.22) !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-global-search {
+        flex: 0 1 300px !important;
+        min-width: 220px !important;
+        max-width: 300px !important;
+        margin: 0 !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active.no-left-sidebar-active .oh-global-search__box {
+        min-height: 48px !important;
+        height: 48px !important;
+        padding: 0 15px !important;
+        border: 1px solid #c5e1e7 !important;
+        border-radius: 18px !important;
+        background: #f4fbfc !important;
+        box-shadow: 0 4px 12px rgba(10,77,96,.06), inset 0 1px 0 #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active.no-left-sidebar-active .oh-global-search__icon,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active.no-left-sidebar-active .oh-global-search__input {
+        color: #176f80 !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active.no-left-sidebar-active .oh-global-search__input::placeholder {
+        color: #668994 !important;
+        opacity: 1 !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active.no-left-sidebar-active .oh-global-search__box:focus-within {
+        background: #ffffff !important;
+        border-color: #16899a !important;
+        box-shadow: 0 0 0 3px rgba(22,137,154,.16), 0 6px 15px rgba(10,77,96,.08) !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__systray {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        flex: 0 0 auto !important;
+        gap: 10px !important;
+        height: 92px !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__systray > #notificationConfig,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__systray > script {
+        display: none !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__systray > *,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__notifications,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__action-icons,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #mainNavProfile {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        height: 92px !important;
+        margin: 0 !important;
+        border: 0 !important;
+        background: transparent !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #settingsMenu,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 46px !important;
+        min-width: 46px !important;
+        height: 46px !important;
+        min-height: 46px !important;
+        border: 1px solid #c5e1e7 !important;
+        border-radius: 15px !important;
+        background: #f4fbfc !important;
+        color: #11758a !important;
+        box-shadow: 0 4px 11px rgba(10,77,96,.07), inset 0 1px 0 #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon {
+        flex: 0 0 46px !important;
+        width: 46px !important;
+        min-width: 46px !important;
+        padding: 0 !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link {
+        position: relative !important;
+        width: 46px !important;
+        min-width: 46px !important;
+        height: 46px !important;
+        min-height: 46px !important;
+        border-radius: 15px !important;
+        background: #f4fbfc !important;
+        color: #11758a !important;
+        box-shadow: 0 4px 11px rgba(10,77,96,.07), inset 0 1px 0 #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link .oh-navbar__icon {
+        width: 22px !important;
+        height: 22px !important;
+        margin: 0 !important;
+        color: #11758a !important;
+        font-size: 22px !important;
+        line-height: 1 !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon .oh-navbar__notification-beacon {
+        top: 7px !important;
+        right: 7px !important;
+        width: 8px !important;
+        min-width: 8px !important;
+        height: 8px !important;
+        min-height: 8px !important;
+        padding: 0 !important;
+        border: 2px solid #f4fbfc !important;
+        border-radius: 50% !important;
+        background: #e16f5c !important;
+        color: transparent !important;
+        font-size: 0 !important;
+        box-shadow: 0 0 0 2px #f4fbfc !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #settingsMenu,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link {
+        outline: none !important;
+        transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #settingsMenu:hover,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #settingsMenu:focus-visible,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link:hover,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link:focus-visible,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link:hover,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link:focus-visible {
+        transform: translateY(-2px) !important;
+        background: linear-gradient(145deg, #0d7183, #0a4d60) !important;
+        border-color: #0d7183 !important;
+        box-shadow: 0 9px 18px rgba(10,77,96,.22), 0 0 0 3px rgba(39,141,160,.12) !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #settingsMenu .oh-navbar__icon,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link .oh-navbar__icon,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link ion-icon {
+        color: #11758a !important;
+        transition: transform 180ms ease !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #settingsMenu:hover .oh-navbar__icon,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #settingsMenu:focus-visible .oh-navbar__icon,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link:hover .oh-navbar__icon,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link:focus-visible .oh-navbar__icon,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link:hover ion-icon,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link:focus-visible ion-icon {
+        color: #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #settingsMenu:hover .oh-navbar__icon {
+        transform: rotate(22deg);
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link:hover .oh-navbar__icon {
+        transform: rotate(-10deg);
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link:hover ion-icon {
+        transform: scale(1.08);
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #settingsMenu:active,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link:active,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link:active {
+        transform: translateY(0) scale(.96) !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__notification-beacon {
+        background: #e16f5c !important;
+        box-shadow: 0 0 0 2px #f4fbfc !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .employee-navbar-apply-leave {
+        height: 38px !important;
+        min-height: 38px !important;
+        align-self: center !important;
+        background: linear-gradient(110deg, #0d7183, #16899a) !important;
+        border: 1px solid #176d83 !important;
+        box-shadow: 0 4px 11px rgba(10,77,96,.12) !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #attendance-activity-container .employee-attendance-action {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        min-width: 132px !important;
+        height: 42px !important;
+        min-height: 42px !important;
+        margin: 0 !important;
+        padding: 0 14px !important;
+        border: 1px solid #176d83 !important;
+        border-radius: 12px !important;
+        background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+        color: #ffffff !important;
+        box-shadow: 0 6px 16px rgba(10,77,96,.18) !important;
+        font-size: .82rem !important;
+        font-weight: 700 !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+        transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #attendance-activity-container .employee-attendance-action:hover,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #attendance-activity-container .employee-attendance-action:focus-visible {
+        transform: translateY(-1px) !important;
+        background: linear-gradient(110deg, #083f50, #176f80) !important;
+        color: #ffffff !important;
+        box-shadow: 0 9px 18px rgba(10,77,96,.22), 0 0 0 3px rgba(39,141,160,.12) !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #attendance-activity-container .employee-attendance-action .oh-navbar__clock-icon,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #attendance-activity-container .employee-attendance-action .hr-Check-In-out-text {
+        flex: 0 0 auto !important;
+        margin: 0 !important;
+        color: #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #attendance-activity-container .employee-attendance-action--clocked-in {
+        min-width: 190px !important;
+        border-color: #0a596b !important;
+        background: linear-gradient(110deg, #0a4d60, #176f80) !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #attendance-activity-container .employee-attendance-action--clocked-in::before {
+        content: "";
+        flex: 0 0 8px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #70e0ae;
+        box-shadow: 0 0 0 3px rgba(112,224,174,.16);
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #attendance-activity-container .employee-attendance-action--clocked-in .time-runner {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-width: 78px !important;
+        min-height: 27px !important;
+        margin-left: 2px !important;
+        padding: 0 8px !important;
+        border: 1px solid rgba(255,255,255,.2) !important;
+        border-radius: 8px !important;
+        background: rgba(255,255,255,.13) !important;
+        color: #ffffff !important;
+        font-family: ui-monospace, SFMono-Regular, Consolas, monospace !important;
+        font-size: .78rem !important;
+        font-weight: 700 !important;
+        font-variant-numeric: tabular-nums !important;
+        letter-spacing: .025em !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #attendance-activity-container .employee-attendance-action--clocked-in:hover .time-runner {
+        background: rgba(255,255,255,.2) !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #attendance-activity-container .employee-attendance-action--clocked-in .oh-navbar__clock-icon {
+        display: none !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #attendance-activity-container .employee-attendance-action--clocked-in .hr-Check-In-out-text {
+        display: inline !important;
+    }
+
+    @media (max-width: 767px) {
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__systray {
+            flex: 0 0 auto !important;
+            width: auto !important;
+            max-width: none !important;
+            gap: 6px !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #attendance-activity-container {
+            flex: 0 0 auto !important;
+            width: auto !important;
+            min-width: 0 !important;
+            max-width: none !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #attendance-activity-container > .employee-attendance-action {
+            flex: 0 0 auto !important;
+            width: auto !important;
+            max-width: none !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #attendance-activity-container .employee-attendance-action {
+            min-width: 100px !important;
+            height: 36px !important;
+            min-height: 36px !important;
+            padding: 0 8px !important;
+            gap: 6px !important;
+            font-size: .7rem !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #attendance-activity-container .employee-attendance-action--clocked-in {
+            min-width: 126px !important;
+            padding: 0 7px !important;
+            gap: 6px !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #attendance-activity-container .employee-attendance-action--clocked-in .oh-navbar__clock-icon {
+            display: inline-flex !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #attendance-activity-container .employee-attendance-action--clocked-in .hr-Check-In-out-text {
+            display: none !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #attendance-activity-container .employee-attendance-action--clocked-in .time-runner {
+            min-width: 68px !important;
+            min-height: 24px !important;
+            padding: 0 5px !important;
+            font-size: .68rem !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #mainNavProfile,
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-navbar__user-info {
+            flex: 0 0 36px !important;
+            width: 36px !important;
+            min-width: 36px !important;
+            height: 36px !important;
+            min-height: 36px !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-navbar__user-info {
+            padding: 0 !important;
+            border-width: 1px !important;
+        }
+    }
+
+    @media (max-width: 540px) {
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar,
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__wrapper {
+            height: 96px !important;
+            min-height: 96px !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__wrapper {
+            display: grid !important;
+            grid-template-columns: 36px minmax(0, 1fr) auto !important;
+            grid-template-rows: 36px 36px !important;
+            gap: 6px 8px !important;
+            padding: 6px 12px !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__toggle-container {
+            position: static !important;
+            grid-column: 1 !important;
+            grid-row: 1 !important;
+            margin: 0 !important;
+            transform: none !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .employee-navbar-greeting,
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .employee-navbar-period {
+            display: none !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__search {
+            grid-column: 1 / -1 !important;
+            grid-row: 2 !important;
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: none !important;
+            margin: 0 !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__search .oh-global-search__box {
+            min-height: 36px !important;
+            height: 36px !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__systray {
+            grid-column: 2 / -1 !important;
+            grid-row: 1 !important;
+            height: 36px !important;
+            min-height: 36px !important;
+            justify-self: end !important;
+            gap: 8px !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__systray > *,
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__notifications,
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__action-icons,
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #mainNavProfile {
+            height: 36px !important;
+            min-height: 36px !important;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #attendance-activity-container .employee-attendance-action {
+            transition: none !important;
+        }
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #attendance-activity-container .employee-attendance-action .oh-navbar__clock-icon {
+        color: #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-navbar__user-info {
+        width: 52px !important;
+        height: 52px !important;
+        padding: 3px !important;
+        border: 2px solid #16899a !important;
+        border-radius: 50% !important;
+        background: #ffffff !important;
+        box-shadow: 0 4px 11px rgba(10,77,96,.12) !important;
+        transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease !important;
+    }
+
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-navbar__user-info:hover,
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-navbar__user-info:focus-visible {
+        transform: translateY(-2px) !important;
+        border-color: #c7e5eb !important;
+        box-shadow: 0 9px 20px rgba(10,77,96,.24), 0 0 0 3px rgba(39,141,160,.14) !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #settingsMenu,
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link,
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link,
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-navbar__user-info {
+            transition: none !important;
+        }
+    }
+
+    @media (max-width: 850px) {
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar,
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__wrapper {
+            min-height: 64px !important;
+            height: 64px !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__wrapper {
+            padding: 0 12px !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .employee-navbar-greeting,
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .employee-navbar-period {
+            display: none !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__toggle-container {
+            display: flex !important;
+            align-items: center !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__systray,
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__systray > *,
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__notifications,
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__action-icons,
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #mainNavProfile {
+            height: 64px !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__search {
+            flex: 1 1 auto !important;
+            min-width: 0 !important;
+            max-width: none !important;
+        }
+    }
+
+    @media (max-width: 540px) {
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar,
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__wrapper {
+            height: 96px !important;
+            min-height: 96px !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__systray,
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__systray > *,
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__notifications,
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__action-icons {
+            height: 36px !important;
+            min-height: 36px !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon {
+            width: 36px !important;
+            min-width: 36px !important;
+            padding: 0 !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link {
+            width: 36px !important;
+            min-width: 36px !important;
+            height: 36px !important;
+            min-height: 36px !important;
+            border-radius: 12px !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link .oh-navbar__icon {
+            width: 18px !important;
+            height: 18px !important;
+            font-size: 18px !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon .oh-navbar__notification-beacon {
+            top: 5px !important;
+            right: 5px !important;
+            width: 7px !important;
+            min-width: 7px !important;
+            height: 7px !important;
+            min-height: 7px !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #mainNavProfile,
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-navbar__user-info {
+            flex: 0 0 36px !important;
+            width: 36px !important;
+            min-width: 36px !important;
+            height: 36px !important;
+            min-height: 36px !important;
+            padding: 0 !important;
+            border-width: 1px !important;
+        }
+    }
+
+    @media (max-width: 767px) {
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar,
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__wrapper {
+            height: 62px !important;
+            min-height: 62px !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__wrapper {
+            display: flex !important;
+            justify-content: flex-end !important;
+            gap: 8px !important;
+            padding: 8px 10px 8px 54px !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__toggle-container {
+            position: absolute !important;
+            left: 8px !important;
+            top: 50% !important;
+            width: 36px !important;
+            margin: 0 !important;
+            transform: translateY(-50%) !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__breadcrumb,
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__search {
+            display: none !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-navbar__systray {
+            display: flex !important;
+            flex: 0 0 auto !important;
+            width: auto !important;
+            max-width: none !important;
+            height: 36px !important;
+            min-height: 36px !important;
+            gap: 6px !important;
+            margin: 0 0 0 auto !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #attendance-activity-container,
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon,
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #mainNavProfile {
+            display: flex !important;
+            flex: 0 0 auto !important;
+            height: 36px !important;
+            min-height: 36px !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon {
+            width: 36px !important;
+            min-width: 36px !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #attendance-activity-container .employee-attendance-action {
+            height: 36px !important;
+            min-height: 36px !important;
+        }
+    }
+</style>
 </body>
 
 </html>

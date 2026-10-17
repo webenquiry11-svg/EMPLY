@@ -1,4 +1,240 @@
 {% load i18n %}
+<style>
+    .policy-form-modal {
+        --policy-ink: #073f47;
+        --policy-teal: #0b7b89;
+        --policy-teal-dark: #075c69;
+        --policy-border: #d7e9ed;
+        --policy-surface: #f5fafb;
+    }
+
+    .oh-modal__dialog:has(.policy-form-modal) {
+        max-width: 760px;
+        overflow: hidden;
+        border-radius: 18px;
+        box-shadow: 0 24px 70px rgba(4, 54, 61, 0.25);
+    }
+
+    .policy-form-modal .oh-modal__dialog-header {
+        display: flex;
+        align-items: center;
+        min-height: 76px;
+        padding: 1.25rem 1.5rem;
+        color: #fff;
+        background: linear-gradient(125deg, var(--policy-teal-dark), #1595a3);
+    }
+
+    .policy-form-modal .oh-modal__dialog-title {
+        margin: 0;
+        color: inherit;
+        font-size: 1.25rem;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+    }
+
+    .policy-form-modal .oh-modal__close {
+        top: 50%;
+        right: 1.25rem;
+        display: grid;
+        width: 36px;
+        height: 36px;
+        place-items: center;
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.14);
+        opacity: 1;
+        transform: translateY(-50%);
+    }
+
+    .policy-form-modal .oh-modal__close:hover {
+        background: rgba(255, 255, 255, 0.25);
+    }
+
+    .policy-form-modal .oh-modal__dialog-body {
+        padding: 1.5rem;
+        background: var(--policy-surface);
+    }
+
+    .policy-form-modal .policy-form {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .policy-form-modal .policy-form > p {
+        margin: 0;
+    }
+
+    .policy-form-modal .policy-form > p {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+
+    .policy-form-modal .policy-form > p:nth-of-type(3) {
+        flex-direction: row !important;
+        align-items: center !important;
+    }
+
+    .policy-form-modal .policy-form > p > label {
+        display: block;
+        margin: 0 0 0.4rem;
+        color: var(--policy-ink);
+        font-size: 0.82rem;
+        font-weight: 700;
+    }
+
+    .policy-form-modal .policy-form input[type="text"],
+    .policy-form-modal .policy-form input[type="file"],
+    .policy-form-modal .policy-form select {
+        width: 100%;
+        min-height: 44px;
+        padding: 0.65rem 0.8rem;
+        color: #31535a;
+        border: 1px solid var(--policy-border);
+        border-radius: 10px;
+        background: #fff;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .policy-form-modal .policy-form input[type="text"]:focus,
+    .policy-form-modal .policy-form input[type="file"]:focus,
+    .policy-form-modal .policy-form select:focus {
+        border-color: var(--policy-teal);
+        box-shadow: 0 0 0 3px rgba(11, 123, 137, 0.12);
+        outline: none;
+    }
+
+    .policy-form-modal .policy-form textarea {
+        display: none !important;
+    }
+
+    .policy-form-modal .note-editor {
+        overflow: hidden;
+        border: 1px solid var(--policy-border) !important;
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: none !important;
+    }
+
+    .policy-form-modal .note-toolbar {
+        padding: 0.45rem 0.55rem;
+        border-bottom: 1px solid var(--policy-border) !important;
+        background: #edf7f8;
+    }
+
+    .oh-wrapper-main.super-admin-panel-theme #objectCreateModal .policy-form-modal .note-toolbar > .note-btn,
+    .oh-wrapper-main.super-admin-panel-theme #objectCreateModal .policy-form-modal .note-toolbar .note-btn-group > .note-btn {
+        min-width: 38px;
+        min-height: 38px;
+        padding: 0.45rem 0.65rem;
+        color: #176f80 !important;
+        border: 1px solid #c7e5eb !important;
+        border-radius: 9px;
+        background: #ffffff !important;
+        box-shadow: 0 1px 2px rgba(10, 77, 96, .06);
+        transition: background .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease;
+    }
+
+    .oh-wrapper-main.super-admin-panel-theme #objectCreateModal .policy-form-modal .note-toolbar .note-btn:not(.note-current-color-button) i,
+    .oh-wrapper-main.super-admin-panel-theme #objectCreateModal .policy-form-modal .note-toolbar .note-btn:not(.note-current-color-button) span {
+        color: #176f80 !important;
+    }
+
+    .oh-wrapper-main.super-admin-panel-theme #objectCreateModal .policy-form-modal .note-toolbar > .note-btn:hover,
+    .oh-wrapper-main.super-admin-panel-theme #objectCreateModal .policy-form-modal .note-toolbar .note-btn-group > .note-btn:hover,
+    .oh-wrapper-main.super-admin-panel-theme #objectCreateModal .policy-form-modal .note-toolbar > .note-btn:focus-visible,
+    .oh-wrapper-main.super-admin-panel-theme #objectCreateModal .policy-form-modal .note-toolbar .note-btn-group > .note-btn:focus-visible {
+        color: #ffffff !important;
+        border-color: #176f80 !important;
+        background: #176f80 !important;
+        box-shadow: 0 0 0 3px rgba(23, 111, 128, .14);
+        outline: none;
+    }
+
+    .oh-wrapper-main.super-admin-panel-theme #objectCreateModal .policy-form-modal .note-toolbar .note-btn:not(.note-current-color-button):hover i,
+    .oh-wrapper-main.super-admin-panel-theme #objectCreateModal .policy-form-modal .note-toolbar .note-btn:not(.note-current-color-button):hover span,
+    .oh-wrapper-main.super-admin-panel-theme #objectCreateModal .policy-form-modal .note-toolbar .note-btn:not(.note-current-color-button):focus-visible i,
+    .oh-wrapper-main.super-admin-panel-theme #objectCreateModal .policy-form-modal .note-toolbar .note-btn:not(.note-current-color-button):focus-visible span {
+        color: #ffffff !important;
+    }
+
+    .oh-wrapper-main.super-admin-panel-theme #objectCreateModal .policy-form-modal .note-toolbar .note-btn.active {
+        border-color: #9bcfd8 !important;
+        background: #e3f2f5 !important;
+    }
+
+    .policy-form-modal .note-editable {
+        min-height: 220px;
+        padding: 0.85rem 1rem;
+        color: #31535a;
+        background: #fff;
+    }
+
+    .policy-form-modal .policy-form input[type="checkbox"] {
+        width: 17px;
+        height: 17px;
+        margin: 0 0.45rem 0 0;
+        accent-color: var(--policy-teal);
+        vertical-align: -3px;
+    }
+
+    .policy-form-modal .policy-form p:has(input[type="checkbox"]) {
+        display: flex;
+        align-items: center;
+        padding: 0.7rem 0.85rem;
+        border: 1px solid var(--policy-border);
+        border-radius: 10px;
+        background: #fff;
+    }
+
+    .policy-form-modal .policy-form p:has(input[type="checkbox"]) label {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .policy-form-modal .select2-container {
+        width: 100% !important;
+    }
+
+    .policy-form-modal .select2-container--default .select2-selection--multiple {
+        min-height: 44px;
+        padding: 0.25rem 0.45rem;
+        border: 1px solid var(--policy-border);
+        border-radius: 10px;
+        background: #fff;
+    }
+
+    .policy-form-modal .oh-modal__dialog-footer {
+        justify-content: flex-end;
+        margin-top: 0.25rem;
+        padding: 0.25rem 0 0;
+        border-top: 1px solid var(--policy-border);
+    }
+
+    .policy-form-modal .policy-save-button {
+        min-width: 120px;
+        margin-top: 0.75rem !important;
+        border: 0;
+        border-radius: 10px;
+        background: var(--policy-teal-dark);
+        box-shadow: 0 8px 18px rgba(7, 92, 105, 0.2);
+    }
+
+    .policy-form-modal .policy-save-button:hover {
+        background: var(--policy-teal);
+    }
+
+    @media (max-width: 640px) {
+        .oh-modal__dialog:has(.policy-form-modal) {
+            width: calc(100% - 1.25rem);
+            margin: 0.75rem auto;
+        }
+
+        .policy-form-modal .oh-modal__dialog-body {
+            padding: 1rem;
+        }
+    }
+</style>
 {% if messages %}
     <span
         hx-get="{% url 'search-policies' %}"
@@ -12,6 +248,7 @@
     "
     ></span>
 {% endif %}
+<div class="policy-form-modal">
 <div class="oh-modal__dialog-header">
     <h2 class="oh-modal__dialog-title">
         {% trans "Policy" %}
@@ -25,14 +262,15 @@
     <form
         hx-post="{% url 'create-policy' %}?instance_id={{form.instance.id}}"
         hx-encoding="multipart/form-data"
-        class="oh-profile-section"
+        class="oh-profile-section policy-form"
         hx-target="#objectCreateModalTarget"
     >
         {{ form.as_p }}
         <div class="oh-modal__dialog-footer p-0">
-            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow mt-3">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow policy-save-button mt-3">
                 {% trans "Save" %}
             </button>
         </div>
     </form>
+</div>
 </div>

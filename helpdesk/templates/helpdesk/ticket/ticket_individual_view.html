@@ -1,7 +1,7 @@
 {% load static %}
 {% load i18n %}{% load helpdeskfilters %}
 
-<div class="oh-modal__dialog-header">
+<div class="oh-modal__dialog-header ticket-modal-header">
     <span
         class="oh-modal__dialog-title"
         id="objectDetailsModalLabel"
@@ -9,7 +9,7 @@
         {{ ticket }}
     </span>
     <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
-        <button class="oh-modal__close"><ion-icon name="close-outline"></ion-icon></button>
+        <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
 <div class="oh-modal__dialog-body">
@@ -37,7 +37,7 @@
             </div>
         </div>
     </a>
-    <div class="oh-modal__dialog-header pt-0 pb-0">
+    <div class="oh-modal__dialog-header pt-0 pb-0 ticket-modal-details">
         <div class="oh-timeoff-modal__stats-container">
             <div class="oh-timeoff-modal__stat">
                 <span class="oh-timeoff-modal__stat-title">{% trans "Ticket type" %}

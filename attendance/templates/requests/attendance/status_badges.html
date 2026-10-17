@@ -1,0 +1,17 @@
+{% load i18n %}
+<div class="attendance-request-row__badges" aria-label="{% trans 'Attendance request status' %}">
+    {% if attendance.is_bulk_request %}
+        <span class="attendance-request-row__badge attendance-request-row__badge--bulk">
+            <span class="oh-dot"></span>{% trans "Bulk-Request" %}
+        </span>
+    {% endif %}
+    {% if attendance.attendance_validated %}
+        <span class="attendance-request-row__badge attendance-request-row__badge--validated">
+            <span class="oh-dot"></span>{% trans "Validated" %}
+        </span>
+    {% else %}
+        <span class="attendance-request-row__badge attendance-request-row__badge--pending">
+            <span class="oh-dot"></span>{% trans "Not-Validated" %}
+        </span>
+    {% endif %}
+</div>

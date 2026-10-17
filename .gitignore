@@ -134,6 +134,7 @@ dmypy.json
 **/migrations/**
 !**/migrations
 !**/migrations/__init__.py
+!payroll/migrations/0002_payrollrun_payrollrunitem_payrollapprovalevent_and_more.py
 
 # media file
 media/

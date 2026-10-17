@@ -856,13 +856,25 @@ def login_user(request):
             return redirect("login")
 
         employee = getattr(user, "employee_get", None)
-        if employee is None:
+        payroll_admin = user.is_superuser or any(
+            user.has_perm(permission)
+            for permission in (
+                "payroll.view_contract",
+                "payroll.view_payslip",
+                "payroll.add_payslip",
+                "payroll.change_payslip",
+                "payroll.submit_payrollrun",
+                "payroll.approve_payrollrun",
+                "payroll.finalize_payrollrun",
+            )
+        )
+        if employee is None and not payroll_admin:
             messages.error(
                 request,
                 _("An employee related to this user's credentials does not exist."),
             )
             return redirect("login")
-        if not employee.is_active:
+        if employee is not None and not employee.is_active:
             messages.warning(
                 request,
                 _(
@@ -872,7 +884,7 @@ def login_user(request):
             return redirect("login")
 
         # Prevent suspended employees from logging in (credentials remain unchanged)
-        if getattr(employee, "is_suspended", False):
+        if employee is not None and getattr(employee, "is_suspended", False):
             messages.warning(
                 request,
                 _(
@@ -887,7 +899,27 @@ def login_user(request):
         else:
             request.session.set_expiry(0)
 
+        if user.is_superuser:
+            messages.success(request, _("Login successful."))
+            return redirect("super-admin-dashboard")
+        if user.has_perm("payroll.view_contract"):
+            messages.success(request, _("Login successful."))
+            return redirect("view-payroll-dashboard")
+        if user.has_perm("payroll.view_payslip"):
+            messages.success(request, _("Login successful."))
+            return redirect("view-payslip")
+        if payroll_admin:
+            messages.success(request, _("Login successful."))
+            return redirect("payroll-run-list")
+
         if login_mode == "payroll":
+            if employee is None:
+                logout(request)
+                messages.error(
+                    request,
+                    _("Payroll access requires an employee profile or payroll permission."),
+                )
+                return redirect(f"{reverse('login')}?login_mode=payroll")
             work_info = getattr(employee, "employee_work_info", None)
             salary_value = getattr(work_info, "basic_salary", None)
             if salary_value is None or salary_value <= 0:

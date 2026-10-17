@@ -1,6 +1,223 @@
 {% load i18n %}
 {% load static %}
 {% load horillafilters %}
+<style>
+    #objectDetailsModalTarget:has(.contract-detail-modal) {
+        width: min(760px, calc(100vw - 2rem));
+        max-width: 760px !important;
+        overflow: hidden;
+        border: 1px solid #d2e8ec;
+        border-radius: 18px;
+        background: #f3fafb;
+        box-shadow: 0 24px 70px rgba(4, 54, 61, 0.25);
+    }
+
+    .contract-detail-modal {
+        --contract-detail-ink: #173f50;
+        --contract-detail-teal: #176f80;
+        --contract-detail-border: #d2e8ec;
+    }
+
+    .contract-detail-modal > .oh-modal__dialog-header {
+        position: relative;
+        display: flex;
+        align-items: center;
+        min-height: 76px;
+        padding: 1rem 4rem 1rem 1.5rem !important;
+        color: #fff;
+        background: linear-gradient(110deg, #0a4d60, #278da0);
+    }
+
+    .contract-detail-modal > .oh-modal__dialog-header .oh-modal__dialog-title,
+    .contract-detail-modal > .oh-modal__dialog-header h5 {
+        margin: 0 !important;
+        color: inherit;
+        font-size: 1.15rem;
+        font-weight: 700;
+    }
+
+    .contract-detail-modal > .oh-modal__dialog-header .oh-modal__close {
+        top: 50%;
+        right: 1.25rem;
+        display: grid;
+        width: 36px;
+        height: 36px;
+        place-items: center;
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.14);
+        opacity: 1;
+        transform: translateY(-50%);
+    }
+
+    .contract-detail-modal > .oh-modal__dialog-header .oh-modal__close:hover {
+        background: rgba(255, 255, 255, 0.25);
+    }
+
+    .contract-detail-modal .oh-modal__dialog-body {
+        max-height: min(76vh, 760px);
+        overflow-y: auto;
+        padding: 1.25rem;
+        background: #f3fafb;
+    }
+
+    .contract-detail-modal .oh-timeoff-modal__profile-content {
+        display: block;
+        margin-bottom: 1rem;
+        padding: 1rem;
+        border: 1px solid var(--contract-detail-border);
+        border-radius: 14px;
+        background: #fff;
+        text-decoration: none;
+        transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .contract-detail-modal .oh-timeoff-modal__profile-content:hover {
+        border-color: #9bcbd3;
+        box-shadow: 0 6px 16px rgba(10, 77, 96, 0.08);
+    }
+
+    .contract-detail-modal .oh-profile {
+        align-items: center;
+        margin: 0 !important;
+    }
+
+    .contract-detail-modal .oh-profile__image {
+        width: 54px;
+        height: 54px;
+        border: 3px solid #e4f3f5;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .contract-detail-modal .oh-timeoff-modal__user {
+        display: block;
+        color: var(--contract-detail-ink);
+        font-size: 0.9rem;
+        font-weight: 700;
+    }
+
+    .contract-detail-modal .oh-timeoff-modal__user.m-0 {
+        margin-top: 0.25rem !important;
+        color: #66818a !important;
+        font-size: 0.78rem !important;
+        line-height: 1.45;
+    }
+
+    .contract-detail-modal .oh-modal__dialog-body > .oh-modal__dialog-header {
+        display: block;
+        padding: 0 !important;
+        border: 0;
+        background: transparent;
+    }
+
+    .contract-detail-modal .oh-timeoff-modal__stats-container {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.75rem;
+        margin: 0 0 0.75rem !important;
+    }
+
+    .contract-detail-modal .oh-timeoff-modal__stat {
+        min-width: 0;
+        margin: 0 !important;
+        padding: 0.8rem 0.9rem;
+        border: 1px solid var(--contract-detail-border);
+        border-radius: 11px;
+        background: #fff;
+    }
+
+    .contract-detail-modal .oh-timeoff-modal__stat-title {
+        display: block;
+        margin-bottom: 0.3rem;
+        color: #718c94;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.035em;
+        text-transform: uppercase;
+    }
+
+    .contract-detail-modal .oh-timeoff-modal__stat-count {
+        display: block;
+        overflow-wrap: anywhere;
+        color: var(--contract-detail-ink);
+        font-size: 0.88rem;
+        font-weight: 600;
+        line-height: 1.45;
+    }
+
+    .contract-detail-modal .oh-timeoff-modal__stat a {
+        color: var(--contract-detail-teal);
+        font-size: 0.83rem;
+        font-weight: 600;
+        overflow-wrap: anywhere;
+    }
+
+    .contract-detail-modal .oh-modal__button-container {
+        margin: 1rem 0 0 !important;
+        padding-top: 1rem;
+        border-top: 1px solid var(--contract-detail-border);
+    }
+
+    .contract-detail-modal .oh-modal__button-container .oh-btn-group {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.6rem;
+    }
+
+    .contract-detail-modal .oh-modal__button-container .oh-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        width: auto !important;
+        min-width: 112px;
+        min-height: 42px;
+        padding: 0.6rem 1rem;
+        border: 0;
+        border-radius: 10px;
+        font-weight: 700;
+    }
+
+    .contract-detail-modal .oh-modal__button-container .oh-btn--info {
+        color: #fff;
+        background: linear-gradient(110deg, #0a4d60, #278da0);
+    }
+
+    .contract-detail-modal .oh-modal__button-container .oh-btn--danger {
+        color: #fff;
+        background: #b64e5b;
+    }
+
+    @media (max-width: 600px) {
+        #objectDetailsModalTarget:has(.contract-detail-modal) {
+            width: calc(100vw - 1rem);
+            max-width: calc(100vw - 1rem) !important;
+            margin: 0.5rem auto;
+        }
+
+        .contract-detail-modal .oh-modal__dialog-body {
+            max-height: 78vh;
+            padding: 0.85rem;
+        }
+
+        .contract-detail-modal .oh-timeoff-modal__stats-container {
+            gap: 0.5rem;
+        }
+
+        .contract-detail-modal .oh-timeoff-modal__stat {
+            padding: 0.7rem;
+        }
+    }
+
+    @media (max-width: 400px) {
+        .contract-detail-modal .oh-timeoff-modal__stats-container {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+<div class="contract-detail-modal">
 {% if messages %}
     <div class="oh-wrapper">
         {% for message in messages %}
@@ -185,6 +402,7 @@
                     </div>
                 </div>
             {% endif %}
+            </div>
             <div class="mt-3 mb-5" style="width: 100%">
                 <div class="oh-timeoff-modal__stat">
                     <span class="oh-timeoff-modal__stat-title">{% trans "Status" %}</span>

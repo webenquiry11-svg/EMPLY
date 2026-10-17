@@ -9,12 +9,16 @@ import math
 import operator
 from collections import defaultdict
 from datetime import date, datetime, timedelta
+from decimal import Decimal, InvalidOperation
+from decimal import Decimal, InvalidOperation
 from itertools import groupby
 from urllib.parse import parse_qs
 
 import pandas as pd
 from django.apps import apps
 from django.contrib import messages
+from django.db import transaction
+from django.db import transaction
 from django.db.models import Sum
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, QueryDict
 from django.shortcuts import redirect, render
@@ -22,6 +26,8 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import never_cache
+from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, Side
 from openpyxl.utils import get_column_letter
@@ -1733,26 +1739,62 @@ def get_assigned_leaves(request):
 
 
 @login_required
+@require_POST
+@transaction.atomic
 @permission_required("payroll.change_reimbursement")
 def approve_reimbursements(request):
     """
     This method is used to approve or reject the reimbursement request
     """
-    ids = request.GET.getlist("ids")
-    status = request.GET["status"]
+    ids = request.POST.getlist("ids")
+    status = request.POST.get("status")
     if status == "canceled":
         status = "rejected"
-    amount = (
-        eval_validate(request.GET.get("amount")) if request.GET.get("amount") else 0
+    if (
+        not ids
+        or any(not value.isdigit() or int(value) <= 0 for value in ids)
+        or len({int(value) for value in ids}) != len(ids)
+        or status not in {"approved", "rejected"}
+    ):
+        messages.error(request, _("Choose a valid request and review status."))
+        return redirect(view_reimbursement)
+    requested_amount = request.POST.get("amount")
+    amount = None
+    if requested_amount not in (None, ""):
+        try:
+            amount = Decimal(requested_amount)
+        except (InvalidOperation, TypeError, ValueError):
+            messages.error(request, _("Enter a valid reimbursement amount."))
+            return redirect(view_reimbursement)
+        if not amount.is_finite() or amount < 0:
+            messages.error(
+                request, _("The amount must be a finite, non-negative number.")
+            )
+            return redirect(view_reimbursement)
+    reimbursements = list(
+        Reimbursement.objects.select_for_update()
+        .filter(id__in=[int(value) for value in ids])
+        .order_by("id")
     )
-    amount = max(0, amount)
-    reimbursements = Reimbursement.objects.filter(id__in=ids)
+    if len(reimbursements) != len(ids):
+        messages.error(request, _("One or more requests were not found."))
+        return redirect(view_reimbursement)
+    if any(item.status != "requested" for item in reimbursements):
+        messages.error(request, _("Only requested reimbursements can be reviewed."))
+        return redirect(view_reimbursement)
+    if status == "approved" and amount is None and any(
+        item.type in {"leave_encashment", "bonus_encashment"}
+        for item in reimbursements
+    ):
+        messages.error(request, _("An amount is required for this request."))
+        return redirect(view_reimbursement)
     if status and len(status):
         for reimbursement in reimbursements:
-            if reimbursement.type == "leave_encashment":
-                reimbursement.amount = amount
-            elif reimbursement.type == "bonus_encashment":
-                reimbursement.amount = amount
+            if (
+                reimbursement.type in {"leave_encashment", "bonus_encashment"}
+                and amount is not None
+            ):
+                reimbursement.amount = float(amount)
 
             emp = reimbursement.employee_id
             reimbursement.status = status
@@ -1765,6 +1807,8 @@ def approve_reimbursements(request):
                     request,
                     _(f"Request {reimbursement.get_status_display()} successfully"),
                 )
+        if reimbursement.status == "requested":
+            return redirect(view_reimbursement)
         if status == "rejected":
             notify.send(
                 request.user.employee_get,

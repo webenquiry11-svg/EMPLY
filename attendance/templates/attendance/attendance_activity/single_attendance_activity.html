@@ -19,7 +19,7 @@
     ></span>
 {% endif %}
 {% if activity %}
-    <div class="oh-modal__dialog-header">
+    <div class="oh-modal__dialog-header attendance-activity-modal-header">
         <h2 class="oh-modal__dialog-title m-0" id="addEmployeeModalLabel">
             {% trans "Details" %}
         </h2>
@@ -27,8 +27,8 @@
             <ion-icon name="close-outline"></ion-icon>
         </button>
     </div>
-    <div class="oh-modal__dialog-body oh-modal__dialog-relative">
-        <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+    <div class="oh-modal__dialog-body oh-modal__dialog-relative attendance-activity-modal-body">
+        <div class="attendance-activity-modal-navigation">
             <button
                 hx-get="{% url 'attendance-activity-single-view' previous_instance %}?{{pd}}&instances_ids={{instance_ids_json}}"
                 hx-target="#objectDetailsModalW25Target"
@@ -58,11 +58,11 @@
             </button>
         </div>
         <a
-            class="oh-timeoff-modal__profile-content"
+            class="oh-timeoff-modal__profile-content attendance-activity-profile"
             style="text-decoration: none"
             href="{% url 'employee-view-individual' activity.employee_id.id %}"
         >
-            <div class="oh-profile mb-2">
+            <div class="oh-profile">
                 <div class="oh-profile__avatar">
                     <img
                         src="{{activity.employee_id.get_avatar}}"
@@ -72,20 +72,20 @@
                 </div>
                 <div class="oh-timeoff-modal__profile-info">
                     <span class="oh-timeoff-modal__user fw-bold">{{ activity.employee_id }}</span>
-                    <span class="oh-timeoff-modal__user m-0" style="font-size: 18px; color: #4d4a4a">
+                    <span class="attendance-activity-profile-role">
                         {{ activity.employee_id.employee_work_info.department_id }} /
                         {{ activity.employee_id.employee_work_info.job_position_id }}</span>
                 </div>
             </div>
         </a>
 
-        <div class="oh-modal__dialog-header pt-0">
+        <div class="oh-modal__dialog-header attendance-activity-details">
             <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
                 <div class="oh-timeoff-modal__stat">
                     <span class="oh-timeoff-modal__stat-title">{% trans "Attendance Date" %}</span>
                     <span class="oh-timeoff-modal__stat-count dateformat_changer">{{ activity.attendance_date }}</span>
                 </div>
-                <div class="oh-timeoff-modal__stat" style="margin-left: 20px">
+                <div class="oh-timeoff-modal__stat">
                     <span class="oh-timeoff-modal__stat-title">{% trans "Day" %}</span>
                     <span class="oh-timeoff-modal__stat-count">{{ activity.shift_day }}</span>
                 </div>
@@ -96,7 +96,7 @@
                     <span class="oh-timeoff-modal__stat-title">{% trans "Check In" %}</span>
                     <span class="oh-timeoff-modal__stat-count timeformat_changer">{{ activity.clock_in }}</span>
                 </div>
-                <div class="oh-timeoff-modal__stat" style="margin-left: 20px">
+                <div class="oh-timeoff-modal__stat">
                     <span class="oh-timeoff-modal__stat-title">{% trans "Check In Date" %}</span>
                     <span class="oh-timeoff-modal__stat-count dateformat_changer">{{ activity.clock_in_date }}</span>
                 </div>
@@ -107,7 +107,7 @@
                     <span class="oh-timeoff-modal__stat-title">{% trans "Check Out" %}</span>
                     <span class="oh-timeoff-modal__stat-count timeformat_changer">{{ activity.clock_out }}</span>
                 </div>
-                <div class="oh-timeoff-modal__stat" style="margin-left: 20px">
+                <div class="oh-timeoff-modal__stat">
                     <span class="oh-timeoff-modal__stat-title">{% trans "Check Out Date" %}</span>
                     <span class="oh-timeoff-modal__stat-count dateformat_changer">{{ activity.clock_out_date }}</span>
                 </div>
@@ -118,13 +118,13 @@
                     <span class="oh-timeoff-modal__stat-title">{% trans "Shift" %}</span>
                     <span class="oh-timeoff-modal__stat-count">{{ attendance.shift_id }}</span>
                 </div>
-                <div class="oh-timeoff-modal__stat" style="margin-left: 20px">
+                <div class="oh-timeoff-modal__stat">
                     <span class="oh-timeoff-modal__stat-title">{% trans "Work Type" %}</span>
                     <span class="oh-timeoff-modal__stat-count">{{ attendance.work_type_id }}</span>
                 </div>
             </div>
             {% if perms.attendance.delete_attendanceactivity %}
-                <div class="oh-modal__button-container text-center w-100">
+                <div class="oh-modal__button-container attendance-activity-delete text-center w-100">
                     <div class="oh-btn-group">
                         {% if perms.attendance.delete_attendancelatecomeearlyout %}
                             <form
@@ -151,13 +151,13 @@
         </div>
     </div>
 {% else %}
-    <div class="oh-modal__dialog-header">
-        <span class="oh-modal__dialog-title" style="margin-left: 30px"></span>
+    <div class="oh-modal__dialog-header attendance-activity-modal-header">
+        <span class="oh-modal__dialog-title">{% trans "Details" %}</span>
         <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
             <ion-icon name="close-outline"></ion-icon>
         </button>
     </div>
-    <div class="oh-modal__dialog-body oh-modal__dialog-relative">
+    <div class="oh-modal__dialog-body oh-modal__dialog-relative attendance-activity-modal-body">
         <img
             style="margin-left: 33%; width: 150px; height: 150px"
             src="{% static 'images/ui/present.png' %}"

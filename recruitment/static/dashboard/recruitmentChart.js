@@ -1,13 +1,15 @@
 $(document).ready(function () {
+	let myChart;
+
 	function recruitmentChart(dataSet, labels) {
 		const data = {
 			labels: labels,
 			datasets: dataSet,
 		};
 		// Create chart using the Chart.js library
-		window["myChart"] = {};
-		if (document.getElementById("recruitmentChart1")){
-			const ctx = document.getElementById("recruitmentChart1").getContext("2d");
+		const canvas = document.getElementById("recruitmentChart1");
+		if (canvas) {
+			const ctx = canvas.getContext("2d");
 			myChart = new Chart(ctx, {
 				type: "bar",
 				data: data,
@@ -15,6 +17,9 @@ $(document).ready(function () {
 					responsive: true,
 
 					onClick: (e, activeEls) => {
+						if (!activeEls.length) {
+							return;
+						}
 						let datasetIndex = activeEls[0].datasetIndex;
 						let dataIndex = activeEls[0].index;
 						let datasetLabel = e.chart.data.datasets[datasetIndex].label;
@@ -31,7 +36,11 @@ $(document).ready(function () {
 				},
 				plugins: [
 					{
-						afterRender: (chart) => emptyChart(chart),
+						afterRender: (chart) => {
+							if (typeof emptyChart === "function") {
+								emptyChart(chart);
+							}
+						},
 					},
 				],
 			});
@@ -87,6 +96,9 @@ $(document).ready(function () {
 							},
 						},
 						onClick: (e, activeEls) => {
+							if (!activeEls.length) {
+								return;
+							}
 							let datasetIndex = activeEls[0].datasetIndex;
 							let dataIndex = activeEls[0].index;
 							let datasetLabel = e.chart.data.datasets[datasetIndex].label;
@@ -102,7 +114,11 @@ $(document).ready(function () {
 					},
 					plugins: [
 						{
-							afterRender: (chart) => emptyChart(chart),
+							afterRender: (chart) => {
+								if (typeof emptyChart === "function") {
+									emptyChart(chart);
+								}
+							},
 						},
 					],
 				});

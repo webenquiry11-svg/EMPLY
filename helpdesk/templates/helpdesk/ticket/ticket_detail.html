@@ -6,6 +6,7 @@
 {% load helpdeskfilters %}
 
 {% block content %}
+    <link rel="stylesheet" href="{% static 'tickets/tickets-theme.css' %}">
     <style>
         .oh-profile__avatar-limit-height {
             height: 30px !important;
@@ -303,9 +304,6 @@
                                             <div class="oh-helpdesk__bubble-header">
                                                 <div class="oh-helpdesk__bubble-user">
                                                     <div class="oh-profile oh-profile--md">
-                                                        {{ item.type }}
-                                                        {{ item.comment.employee_id }}
-                                                        {{ ticket.employee_id }}
                                                         <div class="oh-profile__avatar mr-1">
                                                             <img
                                                                 src="{{item.comment.employee_id.get_avatar}}"
@@ -539,7 +537,7 @@
                     <!-- Ticket Info. -->
                     <div class="oh-helpdesk__card">
                         <div class="oh-helpdesk__card-header d-flex justify-content-between align-items-center">
-                            <span class="oh-helpdesk__card-title">{% trans "Ticket Info 123" %}</span>
+                            <span class="oh-helpdesk__card-title">{% trans "Ticket Info" %} {{ ticket.id }}</span>
                         </div>
                         <div class="oh-helpdesk__card-body">
                             <ul class="helpdesk__card-items">
@@ -846,7 +844,7 @@
     </div>
     <div class="oh-modal" id="editModal" role="dialog" aria-labelledby="editDialogModal" aria-hidden="true">
         <div class="oh-modal__dialog">
-            <div class="oh-modal__dialog-header">
+            <div class="oh-modal__dialog-header ticket-modal-header">
                 <h2 class="oh-modal__dialog-title" id="editTitle">
                     {% trans "Create Tag" %}
                 </h2>
@@ -866,7 +864,7 @@
 
     <div class="oh-modal" id="viewFileModal" role="dialog" aria-labelledby="viewFileModal" aria-hidden="true">
         <div class="oh-modal__dialog custom-dialog" style="max-width: 900px; width: 90%">
-            <div class="oh-modal__dialog-header">
+            <div class="oh-modal__dialog-header ticket-modal-header">
                 <span class="oh-modal__dialog-title" id="viewFileModalLabel">{% trans "View File" %}</span>
                 <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
                     <ion-icon

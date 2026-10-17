@@ -18,7 +18,6 @@
                             <a
                                 class="oh-profile oh-profile--md"
                                 style="text-decoration: none"
-                                hx-on:click="$('#objectDetailsModal').addClass('oh-modal--show');"
                                 hx-get="{% url 'announcement-single-view' announcement.id %}?instance_ids={{instance_ids}}"
                                 hx-target="#objectDetailsModalTarget"
                                 onclick="closeNew(this)"

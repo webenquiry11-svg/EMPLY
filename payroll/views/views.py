@@ -13,9 +13,18 @@ from urllib.parse import parse_qs
 import pandas as pd
 import pdfkit
 from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required as django_login_required
 from django.contrib import messages
-from django.db.models import ProtectedError, Q
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.core.exceptions import ValidationError
+from django.db import transaction
+from django.db.models import ProtectedError, Q, Sum
+from django.http import (
+    HttpResponse,
+    HttpResponseBadRequest,
+    HttpResponseNotAllowed,
+    HttpResponseRedirect,
+    JsonResponse,
+)
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -29,6 +38,7 @@ from base.methods import (
     generate_colors,
     generate_pdf,
     get_key_instances,
+    get_working_days,
     sortby,
 )
 from base.models import Company
@@ -55,7 +65,7 @@ from payroll.forms.component_forms import (
     PayrollSettingsForm,
     PayslipAutoGenerateForm,
 )
-from payroll.methods.methods import paginator_qry, save_payslip
+from payroll.methods.methods import get_daily_salary, paginator_qry, save_payslip
 from payroll.models.models import (
     Contract,
     FilingStatus,
@@ -76,6 +86,26 @@ status_choices = {
     "confirmed": _("Confirmed"),
     "paid": _("Paid"),
 }
+
+PAYSLIP_STATUS_TRANSITIONS = {
+    "draft": {"review_ongoing"},
+    "review_ongoing": {"draft", "confirmed"},
+    "confirmed": {"paid"},
+    "paid": set(),
+}
+
+
+def _payslip_status_error(payslip, new_status):
+    if new_status not in status_choices:
+        return _("Invalid payslip status.")
+    if new_status == payslip.status:
+        return None
+    if new_status not in PAYSLIP_STATUS_TRANSITIONS.get(payslip.status, set()):
+        return _("This payslip cannot transition from %(old)s to %(new)s.") % {
+            "old": payslip.get_status_display(),
+            "new": status_choices[new_status],
+        }
+    return None
 
 
 def get_language_code(request):
@@ -464,15 +494,41 @@ def update_payslip_status(request, payslip_id):
     """
     This method is used to update the payslip confirmation status
     """
-    status = request.POST.get("status")
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    new_status = request.POST.get("status")
     view = request.POST.get("view")
-    payslip = Payslip.objects.filter(id=payslip_id).first()
-    if payslip:
-        payslip.status = status
-        payslip.save()
-        messages.success(request, _("Payslip status updated"))
-    else:
-        messages.error(request, _("Payslip not found"))
+    with transaction.atomic():
+        payslip = get_object_or_404(
+            Payslip.objects.select_for_update(), id=payslip_id
+        )
+        error = _payslip_status_error(payslip, new_status)
+        if error:
+            messages.error(request, error)
+            if view:
+                from .component_views import filter_payslip
+
+                return redirect(filter_payslip)
+            data = payslip.pay_head_data
+            data["employee"] = payslip.employee_id
+            data["payslip"] = payslip
+            data["json_data"] = data.copy()
+            data["json_data"]["employee"] = payslip.employee_id.id
+            data["json_data"]["payslip"] = payslip.id
+            data["instance"] = payslip
+            return render(
+                request,
+                "payroll/payslip/individual_payslip_summery.html",
+                data,
+                status=400,
+            )
+        try:
+            if new_status != payslip.status:
+                payslip.status = new_status
+                payslip.save(update_fields=["status"])
+            messages.success(request, _("Payslip status updated"))
+        except ValidationError as exc:
+            return HttpResponse("; ".join(exc.messages), status=400)
     if view:
         from .component_views import filter_payslip
 
@@ -491,18 +547,71 @@ def update_payslip_status_no_id(request):
     """
     This method is used to update the payslip confirmation status
     """
-    message = {"type": "success", "message": "Payslip status updated."}
-    if request.method == "POST":
-        ids_json = request.POST["ids"]
-        ids = json.loads(ids_json)
-        status = request.POST["status"]
-        slips = Payslip.objects.filter(id__in=ids)
-        slips.update(status=status)
-        message = {
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    if not request.user.is_authenticated or not request.user.has_perm(
+        "payroll.change_payslip"
+    ):
+        return JsonResponse(
+            {"type": "error", "message": _("You do not have permission.")},
+            status=403,
+        )
+    try:
+        ids = json.loads(request.POST.get("ids", ""))
+    except (TypeError, ValueError):
+        return JsonResponse(
+            {"type": "error", "message": _("Invalid payslip selection.")}, status=400
+        )
+    if (
+        not isinstance(ids, list)
+        or not ids
+        or any(
+            isinstance(pk, bool)
+            or not str(pk).isdigit()
+            or int(pk) <= 0
+            for pk in ids
+        )
+        or len({int(pk) for pk in ids}) != len(ids)
+    ):
+        return JsonResponse(
+            {"type": "error", "message": _("Invalid payslip selection.")}, status=400
+        )
+    ids = [int(pk) for pk in ids]
+    new_status = request.POST.get("status")
+    try:
+        with transaction.atomic():
+            slips = list(
+                Payslip.objects.select_for_update().filter(id__in=ids).order_by("id")
+            )
+            if len(slips) != len(ids):
+                return JsonResponse(
+                    {
+                        "type": "error",
+                        "message": _("One or more payslips were not found."),
+                    },
+                    status=404,
+                )
+            for payslip in slips:
+                error = _payslip_status_error(payslip, new_status)
+                if error:
+                    return JsonResponse(
+                        {"type": "error", "message": error}, status=400
+                    )
+            for payslip in slips:
+                if payslip.status != new_status:
+                    payslip.status = new_status
+                    payslip.save(update_fields=["status"])
+    except ValidationError as exc:
+        return JsonResponse(
+            {"type": "error", "message": "; ".join(exc.messages)}, status=400
+        )
+    return JsonResponse(
+        {
             "type": "success",
-            "message": f"{slips.count()} Payslips status updated.",
+            "message": _("%(count)s payslip statuses updated.")
+            % {"count": len(slips)},
         }
-    return JsonResponse(message)
+    )
 
 
 @login_required
@@ -512,39 +621,71 @@ def bulk_update_payslip_status(request):
     This method is used to update payslip status when generating payslip through
     generate payslip method
     """
-    json_data = request.GET["json_data"]
-    pay_data = json.loads(json_data)
-    status = request.GET["status"]
+    try:
+        pay_data = json.loads(request.GET.get("json_data", ""))
+    except (TypeError, ValueError):
+        return JsonResponse(
+            {"type": "error", "message": _("Invalid payroll data.")}, status=400
+        )
+    new_status = request.GET.get("status")
+    if (
+        not isinstance(pay_data, list)
+        or not pay_data
+        or new_status not in {"draft", "review_ongoing"}
+    ):
+        return JsonResponse(
+            {"type": "error", "message": _("Invalid payroll data or status.")},
+            status=400,
+        )
 
-    for json_entry in pay_data:
-        data = json.loads(json_entry)
-        emp_id = data["employee"]
-        employee = Employee.objects.get(id=emp_id)
+    try:
+        with transaction.atomic():
+            for json_entry in pay_data:
+                data = json.loads(json_entry) if isinstance(json_entry, str) else json_entry
+                if not isinstance(data, dict):
+                    raise ValueError("Each payslip entry must be an object.")
+                employee = Employee.objects.filter(id=data.get("employee")).first()
+                if employee is None:
+                    raise ValidationError(
+                        _("An employee was not found in your company scope.")
+                    )
+                payslip_kwargs = {
+                    "employee_id": employee,
+                    "start_date": data["start_date"],
+                    "end_date": data["end_date"],
+                }
+                instance = Payslip.objects.select_for_update().filter(
+                    **payslip_kwargs
+                ).first()
+                if instance is None:
+                    instance = Payslip()
+                else:
+                    error = _payslip_status_error(instance, new_status)
+                    if error:
+                        raise ValidationError(error)
+                instance.employee_id = employee
+                instance.start_date = data["start_date"]
+                instance.end_date = data["end_date"]
+                instance.status = new_status
+                instance.basic_pay = data["basic_pay"]
+                instance.contract_wage = data["contract_wage"]
+                instance.gross_pay = data["gross_pay"]
+                instance.deduction = data["total_deductions"]
+                instance.net_pay = data["net_pay"]
+                instance.pay_head_data = data
+                instance.save()
+    except (KeyError, TypeError, ValueError, ValidationError) as exc:
+        error_message = (
+            "; ".join(exc.messages)
+            if isinstance(exc, ValidationError)
+            else _("Invalid payroll data.")
+        )
+        return JsonResponse({"type": "error", "message": error_message}, status=400)
 
-        payslip_kwargs = {
-            "employee_id": employee,
-            "start_date": data["start_date"],
-            "end_date": data["end_date"],
-        }
-        filtered_instance = Payslip.objects.filter(**payslip_kwargs).first()
-        instance = filtered_instance if filtered_instance is not None else Payslip()
-
-        instance.employee_id = employee
-        instance.start_date = data["start_date"]
-        instance.end_date = data["end_date"]
-        instance.status = status
-        instance.basic_pay = data["basic_pay"]
-        instance.contract_wage = data["contract_wage"]
-        instance.gross_pay = data["gross_pay"]
-        instance.deduction = data["total_deductions"]
-        instance.net_pay = data["net_pay"]
-        instance.pay_head_data = data
-        instance.save()
-
-    return JsonResponse({"type": "success", "message": "Payslips status updated"})
+    return JsonResponse({"type": "success", "message": _("Payslips saved.")})
 
 
-@login_required
+@django_login_required
 def view_payslip_pdf(request, payslip_id):
 
     from .component_views import filter_payslip
@@ -553,16 +694,14 @@ def view_payslip_pdf(request, payslip_id):
         payslip = Payslip.objects.get(id=payslip_id)
         company = Company.objects.filter(hq=True).first()
         is_owner = payslip.employee_id.employee_user_id == request.user
-        is_payroll_staff = (
-            request.user.has_perm("payroll.view_payslip")
-            and (request.user.is_staff or request.user.is_superuser)
-        )
+        is_payroll_staff = request.user.has_perm("payroll.view_payslip")
         if is_owner or is_payroll_staff:
             user = request.user
-            employee = user.employee_get
+            employee = getattr(user, "employee_get", None) or payslip.employee_id
 
             # Taking the company_name of the user
             info = EmployeeWorkInformation.objects.filter(employee_id=employee)
+            date_format = "MMM. D, YYYY"
             if info.exists():
                 for data in info:
                     employee_company = data.company_id
@@ -578,7 +717,7 @@ def view_payslip_pdf(request, payslip_id):
             else:
                 date_format = "MMM. D, YYYY"
 
-            data = payslip.pay_head_data
+            data = payslip.pay_head_data.copy()
             start_date_str = data["start_date"]
             end_date_str = data["end_date"]
 
@@ -586,17 +725,30 @@ def view_payslip_pdf(request, payslip_id):
             start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
             end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
 
+            if data.get("unpaid_days") is None and data.get("loss_of_pay") is not None:
+                daily_salary = get_daily_salary(
+                    data.get("contract_wage") or payslip.contract_wage or 0,
+                    start_date,
+                )["day_wage"]
+                if daily_salary:
+                    data["unpaid_days"] = round(
+                        float(data["loss_of_pay"]) / daily_salary, 2
+                    )
+            if data.get("paid_days") is None and data.get("unpaid_days") is not None:
+                working_days = get_working_days(start_date, end_date)[
+                    "total_working_days"
+                ]
+                data["paid_days"] = round(
+                    working_days - float(data["unpaid_days"]), 2
+                )
+
             month_start_name = start_date.strftime("%B %d, %Y")
             month_end_name = end_date.strftime("%B %d, %Y")
 
             # Formatted date for each format
-            for format_name, format_string in HORILLA_DATE_FORMATS.items():
-                if format_name == date_format:
-                    formatted_start_date = start_date.strftime(format_string)
-
-            for format_name, format_string in HORILLA_DATE_FORMATS.items():
-                if format_name == date_format:
-                    formatted_end_date = end_date.strftime(format_string)
+            format_string = HORILLA_DATE_FORMATS.get(date_format, "%b. %d, %Y")
+            formatted_start_date = start_date.strftime(format_string)
+            formatted_end_date = end_date.strftime(format_string)
             data["month_start_name"] = month_start_name
             data["month_end_name"] = month_end_name
             data["formatted_start_date"] = formatted_start_date
@@ -607,7 +759,11 @@ def view_payslip_pdf(request, payslip_id):
             data["json_data"]["employee"] = payslip.employee_id.id
             data["json_data"]["payslip"] = payslip.id
             data["instance"] = payslip
-            data["currency"] = PayrollSettings.objects.first().currency_symbol
+            data["currency"] = (
+                PayrollSettings.objects.first().currency_symbol
+                if PayrollSettings.objects.exists()
+                else "₹"
+            )
             data["all_deductions"] = []
             for deduction_list in [
                 data["basic_pay_deductions"],
@@ -626,7 +782,7 @@ def view_payslip_pdf(request, payslip_id):
             data["protocol"] = "https" if request.is_secure() else "http"
             data["company"] = company
 
-            return render(request, "payroll/payslip/payslip_pdf.html", context=data)
+            return render(request, "payroll/payslip/employee_payslip.html", context=data)
         return redirect(filter_payslip)
     return render(request, "405.html")
 
@@ -729,7 +885,150 @@ def employee_payroll_dashboard(request):
         return redirect(f"{reverse('login')}?login_mode=payroll")
 
     payroll = calculate_employee_payroll(employee)
-    payslips = employee_payslips(employee)[:6]
+    payslips = list(employee_payslips(employee)[:6])
+    finalized_payslip = employee_payslips(employee).filter(
+        start_date=payroll["start_date"],
+        end_date=payroll["end_date"],
+        status__in=("confirmed", "paid"),
+    ).first()
+    payroll_is_finalized = finalized_payslip is not None
+    if finalized_payslip is not None:
+        snapshot = finalized_payslip.pay_head_data
+        payroll["basic_salary"] = finalized_payslip.basic_pay or 0
+        payroll["current_salary"] = finalized_payslip.basic_pay or 0
+        payroll["gross_pay"] = finalized_payslip.gross_pay or 0
+        payroll["total_deductions"] = finalized_payslip.deduction or 0
+        payroll["net_pay"] = finalized_payslip.net_pay or 0
+        payroll["basic_salary_display"] = f"₹{payroll['basic_salary']:,.2f}"
+        payroll["total_deductions_display"] = (
+            f"₹{payroll['total_deductions']:,.2f}"
+        )
+        payroll["net_pay_display"] = f"₹{payroll['net_pay']:,.2f}"
+        payroll["paid_days"] = snapshot.get("paid_days")
+        payroll["unpaid_days"] = snapshot.get("unpaid_days")
+        payroll["paid_leave_days"] = None
+        payroll["unpaid_leave_days"] = None
+        payroll["absence_days"] = None
+        payroll["sandwich_days"] = None
+        payroll["daily_rate_basis"] = _(
+            "Amounts and days below are read from the finalized payslip snapshot."
+        )
+        payroll["deduction_details"] = []
+        deduction_categories = (
+            ("basic_pay_deductions", _("Basic pay deduction")),
+            ("gross_pay_deductions", _("Gross pay deduction")),
+            ("pretax_deductions", _("Pre-tax deduction")),
+            ("post_tax_deductions", _("Post-tax deduction")),
+            ("tax_deductions", _("Tax deduction")),
+            ("net_deductions", _("Net pay deduction")),
+        )
+        for key, category_label in deduction_categories:
+            for detail in snapshot.get(key, []) or []:
+                amount = float(detail.get("amount", 0) or 0)
+                payroll["deduction_details"].append(
+                    {
+                        "leave_type": detail.get("title")
+                        or detail.get("deduction")
+                        or category_label,
+                        "reason": detail.get("title")
+                        or detail.get("deduction")
+                        or category_label,
+                        "policy": category_label,
+                        "amount_display": f"₹{amount:,.2f}",
+                    }
+                )
+        payroll["total_affected_days"] = len(payroll["deduction_details"])
+    for payslip in payslips:
+        payslip.net_pay_display = (
+            f"₹{payslip.net_pay:,.2f}"
+            if payslip.net_pay is not None
+            else _("Not available yet")
+        )
+        payslip.basic_pay_display = (
+            f"₹{payslip.basic_pay:,.2f}"
+            if payslip.basic_pay is not None
+            else _("Not available yet")
+        )
+        payslip.deduction_display = (
+            f"₹{payslip.deduction:,.2f}"
+            if payslip.deduction is not None
+            else _("Not available yet")
+        )
+    previous_month_date = payroll["start_date"] - timedelta(days=1)
+    previous_payslip = next(
+        (
+            payslip
+            for payslip in payslips
+            if payslip.start_date.year == previous_month_date.year
+            and payslip.start_date.month == previous_month_date.month
+        ),
+        None,
+    )
+    payroll_trends = {}
+    if previous_payslip is not None:
+        trend_values = (
+            ("net_pay", payroll["net_pay"], previous_payslip.net_pay, "net_pay"),
+            (
+                "deductions",
+                payroll["total_deductions"],
+                previous_payslip.deduction,
+                "deduction",
+            ),
+            (
+                "earnings",
+                payroll["basic_salary"],
+                previous_payslip.basic_pay,
+                "basic_pay",
+            ),
+        )
+        for name, current_value, previous_value, field_name in trend_values:
+            previous_amount = float(previous_value or 0)
+            values = [
+                float(getattr(payslip, field_name))
+                for payslip in reversed(payslips)
+                if payslip.start_date < payroll["start_date"]
+                and getattr(payslip, field_name) is not None
+            ] + [float(current_value)]
+            spread = max(values) - min(values)
+            points = []
+            if len(values) > 1:
+                points = [
+                    f"{index * 40 / (len(values) - 1):.1f} "
+                    f"{17 - ((value - min(values)) / spread * 14 if spread else 7):.1f}"
+                    for index, value in enumerate(values)
+                ]
+            payroll_trends[name] = {
+                "change": (
+                    round(
+                        (float(current_value) - previous_amount)
+                        / abs(previous_amount)
+                        * 100,
+                        1,
+                    )
+                    if previous_amount
+                    else None
+                ),
+                "has_change": bool(previous_amount),
+                "sparkline": f"M {' L '.join(points)}" if len(points) > 1 else "",
+            }
+    deduction_ratio = min(
+        100,
+        max(
+            0,
+            round(
+                float(
+                    payroll["total_deductions"]
+                    / payroll["basic_salary"]
+                    * 100
+                ),
+                2,
+            ),
+        ),
+    )
+    net_pay_ratio = min(
+        100,
+        max(0, round(float(payroll["net_pay"] / payroll["basic_salary"] * 100), 2)),
+    )
 
     context = {
         "employee": employee,
@@ -743,8 +1042,13 @@ def employee_payroll_dashboard(request):
         "current_period": payroll["start_date"].strftime("%B %Y"),
         "current_month": payroll["start_date"].strftime("%B %Y"),
         "payroll": payroll,
+        "payroll_is_finalized": payroll_is_finalized,
+        "finalized_payslip": finalized_payslip,
         "payslips": payslips,
         "employee_avatar": employee.get_avatar(),
+        "deduction_ratio": deduction_ratio,
+        "net_pay_ratio": net_pay_ratio,
+        "payroll_trends": payroll_trends,
     }
     return render(request, "payroll/employee_dashboard.html", context=context)
 
@@ -761,7 +1065,7 @@ def generate_employee_payslip(request):
     return redirect("payroll-dashboard")
 
 
-@login_required
+@django_login_required
 @permission_required("payroll.view_contract")
 def view_payroll_dashboard(request):
     """
@@ -769,17 +1073,36 @@ def view_payroll_dashboard(request):
     """
     from payroll.forms.forms import DashboardExport
 
-    paid = Payslip.objects.filter(status="paid")
-    posted = Payslip.objects.filter(status="confirmed")
-    review_ongoing = Payslip.objects.filter(status="review_ongoing")
-    draft = Payslip.objects.filter(status="draft")
+    selected_period = request.GET.get("period", "")
+    if selected_period:
+        try:
+            period_start = datetime.strptime(selected_period, "%Y-%m").date()
+        except ValueError:
+            return HttpResponseBadRequest(_("Select a valid payroll period."))
+    else:
+        period_start = timezone.localdate().replace(day=1)
+        selected_period = period_start.strftime("%Y-%m")
+    period_filter = {
+        "start_date__year": period_start.year,
+        "start_date__month": period_start.month,
+    }
+    paid = Payslip.objects.filter(status="paid", **period_filter)
+    posted = Payslip.objects.filter(status="confirmed", **period_filter)
+    review_ongoing = Payslip.objects.filter(status="review_ongoing", **period_filter)
+    draft = Payslip.objects.filter(status="draft", **period_filter)
     export_form = DashboardExport()
+    payroll_settings = PayrollSettings.objects.first()
     context = {
         "paid": paid,
         "posted": posted,
         "review_ongoing": review_ongoing,
         "draft": draft,
         "export_form": export_form,
+        "paid_net_total": paid.aggregate(total=Sum("net_pay"))["total"] or 0,
+        "confirmed_net_total": posted.aggregate(total=Sum("net_pay"))["total"] or 0,
+        "period_value": selected_period,
+        "currency": payroll_settings.currency_symbol if payroll_settings else "₹",
+        "position": payroll_settings.position if payroll_settings else "postfix",
     }
     return render(request, "payroll/dashboard.html", context=context)
 
@@ -1566,10 +1889,11 @@ def payslip_pdf(request, id):
             or payslip.employee_id.employee_user_id == request.user
         ):
             user = request.user
-            employee = user.employee_get
+            employee = getattr(user, "employee_get", None) or payslip.employee_id
 
             # Taking the company_name of the user
             info = EmployeeWorkInformation.objects.filter(employee_id=employee)
+            date_format = "MMM. D, YYYY"
             if info.exists():
                 for data in info:
                     employee_company = data.company_id
@@ -1583,7 +1907,7 @@ def payslip_pdf(request, id):
                     else "MMM. D, YYYY"
                 )
 
-            data = payslip.pay_head_data
+            data = payslip.pay_head_data.copy()
             start_date_str = data["start_date"]
             end_date_str = data["end_date"]
 
@@ -1607,7 +1931,11 @@ def payslip_pdf(request, id):
                     "employee": payslip.employee_id,
                     "payslip": payslip,
                     "json_data": data.copy(),
-                    "currency": PayrollSettings.objects.first().currency_symbol,
+                    "currency": (
+                        PayrollSettings.objects.first().currency_symbol
+                        if PayrollSettings.objects.exists()
+                        else "₹"
+                    ),
                     "all_deductions": [],
                     "all_allowances": data["allowances"].copy(),
                     "host": request.get_host(),

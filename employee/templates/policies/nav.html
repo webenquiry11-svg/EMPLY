@@ -39,6 +39,77 @@
             color: #fff;
             transform: translateY(-1px);
         }
+        html body .oh-wrapper-main.super-admin-panel-theme .employee-policies-head {
+            justify-content: space-between;
+            gap: 24px;
+            background: #ffffff !important;
+            border-color: #b9dce4 !important;
+            box-shadow: 0 10px 26px rgba(10, 77, 96, 0.12);
+        }
+        .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-main__titlebar--left,
+        .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-main__titlebar-title {
+            color: #173f50 !important;
+        }
+        .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-main__titlebar-title {
+            font-size: 1rem !important;
+            font-weight: 700 !important;
+        }
+        .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-main__titlebar--right {
+            display: flex;
+            flex: 0 1 auto;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 14px;
+            margin: 0;
+        }
+        .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-input__search-group {
+            display: flex;
+            flex: 0 1 270px;
+            align-items: center;
+            min-width: 200px;
+            margin: 0 !important;
+            padding: 0;
+            background: transparent !important;
+            border: 0 !important;
+            box-shadow: none !important;
+        }
+        .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-input {
+            width: 100%;
+            margin: 0 !important;
+            background: #ffffff !important;
+            border-color: #c7e5eb !important;
+            color: #173f50 !important;
+            box-shadow: none;
+        }
+        .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-input::placeholder {
+            color: #557b84;
+        }
+        .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-input-group__icon {
+            color: #176f80 !important;
+        }
+        .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-main__titlebar-button-container {
+            margin: 0;
+        }
+        .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-btn--secondary {
+            min-width: 120px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            background: linear-gradient(135deg, #0a596b, #177f91) !important;
+            border-color: #176f80 !important;
+            color: #ffffff !important;
+        }
+        .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-btn--secondary ion-icon {
+            flex: 0 0 auto;
+            color: #ffffff !important;
+            font-size: 18px;
+            line-height: 1;
+        }
+        .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-btn--secondary:hover {
+            background: #0a4d60 !important;
+            border-color: #0a4d60 !important;
+        }
         @media (max-width: 640px) {
             .employee-policies-head {
                 margin: 14px 12px 14px;
@@ -53,6 +124,14 @@
             .employee-policies-head .oh-btn {
                 width: 100%;
                 margin-right: 0 !important;
+            }
+            .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-main__titlebar--right {
+                width: 100%;
+                align-items: stretch;
+            }
+            .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-input__search-group {
+                flex-basis: 100%;
+                min-width: 0;
             }
         }
     </style>

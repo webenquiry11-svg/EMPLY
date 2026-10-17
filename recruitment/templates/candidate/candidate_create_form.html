@@ -2,16 +2,27 @@
 {% comment %} {% include 'candidate/candidate_nav.html' %} {% endcomment %}
 {{form.load}}
 <div
-  class="oh-wrapper mt-5"
+  class="oh-wrapper mt-5 candidate-create-page"
   id="section"
   data-select2-id="select2-data-40-yu7x"
 >
   <form
+    class="candidate-create-form"
     data-select2-id="select2-data-47-5jxy"
     action= "{{request.path}}?{{request.GET.urlencode}}"
     method="post"
     enctype="multipart/form-data"
   >
+    <header class="candidate-create-heading">
+      <div class="candidate-create-heading__icon" aria-hidden="true">
+        <ion-icon name="person-add-outline"></ion-icon>
+      </div>
+      <div>
+        <span class="candidate-create-heading__eyebrow">{% trans "Recruitment" %}</span>
+        <h1>{% if form.instance.pk %}{% trans "Update Candidate" %}{% else %}{% trans "Create Candidate" %}{% endif %}</h1>
+        <p>{% trans "Add candidate details and attach their resume to get started." %}</p>
+      </div>
+    </header>
     <div
       class="oh-general__tab-target oh-profile-section mb-4"
       id="personal"
@@ -38,7 +49,7 @@
             class="col-12 col-sm-12 col-md-12 col-lg-6 d-flex align-items-center"
           >
             <div
-              class="oh-profile-section__edit-photo me-4 mb-3"
+              class="oh-profile-section__edit-photo candidate-create-avatar me-4 mb-3"
               data-toggle="oh-modal-toggle"
               data-target="#uploadPhotoModal"
             >
@@ -47,6 +58,10 @@
               class="oh-profile-section__modal-image preview"
                 alt="{% trans 'Username' %}"
               />
+            </div>
+            <div class="candidate-create-avatar__copy">
+              <strong>{% trans "Candidate profile" %}</strong>
+              <span>{% trans "Click the avatar to upload a profile photo." %}</span>
             </div>
           </div>
         </div>

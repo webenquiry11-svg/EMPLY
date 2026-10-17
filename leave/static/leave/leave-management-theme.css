@@ -1,0 +1,1581 @@
+html body:has(.leave-type-view-header),
+html body:has(.assigned-leave-page),
+html body:has(.leave-allocation-employee-theme),
+html body:has(.compensatory-leave-employee-theme) {
+    --leave-ink: #173f50;
+    --leave-text: #315d69;
+    --leave-muted: #718c94;
+    --leave-teal: #176f80;
+    --leave-teal-dark: #0a596b;
+    --leave-border: #c7e5eb;
+    --leave-soft: #f1f9fa;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-type-view-header,
+html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page.employee-subsection-head,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-employee-theme .employee-subsection-head,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-employee-theme .employee-subsection-head {
+    box-sizing: border-box;
+    display: flex !important;
+    min-height: 88px;
+    align-items: center !important;
+    justify-content: space-between;
+    gap: 22px;
+    margin: 24px 28px 18px !important;
+    padding: 18px 22px !important;
+    overflow: visible !important;
+    border: 1px solid var(--leave-border) !important;
+    border-radius: 18px !important;
+    background: #fff !important;
+    box-shadow: 0 9px 24px rgba(10, 77, 96, 0.1) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-type-view-header .oh-main__titlebar,
+html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page.employee-subsection-head .oh-main__titlebar,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-employee-theme .employee-subsection-head .oh-main__titlebar,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-employee-theme .employee-subsection-head .oh-main__titlebar {
+    min-width: 0;
+    margin: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-type-view-header .oh-main__titlebar--left,
+html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page.employee-subsection-head .oh-main__titlebar--left,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-employee-theme .employee-subsection-head .oh-main__titlebar--left,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-employee-theme .employee-subsection-head .oh-main__titlebar--left {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    margin: 0 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-type-view-header .oh-main__titlebar-title,
+html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page.employee-subsection-head .oh-main__titlebar-title,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-employee-theme .employee-subsection-head .oh-main__titlebar-title,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-employee-theme .employee-subsection-head .oh-main__titlebar-title {
+    margin: 0 !important;
+    color: var(--leave-ink) !important;
+    font-size: 1.05rem !important;
+    font-weight: 750 !important;
+    line-height: 1.35;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-type-view-header .leave-type-view-heading p {
+    margin: 4px 0 0;
+    color: var(--leave-muted);
+    font-size: 0.8rem;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-type-view-header .oh-main__titlebar-search-toggle,
+html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page.employee-subsection-head .oh-main__titlebar-search-toggle,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-employee-theme .employee-subsection-head .oh-main__titlebar-search-toggle,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-employee-theme .employee-subsection-head .oh-main__titlebar-search-toggle {
+    display: none !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-type-view-header > .oh-main__titlebar--right,
+html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page.employee-subsection-head > .oh-main__titlebar--right,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-employee-theme .employee-subsection-head > .oh-main__titlebar--right,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-employee-theme .employee-subsection-head > .oh-main__titlebar--right {
+    display: flex;
+    min-width: 0;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 9px;
+    margin: 0 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-type-view-header #filterForm,
+html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page.employee-subsection-head #filterForm,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-employee-theme .employee-subsection-head #filterForm,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-employee-theme .employee-subsection-head #filterForm {
+    display: flex;
+    min-width: 0;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 9px;
+    margin: 0 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-type-view-header .oh-input__search-group,
+html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page.employee-subsection-head .oh-input__search-group,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-employee-theme .employee-subsection-head .oh-input__search-group,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-employee-theme .employee-subsection-head .oh-input__search-group {
+    position: relative;
+    display: flex;
+    min-width: 150px;
+    max-width: 260px;
+    flex: 1 1 220px;
+    align-items: center;
+    margin: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-type-view-header .oh-input,
+html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page.employee-subsection-head .oh-input,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-employee-theme .employee-subsection-head .oh-input,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-employee-theme .employee-subsection-head .oh-input {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 42px;
+    margin: 0 !important;
+    padding: 0 12px 0 38px !important;
+    border: 1px solid var(--leave-border) !important;
+    border-radius: 11px !important;
+    background: #fff !important;
+    color: var(--leave-ink) !important;
+    box-shadow: none !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-type-view-header .oh-input-group__icon,
+html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page.employee-subsection-head .oh-input-group__icon,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-employee-theme .employee-subsection-head .oh-input-group__icon,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-employee-theme .employee-subsection-head .oh-input-group__icon {
+    z-index: 1;
+    color: var(--leave-teal) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-type-view-header .oh-main__titlebar-button-container,
+html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page.employee-subsection-head .oh-main__titlebar-button-container,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-employee-theme .employee-subsection-head .oh-main__titlebar-button-container,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-employee-theme .employee-subsection-head .oh-btn-group {
+    display: flex;
+    min-width: 0;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 8px;
+    margin: 0 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-type-view-header .oh-btn,
+html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page.employee-subsection-head .oh-btn,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-employee-theme .employee-subsection-head .oh-btn,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-employee-theme .employee-subsection-head .oh-btn {
+    display: inline-flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin: 0 !important;
+    padding: 0 14px !important;
+    border: 1px solid var(--leave-teal) !important;
+    border-radius: 10px !important;
+    background: linear-gradient(135deg, var(--leave-teal-dark), #177f91) !important;
+    color: #fff !important;
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+    box-shadow: 0 4px 11px rgba(10, 77, 96, 0.13);
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-type-view-header .oh-btn:hover,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-type-view-header .oh-btn:focus-visible,
+html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page.employee-subsection-head .oh-btn:hover,
+html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page.employee-subsection-head .oh-btn:focus-visible,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-employee-theme .employee-subsection-head .oh-btn:hover,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-employee-theme .employee-subsection-head .oh-btn:focus-visible,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-employee-theme .employee-subsection-head .oh-btn:hover,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-employee-theme .employee-subsection-head .oh-btn:focus-visible {
+    border-color: var(--leave-teal-dark) !important;
+    background: var(--leave-teal-dark) !important;
+    color: #fff !important;
+    outline: 0;
+    box-shadow: 0 0 0 3px rgba(23, 111, 128, 0.15);
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-type-view-header .oh-btn ion-icon,
+html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page.employee-subsection-head .oh-btn ion-icon,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-employee-theme .employee-subsection-head .oh-btn ion-icon,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-employee-theme .employee-subsection-head .oh-btn ion-icon {
+    display: inline-block !important;
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    margin: 0 !important;
+    color: inherit !important;
+    font-size: 18px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page.employee-subsection-head .assigned-leave-toolbar-button,
+html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page.employee-subsection-head #assigned-leaves-assign-button {
+    min-width: 104px;
+    gap: 8px;
+    padding: 0 13px !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page.employee-subsection-head .assigned-leave-toolbar-button ion-icon,
+html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page.employee-subsection-head #assigned-leaves-assign-button ion-icon {
+    display: inline-block !important;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    margin: 0 !important;
+    color: inherit !important;
+    font-size: 18px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-toolbar-button #filterCount:empty {
+    display: none;
+}
+
+html body:has(.leave-type-view-header) .leave-type-content {
+    box-sizing: border-box;
+    width: auto;
+    margin: 0 28px 140px !important;
+    padding: 16px !important;
+    border: 1px solid var(--leave-border);
+    border-radius: 18px;
+    background: #fff !important;
+    box-shadow: 0 8px 24px rgba(10, 77, 96, 0.07);
+}
+
+html body:has(.leave-type-view-header) .leave-type-quick-filters {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 14px !important;
+}
+
+html body:has(.leave-type-view-header) .leave-type-card-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr));
+    gap: 16px;
+}
+
+html body:has(.leave-type-view-header) .leave-type-card {
+    position: relative;
+    z-index: 0;
+    box-sizing: border-box;
+    min-width: 0;
+    min-height: 150px;
+    align-items: center;
+    padding: 20px;
+    overflow: visible;
+    border: 1px solid #d5e9ed !important;
+    border-left: 3px solid #54aeba !important;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #fff 70%, #f4fafb) !important;
+    box-shadow: 0 5px 16px rgba(23, 109, 131, 0.07);
+    transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+html body:has(.leave-type-view-header) .leave-type-card:hover,
+html body:has(.leave-type-view-header) .leave-type-card:focus-within {
+    z-index: 4;
+    border-color: #9bcfd8 !important;
+    box-shadow: 0 12px 24px rgba(23, 109, 131, 0.13);
+}
+
+html body:has(.leave-type-view-header) .leave-type-card .oh-kanban-card__details {
+    min-width: 0;
+    flex: 1 1 auto;
+    padding-right: 30px;
+}
+
+html body:has(.leave-type-view-header) .leave-type-card__title {
+    color: var(--leave-ink) !important;
+    font-size: 1rem !important;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+html body:has(.leave-type-view-header) .leave-type-card__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px;
+}
+
+html body:has(.leave-type-view-header) .leave-type-card__stats .oh-timeoff-modal__stat-title {
+    color: var(--leave-muted) !important;
+    font-size: 0.75rem;
+    line-height: 1.4;
+}
+
+html body:has(.leave-type-view-header) .leave-type-card__stats .oh-timeoff-modal__stat-title.fw-bold {
+    color: var(--leave-text) !important;
+    font-size: 0.68rem;
+    font-weight: 750 !important;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+html body:has(.leave-type-view-header) .leave-type-card .oh-kanban-card__dots {
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+}
+
+html body:has(.leave-type-view-header) .leave-type-card .oh-kanban-card__dots > .oh-dropdown {
+    position: relative;
+}
+
+html body:has(.leave-type-view-header) .leave-type-card .oh-kanban-card__dots .oh-btn--transparent {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    place-items: center;
+    padding: 0 !important;
+    border: 1px solid var(--leave-border) !important;
+    border-radius: 10px;
+    background: #eaf5f7 !important;
+    color: var(--leave-teal) !important;
+    box-shadow: none !important;
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+html body:has(.leave-type-view-header) .leave-type-card .oh-kanban-card__dots .oh-btn--transparent:hover,
+html body:has(.leave-type-view-header) .leave-type-card .oh-kanban-card__dots .oh-btn--transparent:focus-visible {
+    border-color: var(--leave-teal) !important;
+    background: var(--leave-teal) !important;
+    color: #fff !important;
+    outline: 0;
+}
+
+html body:has(.leave-type-view-header) .leave-type-card .oh-kanban-card__dots ion-icon {
+    color: inherit !important;
+    font-size: 18px;
+}
+
+html body:has(.leave-type-view-header) .leave-type-card .oh-dropdown__menu {
+    z-index: 30 !important;
+    min-width: 176px;
+    padding: 6px;
+    border: 1px solid var(--leave-border) !important;
+    border-radius: 12px !important;
+    background: #fff !important;
+    box-shadow: 0 14px 30px rgba(10, 77, 96, 0.18) !important;
+}
+
+html body:has(.leave-type-view-header) .leave-type-card .oh-dropdown__link {
+    min-height: 36px;
+    border-radius: 8px;
+    color: var(--leave-text) !important;
+}
+
+html body:has(.leave-type-view-header) .leave-type-card .oh-dropdown__link:hover,
+html body:has(.leave-type-view-header) .leave-type-card .oh-dropdown__link:focus-visible {
+    background: var(--leave-soft) !important;
+    color: var(--leave-ink) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme :is(.leave-type-pagination, #assignedLeaves .oh-pagination, .leave-allocation-content .oh-pagination, .compensatory-leave-content .oh-pagination) {
+    box-sizing: border-box;
+    display: flex;
+    min-height: 64px;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 14px 0 0 !important;
+    padding: 11px 14px !important;
+    border: 1px solid var(--leave-border) !important;
+    border-radius: 12px;
+    background: #fff !important;
+    box-shadow: none !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme :is(.leave-type-pagination, #assignedLeaves .oh-pagination, .leave-allocation-content .oh-pagination, .compensatory-leave-content .oh-pagination) .oh-pagination__page,
+html body .oh-wrapper-main.super-admin-panel-theme :is(.leave-type-pagination, #assignedLeaves .oh-pagination, .leave-allocation-content .oh-pagination, .compensatory-leave-content .oh-pagination) .oh-pagination__label {
+    border-color: transparent !important;
+    background: transparent !important;
+    color: var(--leave-text) !important;
+    font-size: 0.8rem;
+    font-weight: 650;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme :is(.leave-type-pagination, #assignedLeaves .oh-pagination, .leave-allocation-content .oh-pagination, .compensatory-leave-content .oh-pagination) .oh-pagination__page:hover,
+html body .oh-wrapper-main.super-admin-panel-theme :is(.leave-type-pagination, #assignedLeaves .oh-pagination, .leave-allocation-content .oh-pagination, .compensatory-leave-content .oh-pagination) .oh-pagination__label:hover {
+    background: transparent !important;
+    color: var(--leave-text) !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme :is(.leave-type-pagination, #assignedLeaves .oh-pagination, .leave-allocation-content .oh-pagination, .compensatory-leave-content .oh-pagination) .oh-pagination__nav,
+html body .oh-wrapper-main.super-admin-panel-theme :is(.leave-type-pagination, #assignedLeaves .oh-pagination, .leave-allocation-content .oh-pagination, .compensatory-leave-content .oh-pagination) .oh-pagination__items {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-color: transparent !important;
+    background: transparent !important;
+    list-style: none;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme :is(.leave-type-pagination, #assignedLeaves .oh-pagination, .leave-allocation-content .oh-pagination, .compensatory-leave-content .oh-pagination) .oh-pagination__nav:hover,
+html body .oh-wrapper-main.super-admin-panel-theme :is(.leave-type-pagination, #assignedLeaves .oh-pagination, .leave-allocation-content .oh-pagination, .compensatory-leave-content .oh-pagination) .oh-pagination__items:hover {
+    border-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme :is(.leave-type-pagination, #assignedLeaves .oh-pagination, .leave-allocation-content .oh-pagination, .compensatory-leave-content .oh-pagination) .oh-pagination__input-container {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    gap: 6px;
+    margin: 0 !important;
+    padding: 4px 8px !important;
+    border: 1px solid transparent !important;
+    border-radius: 9px;
+    background: transparent !important;
+    transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme :is(.leave-type-pagination, #assignedLeaves .oh-pagination, .leave-allocation-content .oh-pagination, .compensatory-leave-content .oh-pagination) .oh-pagination__input-container:hover,
+html body .oh-wrapper-main.super-admin-panel-theme :is(.leave-type-pagination, #assignedLeaves .oh-pagination, .leave-allocation-content .oh-pagination, .compensatory-leave-content .oh-pagination) .oh-pagination__input-container:focus-within {
+    border-color: var(--leave-border) !important;
+    background: var(--leave-soft) !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme :is(.leave-type-pagination, #assignedLeaves .oh-pagination, .leave-allocation-content .oh-pagination, .compensatory-leave-content .oh-pagination) .oh-pagination__input {
+    width: 54px;
+    min-height: 34px;
+    padding: 0 6px !important;
+    border: 1px solid var(--leave-border) !important;
+    border-radius: 8px;
+    background: #fff !important;
+    color: var(--leave-ink) !important;
+    text-align: center;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme :is(.leave-type-pagination, #assignedLeaves .oh-pagination, .leave-allocation-content .oh-pagination, .compensatory-leave-content .oh-pagination) .oh-pagination__input:hover,
+html body .oh-wrapper-main.super-admin-panel-theme :is(.leave-type-pagination, #assignedLeaves .oh-pagination, .leave-allocation-content .oh-pagination, .compensatory-leave-content .oh-pagination) .oh-pagination__input:focus,
+html body .oh-wrapper-main.super-admin-panel-theme :is(.leave-type-pagination, #assignedLeaves .oh-pagination, .leave-allocation-content .oh-pagination, .compensatory-leave-content .oh-pagination) .oh-pagination__input:focus-visible {
+    border-color: var(--leave-teal) !important;
+    background: #fff !important;
+    color: var(--leave-ink) !important;
+    box-shadow: 0 0 0 3px rgba(23, 111, 128, 0.12) !important;
+    outline: 0;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme :is(.leave-type-pagination, #assignedLeaves .oh-pagination, .leave-allocation-content .oh-pagination, .compensatory-leave-content .oh-pagination) .oh-pagination__item {
+    display: flex;
+    min-width: 38px;
+    min-height: 36px;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0 10px !important;
+    border: 1px solid var(--leave-border) !important;
+    border-radius: 9px !important;
+    background: var(--leave-soft) !important;
+    color: var(--leave-teal) !important;
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme :is(.leave-type-pagination, #assignedLeaves .oh-pagination, .leave-allocation-content .oh-pagination, .compensatory-leave-content .oh-pagination) .oh-pagination__link {
+    display: inline-flex;
+    min-height: 34px;
+    align-items: center;
+    justify-content: center;
+    color: inherit !important;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-decoration: none !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme :is(.leave-type-pagination, #assignedLeaves .oh-pagination, .leave-allocation-content .oh-pagination, .compensatory-leave-content .oh-pagination) .oh-pagination__item:hover,
+html body .oh-wrapper-main.super-admin-panel-theme :is(.leave-type-pagination, #assignedLeaves .oh-pagination, .leave-allocation-content .oh-pagination, .compensatory-leave-content .oh-pagination) .oh-pagination__item:focus-within {
+    transform: translateY(-1px);
+    border-color: var(--leave-teal-dark) !important;
+    background: var(--leave-teal) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 10px rgba(10, 77, 96, 0.16);
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-content,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-content {
+    box-sizing: border-box;
+    margin: 0 28px 140px !important;
+    padding: 16px !important;
+    border: 1px solid var(--leave-border) !important;
+    border-radius: 18px !important;
+    background: #fff !important;
+    box-shadow: 0 8px 24px rgba(10, 77, 96, 0.07) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-employee-theme,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-employee-theme {
+    min-height: 0;
+    padding: 0 0 130px !important;
+    background: #e8f5f7 !important;
+    color: var(--leave-text) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-sticky-table,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-content .oh-sticky-table,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-content .oh-sticky-table {
+    overflow: auto;
+    border: 1px solid var(--leave-border) !important;
+    border-radius: 12px;
+    background: #fff !important;
+    box-shadow: 0 4px 14px rgba(10, 77, 96, 0.05);
+    scrollbar-color: #9ecbd4 #eef7f8;
+    scrollbar-width: thin;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-sticky-table__th,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-content .oh-sticky-table__th,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-content .oh-sticky-table__th {
+    background: #eaf5f7 !important;
+    color: var(--leave-ink) !important;
+    border-color: #d9e9ec !important;
+    font-size: 0.78rem;
+    font-weight: 750;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-content .compensatory-request-table {
+    overflow: auto;
+    border: 1px solid var(--leave-border) !important;
+    border-radius: 12px !important;
+    background: #fff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table > .oh-sticky-table__table {
+    width: 100% !important;
+    min-width: 1280px;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .oh-sticky-table__tr > :nth-child(1) { width: 10%; }
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .oh-sticky-table__tr > :nth-child(2) { width: 12%; }
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .oh-sticky-table__tr > :nth-child(3) { width: 13%; }
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .oh-sticky-table__tr > :nth-child(4) { width: 9%; }
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .oh-sticky-table__tr > :nth-child(5) { width: 12%; }
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .oh-sticky-table__tr > :nth-child(6) { width: 8%; }
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .oh-sticky-table__tr > :nth-child(7) { width: 11%; }
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .oh-sticky-table__tr > :nth-child(8) { width: 7%; }
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .oh-sticky-table__tr > :nth-child(9) { width: 9%; }
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .oh-sticky-table__tr > :nth-child(10) { width: 9%; }
+
+html body .oh-wrapper-main.super-admin-panel-theme #tab_1 .compensatory-request-table .oh-sticky-table__tr > :nth-child(1) { width: 11%; }
+html body .oh-wrapper-main.super-admin-panel-theme #tab_1 .compensatory-request-table .oh-sticky-table__tr > :nth-child(2) { width: 13%; }
+html body .oh-wrapper-main.super-admin-panel-theme #tab_1 .compensatory-request-table .oh-sticky-table__tr > :nth-child(3) { width: 14%; }
+html body .oh-wrapper-main.super-admin-panel-theme #tab_1 .compensatory-request-table .oh-sticky-table__tr > :nth-child(4) { width: 10%; }
+html body .oh-wrapper-main.super-admin-panel-theme #tab_1 .compensatory-request-table .oh-sticky-table__tr > :nth-child(5) { width: 13%; }
+html body .oh-wrapper-main.super-admin-panel-theme #tab_1 .compensatory-request-table .oh-sticky-table__tr > :nth-child(6) { width: 9%; }
+html body .oh-wrapper-main.super-admin-panel-theme #tab_1 .compensatory-request-table .oh-sticky-table__tr > :nth-child(7) { width: 13%; }
+html body .oh-wrapper-main.super-admin-panel-theme #tab_1 .compensatory-request-table .oh-sticky-table__tr > :nth-child(8) { width: 7%; }
+html body .oh-wrapper-main.super-admin-panel-theme #tab_1 .compensatory-request-table .oh-sticky-table__tr > :nth-child(9) { width: 10%; }
+
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .oh-sticky-table__th {
+    padding: 13px 12px !important;
+    white-space: normal;
+    line-height: 1.35;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #tab_2 .compensatory-request-table .oh-sticky-table__thead .oh-sticky-table__th:last-child {
+    white-space: nowrap;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .oh-sticky-table__tbody .oh-sticky-table__td,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .oh-sticky-table__tbody .oh-sticky-table__sd {
+    padding: 12px !important;
+    overflow-wrap: anywhere;
+    line-height: 1.45;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .oh-sticky-table__tr > :nth-child(8),
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .oh-sticky-table__tr > :nth-child(9),
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .oh-sticky-table__tr > :nth-child(10) {
+    text-align: center;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .oh-sticky-table__tr:hover > * {
+    background: #f1f9fa !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .compensatory-status-badge {
+    display: inline-flex;
+    min-height: 26px;
+    align-items: center;
+    padding: 3px 10px;
+    border: 1px solid #b8dce3;
+    border-radius: 999px;
+    background: #e7f4f6;
+    color: #125f70;
+    font-size: 0.75rem;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .compensatory-status-badge[data-status="requested"] {
+    border-color: #b9d7f4;
+    background: #eaf3fc;
+    color: #245f99;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .compensatory-status-badge[data-status="rejected"] {
+    border-color: #f0c2c2;
+    background: #fff0f0;
+    color: #a22c35;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .compensatory-status-badge[data-status="cancelled"] {
+    border-color: #d3dfe2;
+    background: #f1f5f6;
+    color: #536e76;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .compensatory-comment-button {
+    display: inline-flex !important;
+    width: 40px !important;
+    min-width: 40px;
+    height: 38px !important;
+    min-height: 38px;
+    flex: 0 0 40px !important;
+    align-items: center;
+    justify-content: center;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1px solid #b9dce2 !important;
+    border-radius: 9px !important;
+    background: #eaf5f7 !important;
+    color: #176f80 !important;
+    box-shadow: none !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .compensatory-comment-button ion-icon,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .compensatory-action-buttons ion-icon,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .compensatory-confirmation-buttons ion-icon {
+    display: block !important;
+    width: 19px;
+    height: 19px;
+    margin: 0 !important;
+    color: inherit !important;
+    font-size: 19px !important;
+    line-height: 1;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .compensatory-comment-button:hover,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .compensatory-comment-button:focus-visible {
+    border-color: #176f80 !important;
+    background: #176f80 !important;
+    color: #fff !important;
+    outline: 0;
+    box-shadow: 0 0 0 3px rgba(23, 111, 128, 0.14) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .compensatory-action-buttons,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-request-table .compensatory-confirmation-buttons {
+    display: inline-flex !important;
+    width: 100%;
+    align-items: center;
+    justify-content: center !important;
+    gap: 6px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-content .oh-btn-group.compensatory-confirmation-buttons .oh-btn--success {
+    border-color: #23845b !important;
+    background: #23845b !important;
+    color: #fff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-content .oh-btn-group.compensatory-confirmation-buttons .oh-btn--danger {
+    border-color: #c4424d !important;
+    background: #c4424d !important;
+    color: #fff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-content .oh-btn-group.compensatory-confirmation-buttons .oh-btn:disabled,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-content .oh-btn-group.compensatory-confirmation-buttons .oh-btn--disabled {
+    opacity: 0.62 !important;
+    cursor: not-allowed;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-sticky-table__td,
+html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-sticky-table__sd,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-content .oh-sticky-table__td,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-content .oh-sticky-table__sd,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-content .oh-sticky-table__td,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-content .oh-sticky-table__sd {
+    background: #fff !important;
+    color: var(--leave-text) !important;
+    border-color: #e5eff1 !important;
+    font-size: 0.8rem;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-sticky-table__tr:hover > *,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-content .oh-sticky-table__tr:hover > *,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-content .oh-sticky-table__tr:hover > * {
+    background: #eef8fa !important;
+    color: var(--leave-ink) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-btn-group,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-content .oh-btn-group,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-content .oh-btn-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-btn-group .oh-btn,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-content .oh-btn-group .oh-btn,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-content .oh-btn-group .oh-btn {
+    display: inline-flex;
+    width: 36px !important;
+    min-width: 36px;
+    height: 36px;
+    min-height: 36px;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 36px;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1px solid var(--leave-border) !important;
+    border-radius: 9px !important;
+    background: #f3f9fa !important;
+    color: var(--leave-teal) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-btn-group .oh-btn ion-icon,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-content .oh-btn-group .oh-btn ion-icon,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-content .oh-btn-group .oh-btn ion-icon {
+    display: block !important;
+    width: 18px;
+    height: 18px;
+    margin: 0 !important;
+    color: inherit !important;
+    font-size: 18px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-btn-group .oh-btn:hover,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-content .oh-btn-group .oh-btn:hover,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-content .oh-btn-group .oh-btn:hover {
+    border-color: var(--leave-teal) !important;
+    background: var(--leave-teal) !important;
+    color: #fff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-content .oh-tabs,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-content .oh-tabs {
+    overflow: hidden;
+    border: 1px solid var(--leave-border) !important;
+    border-radius: 14px;
+    background: #fff !important;
+    box-shadow: 0 4px 14px rgba(10, 77, 96, 0.05);
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-content .oh-tabs__tablist,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-content .oh-tabs__tablist {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin: 0 !important;
+    padding: 10px 12px 0 !important;
+    border-bottom: 1px solid var(--leave-border);
+    background: #eef8f8 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-content .oh-tabs__tab,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-content .oh-tabs__tab {
+    margin: 0;
+    padding: 10px 14px;
+    border: 1px solid transparent;
+    border-radius: 10px 10px 0 0;
+    color: var(--leave-text) !important;
+    font-size: 0.83rem;
+    font-weight: 650;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-content .oh-tabs__tab--active,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-content .oh-tabs__tab--active {
+    border-color: var(--leave-border);
+    border-bottom-color: #fff;
+    background: #fff !important;
+    color: var(--leave-teal-dark) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-content .oh-tabs__contents,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-content .oh-tabs__contents {
+    padding: 14px;
+    background: #fff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-content .oh-empty,
+html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-content .oh-empty {
+    margin: 12px 0;
+    padding: 42px 20px;
+    border: 1px solid var(--leave-border);
+    border-radius: 14px;
+    background: #f8fcfd;
+    color: var(--leave-text);
+    text-align: center;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModalTarget,
+html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget {
+    box-sizing: border-box;
+    width: min(680px, calc(100vw - 32px)) !important;
+    max-width: 680px !important;
+    max-height: calc(100dvh - 48px);
+    overflow: auto;
+    border: 1px solid var(--leave-border) !important;
+    border-radius: 18px !important;
+    background: #fff !important;
+    color: var(--leave-text) !important;
+    box-shadow: 0 24px 64px rgba(15, 48, 59, 0.24) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModalTarget > .oh-modal__dialog-header,
+html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget > .oh-modal__dialog-header {
+    display: flex;
+    min-height: 62px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 0 !important;
+    padding: 14px 20px !important;
+    border: 0 !important;
+    border-bottom: 1px solid var(--leave-border) !important;
+    border-radius: 17px 17px 0 0;
+    background: linear-gradient(120deg, #0a596b, #20899a) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModalTarget .oh-modal__dialog-title,
+html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget .oh-modal__dialog-title {
+    margin: 0 !important;
+    color: #fff !important;
+    font-size: 1rem !important;
+    font-weight: 750 !important;
+    line-height: 1.35;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModalTarget .oh-modal__close,
+html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget .oh-modal__close {
+    display: inline-flex;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255,255,255,0.42) !important;
+    border-radius: 10px !important;
+    background: rgba(255,255,255,0.14) !important;
+    color: #fff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModalTarget .oh-modal__close:hover,
+html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget .oh-modal__close:hover {
+    background: #fff !important;
+    color: var(--leave-teal-dark) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModalTarget .oh-modal__close ion-icon,
+html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget .oh-modal__close ion-icon {
+    color: inherit !important;
+    font-size: 20px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModalTarget > .oh-modal__dialog-body,
+html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget > .oh-modal__dialog-body,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModalTarget .oh-modal__dialog-body,
+html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget .oh-modal__dialog-body {
+    padding: 20px !important;
+    background: #fff !important;
+    color: var(--leave-text) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModalTarget form p,
+html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget form p {
+    margin: 0 0 15px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModalTarget form label,
+html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget form label,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModalTarget .oh-label,
+html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget .oh-label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--leave-ink) !important;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModalTarget input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModalTarget select,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModalTarget textarea,
+html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget select,
+html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget textarea {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 42px;
+    padding: 9px 11px !important;
+    border: 1px solid var(--leave-border) !important;
+    border-radius: 9px !important;
+    background: #fff !important;
+    color: var(--leave-ink) !important;
+    box-shadow: none !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModalTarget textarea,
+html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModalTarget input:focus,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModalTarget select:focus,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModalTarget textarea:focus,
+html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget input:focus,
+html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget select:focus,
+html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget textarea:focus {
+    border-color: var(--leave-teal) !important;
+    box-shadow: 0 0 0 3px rgba(23, 111, 128, 0.12) !important;
+    outline: 0;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModalTarget .oh-btn,
+html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget .oh-btn {
+    display: inline-flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 0 16px !important;
+    border: 1px solid var(--leave-teal) !important;
+    border-radius: 10px !important;
+    background: var(--leave-teal) !important;
+    color: #fff !important;
+    font-weight: 700;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModalTarget .oh-btn ion-icon,
+html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget .oh-btn ion-icon {
+    color: inherit !important;
+    font-size: 18px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModalTarget .oh-modal__dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 16px !important;
+    padding-top: 14px !important;
+    border-top: 1px solid #e3eef0;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-type-creation-page {
+    box-sizing: border-box;
+    width: min(760px, calc(100% - 40px));
+    margin: 26px auto 140px !important;
+    padding: 20px !important;
+    border: 1px solid var(--leave-border);
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(10, 77, 96, 0.08);
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-type-creation-page .oh-onboarding-card {
+    width: 100%;
+    max-width: none;
+    padding: 22px;
+    border: 0;
+    border-radius: 12px;
+    box-shadow: none;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-type-creation-page .oh-onboarding-card__section-title {
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--leave-border);
+    color: var(--leave-ink);
+    font-size: 1.1rem;
+    font-weight: 750;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-type-creation-page .oh-onboarding-card input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+html body .oh-wrapper-main.super-admin-panel-theme .leave-type-creation-page .oh-onboarding-card select,
+html body .oh-wrapper-main.super-admin-panel-theme .leave-type-creation-page .oh-onboarding-card textarea {
+    width: 100%;
+    min-height: 42px;
+    padding: 9px 11px !important;
+    border: 1px solid var(--leave-border) !important;
+    border-radius: 9px !important;
+    background: #fff !important;
+    color: var(--leave-ink) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .leave-type-creation-page .oh-onboarding-card__address-group > .row > [class*="col-"] {
+    margin-bottom: 12px;
+}
+
+@media (max-width: 900px) {
+    html body .oh-wrapper-main.super-admin-panel-theme .leave-type-view-header,
+    html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page.employee-subsection-head,
+    html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-employee-theme .employee-subsection-head,
+    html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-employee-theme .employee-subsection-head {
+        align-items: stretch !important;
+        flex-direction: column;
+        gap: 12px;
+        margin: 16px 18px !important;
+        padding: 16px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme .leave-type-view-header > .oh-main__titlebar--right,
+    html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page.employee-subsection-head > .oh-main__titlebar--right,
+    html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-employee-theme .employee-subsection-head > .oh-main__titlebar--right,
+    html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-employee-theme .employee-subsection-head > .oh-main__titlebar--right {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme :is(#assignedLeaves, .leave-allocation-content, .compensatory-leave-content) {
+        margin-right: 18px !important;
+        margin-left: 18px !important;
+    }
+}
+
+@media (max-width: 600px) {
+    html body .oh-wrapper-main.super-admin-panel-theme .leave-type-view-header,
+    html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page.employee-subsection-head,
+    html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-employee-theme .employee-subsection-head,
+    html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-employee-theme .employee-subsection-head {
+        margin: 52px 12px 12px !important;
+        padding: 14px !important;
+        border-radius: 14px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme .leave-type-view-header > .oh-main__titlebar--right,
+    html body .oh-wrapper-main.super-admin-panel-theme .leave-type-view-header #filterForm,
+    html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page.employee-subsection-head > .oh-main__titlebar--right,
+    html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page.employee-subsection-head #filterForm,
+    html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-employee-theme .employee-subsection-head > .oh-main__titlebar--right,
+    html body .oh-wrapper-main.super-admin-panel-theme .leave-allocation-employee-theme .employee-subsection-head #filterForm,
+    html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-employee-theme .employee-subsection-head > .oh-main__titlebar--right,
+    html body .oh-wrapper-main.super-admin-panel-theme .compensatory-leave-employee-theme .employee-subsection-head #filterForm {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme :is(.leave-type-view-header, .assigned-leave-page.employee-subsection-head, .leave-allocation-employee-theme .employee-subsection-head, .compensatory-leave-employee-theme .employee-subsection-head) .oh-input__search-group {
+        min-width: 100%;
+        max-width: none;
+        flex-basis: 100%;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme :is(#assignedLeaves, .leave-allocation-content, .compensatory-leave-content, .leave-type-content) {
+        margin: 0 12px 130px !important;
+        padding: 11px !important;
+        border-radius: 14px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme :is(.leave-type-pagination, #assignedLeaves .oh-pagination, .leave-allocation-content .oh-pagination, .compensatory-leave-content .oh-pagination) {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme :is(.leave-type-pagination, #assignedLeaves .oh-pagination, .leave-allocation-content .oh-pagination, .compensatory-leave-content .oh-pagination) .oh-pagination__nav {
+        width: 100%;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModalTarget,
+    html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget {
+        width: calc(100vw - 24px) !important;
+        max-height: calc(100dvh - 24px);
+        border-radius: 14px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModalTarget > .oh-modal__dialog-body,
+    html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget > .oh-modal__dialog-body {
+        padding: 14px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme .leave-type-creation-page {
+        width: calc(100% - 24px);
+        margin: 14px 12px 130px !important;
+        padding: 10px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme .leave-type-creation-page .oh-onboarding-card {
+        padding: 12px;
+    }
+}
+
+html body:has(.compensatory-leave-employee-theme) .compensatory-request-table .compensatory-status-badge {
+    display: inline-flex;
+    min-height: 26px;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 10px;
+    border: 1px solid #b8dce3 !important;
+    border-radius: 999px;
+    background: #e7f4f6 !important;
+    color: #125f70 !important;
+    font-size: 0.75rem;
+    font-weight: 750;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+html body:has(.compensatory-leave-employee-theme) .compensatory-request-table .compensatory-status-badge[data-status="requested"] {
+    border-color: #b9d7f4 !important;
+    background: #eaf3fc !important;
+    color: #245f99 !important;
+}
+
+html body:has(.compensatory-leave-employee-theme) .compensatory-request-table .compensatory-status-badge[data-status="rejected"] {
+    border-color: #f0c2c2 !important;
+    background: #fff0f0 !important;
+    color: #a22c35 !important;
+}
+
+html body:has(.compensatory-leave-employee-theme) .compensatory-request-table .compensatory-status-badge[data-status="cancelled"] {
+    border-color: #d3dfe2 !important;
+    background: #f1f5f6 !important;
+    color: #536e76 !important;
+}
+
+html body:has(.leave-allocation-employee-theme) .leave-allocation-content .leave-allocation-status-badge {
+    display: inline-flex;
+    min-height: 26px;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 10px;
+    border: 1px solid #b8dce3;
+    border-radius: 999px;
+    background: #e7f4f6;
+    color: #125f70;
+    font-size: 0.75rem;
+    font-weight: 750;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+html body:has(.leave-allocation-employee-theme) .leave-allocation-content .leave-allocation-status-badge[data-status="requested"] {
+    border-color: #b9d7f4;
+    background: #eaf3fc;
+    color: #245f99;
+}
+
+html body:has(.leave-allocation-employee-theme) .leave-allocation-content .leave-allocation-status-badge[data-status="rejected"] {
+    border-color: #f0c2c2;
+    background: #fff0f0;
+    color: #a22c35;
+}
+
+html body:has(.leave-allocation-employee-theme) .leave-allocation-content .leave-allocation-status-badge[data-status="cancelled"] {
+    border-color: #d3dfe2;
+    background: #f1f5f6;
+    color: #536e76;
+}
+
+html body:has(.compensatory-leave-employee-theme) .compensatory-leave-content .paid .oh-dot {
+    background-color: #16836f !important;
+}
+
+html body:has(.compensatory-leave-employee-theme) .compensatory-leave-content .confirmed .oh-dot {
+    background-color: #4c8ed9 !important;
+}
+
+html body:has(.compensatory-leave-employee-theme) .compensatory-leave-content .review_ongoing .oh-dot {
+    background-color: #c3424d !important;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target:has(.compensatory-request-detail__header) {
+    position: relative;
+    box-sizing: border-box;
+    width: min(560px, calc(100vw - 36px)) !important;
+    max-width: 560px !important;
+    max-height: calc(100vh - 40px);
+    padding: 0 !important;
+    overflow: visible;
+    border: 1px solid #d6e7ea;
+    border-radius: 20px;
+    background: #ffffff !important;
+    box-shadow: 0 24px 64px rgba(17, 52, 61, 0.26);
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .compensatory-request-detail__navigation {
+    position: absolute;
+    z-index: 5;
+    top: 50%;
+    right: -54px;
+    left: -54px;
+    display: flex;
+    width: auto;
+    height: 0;
+    max-width: none;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: translateY(-50%);
+    overflow: visible;
+    border: 0;
+    background: transparent !important;
+    box-shadow: none !important;
+    pointer-events: none;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .compensatory-request-detail__navigation .oh-modal__diaglog-nav {
+    position: static;
+    display: grid;
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    place-items: center;
+    margin: 0;
+    padding: 0;
+    transform: none;
+    border: 1px solid #c4dfe4 !important;
+    border-radius: 13px !important;
+    background: #ffffff !important;
+    color: #176f80 !important;
+    opacity: 1 !important;
+    box-shadow: 0 5px 16px rgba(17, 52, 61, 0.13) !important;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .compensatory-request-detail__navigation .oh-modal__diaglog-nav ion-icon {
+    display: block !important;
+    width: 19px !important;
+    height: 19px !important;
+    margin: 0 !important;
+    color: inherit !important;
+    font-size: 19px !important;
+    opacity: 1 !important;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .compensatory-request-detail__navigation .oh-modal__diaglog-nav:hover,
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .compensatory-request-detail__navigation .oh-modal__diaglog-nav:focus-visible {
+    border-color: #176f80 !important;
+    background: #176f80 !important;
+    color: #ffffff !important;
+    outline: 0;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .compensatory-request-detail__header {
+    position: relative;
+    display: flex;
+    min-height: 68px;
+    align-items: center;
+    gap: 12px;
+    margin: 0 !important;
+    padding: 16px 68px 16px 26px !important;
+    border: 0;
+    border-bottom: 1px solid #e4eef0;
+    border-radius: 20px 20px 0 0;
+    background: linear-gradient(135deg, #f3fafb, #ffffff 72%) !important;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .compensatory-request-detail__header .oh-modal__dialog-title {
+    margin: 0;
+    color: #173f50;
+    font-size: 1.08rem;
+    font-weight: 750;
+    line-height: 1.3;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .compensatory-request-detail__status {
+    display: inline-flex;
+    min-height: 27px;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 11px;
+    border: 1px solid #b8dce3;
+    border-radius: 999px;
+    background: #e7f4f6;
+    color: #125f70;
+    font-size: 0.75rem;
+    font-weight: 750;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .compensatory-request-detail__status[data-status="requested"] {
+    border-color: #b9d7f4;
+    background: #eaf3fc;
+    color: #245f99;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .compensatory-request-detail__status[data-status="rejected"] {
+    border-color: #f0c2c2;
+    background: #fff0f0;
+    color: #a22c35;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .compensatory-request-detail__status[data-status="cancelled"] {
+    border-color: #d3dfe2;
+    background: #f1f5f6;
+    color: #536e76;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .compensatory-request-detail__header .oh-modal__close {
+    position: absolute;
+    top: 50%;
+    right: 17px;
+    display: grid;
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    place-items: center;
+    margin: 0;
+    padding: 0;
+    transform: translateY(-50%);
+    border: 1px solid #d7e8eb !important;
+    border-radius: 11px !important;
+    background: #ffffff !important;
+    color: #176f80 !important;
+    opacity: 1 !important;
+    cursor: pointer;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .compensatory-request-detail__header .oh-modal__close ion-icon {
+    display: block !important;
+    width: 18px !important;
+    height: 18px !important;
+    margin: 0 !important;
+    color: inherit !important;
+    font-size: 18px !important;
+    opacity: 1 !important;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .compensatory-request-detail__header .oh-modal__close:hover,
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .compensatory-request-detail__header .oh-modal__close:focus-visible {
+    border-color: #176f80 !important;
+    background: #e9f5f7 !important;
+    outline: 0;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .compensatory-request-detail__body {
+    max-height: calc(100vh - 170px);
+    padding: 20px 26px 24px !important;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: #ffffff;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .oh-timeoff-modal__profile-content {
+    display: block;
+    margin: 0 0 16px;
+    padding: 15px;
+    border: 1px solid #dcebed;
+    border-radius: 15px;
+    background: #f5fafb;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .oh-profile {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 14px;
+    margin: 0 !important;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .oh-profile__avatar,
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .oh-profile__image {
+    width: 58px;
+    height: 58px;
+    flex: 0 0 58px;
+    margin: 0 !important;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .oh-timeoff-modal__profile-info {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 5px;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .oh-timeoff-modal__user {
+    color: #173f50 !important;
+    font-size: 0.93rem !important;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .compensatory-request-detail__content {
+    display: block;
+    min-height: 0;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0;
+    background: transparent !important;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .oh-timeoff-modal__stats-container {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin: 0 0 10px !important;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .oh-timeoff-modal__stat {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 14px;
+    border: 1px solid #e1edef;
+    border-radius: 12px;
+    background: #fbfdfd;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .oh-timeoff-modal__stat-title {
+    color: #718c94;
+    font-size: 0.75rem;
+    font-weight: 650;
+    line-height: 1.3;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .oh-timeoff-modal__stat-count,
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .oh-timeoff-modal__stat-description {
+    color: #315d69;
+    font-size: 0.88rem;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .compensatory-request-detail__date {
+    display: inline-flex;
+    min-height: 25px;
+    align-items: center;
+    margin: 0 5px 5px 0;
+    padding: 3px 8px;
+    border: 1px solid #c7e5eb;
+    border-radius: 8px;
+    background: #edf7f8;
+    color: #176f80;
+    font-size: 0.76rem;
+    font-weight: 650;
+    line-height: 1.25;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .oh-timeoff-modal__stats.w-100 {
+    width: 100%;
+    margin: 10px 0 0 !important;
+    padding: 0 !important;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .oh-timeoff-modal__stats.w-100 > .oh-timeoff-modal__stat {
+    padding: 13px 14px;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .row-status--red {
+    border-left: 4px solid #d94c4c !important;
+    background: #fff7f6 !important;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .oh-modal__button-container {
+    display: flex;
+    gap: 10px;
+    margin: 0 !important;
+    padding: 0 26px 24px;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .oh-modal__button-container .oh-btn-group {
+    display: flex;
+    width: 100%;
+    gap: 10px;
+    margin: 0;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .oh-modal__button-container .oh-btn {
+    display: inline-flex;
+    min-width: 0;
+    min-height: 44px;
+    flex: 1 1 0;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 0 !important;
+    padding: 0 14px !important;
+    border: 1px solid #176f80 !important;
+    border-radius: 11px !important;
+    background: #176f80 !important;
+    color: #ffffff !important;
+    font-size: 0.86rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: none !important;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .oh-modal__button-container .oh-btn--success {
+    border-color: #147a67 !important;
+    background: #147a67 !important;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .oh-modal__button-container .oh-btn--danger {
+    border-color: #b94d4d !important;
+    background: #b94d4d !important;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .oh-modal__button-container .oh-btn:hover,
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .oh-modal__button-container .oh-btn:focus-visible {
+    filter: brightness(0.93);
+    outline: 0;
+}
+
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .oh-modal__button-container .oh-btn--disabled,
+html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .oh-modal__button-container .oh-btn:disabled {
+    border-color: #c7dde1 !important;
+    background: #eaf3f5 !important;
+    color: #557b84 !important;
+    opacity: 1 !important;
+    cursor: not-allowed;
+    filter: none;
+}
+
+@media (max-width: 768px) {
+    html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target:has(.compensatory-request-detail__header) {
+        width: calc(100vw - 28px) !important;
+        max-width: 560px !important;
+    }
+
+    html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .compensatory-request-detail__navigation {
+        right: 8px;
+        left: 8px;
+        top: 66px;
+        transform: none;
+    }
+
+    html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .compensatory-request-detail__navigation .oh-modal__diaglog-nav {
+        width: 34px;
+        min-width: 34px;
+        height: 34px;
+    }
+
+    html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .compensatory-request-detail__body {
+        max-height: calc(100vh - 155px);
+        padding: 16px !important;
+    }
+
+    html body:has(.compensatory-leave-employee-theme) #objectDetailsModalW25Target .oh-modal__button-container {
+        padding: 0 16px 18px;
+    }
+}

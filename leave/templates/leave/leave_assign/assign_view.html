@@ -204,7 +204,6 @@
 
         .assigned-leave-page .oh-btn:hover,
         .assigned-leave-page .oh-dropdown__menu a:hover,
-        .assigned-leave-page .oh-pagination__link:hover,
         .assigned-leave-page .oh-dropdown__item:hover {
             background: rgba(45, 90, 63, 0.18) !important;
         }
@@ -257,8 +256,1511 @@
         .assigned-leave-page .oh-accordion-meta__header ion-icon {
             color: var(--emp-light-green) !important;
         }
+
+        html body .oh-wrapper-main.super-admin-panel-theme section.assigned-leave-page {
+            --emp-bg: #e8f5f7;
+            --emp-surface: #ffffff;
+            --emp-surface-elevated: #eef8f8;
+            --emp-border: #c7e5eb;
+            --emp-text: #173f50;
+            --emp-muted: #557b84;
+            --emp-green: #176f80;
+            --emp-green-soft: rgba(23, 111, 128, 0.1);
+            --emp-light-green: #0a4d60;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            min-height: 84px;
+            margin: 16px 28px 18px;
+            padding: 18px 24px !important;
+            background: #e8f5f7 !important;
+            border: 1px solid #c7e5eb !important;
+            border-radius: 18px;
+            box-shadow: 0 10px 26px rgba(10, 77, 96, 0.08);
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page .oh-main__titlebar {
+            display: flex;
+            align-items: center;
+            min-height: 44px;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: transparent !important;
+            color: #173f50 !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page .oh-main__titlebar-title {
+            margin: 0;
+            color: #173f50 !important;
+            font-size: 1rem;
+            line-height: 1.35;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page .oh-main__titlebar--right {
+            flex: 0 1 auto;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page #filterForm,
+        html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page .oh-main__titlebar-button-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: transparent !important;
+            border: 0 !important;
+            box-shadow: none !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page .oh-input__search-group {
+            display: flex;
+            align-items: center;
+            min-width: 220px;
+            margin: 0 !important;
+            padding: 0;
+            background: transparent !important;
+            border: 0 !important;
+            box-shadow: none !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page .oh-input {
+            width: 100%;
+            height: 44px;
+            margin: 0 !important;
+            background: #ffffff !important;
+            border: 1px solid #c7e5eb !important;
+            border-radius: 10px !important;
+            color: #173f50 !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page .oh-input-group__icon {
+            color: #176f80 !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page .oh-btn:not(.oh-btn--light-bkg):not(.oh-btn--danger-outline) {
+            min-height: 42px;
+            background: #176f80 !important;
+            border: 1px solid #176f80 !important;
+            border-radius: 10px !important;
+            color: #ffffff !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page .oh-btn:not(.oh-btn--light-bkg):not(.oh-btn--danger-outline):hover {
+            background: #0a4d60 !important;
+            border-color: #0a4d60 !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page .oh-btn--light-bkg,
+        html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page .oh-btn--danger-outline,
+        html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page .oh-btn-group .oh-btn {
+            background: #ffffff !important;
+            border: 1px solid #c7e5eb !important;
+            color: #176f80 !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves,
+        html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-table_sticky--wrapper {
+            background: #e8f5f7 !important;
+            border-color: #c7e5eb !important;
+            color: #173f50 !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves {
+            --emp-bg: #e8f5f7;
+            --emp-surface: #ffffff;
+            --emp-surface-elevated: #eef8f8;
+            --emp-border: #c7e5eb;
+            --emp-text: #173f50;
+            --emp-muted: #557b84;
+            --emp-green: #176f80;
+            --emp-green-soft: rgba(23, 111, 128, 0.1);
+            --emp-light-green: #0a4d60;
+            display: block;
+            box-sizing: border-box;
+            min-height: 0;
+            margin: 0 28px;
+            padding: 0 !important;
+            border: 0 !important;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-accordion-meta,
+        html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-accordion-meta__item,
+        html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-accordion-meta__header,
+        html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-accordion-meta__body {
+            box-sizing: border-box;
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-accordion-meta__header {
+            background: #eef8f8 !important;
+            color: #0a4d60 !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-sticky-table {
+            box-sizing: border-box;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto;
+            background: #e8f5f7 !important;
+            border-color: #c7e5eb !important;
+            color: #173f50 !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-sticky-table__table,
+        html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-sticky-table__tbody,
+        html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-sticky-table__tr,
+        html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-sticky-table__td,
+        html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-sticky-table__sd {
+            background: #ffffff !important;
+            border-color: #e1eef0 !important;
+            color: #456b76 !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-sticky-table__thead,
+        html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-sticky-table__th {
+            background: #eef8f8 !important;
+            border-color: #c7e5eb !important;
+            color: #0a4d60 !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-sticky-table__tr:hover > .oh-sticky-table__td,
+        html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-sticky-table__tr:hover > .oh-sticky-table__sd {
+            background: #f0fafb !important;
+            color: #173f50 !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-pagination {
+            box-sizing: border-box;
+            width: 100%;
+            max-width: 100%;
+            padding: 11px 14px !important;
+            background: #ffffff !important;
+            border: 1px solid #c7e5eb !important;
+            border-radius: 12px;
+            color: #315d69 !important;
+            box-shadow: none !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-pagination__page,
+        html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-pagination__label {
+            background: transparent !important;
+            color: #315d69 !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-pagination__input,
+        html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-pagination__item {
+            background: #ffffff !important;
+            border-color: #c7e5eb !important;
+            color: #176f80 !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme #assignedLeaves .oh-badge {
+            background: #e3f3f5 !important;
+            border-color: #c7e5eb !important;
+            color: #176f80 !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme #selectAllLeaves,
+        html body .oh-wrapper-main.super-admin-panel-theme #selectedLeaves {
+            background: #e3f3f5 !important;
+            border: 1px solid #c7e5eb !important;
+            color: #176f80 !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme #filterTagContainerSectionNav .oh-titlebar__tag,
+        html body .oh-wrapper-main.super-admin-panel-theme #filterTagContainerSectionNav .oh-titlebar__tag--custom {
+            background: #176f80 !important;
+            border-color: #176f80 !important;
+            color: #ffffff !important;
+        }
+
+        html body:has(.assigned-leave-page) #filterTagContainerSectionNav {
+            display: flex !important;
+            min-width: 0;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            overflow: visible;
+        }
+
+        html body:has(.assigned-leave-page) {
+            background-color: #e8f5f7 !important;
+        }
+
+        html body:has(.assigned-leave-page) #main,
+        html body:has(.assigned-leave-page) #main-section,
+        html body:has(.assigned-leave-page) #main-section-data {
+            background-color: #e8f5f7 !important;
+            background-image: none !important;
+        }
+
+        html body:has(.assigned-leave-page) #filterTagContainerSectionNav .oh-titlebar__tag {
+            box-sizing: border-box;
+            display: inline-flex !important;
+            width: fit-content;
+            max-width: 100%;
+            height: 32px !important;
+            min-height: 32px !important;
+            align-self: center;
+            flex: 0 0 auto;
+            align-items: center;
+            gap: 7px;
+            margin: 0 !important;
+            padding: 0 10px !important;
+            border: 1px solid #b9d9df !important;
+            border-radius: 999px !important;
+            background: #f4fafb !important;
+            color: #245568 !important;
+            font-size: 0.78rem;
+            font-weight: 700;
+            line-height: 1 !important;
+            white-space: normal;
+            overflow-wrap: anywhere;
+        }
+
+        html body:has(.assigned-leave-page) #filterTagContainerSectionNav .oh-titlebar__tag--custom {
+            border-color: #176f80 !important;
+            background: #176f80 !important;
+            color: #ffffff !important;
+        }
+
+        html body:has(.assigned-leave-page) #filterTagContainerSectionNav .oh-titlebar__tag-close {
+            display: inline-grid !important;
+            width: 18px;
+            height: 18px;
+            min-width: 18px !important;
+            min-height: 18px !important;
+            flex: 0 0 18px;
+            place-items: center;
+            align-self: center;
+            margin: 0 0 0 2px !important;
+            padding: 0 !important;
+            border: 1px solid rgba(255, 255, 255, 0.42) !important;
+            border-radius: 50% !important;
+            background: rgba(255, 255, 255, 0.12) !important;
+            color: #ffffff !important;
+            cursor: pointer;
+            line-height: 1 !important;
+        }
+
+        html body:has(.assigned-leave-page) #filterTagContainerSectionNav .oh-titlebar__tag-close ion-icon {
+            display: block !important;
+            width: 12px;
+            height: 12px;
+            color: inherit !important;
+            font-size: 12px !important;
+            opacity: 1 !important;
+        }
+
+        html body:has(.assigned-leave-page) #filterTagContainerSectionNav .oh-titlebar__tag-close:hover,
+        html body:has(.assigned-leave-page) #filterTagContainerSectionNav .oh-titlebar__tag-close:focus-visible {
+            border-color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.25) !important;
+            outline: 2px solid rgba(23, 111, 128, 0.25);
+            outline-offset: 2px;
+        }
+
+        html body:has(.assigned-leave-page) #filterTagContainerSectionNav .filter-clear-all {
+            display: inline-grid !important;
+            width: 34px;
+            height: 32px;
+            min-width: 34px;
+            min-height: 32px !important;
+            align-self: center;
+            flex: 0 0 34px;
+            place-items: center;
+            padding: 0 !important;
+            border: 1px solid #176f80 !important;
+            border-radius: 999px !important;
+            background: #176f80 !important;
+            color: #ffffff !important;
+            cursor: pointer;
+        }
+
+        html body:has(.assigned-leave-page) #filterTagContainerSectionNav .filter-clear-all ion-icon {
+            display: block !important;
+            width: 16px;
+            height: 16px;
+            color: #ffffff !important;
+            font-size: 16px !important;
+            opacity: 1 !important;
+        }
+
+        html body:has(.assigned-leave-page) #filterTagContainerSectionNav .filter-clear-all:hover,
+        html body:has(.assigned-leave-page) #filterTagContainerSectionNav .filter-clear-all:focus-visible {
+            border-color: #0a4d60 !important;
+            background: #0a4d60 !important;
+            outline: 2px solid rgba(23, 111, 128, 0.22);
+            outline-offset: 2px;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal {
+            position: fixed !important;
+            z-index: 13010 !important;
+            inset: 0;
+            display: none !important;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            overflow: auto;
+            padding: 16px !important;
+            background: rgba(8, 38, 47, 0.62) !important;
+            backdrop-filter: blur(3px);
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal.oh-modal--show {
+            display: flex !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal__dialog {
+            position: relative;
+            display: flex !important;
+            width: min(100%, 760px) !important;
+            max-width: 760px !important;
+            max-height: min(90vh, 820px) !important;
+            max-height: min(90dvh, 820px) !important;
+            min-height: 0;
+            flex: 0 1 760px;
+            flex-direction: column;
+            margin: auto !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            border: 1px solid #b9dce4 !important;
+            border-radius: 18px !important;
+            background: #ffffff !important;
+            box-shadow: 0 24px 64px rgba(7, 38, 47, 0.32) !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal__header {
+            position: relative;
+            z-index: 1;
+            display: flex !important;
+            min-height: 62px;
+            flex: 0 0 auto;
+            align-items: center;
+            justify-content: flex-start;
+            margin: 0 !important;
+            padding: 12px 72px 12px 22px !important;
+            border: 0 !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+            background: linear-gradient(110deg, #0a596b, #198497) !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal__title {
+            margin: 0 !important;
+            padding: 0 !important;
+            color: #ffffff !important;
+            font-size: 1rem !important;
+            font-weight: 750;
+            line-height: 1.35;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme:has(.assigned-leave-page) button.announcement-multiselect-modal__close {
+            position: absolute !important;
+            top: 50% !important;
+            right: 16px !important;
+            z-index: 2;
+            display: grid !important;
+            width: 38px !important;
+            min-width: 38px !important;
+            height: 38px !important;
+            min-height: 38px !important;
+            align-items: center;
+            justify-content: center;
+            margin: 0 !important;
+            padding: 0 !important;
+            transform: translateY(-50%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.42) !important;
+            border-radius: 11px !important;
+            background: rgba(255, 255, 255, 0.12) !important;
+            color: #ffffff !important;
+            opacity: 1 !important;
+            cursor: pointer;
+            box-shadow: none !important;
+        }
+
+        html body .oh-wrapper-main.admin-panel-theme:has(.assigned-leave-page) button.announcement-multiselect-modal__close {
+            position: absolute !important;
+            top: 50% !important;
+            right: 16px !important;
+            z-index: 2;
+            display: grid !important;
+            width: 38px !important;
+            min-width: 38px !important;
+            height: 38px !important;
+            min-height: 38px !important;
+            align-items: center;
+            justify-content: center;
+            margin: 0 !important;
+            padding: 0 !important;
+            transform: translateY(-50%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.42) !important;
+            border-radius: 11px !important;
+            background: rgba(255, 255, 255, 0.12) !important;
+            color: #ffffff !important;
+            opacity: 1 !important;
+            cursor: pointer;
+            box-shadow: none !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme:has(.assigned-leave-page) button.announcement-multiselect-modal__close ion-icon {
+            display: block !important;
+            width: 20px;
+            height: 20px;
+            margin: 0;
+            color: #ffffff !important;
+            font-size: 20px !important;
+            opacity: 1 !important;
+        }
+
+        html body .oh-wrapper-main.admin-panel-theme:has(.assigned-leave-page) button.announcement-multiselect-modal__close ion-icon {
+            display: block !important;
+            width: 20px;
+            height: 20px;
+            margin: 0;
+            color: #ffffff !important;
+            font-size: 20px !important;
+            opacity: 1 !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme:has(.assigned-leave-page) button.announcement-multiselect-modal__close:hover,
+        html body .oh-wrapper-main.super-admin-panel-theme:has(.assigned-leave-page) button.announcement-multiselect-modal__close:focus-visible {
+            transform: translateY(-50%) !important;
+            border-color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.25) !important;
+            outline: 0;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.16) !important;
+        }
+
+        html body .oh-wrapper-main.admin-panel-theme:has(.assigned-leave-page) button.announcement-multiselect-modal__close:hover,
+        html body .oh-wrapper-main.admin-panel-theme:has(.assigned-leave-page) button.announcement-multiselect-modal__close:focus-visible {
+            transform: translateY(-50%) !important;
+            border-color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.25) !important;
+            outline: 0;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.16) !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal__body {
+            display: flex !important;
+            min-height: 0;
+            flex: 1 1 auto;
+            flex-direction: column;
+            overflow: auto !important;
+            padding: 16px 20px 18px !important;
+            border: 0 !important;
+            background: #ffffff !important;
+            color: #173f50 !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal__body > .oh-wrapper {
+            display: flex;
+            width: 100% !important;
+            max-width: none !important;
+            min-height: 0;
+            flex: 1 1 auto;
+            flex-direction: column;
+            gap: 10px;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
+            color: #173f50 !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .announcement-multiselect-toolbar {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            width: 100%;
+            min-height: 68px;
+            height: auto !important;
+            flex: 0 0 auto;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            margin: 0 !important;
+            padding: 10px !important;
+            border: 1px solid #e2ecef !important;
+            border-radius: 12px;
+            background: #ffffff !important;
+            box-shadow: none !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-main__titlebar--left,
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-main__titlebar--right {
+            display: flex;
+            min-width: 0;
+            height: auto !important;
+            align-items: center;
+            margin: 0 !important;
+            padding: 0 4px !important;
+            background: transparent !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-main__titlebar--left > div {
+            margin: 0 !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-main__titlebar-title {
+            margin: 0 !important;
+            color: #173f50 !important;
+            font-size: 0.92rem;
+            font-weight: 750;
+            line-height: 1.35;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-main__titlebar--right {
+            flex: 0 1 390px;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            justify-content: flex-end;
+            gap: 9px;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-input__search-group {
+            display: flex;
+            position: static !important;
+            min-width: 0;
+            flex: 1 1 180px;
+            top: auto !important;
+            left: auto !important;
+            transform: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-input {
+            box-sizing: border-box;
+            width: 100%;
+            min-width: 0;
+            min-height: 40px;
+            margin: 0 !important;
+            padding: 0 12px !important;
+            border: 1px solid #c8dfe4 !important;
+            border-radius: 9px !important;
+            background: #ffffff !important;
+            color: #173f50 !important;
+            box-shadow: none !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-main__titlebar-button-container {
+            display: flex;
+            flex: 0 0 auto;
+            align-items: center;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-btn {
+            display: inline-flex;
+            min-width: 82px;
+            min-height: 40px;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin: 0 !important;
+            padding: 0 12px !important;
+            border: 1px solid #176f80 !important;
+            border-radius: 9px !important;
+            background: #176f80 !important;
+            color: #ffffff !important;
+            font-size: 0.78rem;
+            font-weight: 700;
+            box-shadow: none !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-btn ion-icon {
+            display: block !important;
+            width: 16px;
+            height: 16px;
+            margin: 0;
+            color: #ffffff !important;
+            font-size: 16px !important;
+            opacity: 1 !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-btn:hover,
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-btn:focus-visible {
+            border-color: #0a4d60 !important;
+            background: #0a4d60 !important;
+            color: #ffffff !important;
+            outline: 0;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-filter-tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 0 !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .ration-container {
+            display: flex !important;
+            min-width: 0;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .ration-container > div:first-child {
+            display: flex;
+            min-width: 0;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 7px;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-checkpoint-badge {
+            display: inline-flex !important;
+            min-height: 34px;
+            align-items: center;
+            justify-content: center;
+            margin: 0 !important;
+            padding: 6px 10px !important;
+            border: 1px solid #c7dfe5 !important;
+            border-radius: 9px !important;
+            background: #f2f8f9 !important;
+            color: #245568 !important;
+            font-size: 0.76rem;
+            font-weight: 700;
+            line-height: 1.2;
+            cursor: pointer;
+            transition: background-color .16s ease, border-color .16s ease, color .16s ease, box-shadow .16s ease;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-checkpoint-badge:hover,
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-checkpoint-badge:focus-visible {
+            border-color: #7db9c3 !important;
+            background: #e7f4f6 !important;
+            color: #0a4d60 !important;
+            outline: 0;
+            box-shadow: 0 2px 8px rgba(23, 111, 128, 0.12);
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal #selectAllInstances {
+            background: #176f80 !important;
+            border-color: #176f80 !important;
+            color: #ffffff !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal #selectAllInstances:hover,
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal #selectAllInstances:focus-visible {
+            background: #0a4d60 !important;
+            border-color: #0a4d60 !important;
+            color: #ffffff !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-sticky-table {
+            box-sizing: border-box;
+            width: 100%;
+            height: clamp(210px, 38vh, 390px) !important;
+            min-height: 190px;
+            flex: 1 1 auto;
+            overflow: auto;
+            border: 1px solid #d3e5e9 !important;
+            border-radius: 11px;
+            background: #ffffff !important;
+            scrollbar-color: #88bdc7 #edf5f6;
+            scrollbar-width: thin;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal #chooseTableHeaderParent,
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal #chooseTableHeader,
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-sticky-table__tbody,
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-sticky-table__tr {
+            box-sizing: border-box;
+            width: 100% !important;
+            min-width: 0 !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-sticky-table__table {
+            width: 100% !important;
+            min-width: 0 !important;
+            background: #ffffff !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-sticky-table__thead {
+            position: sticky;
+            z-index: 1;
+            top: 0;
+            background: #eaf5f7 !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-sticky-table__th,
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-sticky-table__sd {
+            box-sizing: border-box;
+            width: 100% !important;
+            min-width: 0 !important;
+            padding: 8px 12px !important;
+            border-color: #dcebef !important;
+            color: #173f50 !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-sticky-table__th > div,
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-sticky-table__sd > div {
+            display: flex;
+            min-width: 0;
+            align-items: center;
+            gap: 10px;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-sticky-table__tbody {
+            display: block;
+            background: #ffffff !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-sticky-table__tr--custom {
+            display: flex;
+            min-height: 48px;
+            align-items: stretch;
+            border-bottom: 1px solid #e3eff1 !important;
+            background: #ffffff !important;
+            transition: background-color .16s ease;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-sticky-table__tr--custom:hover {
+            background: #f2fafb !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-sticky-table__tr--custom .oh-sticky-table__sd {
+            display: flex;
+            align-items: center;
+            padding: 7px 12px !important;
+            background: transparent !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-profile--md {
+            display: flex;
+            min-width: 0;
+            align-items: center;
+            gap: 8px;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-profile__avatar {
+            width: 32px;
+            height: 32px;
+            flex: 0 0 32px;
+            margin: 0 !important;
+            overflow: hidden;
+            border: 1px solid #d7e9ec;
+            border-radius: 50%;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-profile__image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-profile__name {
+            min-width: 0;
+            color: #173f50 !important;
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-input__checkbox {
+            flex: 0 0 auto;
+            margin: 0 8px 0 0 !important;
+            accent-color: #176f80;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-sticky-table__tr--selected {
+            background: #e7f4f6 !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-pagination {
+            display: flex;
+            min-height: 36px;
+            align-items: center;
+            margin: 0 !important;
+            padding: 4px 0 !important;
+            border: 0 !important;
+            background: #ffffff !important;
+            color: #456b76 !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-pagination__page {
+            padding: 0 !important;
+            background: transparent !important;
+            color: #456b76 !important;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal__body > .oh-wrapper > .d-flex.flex-row-reverse {
+            display: flex;
+            justify-content: flex-end !important;
+            margin-top: 0 !important;
+            padding-top: 10px;
+            border-top: 1px solid #e4eef0;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal__body > .oh-wrapper > .d-flex.flex-row-reverse .oh-btn {
+            display: inline-flex;
+            min-width: 100px;
+            min-height: 40px;
+            align-items: center;
+            justify-content: center;
+            margin: 0 !important;
+            padding: 0 16px !important;
+            border: 1px solid #176f80 !important;
+            border-radius: 9px !important;
+            background: #176f80 !important;
+            color: #ffffff !important;
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal__body > .oh-wrapper > .d-flex.flex-row-reverse .oh-btn:hover,
+        html body:has(.assigned-leave-page) .announcement-multiselect-modal__body > .oh-wrapper > .d-flex.flex-row-reverse .oh-btn:focus-visible {
+            border-color: #0a4d60 !important;
+            background: #0a4d60 !important;
+            color: #ffffff !important;
+            outline: 0;
+        }
+
+        @media (max-width: 600px) {
+            html body:has(.assigned-leave-page) .announcement-multiselect-modal {
+                align-items: center;
+                padding: 10px !important;
+            }
+
+            html body:has(.assigned-leave-page) .announcement-multiselect-modal__dialog {
+                width: 100% !important;
+                max-height: 94vh !important;
+                max-height: 94dvh !important;
+                border-radius: 14px !important;
+            }
+
+            html body:has(.assigned-leave-page) .announcement-multiselect-modal__header {
+                min-height: 54px;
+                padding: 10px 58px 10px 15px !important;
+            }
+
+            html body .oh-wrapper-main.super-admin-panel-theme:has(.assigned-leave-page) button.announcement-multiselect-modal__close {
+                right: 10px !important;
+                width: 34px !important;
+                min-width: 34px !important;
+                height: 34px !important;
+                min-height: 34px !important;
+            }
+
+            html body:has(.assigned-leave-page) .announcement-multiselect-modal__body {
+                padding: 11px !important;
+            }
+
+            html body:has(.assigned-leave-page) .announcement-multiselect-modal .announcement-multiselect-toolbar {
+                min-height: 0;
+                align-items: center;
+                gap: 7px;
+                padding: 10px !important;
+            }
+
+            html body:has(.assigned-leave-page) .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-main__titlebar--left {
+                flex: 0 0 72px;
+            }
+
+            html body:has(.assigned-leave-page) .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-main__titlebar--right {
+                min-width: 0;
+                flex: 1 1 auto;
+                flex-direction: row !important;
+                flex-wrap: nowrap !important;
+                gap: 6px;
+            }
+
+            html body:has(.assigned-leave-page) .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-input__search-group {
+                flex-basis: 90px;
+                max-width: none;
+            }
+
+            html body:has(.assigned-leave-page) .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-btn {
+                min-width: 70px;
+                padding: 0 8px !important;
+            }
+
+            html body:has(.assigned-leave-page) .announcement-multiselect-modal .ration-container {
+                align-items: flex-start;
+            }
+
+            html body:has(.assigned-leave-page) .announcement-multiselect-modal .ration-container > div:first-child {
+                gap: 5px;
+            }
+
+            html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-checkpoint-badge {
+                min-height: 32px;
+                padding: 5px 7px !important;
+                font-size: 0.69rem;
+            }
+
+            html body:has(.assigned-leave-page) .announcement-multiselect-modal .oh-sticky-table {
+                height: clamp(190px, 44dvh, 390px) !important;
+                min-height: 180px;
+            }
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget:has(.assigned-leave-detail) {
+            box-sizing: border-box;
+            width: min(92vw, 860px) !important;
+            max-width: 860px !important;
+            max-height: 90vh;
+            overflow: hidden !important;
+            padding: 0 !important;
+            border: 1px solid #c7e5eb !important;
+            border-radius: 20px !important;
+            background: #f4f9fa !important;
+            box-shadow: 0 24px 64px rgba(10, 77, 96, 0.25) !important;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail {
+            position: relative;
+            display: flex;
+            max-height: 90vh;
+            flex-direction: column;
+            overflow: hidden;
+            border-radius: inherit;
+            background: #f4f9fa;
+            color: #173f50;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__header {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            min-height: 78px;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 76px 16px 24px;
+            border: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+            background: linear-gradient(110deg, #0a596b, #198497);
+            color: #ffffff;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__eyebrow {
+            display: block;
+            margin-bottom: 3px;
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 0.68rem;
+            font-weight: 750;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__header h2 {
+            margin: 0;
+            color: #ffffff !important;
+            font-size: 1.22rem;
+            font-weight: 750;
+            line-height: 1.25;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__close {
+            position: absolute;
+            top: 50%;
+            right: 18px;
+            z-index: 3;
+            display: grid;
+            width: 40px;
+            height: 40px;
+            place-items: center;
+            padding: 0 !important;
+            border: 1px solid rgba(255, 255, 255, 0.38) !important;
+            border-radius: 12px !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: #ffffff !important;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__close ion-icon {
+            color: #ffffff !important;
+            font-size: 22px !important;
+            opacity: 1 !important;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__close:hover,
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__close:focus-visible {
+            border-color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.22) !important;
+            outline: 0;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.14) !important;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__body {
+            position: relative;
+            display: grid;
+            min-height: 0;
+            gap: 14px;
+            overflow: auto;
+            padding: 20px 56px 22px;
+            scrollbar-color: #9fcbd3 #e9f2f4;
+            scrollbar-width: thin;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__navigation {
+            position: absolute;
+            inset: 62px 10px auto;
+            z-index: 4;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__navigation .oh-modal__diaglog-nav {
+            position: relative;
+            top: auto !important;
+            right: auto !important;
+            bottom: auto !important;
+            left: auto !important;
+            display: grid;
+            width: 40px;
+            height: 40px;
+            flex: 0 0 40px;
+            place-items: center;
+            margin: 0;
+            padding: 0 !important;
+            transform: none;
+            border: 1px solid #b7d7df !important;
+            border-radius: 50% !important;
+            background: #ffffff !important;
+            color: #176f80 !important;
+            box-shadow: 0 4px 14px rgba(10, 77, 96, 0.14);
+            pointer-events: auto;
+            cursor: pointer;
+            transition: color 0.16s ease, background-color 0.16s ease, border-color 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__navigation .oh-modal__diaglog-nav ion-icon {
+            display: block !important;
+            width: 20px;
+            height: 20px;
+            color: #176f80 !important;
+            font-size: 20px !important;
+            opacity: 1 !important;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__navigation .oh-modal__diaglog-nav:hover,
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__navigation .oh-modal__diaglog-nav:focus-visible {
+            transform: translateY(-2px);
+            border-color: #0a596b !important;
+            background: #176f80 !important;
+            color: #ffffff !important;
+            outline: 0;
+            box-shadow: 0 7px 18px rgba(10, 77, 96, 0.25);
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__navigation .oh-modal__diaglog-nav:hover ion-icon,
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__navigation .oh-modal__diaglog-nav:focus-visible ion-icon {
+            color: #ffffff !important;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__profile {
+            display: flex;
+            min-width: 0;
+            min-height: 78px;
+            align-items: center;
+            gap: 13px;
+            padding: 12px 14px;
+            border: 1px solid #d6e8eb;
+            border-radius: 14px;
+            background: #ffffff;
+            color: #173f50;
+            text-decoration: none;
+            transition: border-color 0.16s ease, box-shadow 0.16s ease;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__profile:hover,
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__profile:focus-visible {
+            border-color: #9bcbd4;
+            outline: 0;
+            box-shadow: 0 4px 14px rgba(10, 77, 96, 0.08);
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__avatar {
+            display: block;
+            width: 58px;
+            height: 58px;
+            flex: 0 0 58px;
+            border: 2px solid #dceef0;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__profile-info {
+            display: grid;
+            min-width: 0;
+            gap: 4px;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__profile-info strong {
+            color: #173f50;
+            font-size: 1rem;
+            font-weight: 750;
+            line-height: 1.3;
+            overflow-wrap: anywhere;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__profile-info span {
+            color: #557b84;
+            font-size: 0.83rem;
+            line-height: 1.45;
+            overflow-wrap: anywhere;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__profile-link {
+            width: 17px;
+            height: 17px;
+            flex: 0 0 17px;
+            margin-left: auto;
+            color: #7296a0;
+            font-size: 17px;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__section {
+            min-width: 0;
+            padding: 14px;
+            border: 1px solid #d6e8eb;
+            border-radius: 14px;
+            background: #ffffff;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__item {
+            display: grid;
+            min-width: 0;
+            min-height: 74px;
+            align-content: center;
+            gap: 7px;
+            padding: 11px 13px;
+            border: 1px solid #e4eef0;
+            border-radius: 11px;
+            background: #f8fbfc;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__item--wide {
+            grid-column: span 1;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__item--balance {
+            border-color: #c9e4d3;
+            background: #f0f8f2;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__item-label {
+            display: inline-flex;
+            min-width: 0;
+            align-items: center;
+            gap: 7px;
+            color: #63818a;
+            font-size: 0.74rem;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__item-label ion-icon {
+            width: 16px;
+            height: 16px;
+            flex: 0 0 16px;
+            color: #478393 !important;
+            font-size: 16px !important;
+            opacity: 1 !important;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__item strong {
+            min-width: 0;
+            color: #245568;
+            font-size: 0.91rem;
+            font-weight: 700;
+            line-height: 1.35;
+            overflow-wrap: anywhere;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__item--balance strong {
+            color: #28643f;
+            font-size: 1.05rem;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__actions {
+            display: flex;
+            gap: 10px;
+            padding-top: 2px;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__delete-form {
+            display: flex;
+            min-width: 0;
+            flex: 1 1 0;
+            margin: 0;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__action {
+            display: inline-flex;
+            min-width: 0;
+            min-height: 44px;
+            flex: 1 1 0;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 0 14px !important;
+            border: 1px solid #176f80 !important;
+            border-radius: 10px !important;
+            background: #176f80 !important;
+            color: #ffffff !important;
+            font-size: 0.83rem;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.16s ease, border-color 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__action ion-icon {
+            display: block !important;
+            width: 18px;
+            height: 18px;
+            color: #ffffff !important;
+            font-size: 18px !important;
+            opacity: 1 !important;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__action:hover,
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__action:focus-visible {
+            transform: translateY(-1px);
+            border-color: #0a4d60 !important;
+            background: #0a4d60 !important;
+            color: #ffffff !important;
+            outline: 0;
+            box-shadow: 0 5px 14px rgba(10, 77, 96, 0.18);
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__action--delete {
+            border-color: #d9a7a7 !important;
+            background: #fff5f4 !important;
+            color: #9d4141 !important;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__action--delete ion-icon {
+            color: #9d4141 !important;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__action--delete:hover,
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__action--delete:focus-visible {
+            border-color: #a94444 !important;
+            background: #a94444 !important;
+            color: #ffffff !important;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__action--delete:hover ion-icon,
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__action--delete:focus-visible ion-icon {
+            color: #ffffff !important;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__empty {
+            display: grid;
+            min-height: 250px;
+            justify-items: center;
+            align-content: center;
+            gap: 10px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__empty img {
+            width: 92px;
+            opacity: 0.45;
+        }
+
+        html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__empty h3 {
+            margin: 0;
+            color: #557b84;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 640px) {
+            html body:has(.assigned-leave-page) #objectDetailsModalTarget:has(.assigned-leave-detail) {
+                width: calc(100vw - 20px) !important;
+                max-width: 860px !important;
+            }
+
+            html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__header {
+                min-height: 68px;
+                padding: 13px 62px 13px 18px;
+            }
+
+            html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__close {
+                right: 12px;
+                width: 36px;
+                height: 36px;
+            }
+
+            html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__body {
+                gap: 11px;
+                padding: 14px 15px 16px;
+            }
+
+            html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__navigation {
+                inset: 46px 9px auto;
+            }
+
+            html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__navigation .oh-modal__diaglog-nav {
+                width: 34px;
+                height: 34px;
+                flex-basis: 34px;
+            }
+
+            html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__profile {
+                margin: 0 28px;
+                padding: 10px;
+            }
+
+            html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__avatar {
+                width: 48px;
+                height: 48px;
+                flex-basis: 48px;
+            }
+
+            html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__profile-info span {
+                font-size: 0.74rem;
+            }
+
+            html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__section {
+                padding: 10px;
+            }
+
+            html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__grid {
+                gap: 8px;
+            }
+
+            html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__item {
+                min-height: 70px;
+                padding: 9px;
+            }
+
+            html body:has(.assigned-leave-page) #objectDetailsModalTarget .assigned-leave-detail__item-label {
+                font-size: 0.68rem;
+            }
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page .oh-checkpoint-badge {
+            background: #e3f3f5 !important;
+            border-color: #c7e5eb !important;
+            color: #176f80 !important;
+        }
+
+        @media (max-width: 760px) {
+            html body .oh-wrapper-main.super-admin-panel-theme section.assigned-leave-page {
+                align-items: stretch;
+                flex-direction: column;
+                gap: 14px;
+                margin: 14px 12px;
+                padding: 16px !important;
+            }
+
+            html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page .oh-main__titlebar--right,
+            html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page #filterForm,
+            html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page .oh-input__search-group {
+                width: 100%;
+            }
+
+            html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page .oh-main__titlebar-button-container {
+                flex-wrap: wrap;
+            }
+        }
+
+        html body:has(.assigned-leave-page) .assigned-leave-page {
+            box-shadow: 0 3px 12px rgba(10, 77, 96, 0.045) !important;
+        }
+
+        html body .oh-wrapper-main.super-admin-panel-theme .assigned-leave-page.employee-subsection-head,
+        html body .oh-wrapper-main.admin-panel-theme .assigned-leave-page.employee-subsection-head {
+            box-shadow: none !important;
+        }
+
+        html body:has(.assigned-leave-page) .assigned-leave-page .oh-main__titlebar--right,
+        html body:has(.assigned-leave-page) .assigned-leave-page #filterForm,
+        html body:has(.assigned-leave-page) .assigned-leave-page .oh-main__titlebar-button-container {
+            display: flex !important;
+            align-items: center !important;
+        }
+
+        html body:has(.assigned-leave-page) .assigned-leave-page .oh-main__titlebar--right {
+            gap: 10px;
+        }
+
+        html body:has(.assigned-leave-page) .assigned-leave-page #filterForm,
+        html body:has(.assigned-leave-page) .assigned-leave-page .oh-main__titlebar-button-container {
+            gap: 10px;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+
+        html body:has(.assigned-leave-page) .assigned-leave-page .assigned-leave-toolbar-button,
+        html body:has(.assigned-leave-page) .assigned-leave-page #assigned-leaves-assign-button {
+            display: inline-flex !important;
+            min-height: 42px;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 8px !important;
+            padding: 0 14px !important;
+            line-height: 1 !important;
+            white-space: nowrap;
+        }
+
+        html body:has(.assigned-leave-page) .assigned-leave-page .assigned-leave-toolbar-button ion-icon,
+        html body:has(.assigned-leave-page) .assigned-leave-page #assigned-leaves-assign-button ion-icon {
+            display: block !important;
+            width: 18px !important;
+            height: 18px !important;
+            flex: 0 0 18px;
+            margin: 0 !important;
+            font-size: 18px !important;
+            line-height: 1 !important;
+            vertical-align: middle;
+        }
+
+        html body:has(.assigned-leave-page) .assigned-leave-page .assigned-leave-toolbar-button #filterCount {
+            display: inline-flex;
+            align-items: center;
+            margin: 0;
+            line-height: 1;
+        }
+
+        html body:has(.assigned-leave-page) .assigned-leave-page .oh-btn-group.ml-2 {
+            align-items: center;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+
+        html body:has(.assigned-leave-page) #filterTagContainerSectionNav {
+            background: transparent !important;
+            background-color: transparent !important;
+            background-image: none !important;
+            box-shadow: none !important;
+        }
     </style>
-    <section class="oh-wrapper oh-main__topbar assigned-leave-page" x-data="{searchShow: false}">
+    <section class="oh-wrapper oh-main__topbar employee-subsection-head assigned-leave-page" x-data="{searchShow: false}">
         <div class="oh-main__titlebar oh-main__titlebar--left">
             <h1 class="oh-main__titlebar-title fw-bold">
                 {% trans "All Assigned Leaves" %}
@@ -302,15 +1804,15 @@
                 <div class="oh-main__titlebar-button-container">
                     {% if available_leaves %}
                         <div class="oh-dropdown" x-data="{open: false}">
-                            <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
-                                <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+                            <button type="button" class="oh-btn ml-2 assigned-leave-toolbar-button" @click="open = !open" onclick="event.preventDefault()">
+                                <ion-icon name="filter-outline" aria-hidden="true"></ion-icon>{% trans "Filter" %}
                                 <div id="filterCount"></div>
                             </button>
                             {% include "leave/leave_assign/assigned_leaves_filter.html" %}
                         </div>
                         <div class="oh-dropdown" x-data="{open: false}">
-                            <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
-                                <ion-icon name="library-outline" class="mr-1"></ion-icon>
+                            <button type="button" class="oh-btn ml-2 assigned-leave-toolbar-button" @click="open = !open" onclick="event.preventDefault()">
+                                <ion-icon name="albums-outline" aria-hidden="true"></ion-icon>
                                 {% trans "Group By" %}
                                 <div id="filterCount"></div>
                             </button>
@@ -356,11 +1858,13 @@
                     {% endif %}
                     <div class="oh-dropdown ml-2" x-data="{open: false}">
                         <button
-                            class="oh-btn oh-btn--dropdown"
+                            type="button"
+                            class="oh-btn oh-btn--dropdown assigned-leave-toolbar-button"
                             @click="open = !open"
                             @click.outside="open = false"
                             onclick="event.preventDefault()"
                         >
+                            <ion-icon name="ellipsis-horizontal-outline" aria-hidden="true"></ion-icon>
                             {% trans "Actions" %}
                         </button>
                         <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none">
@@ -407,13 +1911,16 @@
                 <div class="oh-btn-group ml-2">
                     <div class="oh-dropdown" x-data="{open: false}">
                         <button
+                            type="button"
                             class="oh-btn oh-btn--secondary oh-btn--shadow"
+                            id="assigned-leaves-assign-button"
                             data-toggle="oh-modal-toggle"
                             hx-on:click="$('#objectCreateModalTarget').css('max-width', '410px');"
                             data-target="#objectCreateModal"
                             hx-get="{% url 'assign' %}"
                             hx-target="#objectCreateModalTarget"
                         >
+                            <ion-icon name="person-add-outline" aria-hidden="true"></ion-icon>
                             {% trans "Assign" %}
                         </button>
                     </div>

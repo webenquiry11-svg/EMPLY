@@ -1,5 +1,5 @@
 {% load i18n %}
-<div class="oh-modal__dialog-header">
+<div class="oh-modal__dialog-header ticket-modal-header">
     <h2 class="oh-modal__dialog-title" id="createTitle">
         {% if ticket_id %}
             {% trans "Update" %}
@@ -49,7 +49,7 @@
 
 <div class="oh-modal" id="createTagModal" role="dialog" aria-labelledby="editDialogModal" aria-hidden="true">
     <div class="oh-modal__dialog">
-        <div class="oh-modal__dialog-header pb-0">
+        <div class="oh-modal__dialog-header pb-0 ticket-modal-header">
             <h2 class="oh-modal__dialog-title" id="editTitle">
                 {% trans "Create Tag" %}
             </h2>
@@ -114,7 +114,7 @@
 </div>
 <div class="oh-modal" id="createTicketTypeModal" role="dialog" aria-labelledby="editDialogModal" aria-hidden="true">
     <div class="oh-modal__dialog">
-        <div class="oh-modal__dialog-header">
+        <div class="oh-modal__dialog-header ticket-modal-header">
             <h2 class="oh-modal__dialog-title" id="editTitle">
                 {% trans "Create" %} {{ t_type_form.verbose_name }}
             </h2>

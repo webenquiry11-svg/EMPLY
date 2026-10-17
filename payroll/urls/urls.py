@@ -7,7 +7,7 @@ This module is used to map url pattern or request path with view functions
 from django.urls import include, path
 
 from payroll.models.models import Contract, Payslip
-from payroll.views import views
+from payroll.views import run_views, super_admin_views, views
 
 urlpatterns = [
     path("", include("payroll.urls.component_urls")),
@@ -102,6 +102,52 @@ urlpatterns = [
         "view-payroll-dashboard/",
         views.view_payroll_dashboard,
         name="view-payroll-dashboard",
+    ),
+    path(
+        "super-admin/",
+        super_admin_views.super_admin_dashboard,
+        name="super-admin-dashboard",
+    ),
+    path(
+        "super-admin/users/",
+        super_admin_views.super_admin_users,
+        name="super-admin-users",
+    ),
+    path(
+        "super-admin/groups/",
+        super_admin_views.super_admin_groups,
+        name="super-admin-groups",
+    ),
+    path(
+        "super-admin/companies/",
+        super_admin_views.super_admin_companies,
+        name="super-admin-companies",
+    ),
+    path(
+        "super-admin/payroll-settings/",
+        super_admin_views.super_admin_payroll_settings,
+        name="super-admin-payroll-settings",
+    ),
+    path(
+        "super-admin/audit/",
+        super_admin_views.super_admin_audit,
+        name="super-admin-audit",
+    ),
+    path("runs/", run_views.payroll_run_list, name="payroll-run-list"),
+    path(
+        "runs/create/",
+        run_views.payroll_run_create,
+        name="payroll-run-create",
+    ),
+    path(
+        "runs/<int:run_id>/",
+        run_views.payroll_run_detail,
+        name="payroll-run-detail",
+    ),
+    path(
+        "runs/<int:run_id>/<str:action>/",
+        run_views.payroll_run_action,
+        name="payroll-run-action",
     ),
     path(
         "dashboard-employee-chart",

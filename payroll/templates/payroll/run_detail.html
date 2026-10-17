@@ -1,0 +1,69 @@
+{% extends "payroll/workflow_base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Payroll run" %} #{{ run.pk }}{% endblock %}
+{% block content %}
+<section class="oh-card mb-4">
+    <div class="oh-card__header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+            <h1 class="oh-card__title">{{ run.company }} — {{ run.start_date }} – {{ run.end_date }}</h1>
+            <p>{% trans "Attempt" %} {{ run.attempt }} · {% trans "Status" %}: {{ run.get_status_display }}</p>
+        </div>
+        <div class="payroll-workflow__actions">
+            {% if run.status == "draft" and not run.warnings and perms.payroll.submit_payrollrun or run.status == "draft" and not run.warnings and request.user.is_superuser %}
+                <form method="post" action="{% url 'payroll-run-action' run.pk 'submit' %}">{% csrf_token %}<button class="oh-btn oh-btn--secondary" type="submit">{% trans "Submit for approval" %}</button></form>
+            {% endif %}
+            {% if run.status == "submitted" and perms.payroll.approve_payrollrun or run.status == "submitted" and request.user.is_superuser %}
+                <form method="post" action="{% url 'payroll-run-action' run.pk 'approve' %}">{% csrf_token %}<button class="oh-btn oh-btn--secondary" type="submit">{% trans "Approve" %}</button></form>
+                <form method="post" action="{% url 'payroll-run-action' run.pk 'reject' %}">
+                    {% csrf_token %}
+                    <label class="oh-label" for="rejection-comment">{% trans "Rejection reason" %}</label>
+                    <input class="oh-input" id="rejection-comment" name="comment" required maxlength="2000">
+                    <button class="oh-btn oh-btn--danger" type="submit">{% trans "Reject" %}</button>
+                </form>
+            {% endif %}
+            {% if run.status == "approved" and perms.payroll.finalize_payrollrun or run.status == "approved" and request.user.is_superuser %}
+                <form method="post" action="{% url 'payroll-run-action' run.pk 'finalize' %}">{% csrf_token %}<button class="oh-btn oh-btn--secondary" type="submit">{% trans "Finalize payroll" %}</button></form>
+            {% endif %}
+        </div>
+    </div>
+    <div class="oh-card__body">
+        {% if run.error_summary %}<div class="oh-alert oh-alert--danger"><strong>{% trans "Validation or review notes" %}</strong><br>{{ run.error_summary|linebreaksbr }}</div>{% endif %}
+        {% if run.status == "finalized" %}<p>{% trans "Finalized snapshots are locked. This action does not transfer funds." %}</p>{% endif %}
+        <div class="payroll-workflow__table-wrap">
+            <table class="oh-table payroll-workflow__table">
+                <thead><tr>
+                    <th>{% trans "Employee" %}</th><th>{% trans "Period" %}</th>
+                    <th>{% trans "Basic" %}</th><th>{% trans "Gross" %}</th>
+                    <th>{% trans "Deductions" %}</th><th>{% trans "Net" %}</th>
+                    <th>{% trans "Payslip" %}</th><th>{% trans "Warnings" %}</th>
+                </tr></thead>
+                <tbody>
+                {% for item in items %}
+                    <tr>
+                        <td>{{ item.employee.get_full_name }}</td>
+                        <td>{{ item.start_date }} – {{ item.end_date }}</td>
+                        <td>{{ item.basic_pay|floatformat:2 }}</td><td>{{ item.gross_pay|floatformat:2 }}</td>
+                        <td>{{ item.deduction|floatformat:2 }}</td><td>{{ item.net_pay|floatformat:2 }}</td>
+                        <td>{% if item.payslip %}<a href="{% url 'view-created-payslip' item.payslip.pk %}">{% trans "View" %}</a>{% else %}—{% endif %}</td>
+                        <td class="payroll-workflow__warning">{{ item.warnings|join:", " }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="8">{% trans "No employee calculations were produced." %}</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+<section class="oh-card">
+    <div class="oh-card__header"><h2 class="oh-card__title">{% trans "Approval history" %}</h2></div>
+    <div class="oh-card__body payroll-workflow__table-wrap">
+        <table class="oh-table payroll-workflow__table">
+            <thead><tr><th>{% trans "When" %}</th><th>{% trans "Actor" %}</th><th>{% trans "Transition" %}</th><th>{% trans "Comment" %}</th></tr></thead>
+            <tbody>{% for event in events %}
+                <tr><td>{{ event.created_at }}</td><td>{{ event.actor|default:"—" }}</td><td>{{ event.from_status|default:"created" }} → {{ event.to_status }}</td><td>{{ event.comment|default:"—" }}</td></tr>
+            {% empty %}<tr><td colspan="4">{% trans "No approval events are recorded." %}</td></tr>{% endfor %}</tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

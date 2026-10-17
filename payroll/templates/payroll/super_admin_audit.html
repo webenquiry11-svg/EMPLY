@@ -1,0 +1,28 @@
+{% extends "payroll/super_admin_base.html" %}
+{% load i18n %}
+{% block title %}{% trans "System audit history" %}{% endblock %}
+{% block content %}
+<section class="oh-card mb-4">
+    <div class="oh-card__header"><h1 class="oh-card__title">{% trans "Django administration audit log" %}</h1></div>
+    <div class="oh-card__body super-admin-table-wrap">
+        <table class="oh-table super-admin-table">
+            <thead><tr><th>{% trans "When" %}</th><th>{% trans "User" %}</th><th>{% trans "Action" %}</th><th>{% trans "Object" %}</th><th>{% trans "Details" %}</th></tr></thead>
+            <tbody>{% for entry in log_entries %}
+                <tr><td>{{ entry.action_time }}</td><td>{{ entry.user }}</td><td>{{ entry.get_action_flag_display }}</td><td>{{ entry.content_type }}: {{ entry.object_repr }}</td><td>{{ entry.change_message }}</td></tr>
+            {% empty %}<tr><td colspan="5">{% trans "No admin audit entries are recorded." %}</td></tr>{% endfor %}</tbody>
+        </table>
+        <nav class="mt-3">{% if log_entries.has_previous %}<a href="?page={{ log_entries.previous_page_number }}">{% trans "Previous" %}</a>{% endif %} {{ log_entries.number }} / {{ log_entries.paginator.num_pages }} {% if log_entries.has_next %}<a href="?page={{ log_entries.next_page_number }}">{% trans "Next" %}</a>{% endif %}</nav>
+    </div>
+</section>
+<section class="oh-card">
+    <div class="oh-card__header"><h2 class="oh-card__title">{% trans "Payroll approval events" %}</h2></div>
+    <div class="oh-card__body super-admin-table-wrap">
+        <table class="oh-table super-admin-table">
+            <thead><tr><th>{% trans "When" %}</th><th>{% trans "Company" %}</th><th>{% trans "Payroll run" %}</th><th>{% trans "Actor" %}</th><th>{% trans "Transition" %}</th><th>{% trans "Comment" %}</th></tr></thead>
+            <tbody>{% for event in events %}
+                <tr><td>{{ event.created_at }}</td><td>{{ event.payroll_run.company }}</td><td><a href="{% url 'payroll-run-detail' event.payroll_run_id %}">#{{ event.payroll_run_id }}</a></td><td>{{ event.actor|default:"—" }}</td><td>{{ event.from_status|default:"created" }} → {{ event.to_status }}</td><td>{{ event.comment|default:"—" }}</td></tr>
+            {% empty %}<tr><td colspan="6">{% trans "No payroll approval events are recorded." %}</td></tr>{% endfor %}</tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

@@ -268,8 +268,9 @@
             opacity: 0.7;
         }
     </style>
+    <link rel="stylesheet" href="{% static 'asset/asset-sections.css' %}">
     <main class="employee-asset-page" :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
-        <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+        <section class="oh-wrapper oh-main__topbar employee-asset-header" x-data="{searchShow: false}">
             <div class="oh-main__titlebar oh-main__titlebar--left">
                 <h1 class="oh-main__titlebar-title fw-bold">{% trans "Asset" %}</h1>
 

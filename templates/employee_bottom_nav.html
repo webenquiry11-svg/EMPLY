@@ -1,20 +1,20 @@
 {% load static i18n %}
-{% comment %}Employee bottom navigation partial - minimal, permission-aware, uses existing sidebar data and hidden-submenus for flyouts{% endcomment %}
+{% comment %}Shared employee and admin navigation using permission-filtered sidebar data for flyouts{% endcomment %}
 
-<button id="employeeMobileNavToggle" class="employee-mobile-nav-toggle" type="button" aria-label="Open employee menu" aria-expanded="false">
+<button id="employeeMobileNavToggle" class="employee-mobile-nav-toggle" type="button" aria-label="Open {% if request.user.is_superuser %}Super Admin{% elif request.user.is_staff %}Admin{% else %}employee{% endif %} menu" aria-expanded="false">
     <span class="material-symbols-outlined">menu</span>
 </button>
 <div id="employeeMobileNavOverlay" class="employee-mobile-nav-overlay" aria-hidden="true"></div>
-<aside id="employeeMobileNavDrawer" class="employee-mobile-nav-drawer" aria-label="Employee navigation" aria-hidden="true">
+<aside id="employeeMobileNavDrawer" class="employee-mobile-nav-drawer" aria-label="{% if request.user.is_superuser %}{% trans 'Super Admin navigation' %}{% elif request.user.is_staff %}{% trans 'Admin navigation' %}{% else %}{% trans 'Employee navigation' %}{% endif %}" aria-hidden="true">
     <div class="employee-mobile-nav-header">
         <div class="employee-mobile-nav-brand">
             <img src="{% static 'images/ui/emply-logo.png' %}" alt="EMPLY">
         </div>
-        <button id="employeeMobileNavClose" class="employee-mobile-nav-close" type="button" aria-label="Close employee menu">
+        <button id="employeeMobileNavClose" class="employee-mobile-nav-close" type="button" aria-label="Close {% if request.user.is_superuser %}Super Admin{% elif request.user.is_staff %}Admin{% else %}employee{% endif %} menu">
             <span aria-hidden="true">×</span>
         </button>
     </div>
-    <nav class="employee-mobile-nav" aria-label="Employee navigation">
+    <nav class="employee-mobile-nav" aria-label="{% if request.user.is_superuser %}{% trans 'Super Admin navigation' %}{% elif request.user.is_staff %}{% trans 'Admin navigation' %}{% else %}{% trans 'Employee navigation' %}{% endif %}">
         <ul>
             <li class="employee-mobile-nav-item simple">
                 <a href="/" class="employee-mobile-nav-link {% if request.path == '/' or request.path == '/dashboard-employee' %}active{% endif %}">
@@ -35,13 +35,37 @@
                 </a>
             </li>
             <li class="employee-mobile-nav-item simple">
-                <button type="button" class="employee-mobile-nav-link employee-payroll-login-trigger" aria-haspopup="dialog" aria-controls="employeePayrollLoginModal">
-                    <span class="employee-mobile-nav-icon material-symbols-outlined">payments</span>
-                    <span>{% trans "Payroll" %}</span>
-                </button>
+                {% if request.user.is_superuser or request.user.is_staff %}
+                    <a href="{% url 'view-contract' %}" class="employee-mobile-nav-link {% if '/payroll/' in request.path and request.path != '/payroll/view-reimbursement/' %}active{% endif %}">
+                        <span class="employee-mobile-nav-icon material-symbols-outlined">credit_card</span>
+                        <span>{% trans "Payroll" %}</span>
+                    </a>
+                {% else %}
+                    <button type="button" class="employee-mobile-nav-link employee-payroll-login-trigger" aria-haspopup="dialog" aria-controls="employeePayrollLoginModal">
+                        <span class="employee-mobile-nav-icon material-symbols-outlined">payments</span>
+                        <span>{% trans "Payroll" %}</span>
+                    </button>
+                {% endif %}
             </li>
+            {% if request.user.is_superuser or request.user.is_staff and perms.base.add_announcement %}
+                <li class="employee-mobile-nav-item simple">
+                    <button
+                        type="button"
+                        class="employee-mobile-nav-link employee-announcement-create"
+                        aria-label="{% trans 'Create Announcement' %}"
+                        hx-get="{% url 'create-announcement' %}"
+                        hx-target="#objectCreateModalTarget"
+                        hx-swap="innerHTML"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#objectCreateModal"
+                    >
+                        <span class="employee-mobile-nav-icon material-symbols-outlined">campaign</span>
+                        <span>{% trans "Announcement" %}</span>
+                    </button>
+                </li>
+            {% endif %}
             {% for menues in sidebar %}
-                {% if menues.menu != 'Performance' and menues.menu != 'Payroll' %}
+                {% if menues.menu != 'Project' and menues.menu != 'Performance' and menues.menu != 'Payroll' %}
                 {% if menues.menu == 'Attendance' and not request.user.is_staff and not request.user.is_superuser %}
                     <li class="employee-mobile-nav-item simple">
                         <a href="{% url 'view-my-attendance' %}" class="employee-mobile-nav-link {% if request.path == '/attendance/view-my-attendance' or request.path == '/attendance/view-my-attendance/' %}active{% endif %}">
@@ -60,7 +84,7 @@
                     <li class="employee-mobile-nav-item">
                         <button type="button" class="employee-mobile-nav-parent" data-target="employee-mobile-submenu-{{ forloop.counter }}">
                             <span class="employee-mobile-nav-icon material-symbols-outlined">
-                                {% if menues.menu == 'Employee' %}person{% elif menues.menu == 'Attendance' %}schedule{% elif menues.menu == 'Leave' %}event_available{% elif menues.menu == 'Payroll' %}payments{% elif menues.menu == 'Performance' %}trending_up{% elif menues.menu == 'Assets' %}devices{% elif menues.menu == 'Help Desk' %}support_agent{% else %}menu{% endif %}
+                                {% if menues.menu == 'Employee' %}group{% elif menues.menu == 'Attendance' %}schedule{% elif menues.menu == 'Leave' %}event_available{% elif menues.menu == 'Payroll' %}payments{% elif menues.menu == 'Performance' %}trending_up{% elif menues.menu == 'Assets' %}devices{% elif menues.menu == 'Help Desk' %}support_agent{% elif menues.menu == 'Recruitment' %}person_add{% elif menues.menu == 'Onboarding' %}rocket_launch{% elif menues.menu == 'Offboarding' %}logout{% elif menues.menu == 'Project' %}account_tree{% else %}extension{% endif %}
                             </span>
                             <span>{{ menues.menu }}</span>
                             <span class="employee-mobile-nav-chevron material-symbols-outlined">chevron_right</span>
@@ -83,7 +107,7 @@
                         <li class="employee-mobile-nav-item simple">
                             <a href="{{ menues.redirect }}" class="employee-mobile-nav-link {% if menues.redirect == request.path or menues.redirect == request.get_full_path %}active{% endif %}">
                                 <span class="employee-mobile-nav-icon material-symbols-outlined">
-                                    {% if menues.menu == 'Employee' %}person{% elif menues.menu == 'Attendance' %}schedule{% elif menues.menu == 'Leave' %}event_available{% elif menues.menu == 'Payroll' %}payments{% elif menues.menu == 'Performance' %}trending_up{% elif menues.menu == 'Assets' %}devices{% elif menues.menu == 'Help Desk' %}support_agent{% else %}menu{% endif %}
+                                    {% if menues.menu == 'Employee' %}group{% elif menues.menu == 'Attendance' %}schedule{% elif menues.menu == 'Leave' %}event_available{% elif menues.menu == 'Payroll' %}payments{% elif menues.menu == 'Performance' %}trending_up{% elif menues.menu == 'Assets' %}devices{% elif menues.menu == 'Help Desk' %}support_agent{% elif menues.menu == 'Recruitment' %}person_add{% elif menues.menu == 'Onboarding' %}rocket_launch{% elif menues.menu == 'Offboarding' %}logout{% elif menues.menu == 'Project' %}account_tree{% else %}extension{% endif %}
                                 </span>
                                 <span>{{ menues.menu }}</span>
                             </a>
@@ -96,7 +120,7 @@
     </nav>
 </aside>
 
-<nav id="employeeBottomNav" class="employee-bottom-nav oh-bottom-nav" aria-label="Employee navigation" role="navigation">
+<nav id="employeeBottomNav" class="employee-bottom-nav oh-bottom-nav" aria-label="{% if request.user.is_superuser %}{% trans 'Super Admin navigation' %}{% elif request.user.is_staff %}{% trans 'Admin navigation' %}{% else %}{% trans 'Employee navigation' %}{% endif %}" role="navigation">
     <ul class="oh-bottom-nav__list" role="menubar">
         <li role="none" class="oh-bottom-nav__item">
             <a role="menuitem" href="/" class="oh-bottom-nav__link {% if request.path == '/' or request.path == '/dashboard-employee' %}active{% endif %}" aria-label="{% trans 'Dashboard' %}">
@@ -120,14 +144,42 @@
             </a>
         </li>
         <li role="none" class="oh-bottom-nav__item">
-            <button type="button" class="oh-bottom-nav__link employee-payroll-login-trigger" aria-label="{% trans 'Payroll' %}" aria-haspopup="dialog" aria-controls="employeePayrollLoginModal">
-                <span class="oh-bottom-nav__icon material-symbols-outlined">payments</span>
-                <span class="oh-bottom-nav__label">{% trans "Payroll" %}</span>
-                <span class="oh-bottom-nav__tooltip">{% trans "Payroll" %}</span>
-            </button>
+            {% if request.user.is_superuser or request.user.is_staff %}
+                <a role="menuitem" href="{% url 'view-contract' %}" class="oh-bottom-nav__link {% if '/payroll/' in request.path and request.path != '/payroll/view-reimbursement/' %}active{% endif %}" aria-label="{% trans 'Payroll' %}">
+                    <span class="oh-bottom-nav__icon material-symbols-outlined">credit_card</span>
+                    <span class="oh-bottom-nav__label">{% trans "Payroll" %}</span>
+                    <span class="oh-bottom-nav__tooltip">{% trans "Payroll" %}</span>
+                </a>
+            {% else %}
+                <button type="button" class="oh-bottom-nav__link employee-payroll-login-trigger" aria-label="{% trans 'Payroll' %}" aria-haspopup="dialog" aria-controls="employeePayrollLoginModal">
+                    <span class="oh-bottom-nav__icon material-symbols-outlined">payments</span>
+                    <span class="oh-bottom-nav__label">{% trans "Payroll" %}</span>
+                    <span class="oh-bottom-nav__tooltip">{% trans "Payroll" %}</span>
+                </button>
+            {% endif %}
         </li>
+        {% if request.user.is_superuser or request.user.is_staff and perms.base.add_announcement %}
+            <li role="none" class="oh-bottom-nav__item">
+                <button
+                    type="button"
+                    role="menuitem"
+                    class="oh-bottom-nav__link employee-announcement-create"
+                    aria-label="{% trans 'Create Announcement' %}"
+                    title="{% trans 'Create Announcement' %}"
+                    hx-get="{% url 'create-announcement' %}"
+                    hx-target="#objectCreateModalTarget"
+                    hx-swap="innerHTML"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#objectCreateModal"
+                >
+                    <span class="oh-bottom-nav__icon material-symbols-outlined" aria-hidden="true">campaign</span>
+                    <span class="oh-bottom-nav__label">{% trans "Announcement" %}</span>
+                    <span class="oh-bottom-nav__tooltip">{% trans "Create Announcement" %}</span>
+                </button>
+            </li>
+        {% endif %}
         {% for menues in sidebar %}
-            {% if menues.menu != 'Performance' and menues.menu != 'Payroll' %}
+            {% if menues.menu != 'Project' and menues.menu != 'Performance' and menues.menu != 'Payroll' %}
             {% if menues.submenu and menues.submenu|length > 0 %}
                 <li role="none" class="oh-bottom-nav__item">
                     {% if menues.menu == 'Attendance' and not request.user.is_staff and not request.user.is_superuser %}
@@ -159,13 +211,13 @@
                         {% endwith %}
                     {% else %}
                         {% with menues.submenu.0.redirect as first_redirect %}
-                            <a role="menuitem" href="{% if first_redirect %}{{ first_redirect }}{% else %}#{% endif %}" class="oh-bottom-nav__link" data-menu-id="{{menues.app}}GenericNav" aria-label="{{ menues.menu }}" data-has-children="{{ menues.submenu|length|yesno:'true,false' }}">
+                            <a role="menuitem" href="{% if first_redirect %}{{ first_redirect }}{% else %}#{% endif %}" class="oh-bottom-nav__link {% if menues.menu == 'Recruitment' and '/recruitment/' in request.path %}active{% endif %}" data-menu-id="{{menues.app}}GenericNav" aria-label="{{ menues.menu }}" data-has-children="{{ menues.submenu|length|yesno:'true,false' }}">
                                 {% if menues.img_src %}
                                     <span class="oh-bottom-nav__icon material-symbols-outlined" aria-hidden="true">
-                                        {% if menues.menu == 'Employee' %}group{% elif menues.menu == 'Attendance' %}task_alt{% elif menues.menu == 'Leave' %}calendar_month{% elif menues.menu == 'Payroll' %}credit_card{% elif menues.menu == 'Performance' %}trending_up{% elif menues.menu == 'Assets' %}desktop_windows{% elif menues.menu == 'Help Desk' %}headphones{% else %}apps{% endif %}
+                                        {% if menues.menu == 'Employee' %}group{% elif menues.menu == 'Attendance' %}task_alt{% elif menues.menu == 'Leave' %}calendar_month{% elif menues.menu == 'Payroll' %}credit_card{% elif menues.menu == 'Performance' %}trending_up{% elif menues.menu == 'Assets' %}desktop_windows{% elif menues.menu == 'Help Desk' %}headphones{% elif menues.menu == 'Recruitment' %}person_add{% elif menues.menu == 'Onboarding' %}rocket_launch{% elif menues.menu == 'Offboarding' %}logout{% elif menues.menu == 'Project' %}account_tree{% else %}extension{% endif %}
                                     </span>
                                 {% else %}
-                                    <span class="oh-bottom-nav__icon material-symbols-outlined" aria-hidden="true">apps</span>
+                                    <span class="oh-bottom-nav__icon material-symbols-outlined" aria-hidden="true">extension</span>
                                 {% endif %}
                                 <span class="oh-bottom-nav__label">{{ menues.menu }}</span>
                                 <span class="oh-bottom-nav__tooltip">{{ menues.menu }}</span>
@@ -803,6 +855,20 @@
 
     body .oh-sidebar-flyout h4 {
         display: none;
+    }
+
+    html body:has(.oh-wrapper-main.super-admin-panel-theme) #oh-sidebar-flyout h4 {
+        display: block !important;
+        margin: 0 0 8px !important;
+        padding: 10px 14px;
+        border: 1px solid rgba(255, 255, 255, 0.88);
+        border-radius: 22px;
+        background: #176f80;
+        box-shadow: 0 6px 14px rgba(23, 109, 131, 0.12);
+        color: #ffffff !important;
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-align: center;
     }
 
     body .oh-sidebar-flyout li {
@@ -2339,6 +2405,155 @@
         border-radius: 12px !important;
         color: #285d6b !important;
     }
+
+    html body:has(.oh-wrapper-main.super-admin-panel-theme) #employeeBottomNav .oh-bottom-nav__link:not(.active) {
+        background: transparent !important;
+        border-color: transparent !important;
+        box-shadow: none !important;
+        color: #176d83 !important;
+    }
+
+    html body:has(.oh-wrapper-main.super-admin-panel-theme) #employeeBottomNav .oh-bottom-nav__link:not(.active):hover,
+    html body:has(.oh-wrapper-main.super-admin-panel-theme) #employeeBottomNav .oh-bottom-nav__link:not(.active):focus-visible {
+        background: #d8edf1 !important;
+        border-color: rgba(42, 132, 155, 0.2) !important;
+        box-shadow: 0 8px 18px rgba(23, 109, 131, 0.14) !important;
+        color: #0a4d60 !important;
+    }
+
+    html body:has(.oh-wrapper-main.super-admin-panel-theme) #employeeBottomNav .oh-bottom-nav__link.active {
+        background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+        border-color: #176d83 !important;
+        box-shadow: 0 8px 18px rgba(10, 77, 96, 0.22) !important;
+        color: #ffffff !important;
+    }
+
+    html body:has(.oh-wrapper-main.super-admin-panel-theme) #employeeBottomNav .oh-bottom-nav__icon {
+        color: inherit !important;
+        filter: none !important;
+        opacity: 1 !important;
+    }
+
+    html body:has(.oh-wrapper-main.super-admin-panel-theme) #employeeBottomNav .employee-announcement-create:not(:hover):not(:focus-visible) {
+        background: transparent !important;
+        border-color: transparent !important;
+        box-shadow: none !important;
+        color: #176d83 !important;
+    }
+
+    html body #employeeBottomNav .oh-bottom-nav__link.active {
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 9px !important;
+        width: max-content !important;
+        min-width: 0 !important;
+        padding: 0 18px !important;
+    }
+
+    html body #employeeBottomNav .oh-bottom-nav__link.active .oh-bottom-nav__icon {
+        flex: 0 0 24px !important;
+        margin: 0 !important;
+    }
+
+    html body #employeeBottomNav .oh-bottom-nav__link.active .oh-bottom-nav__label {
+        display: block !important;
+        margin: 0 !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+    }
+
+    html body #employeeBottomNav .oh-bottom-nav__link.active .oh-bottom-nav__tooltip {
+        display: none !important;
+    }
+
+    html body #oh-sidebar-flyout {
+        position: fixed !important;
+        z-index: 1500 !important;
+        width: min(280px, calc(100vw - 24px)) !important;
+        min-width: 250px !important;
+        max-width: calc(100vw - 24px) !important;
+        max-height: min(60vh, 520px) !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        padding: 10px !important;
+        border: 1px solid #d7e8ed !important;
+        border-radius: 16px !important;
+        background: #ffffff !important;
+        color: #173f50 !important;
+        box-shadow: 0 16px 40px rgba(10, 77, 96, 0.2) !important;
+        transform: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        scrollbar-color: #a8cbd3 #f2f8f9;
+        scrollbar-width: thin;
+    }
+
+    html body #oh-sidebar-flyout h4 {
+        display: block !important;
+        margin: 0 0 8px !important;
+        padding: 10px 12px !important;
+        border: 0 !important;
+        border-radius: 10px !important;
+        background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+        color: #ffffff !important;
+        font-size: 0.82rem !important;
+        font-weight: 750 !important;
+        line-height: 1.3 !important;
+        text-align: left !important;
+    }
+
+    html body #oh-sidebar-flyout ul {
+        display: grid !important;
+        gap: 5px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+    }
+
+    html body #oh-sidebar-flyout li {
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        border-radius: 10px !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        text-align: left !important;
+    }
+
+    html body #oh-sidebar-flyout li a {
+        display: flex !important;
+        min-height: 40px;
+        align-items: center;
+        padding: 9px 11px !important;
+        border: 1px solid transparent;
+        border-radius: 10px !important;
+        background: #f5f9fa !important;
+        color: #315765 !important;
+        font-size: 0.84rem !important;
+        font-weight: 650 !important;
+        line-height: 1.35;
+        text-align: left !important;
+        text-decoration: none !important;
+        transition: border-color 140ms ease, background-color 140ms ease, color 140ms ease;
+    }
+
+    html body #oh-sidebar-flyout li:hover a,
+    html body #oh-sidebar-flyout li a:hover,
+    html body #oh-sidebar-flyout li a:focus-visible {
+        border-color: #c9e2e7 !important;
+        background: #eaf5f7 !important;
+        color: #0a4d60 !important;
+        outline: none;
+    }
+
+    html body #oh-sidebar-flyout li a.active {
+        border-color: #176d83 !important;
+        border-radius: 10px !important;
+        background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 10px rgba(10, 77, 96, 0.16) !important;
+    }
 </style>
 <script>
 (function(){
@@ -2389,6 +2604,15 @@
         $item.toggleClass('is-open', !isOpen);
     });
 
+    $(document).on('click', '.employee-announcement-create', function () {
+        $('html, body').addClass('announcement-modal-open');
+        $('#objectCreateModal').addClass('oh-modal--show');
+    });
+
+    $(document).on('click', '#objectCreateModal .oh-modal__close, #objectCreateModal .oh-modal__cancel', function () {
+        $('html, body').removeClass('announcement-modal-open');
+    });
+
     $(document).on('click', '.employee-payroll-login-trigger', function (event) {
         event.preventDefault();
         $('#employeePayrollLoginModal').prop('hidden', false);
@@ -2433,12 +2657,14 @@
                 $(this).addClass('active');
             }
         });
-        var offset = $el.offset();
-        var left = offset.left + ($el.outerWidth()/2) - (flyout.outerWidth()/2);
+        var anchor = $el[0].getBoundingClientRect();
+        var flyoutWidth = flyout.outerWidth();
+        var left = anchor.left + (anchor.width / 2) - (flyoutWidth / 2);
+        var maxLeft = Math.max(12, window.innerWidth - flyoutWidth - 12);
         flyout.css({
             top: 'auto',
-            bottom: '130px',
-            left: Math.max(12, left) + 'px'
+            bottom: (window.innerHeight - anchor.top + 12) + 'px',
+            left: Math.max(12, Math.min(left, maxLeft)) + 'px'
         });
         flyout.show();
         flyout.attr('aria-hidden','false');
@@ -2468,11 +2694,29 @@
         });
     }
 
+    var flyoutHideTimer;
+
+    function cancelFlyoutHide(){
+        window.clearTimeout(flyoutHideTimer);
+    }
+
+    function scheduleFlyoutHide(){
+        cancelFlyoutHide();
+        flyoutHideTimer = window.setTimeout(function(){
+            var flyout = $('#oh-sidebar-flyout');
+            if(!flyout.is(':hover')){
+                flyout.hide().attr('aria-hidden','true');
+            }
+        }, 450);
+    }
+
     markActiveParentMenus();
-    $(document).on('mouseenter', '.oh-bottom-nav__link', function(){ showFlyoutFor($(this)); });
+    $(document).on('mouseenter', '.oh-bottom-nav__link', function(){
+        cancelFlyoutHide();
+        showFlyoutFor($(this));
+    });
     $(document).on('mouseleave', '.oh-bottom-nav__link', function(){
-        var flyout = $('#oh-sidebar-flyout');
-        setTimeout(function(){ if(!flyout.is(':hover')){ flyout.hide(); flyout.attr('aria-hidden','true'); } }, 200);
+        scheduleFlyoutHide();
     });
     $(document).on('click', '.oh-bottom-nav__link', function(e){
         var href = $(this).attr('href');
@@ -2485,6 +2729,8 @@
             else { showFlyoutFor($this); }
         }
     });
-    $('#oh-sidebar-flyout').on('mouseleave', function(){ $(this).hide().attr('aria-hidden','true'); });
+    $('#oh-sidebar-flyout')
+        .on('mouseenter', cancelFlyoutHide)
+        .on('mouseleave', scheduleFlyoutHide);
 })();
 </script>

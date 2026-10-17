@@ -70,7 +70,7 @@
         </div>
     </div>
 
-    <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+    <section class="oh-wrapper oh-main__topbar recruitment-survey-head" x-data="{searchShow: false}">
         <div class="oh-main__titlebar oh-main__titlebar--left">
             <h1 class="oh-main__titlebar-title fw-bold">
                 {% trans "Survey Templates" %}
@@ -103,8 +103,9 @@
             </div>
             <div class="oh-main__titlebar-button-container">
                 <div class="oh-dropdown" x-data="{open: false}">
-                    <button class="oh-btn ml-2" @click="open = !open">
-                        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+                    <button class="oh-btn oh-btn--secondary recruitment-survey-filter" type="button" @click="open = !open">
+                        <span class="material-symbols-outlined" aria-hidden="true">filter_list</span>
+                        <span>{% trans "Filter" %}</span>
                         <div id="filterCount"></div>
                     </button>
                     <div
@@ -173,7 +174,7 @@
     </div>
 
     <div class="oh-modal" id="templateModal" role="dialog" aria-hidden="true">
-        <div class="oh-modal__dialog" style="max-width: 550px">
+        <div class="oh-modal__dialog">
             <div class="oh-modal__dialog-header">
                 <button type="button" class="oh-modal__close" aria-label="{% trans 'Close' %}">
                     <ion-icon name="close-outline"></ion-icon>
@@ -184,15 +185,43 @@
         </div>
     </div>
     <script>
+        function activateSurveyTab() {
+            var activeTab = localStorage.getItem("activeSurveyTab") === "#questionTab"
+                ? "#questionTab"
+                : "#templateTab";
+            var viewContainer = document.querySelector("#view-container");
+            var tabContainer = viewContainer ? viewContainer.closest(".oh-tabs") : null;
+            if (!tabContainer) {
+                return;
+            }
+            var tab = tabContainer.querySelector(".oh-tabs__tab[data-target='" + activeTab + "']");
+            var panel = tabContainer.querySelector(activeTab);
+            if (!tab || !panel) {
+                return;
+            }
+
+            tabContainer.querySelectorAll(".oh-tabs__tab--active").forEach(function (element) {
+                element.classList.remove("oh-tabs__tab--active");
+            });
+            tabContainer.querySelectorAll(".oh-tabs__content--active").forEach(function (element) {
+                element.classList.remove("oh-tabs__content--active");
+            });
+            tab.classList.add("oh-tabs__tab--active");
+            panel.classList.add("oh-tabs__content--active");
+        }
+
         $(document).ready(function () {
-            var activeTab = localStorage.getItem("activeSurveyTab")
-            $(".oh-tabs__tab--active").removeClass("oh-tabs__tab--active");
-            $(`[data-target='${activeTab}']`).addClass("oh-tabs__tab--active");
-            $(`[data-target='${activeTab}']`).click();
             $(".oh-tabs__tab").on("click", function (e) {
                 var dataTarget = $(this).data('target');
                 localStorage.setItem("activeSurveyTab", dataTarget)
             });
+            activateSurveyTab();
+        });
+
+        document.body.addEventListener("htmx:afterSwap", function (event) {
+            if (event.detail && event.detail.target && event.detail.target.id === "view-container") {
+                activateSurveyTab();
+            }
         });
     </script>
 {% endblock content %}

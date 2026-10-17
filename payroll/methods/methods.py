@@ -10,6 +10,7 @@ from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from django.apps import apps
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.models import F, Q
 
 # from attendance.models import Attendance
@@ -574,23 +575,28 @@ def save_payslip(**kwargs):
     """
     This method is used to save the generated payslip
     """
-    filtered_instance = Payslip.objects.filter(
-        employee_id=kwargs["employee"],
-        start_date=kwargs["start_date"],
-        end_date=kwargs["end_date"],
-    ).first()
-    instance = filtered_instance if filtered_instance is not None else Payslip()
-    instance.employee_id = kwargs["employee"]
-    instance.group_name = kwargs.get("group_name")
-    instance.start_date = kwargs["start_date"]
-    instance.end_date = kwargs["end_date"]
-    instance.status = kwargs["status"]
-    instance.basic_pay = round(kwargs["basic_pay"], 2)
-    instance.contract_wage = round(kwargs["contract_wage"], 2)
-    instance.gross_pay = round(kwargs["gross_pay"], 2)
-    instance.deduction = round(kwargs["deduction"], 2)
-    instance.net_pay = round(kwargs["net_pay"], 2)
-    instance.pay_head_data = kwargs["pay_data"]
-    instance.save()
-    instance.installment_ids.set(kwargs["installments"])
+    employee = kwargs["employee"]
+    with transaction.atomic():
+        employee.__class__._base_manager.select_for_update().filter(
+            pk=employee.pk
+        ).first()
+        instance = Payslip.objects.select_for_update().filter(
+            employee_id=employee,
+            start_date=kwargs["start_date"],
+            end_date=kwargs["end_date"],
+        ).first()
+        instance = instance if instance is not None else Payslip()
+        instance.employee_id = employee
+        instance.group_name = kwargs.get("group_name")
+        instance.start_date = kwargs["start_date"]
+        instance.end_date = kwargs["end_date"]
+        instance.status = kwargs["status"]
+        instance.basic_pay = round(kwargs["basic_pay"], 2)
+        instance.contract_wage = round(kwargs["contract_wage"], 2)
+        instance.gross_pay = round(kwargs["gross_pay"], 2)
+        instance.deduction = round(kwargs["deduction"], 2)
+        instance.net_pay = round(kwargs["net_pay"], 2)
+        instance.pay_head_data = kwargs["pay_data"]
+        instance.save()
+        instance.installment_ids.set(kwargs["installments"])
     return instance

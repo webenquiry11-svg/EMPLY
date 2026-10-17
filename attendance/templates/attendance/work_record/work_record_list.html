@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load attendancefilters %}
 {% include "filter_tags.html" %}
-<div class="d-flex justify-content-between m-2 ms-0">
+<div class="work-record-toolbar d-flex justify-content-between m-2 ms-0">
     <div class="d-flex justify-content-between">
         <button
             class="oh-btn oh-btn--secondary"
@@ -51,47 +51,29 @@
         </div>
     </div>
 
-    <div class="d-flex flex-row-reverse m-2">
-        <span class="" style="margin-left: 10px">
-            <span
-                class="oh-dot oh-dot--small me-1"
-                style="background-color: #ed4c4c"
-            ></span>
+    <div class="work-record-legend d-flex flex-row-reverse m-2">
+        <span class="work-record-legend__item">
+            <span class="oh-dot oh-dot--small work-record-legend__dot work-record-legend__dot--conflict"></span>
             {% trans "Conflict" %}
         </span>
-        <span class="me-3" style="margin-left: 10px">
-            <span
-                class="oh-dot oh-dot--small me-1"
-                style="background-color: #a8b1ff"
-            ></span>
+        <span class="work-record-legend__item">
+            <span class="oh-dot oh-dot--small work-record-legend__dot work-record-legend__dot--absent"></span>
             {% trans "Absent" %}
         </span>
-        <span class="me-3" style="margin-left: 10px">
-            <span
-                class="oh-dot oh-dot--small me-1"
-                style="background-color: #808080"
-            ></span>
+        <span class="work-record-legend__item">
+            <span class="oh-dot oh-dot--small work-record-legend__dot work-record-legend__dot--leave"></span>
             {% trans "Leave" %}
         </span>
-        <span class="me-3" style="margin-left: 10px">
-            <span
-                class="oh-dot oh-dot--small me-1"
-                style="background-color: #c65d0f"
-            ></span>
+        <span class="work-record-legend__item">
+            <span class="oh-dot oh-dot--small work-record-legend__dot work-record-legend__dot--leave-present"></span>
             {% trans "On leave, But attendance exist" %}
         </span>
-        <span class="me-3" style="margin-left: 10px">
-            <span
-                class="oh-dot oh-dot--small me-1"
-                style="background-color: #dfdf52"
-            ></span>
+        <span class="work-record-legend__item">
+            <span class="oh-dot oh-dot--small work-record-legend__dot work-record-legend__dot--half-day"></span>
             {% trans "Half Day Present" %}
         </span>
-        <span class="me-3" style="margin-left: 10px">
-            <span
-                class="oh-dot oh-dot--small me-1"
-                style="background-color: #38c338"
-            ></span>
+        <span class="work-record-legend__item">
+            <span class="oh-dot oh-dot--small work-record-legend__dot work-record-legend__dot--present"></span>
             {% trans "Present" %}
         </span>
     </div>
@@ -119,7 +101,7 @@
 
         {% for employee, work_records in data %}
             <tr>
-                <td style="width: 12%">
+                <td class="work-record-employee">
                     <a
                         style="text-decoration: none"
                         href="{% url 'employee-view-individual' employee.id %}"
@@ -131,30 +113,25 @@
                 {% for work_record in work_records %}
                     {% with day=current_month_dates_list|get_item:forloop.counter0 %}
                         <td
-                            class="days {% if work_record and work_record.date in leave_dates or work_record is None and day in leave_dates %}holiday{% endif %}"
-                            style="text-align:center; cursor:default;
-                        {% if work_record %}
-                            {% if work_record.work_record_type == 'CONF' %}
-                                background-color: #ed4c4c; color: #fff;
-                            {% elif work_record.is_leave_record and work_record.work_record_type == 'FDP' %}
-                                background-color: #c65d0f; color: #fff;
-                            {% elif work_record.work_record_type == 'FDP' %}
-                                background-color: #38c338; color: #fff;
-                            {% elif work_record.work_record_type == 'HDP' %}
-                                background-color: #dfdf52;
-                            {% elif work_record.work_record_type == 'ABS' %}
-                                background-color: #808080; color: #fff;
-                            {% elif work_record.work_record_type == 'DFT' and work_record.shift_id and not work_record.date in leave_dates %}
-                                background-color: #a8b1ff; color: #fff;
-                            {% endif %}
-                        {% endif %}"
+                            class="days
+                                {% if work_record and work_record.date in leave_dates or work_record is None and day in leave_dates %}holiday{% endif %}
+                                {% if work_record %}
+                                    {% if work_record.work_record_type == 'CONF' %}work-record-cell--conflict
+                                    {% elif work_record.is_leave_record and work_record.work_record_type == 'ABS' %}work-record-cell--leave
+                                    {% elif work_record.is_leave_record and work_record.work_record_type == 'FDP' %}work-record-cell--leave-present
+                                    {% elif work_record.work_record_type == 'FDP' %}work-record-cell--present
+                                    {% elif work_record.work_record_type == 'HDP' %}work-record-cell--half-day
+                                    {% elif work_record.work_record_type == 'ABS' %}work-record-cell--absent
+                                    {% elif work_record.work_record_type == 'DFT' and work_record.shift_id and not work_record.date in leave_dates %}work-record-cell--absent
+                                    {% endif %}
+                                {% endif %}"
                         >
                             {% if work_record %}
                                 <div
                                     {% if work_record.title_message %}
                                         title="{{work_record.title_message}}"
                                     {% endif %}
-                                    class="fw-bold"
+                                    class="work-record-cell-value fw-bold"
                                     onclick="{% if work_record.work_record_type == 'ABS' %}
                                         window.location.href = `{% url 'request-view' %}?employee_id={{work_record.employee_id.id}}&from_date={{work_record.date|date:'Y-m-d'}}&to_date={{work_record.date|date:'Y-m-d'}}`;
                                     {% elif work_record.work_record_type != 'DFT' %}
@@ -174,7 +151,7 @@
                                         {% elif work_record.work_record_type == 'HDP' %}
                                             HP
                                         {% elif work_record.work_record_type == 'ABS' %}
-                                            L
+                                            {% if work_record.is_leave_record %}L{% else %}A{% endif %}
                                         {% elif work_record.work_record_type == 'DFT' and work_record.shift_id and not work_record.date in leave_dates %}
                                             <span class="fw-light" style="cursor: default">A</span>
                                         {% endif %}

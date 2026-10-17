@@ -4,6 +4,7 @@
 {% load i18n %}
 {% load widget_tweaks %}
 {% load assets_custom_filter %}
+<link rel="stylesheet" href="{% static 'asset/asset-category.css' %}?v=4">
 
 
 <style>
@@ -45,8 +46,8 @@
 <!-- end of messages -->
 
 
-<main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
-    <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+<main id="assetCategoryPage" class="asset-category-page" :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    <section class="oh-wrapper oh-main__topbar asset-category-page__header" x-data="{searchShow: false}">
         <div class="oh-main__titlebar oh-main__titlebar--left">
             <h1 class="oh-main__titlebar-title fw-bold">{{ model.get_verbose_name }}</h1>
             <a class="oh-main__titlebar-search-toggle" role="button" aria-label="{% trans 'Toggle Search' %}"
@@ -167,6 +168,7 @@
                     <button onclick="event.stopPropagation();event.preventDefault()" class="oh-btn oh-btn--dropdown"
                         @click="open = !open" @click.outside="open = false">
                         {% trans "Actions" %}
+                        <ion-icon name="caret-down-outline" aria-hidden="true"></ion-icon>
                     </button>
                     <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none">
                         <ul class="oh-dropdown__items">
@@ -204,7 +206,7 @@
         </div>
     </section>
     </div>
-    <div class="oh-wrapper">
+    <div class="oh-wrapper asset-category-page__content">
         <div id="assetCategoryList" class="employee-asset-surface">
             <!-- including asset category -->
             {% include 'category/asset_category.html' %}

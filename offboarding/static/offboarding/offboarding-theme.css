@@ -1,0 +1,665 @@
+html:has(#offboardingPage),
+body:has(#offboardingPage),
+.oh-wrapper-main:has(#offboardingPage),
+.oh-wrapper-main:has(#offboardingPage) > #main,
+html:has(#resignationPage),
+body:has(#resignationPage),
+.oh-wrapper-main:has(#resignationPage),
+.oh-wrapper-main:has(#resignationPage) > #main {
+    background: #e8f5f7 !important;
+}
+
+.offboarding-section-head,
+.resignation-section-head {
+    box-sizing: border-box;
+    justify-content: space-between;
+    gap: 24px;
+    margin: 26px 28px 18px;
+    padding: 20px 24px !important;
+    background: #ffffff !important;
+    border: 1px solid #b9dce4;
+    border-radius: 20px;
+    box-shadow: 0 10px 26px rgba(10, 77, 96, .12);
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .offboarding-section-head,
+html body .oh-wrapper-main.super-admin-panel-theme .resignation-section-head {
+    justify-content: space-between;
+    gap: 24px;
+    margin: 26px 28px 18px;
+    padding: 20px 24px !important;
+    background: #ffffff !important;
+    border-color: #b9dce4 !important;
+    border-radius: 20px !important;
+    box-shadow: 0 10px 26px rgba(10, 77, 96, .12) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme section.oh-wrapper.oh-main__topbar.offboarding-section-head,
+html body .oh-wrapper-main.super-admin-panel-theme section.oh-wrapper.oh-main__topbar.resignation-section-head {
+    margin: 26px 28px 18px !important;
+    padding: 20px 24px !important;
+}
+
+body.recruitment-theme:has(#offboardingPage) .oh-wrapper-main.super-admin-panel-theme .offboarding-section-head,
+body.recruitment-theme:has(#resignationPage) .oh-wrapper-main.super-admin-panel-theme .resignation-section-head {
+    margin: 26px 28px 18px !important;
+    padding: 20px 24px !important;
+}
+
+.offboarding-section-head .oh-main__titlebar--left,
+.offboarding-section-head .oh-main__titlebar-title,
+.resignation-section-head .oh-main__titlebar--left,
+.resignation-section-head .oh-main__titlebar-title {
+    color: #173f50 !important;
+}
+
+.offboarding-section-head .oh-main__titlebar-title,
+.resignation-section-head .oh-main__titlebar-title {
+    margin: 0;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .offboarding-section-head .oh-main__titlebar--left,
+html body .oh-wrapper-main.super-admin-panel-theme .offboarding-section-head .oh-main__titlebar-title,
+html body .oh-wrapper-main.super-admin-panel-theme .resignation-section-head .oh-main__titlebar--left,
+html body .oh-wrapper-main.super-admin-panel-theme .resignation-section-head .oh-main__titlebar-title {
+    color: #173f50 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .offboarding-section-head .oh-main__titlebar-title,
+html body .oh-wrapper-main.super-admin-panel-theme .resignation-section-head .oh-main__titlebar-title {
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+}
+
+.offboarding-section-head .oh-main__titlebar--left,
+.resignation-section-head .oh-main__titlebar--left {
+    margin: 0;
+}
+
+.offboarding-section-head .oh-main__titlebar--right,
+.resignation-section-head .oh-main__titlebar--right {
+    display: flex;
+    flex: 0 1 auto;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    margin: 0;
+}
+
+.offboarding-section-head .oh-input__search-group,
+.resignation-section-head .oh-input__search-group {
+    display: flex;
+    flex: 0 1 230px;
+    align-items: center;
+    min-width: 180px;
+    margin: 0 !important;
+    padding: 0;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+.offboarding-section-head .oh-input,
+.resignation-section-head .oh-input {
+    width: 100%;
+    margin: 0 !important;
+    background: #ffffff !important;
+    border: 1px solid #c7e5eb !important;
+    border-radius: 12px;
+    color: #173f50 !important;
+    box-shadow: none;
+}
+
+.offboarding-section-head .oh-input::placeholder,
+.resignation-section-head .oh-input::placeholder {
+    color: #557b84;
+}
+
+.offboarding-section-head .oh-input-group__icon,
+.resignation-section-head .oh-input-group__icon {
+    color: #176f80 !important;
+}
+
+.offboarding-section-head .oh-main__titlebar-button-container,
+.resignation-section-head .oh-main__titlebar-button-container {
+    margin: 0;
+}
+
+.offboarding-section-head .oh-btn--secondary,
+.resignation-section-head .oh-btn--secondary {
+    display: inline-flex;
+    min-width: 120px;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    background: linear-gradient(135deg, #0a596b, #177f91) !important;
+    border: 1px solid #176f80 !important;
+    border-radius: 11px;
+    color: #ffffff !important;
+    box-shadow: 0 6px 14px rgba(21, 95, 109, .16);
+    transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
+}
+
+.offboarding-section-head .oh-btn--secondary ion-icon,
+.resignation-section-head .oh-btn--secondary ion-icon {
+    flex: 0 0 auto;
+    color: #ffffff !important;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.offboarding-section-head .oh-btn--secondary:hover,
+.resignation-section-head .oh-btn--secondary:hover {
+    transform: translateY(-1px);
+    background: #0a4d60 !important;
+    border-color: #0a4d60 !important;
+    color: #ffffff !important;
+    box-shadow: 0 9px 18px rgba(10, 77, 96, .2);
+}
+
+#offboardingContainer {
+    padding-bottom: 135px;
+}
+
+#offboardingContainer > .oh-empty,
+.resignation-empty {
+    display: flex;
+    min-height: 330px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    margin: 0 28px;
+    padding: 48px 24px;
+    background: #ffffff;
+    border: 1px solid #cfe4e9;
+    border-radius: 18px;
+    box-shadow: 0 8px 24px rgba(10, 77, 96, .08);
+    text-align: center;
+}
+
+#offboardingContainer > .oh-empty .oh-404__image,
+.resignation-empty .oh-404__image {
+    width: 76px;
+    height: 76px;
+    margin-bottom: 20px;
+    opacity: .72;
+}
+
+#offboardingContainer > .oh-empty .oh-empty__title,
+.resignation-empty .oh-empty__title {
+    margin: 0 0 8px;
+    color: #173f50;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+#offboardingContainer > .oh-empty .oh-empty__subtitle,
+.resignation-empty .oh-empty__subtitle {
+    margin: 0;
+    color: #607d86;
+    font-size: .95rem;
+}
+
+#offboardingContainer > .oh-wrapper {
+    width: auto;
+    margin: 0 28px;
+    padding-bottom: 0;
+}
+
+#offboardingContainer .oh-tabs__tablist {
+    display: flex;
+    gap: 8px;
+    margin: 0 0 18px;
+    padding: 8px;
+    overflow-x: auto;
+    background: #f5fbfc;
+    border: 1px solid #cfe4e9;
+    border-radius: 15px;
+    box-shadow: 0 5px 18px rgba(10, 77, 96, .06);
+}
+
+#offboardingContainer .oh-tabs__tab {
+    display: flex;
+    min-width: max-content;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    padding: 10px 14px;
+    color: #426b77;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    transition: color .18s ease, background .18s ease, border-color .18s ease;
+}
+
+#offboardingContainer .oh-tabs__tab:hover {
+    color: #176f80;
+    background: #e8f5f7;
+}
+
+#offboardingContainer .oh-tabs__tab--active {
+    color: #ffffff !important;
+    background: #176f80 !important;
+    border-color: #176f80 !important;
+    box-shadow: 0 4px 10px rgba(23, 111, 128, .18);
+}
+
+#offboardingContainer .oh-tabs__tab .oh-badge {
+    margin: 0 !important;
+    color: #176f80;
+    background: #ffffff;
+}
+
+#offboardingContainer .oh-tabs__contents {
+    padding: 0;
+    background: transparent;
+}
+
+#offboardingContainer .oh-tabs__content {
+    padding: 0;
+}
+
+#offboardingContainer .oh-tabs__content > .d-flex {
+    margin-bottom: 12px;
+}
+
+#offboardingContainer .oh-tabs__content > .d-flex .oh-btn {
+    border-radius: 10px;
+}
+
+#offboardingContainer .oh-card[id^="offboardingBody"] {
+    padding: 16px;
+    background: #ffffff;
+    border: 1px solid #cfe4e9;
+    border-radius: 18px;
+    box-shadow: 0 8px 24px rgba(10, 77, 96, .08);
+}
+
+#offboardingContainer .oh-accordion-meta {
+    margin-bottom: 12px;
+    border: 1px solid #d7e9ed;
+    border-radius: 13px;
+    overflow: visible;
+}
+
+#offboardingContainer .oh-accordion-meta__header {
+    min-height: 56px !important;
+    padding: 10px 16px;
+    background: #f4fafb;
+    border-radius: 12px;
+    color: #173f50;
+}
+
+#offboardingContainer .oh-accordion-meta__header--show {
+    background: #e9f5f7;
+}
+
+#offboardingContainer .oh-accordion-meta__title {
+    color: #173f50;
+    font-weight: 700;
+}
+
+#offboardingContainer .oh-accordion-meta__body {
+    padding: 14px;
+    background: #ffffff;
+    border-top: 1px solid #e0edf0;
+    border-radius: 0 0 12px 12px;
+}
+
+#offboardingContainer .oh-accordion-meta__body > div {
+    min-height: 0 !important;
+    border-radius: 10px;
+    scrollbar-color: #9bcfd8 #f1f8fa;
+}
+
+#offboardingContainer .oh-sticky-table__table {
+    border: 1px solid #d7e9ed !important;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#offboardingContainer .oh-sticky-table__thead {
+    background: #eef7f9;
+}
+
+#offboardingContainer .oh-sticky-table__th {
+    color: #315b67;
+    font-weight: 700;
+}
+
+#offboardingContainer .oh-sticky-table__tbody:nth-child(even) {
+    background: #f8fbfc;
+}
+
+#offboardingContainer .oh-sticky-table__tbody:hover {
+    background: #edf7f9;
+}
+
+#offboardingContainer .oh-pagination,
+#resignationLetterContianer .oh-pagination {
+    min-height: 48px;
+    margin: 20px 0 0;
+    padding: 8px 14px;
+    background: #f3fafb !important;
+    border: 1px solid #c7e5eb;
+    border-radius: 12px;
+    color: #173f50 !important;
+}
+
+#offboardingContainer .oh-pagination__page,
+#offboardingContainer .oh-pagination__label,
+#resignationLetterContianer .oh-pagination__page,
+#resignationLetterContianer .oh-pagination__label {
+    color: #456b76 !important;
+}
+
+#offboardingContainer .oh-pagination__input,
+#resignationLetterContianer .oh-pagination__input {
+    background: #ffffff !important;
+    border: 1px solid #c7e5eb !important;
+    border-radius: 9px;
+    color: #173f50 !important;
+}
+
+#offboardingContainer .oh-pagination__item,
+#resignationLetterContianer .oh-pagination__item {
+    background: #ffffff !important;
+    border-color: #c7e5eb !important;
+}
+
+#offboardingContainer .oh-pagination__link,
+#resignationLetterContianer .oh-pagination__link {
+    color: #176f80 !important;
+}
+
+#resignationPage {
+    padding-bottom: 135px;
+}
+
+#resignationLetterContianer {
+    color: #315b67;
+}
+
+#resignationLetterContianer > .oh-wrapper,
+#resignationLetterContianer > .oh-table_sticky--wrapper {
+    width: auto;
+    margin-right: 28px;
+    margin-left: 28px;
+}
+
+#resignationLetterContianer .oh-faq-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+#resignationLetterContianer .oh-faq-card {
+    display: flex;
+    min-height: 380px;
+    flex-direction: column;
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid #cfe4e9;
+    border-top: 3px solid #238da0;
+    border-radius: 17px;
+    box-shadow: 0 8px 24px rgba(10, 77, 96, .08);
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+
+#resignationLetterContianer .oh-faq-card:hover {
+    transform: translateY(-3px);
+    border-color: #9bcfd8;
+    border-top-color: #176f80;
+    box-shadow: 0 14px 28px rgba(10, 77, 96, .14);
+}
+
+#resignationLetterContianer .oh-faq-card > .d-flex:first-child {
+    align-items: flex-start;
+    gap: 10px;
+}
+
+#resignationLetterContianer .resign-status {
+    display: inline-flex !important;
+    margin: 0;
+    padding: 6px 10px;
+    color: #176f80;
+    background: #e9f5f7;
+    border: 1px solid #c9e4e9;
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 700;
+}
+
+#resignationLetterContianer .oh-faq-card .oh-btn--light {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #f4fafb;
+    border: 1px solid #d8e9ed;
+    border-radius: 9px;
+    color: #176f80;
+    transition: background .18s ease, border-color .18s ease;
+}
+
+#resignationLetterContianer .oh-faq-card .oh-btn--light:hover {
+    background: #e7f4f6;
+    border-color: #a9d4dd;
+}
+
+#resignationLetterContianer .oh-faq-card .oh-profile {
+    align-items: center;
+    padding: 12px;
+    background: #f6fafb;
+    border: 1px solid #e3eef1;
+    border-radius: 12px;
+}
+
+#resignationLetterContianer .oh-faq-card .oh-profile__image {
+    width: 42px;
+    height: 42px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(10, 77, 96, .12);
+}
+
+#resignationLetterContianer .oh-faq-card .oh-timeoff-modal__user {
+    color: #42636c;
+    line-height: 1.45;
+}
+
+#resignationLetterContianer .oh-faq-card .oh-timeoff-modal__user.fw-bold {
+    color: #173f50;
+    font-size: .95rem;
+}
+
+#resignationLetterContianer .oh-faq-card__title {
+    margin: 14px 0 10px;
+    color: #173f50;
+    font-size: 1.05rem;
+    font-weight: 750;
+    line-height: 1.4;
+}
+
+#resignationLetterContianer .oh-faq-card__desc {
+    flex: 1;
+    min-height: 120px !important;
+    margin-bottom: 16px;
+    padding: 14px;
+    overflow-wrap: anywhere;
+    color: #5d7775;
+    background: #f8fbfc;
+    border: 1px solid #e3eef1;
+    border-radius: 12px;
+    line-height: 1.6;
+}
+
+#resignationLetterContianer .oh-faq-card__desc img,
+#resignationLetterContianer .oh-faq-card__desc table {
+    max-width: 100%;
+}
+
+#resignationLetterContianer .oh-faq-card__desc img {
+    height: auto;
+}
+
+#resignationLetterContianer .oh-faq-card form .oh-btn-group {
+    gap: 8px;
+}
+
+#resignationLetterContianer .oh-faq-card form .oh-btn {
+    min-height: 40px;
+    border-radius: 10px;
+}
+
+#resignationLetterContianer .oh-sticky-table {
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #cfe4e9;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(10, 77, 96, .08);
+}
+
+#resignationLetterContianer .oh-sticky-table__thead {
+    background: #eef7f9;
+}
+
+#resignationLetterContianer .oh-sticky-table__th {
+    color: #315b67;
+    font-weight: 700;
+}
+
+#resignationLetterContianer .oh-sticky-table__tbody:nth-child(even) {
+    background: #f8fbfc;
+}
+
+#resignationLetterContianer .oh-sticky-table__tbody:hover {
+    background: #edf7f9;
+}
+
+#resignationLetterContianer .oh-sticky-table__td,
+#resignationLetterContianer .oh-sticky-table__sd {
+    color: #42636c;
+}
+
+#resignationLetterContianer .oh-table_sticky--wrapper {
+    margin-bottom: 0;
+}
+
+#resignationLetterContianer .d-flex.flex-row-reverse.oh-wrapper {
+    gap: 14px;
+    align-items: center;
+    padding: 12px 16px;
+    background: #ffffff;
+    border: 1px solid #cfe4e9;
+    border-radius: 13px;
+}
+
+#resignationLetterContianer .d-flex.flex-row-reverse.oh-wrapper > span {
+    margin: 0 !important;
+    color: #456b76;
+    cursor: pointer;
+}
+
+#resignationLetterContianer .oh-sticky-dropdown--header {
+    z-index: 2;
+}
+
+#resignationLetterContianer .oh-sticky-dropdown_btn {
+    color: #176f80;
+    background: #ffffff;
+    border: 1px solid #cfe4e9;
+    border-radius: 9px;
+}
+
+@media (max-width: 900px) {
+    #resignationLetterContianer .oh-faq-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .offboarding-section-head,
+    .resignation-section-head {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+        margin: 14px 12px;
+        padding: 16px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme .offboarding-section-head,
+    html body .oh-wrapper-main.super-admin-panel-theme .resignation-section-head {
+        margin: 14px 12px !important;
+        padding: 16px !important;
+    }
+
+    body.recruitment-theme:has(#offboardingPage) .oh-wrapper-main.super-admin-panel-theme .offboarding-section-head,
+    body.recruitment-theme:has(#resignationPage) .oh-wrapper-main.super-admin-panel-theme .resignation-section-head {
+        margin: 14px 12px !important;
+        padding: 16px !important;
+    }
+
+    .offboarding-section-head .oh-main__titlebar--right,
+    .resignation-section-head .oh-main__titlebar--right {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .offboarding-section-head .oh-input__search-group,
+    .resignation-section-head .oh-input__search-group,
+    .offboarding-section-head .oh-input,
+    .resignation-section-head .oh-input,
+    .offboarding-section-head .oh-main__titlebar-button-container,
+    .resignation-section-head .oh-main__titlebar-button-container,
+    .offboarding-section-head .oh-btn--secondary,
+    .resignation-section-head .oh-btn--secondary {
+        width: 100%;
+        min-width: 0;
+    }
+
+    #offboardingContainer > .oh-empty,
+    .resignation-empty {
+        min-height: 280px;
+        margin: 0 12px;
+        padding: 36px 18px;
+    }
+
+    #offboardingContainer > .oh-wrapper {
+        margin: 0 12px;
+    }
+
+    #offboardingContainer .oh-card[id^="offboardingBody"] {
+        padding: 10px;
+    }
+
+    #offboardingContainer .oh-accordion-meta__header {
+        padding: 10px;
+    }
+
+    #offboardingContainer .oh-accordion-meta__body {
+        padding: 10px;
+    }
+
+    #resignationPage {
+        padding-bottom: 112px;
+    }
+
+    #resignationLetterContianer > .oh-wrapper,
+    #resignationLetterContianer > .oh-table_sticky--wrapper {
+        margin-right: 12px;
+        margin-left: 12px;
+    }
+
+    #resignationLetterContianer .oh-faq-cards {
+        grid-template-columns: 1fr;
+    }
+
+    #resignationLetterContianer .oh-faq-card {
+        min-height: 0;
+        padding: 16px;
+    }
+}

@@ -1,5 +1,5 @@
 {% load i18n %}{% load horillafilters %}{% load basefilters %}
-<div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+<div class="leave-request-detail oh-modal__dialog--navigation">
     <button
         hx-get="{% url 'one-request-view' previous %}?instances_ids={{requests_ids}}&dashboard={{dashboard}}"
         hx-target="#objectDetailsModalW25Target"
@@ -27,213 +27,176 @@
             aria-label="{% trans 'chevron forward outline' %}"
         ></ion-icon>
     </button>
-</div>
-<div class="oh-modal__dialog-header">
-    <span class="oh-modal__dialog-title">
-        {% trans "Details" %}
-    </span>
-    <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
+
+    <div class="leave-request-detail__header">
+        <div>
+            <span class="leave-request-detail__eyebrow">{% trans "Leave Request" %}</span>
+            <h2>{% trans "Details" %}</h2>
+        </div>
+        <span class="leave-request-detail__status leave-request-detail__status--{{ leave_request.status }}">
+            {{ leave_request.get_status_display }}
+        </span>
         <button
-            class="oh-modal__close--custom"
-            onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
+            type="button"
+            class="oh-modal__close leave-request-detail__close"
+            aria-label="{% trans 'Close' %}"
+            onclick="this.closest('.oh-modal--show').classList.remove('oh-modal--show')"
         >
             <ion-icon name="close-outline"></ion-icon>
         </button>
-    </button>
-</div>
-<div class="oh-modal__dialog-body oh-modal__dialog-relative">
-    <a
-        class="oh-timeoff-modal__profile-content"
-        style="text-decoration: none"
-        href="{% url 'employee-view-individual' leave_request.employee_id.id %}"
-    >
-        <div class="oh-profile mb-2">
-            <div class="oh-profile__avatar">
-                <img
-                    src="{{leave_request.employee_id.get_avatar}}"
-                    class="oh-profile__image me-2"
-                    alt="{% trans 'Mary Magdalene' %}"
-                >
-            </div>
-            <div class="oh-timeoff-modal__profile-info">
-                <span class="oh-timeoff-modal__user fw-bold">{{ leave_request.employee_id }}</span>
-                <span
-                    class="oh-timeoff-modal__user m-0"
-                    style="font-size: 18px; color: #4d4a4a"
-                >
+    </div>
+
+    <div class="leave-request-detail__body">
+        <a
+            class="leave-request-detail__profile"
+            href="{% url 'employee-view-individual' leave_request.employee_id.id %}"
+        >
+            <img
+                src="{{ leave_request.employee_id.get_avatar }}"
+                class="leave-request-detail__avatar"
+                alt="{{ leave_request.employee_id }}"
+            >
+            <span class="leave-request-detail__profile-info">
+                <strong>{{ leave_request.employee_id }}</strong>
+                <span>
                     {{ leave_request.employee_id.employee_work_info.department_id }} /
-                    {{ leave_request.employee_id.employee_work_info.job_position_id }}</span>
-            </div>
-        </div>
-    </a>
+                    {{ leave_request.employee_id.employee_work_info.job_position_id }}
+                </span>
+            </span>
+        </a>
 
-    <div class="oh-modal__dialog-header pt-0">
-        <div class="oh-timeoff-modal__stats-container">
-            <div class="oh-timeoff-modal__stat">
-                <span class="oh-timeoff-modal__stat-title">{% trans "Leave Type" %}</span>
-                <span class="oh-timeoff-modal__stat-count">{{ leave_request.leave_type_id }}</span>
-            </div>
-            <div class="oh-timeoff-modal__stat">
-                <span class="oh-timeoff-modal__stat-title">{% trans "Days" %}</span>
-                <span class="oh-timeoff-modal__stat-count">{{ leave_request.requested_days }}</span>
-            </div>
-        </div>
-
-        <div class="oh-timeoff-modal__stats-container mt-3">
-            <div class="oh-timeoff-modal__stat">
-                <span class="oh-timeoff-modal__stat-title">{% trans "Start Date" %}</span>
-                <span class="oh-timeoff-modal__stat-count dateformat_changer">{{ leave_request.start_date }}</span>
-            </div>
-            <div class="oh-timeoff-modal__stat">
-                <span class="oh-timeoff-modal__stat-title">{% trans "Start Date Breakdown" %}</span>
-                <span class="oh-timeoff-modal__stat-count">{{ leave_request.get_start_date_breakdown_display }}</span>
-            </div>
-        </div>
-        <div class="oh-timeoff-modal__stats-container mt-3">
-            <div class="oh-timeoff-modal__stat">
-                <span class="oh-timeoff-modal__stat-title">{% trans "End Date" %}</span>
-                <span class="oh-timeoff-modal__stat-count dateformat_changer">{{ leave_request.end_date }}</span>
-            </div>
-            <div class="oh-timeoff-modal__stat">
-                <span class="oh-timeoff-modal__stat-title">{% trans "End Date Breakdown" %}</span>
-                <span class="oh-timeoff-modal__stat-count">{{ leave_request.get_end_date_breakdown_display }}</span>
-            </div>
-        </div>
-        <div class="oh-timeoff-modal__stats-container mt-3">
-            <div class="oh-timeoff-modal__stat">
-                <span class="oh-timeoff-modal__stat-title">{% trans "Created Date" %}</span>
-                <span class="oh-timeoff-modal__stat-count dateformat_changer">{{ leave_request.requested_date }}</span>
-            </div>
-            <div class="oh-timeoff-modal__stat">
-                <span class="oh-timeoff-modal__stat-title">{% trans "Created By" %}</span>
-                <span class="oh-timeoff-modal__stat-count">{{ leave_request.created_by }}</span>
-            </div>
-        </div>
-        {% if leave_request.multiple_approvals %}
-            <div class="oh-timeoff-modal__stats w-100 mt-3">
-                <div class="oh-timeoff-modal__stat">
-                    <span class="oh-timeoff-modal__stat-title">{% trans "Multiple Approvals" %}</span>
-                    {% for approval in  leave_request.multiple_approvals.approvals %}
-                        <div class="oh-timeoff-modal__stat-description">
-                            {{ forloop.counter }}.{{ approval.manager_id }} :
-                            {% if approval.is_approved %}{% trans "Approved" %}
-                            {% else %}
-                                {% if approval.is_rejected %}
-                                    {% trans "Rejected" %}
-                                {% else %}
-                                    {% trans "Not Marked" %}
-                                {% endif %}
-                            {% endif %}
-                        </div>
-                    {% endfor %}
+        <section class="leave-request-detail__section" aria-label="{% trans 'Leave details' %}">
+            <div class="leave-request-detail__summary">
+                <div class="leave-request-detail__summary-item">
+                    <span>{% trans "Leave Type" %}</span>
+                    <strong>{{ leave_request.leave_type_id }}</strong>
+                </div>
+                <div class="leave-request-detail__summary-item leave-request-detail__summary-item--days">
+                    <span>{% trans "Requested Days" %}</span>
+                    <strong>{{ leave_request.requested_days }}</strong>
                 </div>
             </div>
+
+            <div class="leave-request-detail__grid">
+                <div class="leave-request-detail__item">
+                    <span>{% trans "Start Date" %}</span>
+                    <strong class="dateformat_changer">{{ leave_request.start_date }}</strong>
+                </div>
+                <div class="leave-request-detail__item">
+                    <span>{% trans "Start Date Breakdown" %}</span>
+                    <strong>{{ leave_request.get_start_date_breakdown_display }}</strong>
+                </div>
+                <div class="leave-request-detail__item">
+                    <span>{% trans "End Date" %}</span>
+                    <strong class="dateformat_changer">{{ leave_request.end_date }}</strong>
+                </div>
+                <div class="leave-request-detail__item">
+                    <span>{% trans "End Date Breakdown" %}</span>
+                    <strong>{{ leave_request.get_end_date_breakdown_display }}</strong>
+                </div>
+                <div class="leave-request-detail__item">
+                    <span>{% trans "Created Date" %}</span>
+                    <strong class="dateformat_changer">{{ leave_request.requested_date }}</strong>
+                </div>
+                <div class="leave-request-detail__item">
+                    <span>{% trans "Created By" %}</span>
+                    <strong>{{ leave_request.created_by }}</strong>
+                </div>
+            </div>
+        </section>
+
+        {% if leave_request.multiple_approvals %}
+            <section class="leave-request-detail__section leave-request-detail__approvals">
+                <h3>{% trans "Multiple Approvals" %}</h3>
+                <ol>
+                    {% for approval in leave_request.multiple_approvals.approvals %}
+                        <li>
+                            <span>{{ approval.manager_id }}</span>
+                            {% if approval.is_approved %}
+                                <span class="leave-request-detail__approval-status leave-request-detail__approval-status--approved">{% trans "Approved" %}</span>
+                            {% elif approval.is_rejected %}
+                                <span class="leave-request-detail__approval-status leave-request-detail__approval-status--rejected">{% trans "Rejected" %}</span>
+                            {% else %}
+                                <span class="leave-request-detail__approval-status">{% trans "Not Marked" %}</span>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ol>
+            </section>
         {% endif %}
 
-        <div class="oh-timeoff-modal__stats w-100 mt-3">
-            <div class="oh-timeoff-modal__stat">
-                <span class="oh-timeoff-modal__stat-title">{% trans "Leave Description" %}</span>
-                <div class="oh-timeoff-modal__stat-description">{{ leave_request.description }}</div>
-            </div>
-        </div>
+        <section class="leave-request-detail__section leave-request-detail__description">
+            <h3>{% trans "Leave Description" %}</h3>
+            <p>{{ leave_request.description|default:"—" }}</p>
+        </section>
+
         {% if leave_request.reject_reason %}
             {% if leave_request.status == "cancelled" %}
-                <div class="oh-timeoff-modal__stats w-100 mt-3 p-2 row-status--gray diff-cell">
-                    <div class="oh-timeoff-modal__stat">
-                        <span class="oh-timeoff-modal__stat-title">{% trans "Reason for Cancellation" %}</span>
-                        <div class="oh-timeoff-modal__stat-description">{{ leave_request.reject_reason }}</div>
-                    </div>
-                </div>
-            {% elif leave_request.status == "rejected"  or leave_request.status == "cancelled" %}
-                <div class="oh-timeoff-modal__stats w-100 mt-3 p-2 row-status--red">
-                    <div class="oh-timeoff-modal__stat">
-                        <span class="oh-timeoff-modal__stat-title">{% trans "Reason for Rejection" %}</span>
-                        <div class="oh-timeoff-modal__stat-description">{{ leave_request.reject_reason }}</div>
-                    </div>
-                </div>
+                <section class="leave-request-detail__notice leave-request-detail__notice--cancelled">
+                    <h3>{% trans "Reason for Cancellation" %}</h3>
+                    <p>{{ leave_request.reject_reason }}</p>
+                </section>
+            {% elif leave_request.status == "rejected" %}
+                <section class="leave-request-detail__notice leave-request-detail__notice--rejected">
+                    <h3>{% trans "Reason for Rejection" %}</h3>
+                    <p>{{ leave_request.reject_reason }}</p>
+                </section>
             {% endif %}
         {% endif %}
+
         {% if leave_request.attachment %}
-            <a href="{{leave_request.attachment.url}}" target="_blank" class="oh-timeoff-modal__download-link">
-                <ion-icon class="me-1" name="download-outline"></ion-icon>
-                <span class="oh-timeoff-modal__download-link-text"></span>
+            <a href="{{ leave_request.attachment.url }}" target="_blank" rel="noopener" class="leave-request-detail__attachment">
+                <ion-icon name="attach-outline"></ion-icon>
                 {% trans "View attachment" %}
+                <ion-icon name="open-outline"></ion-icon>
             </a>
         {% endif %}
     </div>
+
     {% if request.user|is_reportingmanager or perms.leave.change_leaverequest or request.user|is_leave_approval_manager or perms.base.add_penaltyaccounts %}
-        <div class="oh-modal__button-container text-center mt-3">
-            <div class="oh-btn-group">
-                {% if request.user|is_reportingmanager or perms.leave.change_leaverequest or request.user|is_leave_approval_manager %}
-                    {% if leave_request.status == 'requested' %}
-                        <a
-                            type="submit"
-                            href="{% url 'request-approve' leave_request.id %}"
-                            title="{% trans 'Approve' %}"
-                            class="oh-btn oh-btn--success w-100"
-                        >
-                            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                        </a>
-                    {% else %}
-                        <a
-                            type="submit"
-                            href="#"
-                            title="{% trans 'Approve' %}"
-                            class="
-                                oh-btn oh-btn--success oh-btn--disabled
-                                w-100
-                            "
-                        >
-                            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                        </a>
-                    {% endif %}
+        <div class="leave-request-detail__actions">
+            {% if request.user|is_reportingmanager or perms.leave.change_leaverequest or request.user|is_leave_approval_manager %}
+                {% if leave_request.status == 'requested' %}
+                    <a href="{% url 'request-approve' leave_request.id %}" title="{% trans 'Approve' %}" class="oh-btn leave-request-detail__action leave-request-detail__action--approve">
+                        <ion-icon name="checkmark-outline"></ion-icon>{% trans "Approve" %}
+                    </a>
+                {% else %}
+                    <span title="{% trans 'Already processed' %}" class="oh-btn leave-request-detail__action leave-request-detail__action--approve is-disabled" aria-disabled="true">
+                        <ion-icon name="checkmark-outline"></ion-icon>{% trans "Approve" %}
+                    </span>
                 {% endif %}
-                {% if request.user|is_reportingmanager or request.user|is_leave_approval_manager or perms.base.add_penaltyaccounts %}
-                    <button
+            {% endif %}
+            {% if request.user|is_reportingmanager or request.user|is_leave_approval_manager or perms.base.add_penaltyaccounts %}
+                <button
+                    data-toggle="oh-modal-toggle"
+                    data-target="#objectCreateModal"
+                    hx-target="#objectCreateModalTarget"
+                    hx-get="{% url 'leave-cut-penalty' leave_request.id %}"
+                    type="button"
+                    class="oh-btn leave-request-detail__action leave-request-detail__action--penalty"
+                    title="{% trans 'Penalty' %}"
+                >
+                    <ion-icon name="information-circle-outline"></ion-icon>{% trans "Penalty" %}
+                </button>
+            {% endif %}
+            {% if request.user|is_reportingmanager or perms.leave.change_leaverequest or request.user|is_leave_approval_manager %}
+                {% if leave_request.status != 'rejected' and leave_request.status != 'cancelled' and leave_request.end_date >= current_date %}
+                    <a
                         data-toggle="oh-modal-toggle"
-                        data-target="#objectCreateModal"
-                        hx-target="#objectCreateModalTarget"
-                        hx-get="{% url 'leave-cut-penalty' leave_request.id %}"
-                        type="submit"
-                        class="oh-btn oh-btn--info w-100"
-                        title="{% trans 'Penalty' %}"
+                        data-target="#rejectModal"
+                        hx-get="{% url 'request-cancel' leave_request.id %}"
+                        hx-target="#rejectForm"
+                        title="{% trans 'Reject' %}"
+                        class="oh-btn leave-request-detail__action leave-request-detail__action--reject"
                     >
-                        <ion-icon
-                            name="information-circle-outline"
-                            role="img"
-                            class="md hydrated"
-                            aria-label="{% trans 'information circle outline' %}"
-                        ></ion-icon>
-                    </button>
+                        <ion-icon name="close-circle-outline"></ion-icon>{% trans "Reject" %}
+                    </a>
+                {% else %}
+                    <span title="{% trans 'Already processed' %}" class="oh-btn leave-request-detail__action leave-request-detail__action--reject is-disabled" aria-disabled="true">
+                        <ion-icon name="close-circle-outline"></ion-icon>{% trans "Reject" %}
+                    </span>
                 {% endif %}
-                {% if request.user|is_reportingmanager or perms.leave.change_leaverequest or request.user|is_leave_approval_manager %}
-                    {% if leave_request.status != 'rejected' and leave_request.status != 'cancelled' and leave_request.end_date >= current_date %}
-                        <a
-                            type="submit"
-                            data-toggle="oh-modal-toggle"
-                            data-target="#rejectModal"
-                            hx-get="{% url 'request-cancel' leave_request.id %}"
-                            hx-target="#rejectForm"
-                            title="{% trans 'Reject' %}"
-                            class="oh-btn oh-btn--danger w-100"
-                        >
-                            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                        </a>
-                    {% else %}
-                        <a
-                            type="submit"
-                            href="#"
-                            title="{% trans 'Reject' %}"
-                            class="
-                                oh-btn oh-btn--danger oh-btn--disabled
-                                w-100
-                            "
-                        >
-                            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                        </a>
-                    {% endif %}
-                {% endif %}
-            </div>
+            {% endif %}
         </div>
     {% endif %}
 </div>

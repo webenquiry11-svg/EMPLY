@@ -8,6 +8,46 @@
     <div class="oh-wrapper">
         <div class="oh-dashboard row" id="dashboard">
             <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-12">
+                <section class="oh-card-dashboard oh-card-dashboard--no-scale mb-4" aria-label="{% trans 'Payroll administration' %}">
+                    <div class="oh-card-dashboard__header">
+                        <span class="oh-card-dashboard__title">{% trans "Payroll Administration" %}</span>
+                    </div>
+                    <div class="oh-card-dashboard__body d-flex flex-wrap gap-2">
+                        {% if request.user.is_superuser %}
+                            <a class="oh-btn oh-btn--secondary" href="{% url 'super-admin-dashboard' %}">{% trans "Super Admin console" %}</a>
+                        {% endif %}
+                        {% if perms.payroll.view_payslip %}
+                            <a class="oh-btn oh-btn--secondary" href="{% url 'view-payslip' %}">{% trans "Payslips" %}</a>
+                        {% endif %}
+                        {% if perms.payroll.add_payslip or request.user.is_superuser %}
+                            <a class="oh-btn oh-btn--secondary" href="{% url 'payroll-run-list' %}">{% trans "Payroll runs and approvals" %}</a>
+                        {% endif %}
+                        {% if perms.payroll.add_payslip %}
+                            <a class="oh-btn oh-btn--secondary" href="{% url 'generate-payslip' %}">{% trans "Generate Payroll" %}</a>
+                        {% endif %}
+                        {% if perms.employee.view_employee %}
+                            <a class="oh-btn oh-btn--secondary" href="{% url 'employee-view' %}">{% trans "Employee directory" %}</a>
+                        {% endif %}
+                        {% if perms.payroll.view_contract %}
+                            <a class="oh-btn oh-btn--secondary" href="{% url 'view-contract' %}">{% trans "Contracts and salary" %}</a>
+                        {% endif %}
+                        {% if perms.payroll.view_allowance %}
+                            <a class="oh-btn oh-btn--secondary" href="{% url 'view-allowance' %}">{% trans "Allowances" %}</a>
+                        {% endif %}
+                        {% if perms.payroll.view_deduction %}
+                            <a class="oh-btn oh-btn--secondary" href="{% url 'view-deduction' %}">{% trans "Deductions" %}</a>
+                        {% endif %}
+                        {% if perms.payroll.view_loanaccount %}
+                            <a class="oh-btn oh-btn--secondary" href="{% url 'view-loan' %}">{% trans "Loans" %}</a>
+                        {% endif %}
+                        {% if perms.payroll.view_reimbursement %}
+                            <a class="oh-btn oh-btn--secondary" href="{% url 'view-reimbursement' %}">{% trans "Reimbursements" %}</a>
+                        {% endif %}
+                        {% if perms.payroll.view_payrollsettings %}
+                            <a class="oh-btn oh-btn--secondary" href="{% url 'payroll-settings' %}">{% trans "Payroll settings" %}</a>
+                        {% endif %}
+                    </div>
+                </section>
                 <div class="oh-dashboard__cards row">
                     <div class="col-12 col-sm-12 col-md-6 col-lg-3 filter" id="paidPayslip">
                         <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--success" >
@@ -58,11 +98,29 @@
                         </div>
                     </div>
                 </div>
+                <div class="d-flex flex-wrap gap-3 mt-3">
+                    <div class="oh-card-dashboard oh-card-dashboard--no-scale p-3">
+                        <span class="oh-card-dashboard__title">{% trans "Paid net payroll" %}</span>
+                        <strong>
+                            {% if position == "prefix" %}{{ currency }} {% endif %}
+                            {{ paid_net_total|floatformat:2 }}
+                            {% if position != "prefix" %} {{ currency }}{% endif %}
+                        </strong>
+                    </div>
+                    <div class="oh-card-dashboard oh-card-dashboard--no-scale p-3">
+                        <span class="oh-card-dashboard__title">{% trans "Confirmed net payroll" %}</span>
+                        <strong>
+                            {% if position == "prefix" %}{{ currency }} {% endif %}
+                            {{ confirmed_net_total|floatformat:2 }}
+                            {% if position != "prefix" %} {{ currency }}{% endif %}
+                        </strong>
+                    </div>
+                </div>
 
                 <div class="oh-btn-group ms-2 mt-3 justify-content-between">
                     <div style = "cursor: pointer;">
                         <label for="monthYearField" class="text-danger fw-bold" style = "cursor: pointer;">{% trans "Select Month and Year:" %}</label>
-                        <input class="oh-select p-3 m-1" type="month" id="monthYearField" name="monthYearField" style = "cursor: pointer;">
+                        <input class="oh-select p-3 m-1" type="month" id="monthYearField" name="period" value="{{ period_value }}" style = "cursor: pointer;" aria-label="{% trans 'Filter payroll overview by month' %}">
                     </div>
 
                     <div class="oh-main__titlebar-button-container">

@@ -7,6 +7,8 @@ This module is used to register context processor`
 import re
 
 from django.apps import apps
+from django.contrib.auth.decorators import login_required as django_login_required
+from django.http import HttpResponseBadRequest
 from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import path, reverse
@@ -21,7 +23,7 @@ from employee.models import (
     ProfileEditFeature,
 )
 from horilla import horilla_apps
-from horilla.decorators import hx_request_required, login_required, permission_required
+from horilla.decorators import hx_request_required, permission_required
 from horilla.http.response import HorillaRedirect
 from horilla.methods import get_horilla_model_class
 
@@ -78,7 +80,7 @@ def get_companies(request):
     return {"all_companies": companies, "company_selected": company_selected}
 
 
-@login_required
+@django_login_required
 @hx_request_required
 @permission_required("base.change_company")
 def update_selected_company(request):
@@ -86,20 +88,21 @@ def update_selected_company(request):
     This method is used to update the selected company on the session
     """
     company_id = request.GET.get("company_id")
-    user = request.user.employee_get
+    user = getattr(request.user, "employee_get", None)
+    if user is None and not (
+        request.user.is_superuser or request.user.has_perm("base.change_company")
+    ):
+        return HttpResponseBadRequest(_("Employee profile is required."))
     user_company = getattr(
         getattr(user, "employee_work_info", None), "company_id", None
     )
+    if company_id == "all":
+        company = AllCompany()
+    else:
+        company = Company.objects.filter(id=company_id).first()
+        if company is None:
+            return HttpResponseBadRequest(_("Select a valid company."))
     request.session["selected_company"] = company_id
-    company = (
-        AllCompany()
-        if company_id == "all"
-        else (
-            Company.objects.filter(id=company_id).first()
-            if Company.objects.filter(id=company_id).first()
-            else AllCompany()
-        )
-    )
     previous_path = request.GET.get("next", "/")
     # Define the regex pattern for the path
     pattern = r"^/employee/employee-view/\d+/$"
@@ -113,7 +116,7 @@ def update_selected_company(request):
             )
             if emp_company != company:
                 text = "Other Company"
-                if company_id == user_company:
+                if user_company and company_id == str(user_company.id):
                     text = "My Company"
                 company = {
                     "company": company.company,
@@ -133,7 +136,7 @@ def update_selected_company(request):
 
     if company_id == "all":
         text = str(_("All companies"))
-    elif company_id == user_company:
+    elif user_company and company_id == str(user_company.id):
         text = "My Company"
     else:
         text = "Other Company"

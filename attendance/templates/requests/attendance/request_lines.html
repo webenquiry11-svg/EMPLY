@@ -103,6 +103,7 @@
                                                 <span class="oh-profile__name oh-text--dark">{{attendance.employee_id}}
                                                 </span>
                                             </div>
+                                            {% include "requests/attendance/status_badges.html" %}
                                         </div>
                                         <div data-cell-index="1" data-cell-index="1"
                                             class="oh-sticky-table__td {% if 'attendance_worked_hour' in attendance.requested_fields or attendance.request_type == 'create_request' %} diff-cell{% endif %}">
@@ -159,7 +160,6 @@
                                                 hx-target="#commentContainer" data-target='#activitySidebar'
                                                 title='{% trans "Add / View Comment" %}'
                                                 class="oh-btn oh-btn--light oh-activity-sidebar__open w-100"
-                                                style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;"
                                                 onclick="event.stopPropagation()">
                                                 <ion-icon name="newspaper-outline" role="img" class="md hydrated"
                                                     aria-label="{% trans 'newspaper outline' %}"></ion-icon>
@@ -324,6 +324,7 @@
                                                 </div>
                                                 <span class="oh-profile__name oh-text--dark">{{attendance.employee_id}}</span>
                                             </div>
+                                            {% include "requests/attendance/status_badges.html" %}
                                         </div>
                                         <div data-cell-index="21" class="oh-sticky-table__td">
                                             {{attendance.batch_attendance_id}}

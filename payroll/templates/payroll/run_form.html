@@ -1,0 +1,27 @@
+{% extends "payroll/workflow_base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Create payroll preview" %}{% endblock %}
+{% block content %}
+<section class="oh-card">
+    <div class="oh-card__header"><h1 class="oh-card__title">{% trans "Create payroll preview" %}</h1></div>
+    <div class="oh-card__body">
+        <p>{% trans "This preview uses Horilla's existing payroll calculation engine. It does not create payslips or transfer money until an authorized user submits the run." %}</p>
+        <form method="post">
+            {% csrf_token %}
+            {% if form.non_field_errors %}<div class="oh-alert oh-alert--danger">{{ form.non_field_errors }}</div>{% endif %}
+            {% for field in form %}
+                <div class="payroll-workflow__form-row">
+                    <label class="oh-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+                    {% for error in field.errors %}<div class="oh-alert oh-alert--danger">{{ error }}</div>{% endfor %}
+                </div>
+            {% endfor %}
+            <div class="payroll-workflow__actions">
+                <button class="oh-btn oh-btn--secondary" type="submit">{% trans "Calculate and validate preview" %}</button>
+                <a class="oh-btn oh-btn--secondary" href="{% url 'payroll-run-list' %}">{% trans "Cancel" %}</a>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

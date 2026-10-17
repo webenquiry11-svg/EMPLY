@@ -1,23 +1,25 @@
 {% extends "index.html" %} {% load i18n %} {% block content %}
 <style>
-    html:has(#view-container),
-    body:has(#view-container),
-    body:has(#view-container) #main,
-    body:has(#view-container) .oh-wrapper-main {
-        background: #f5faf9 !important;
+    html:has(body.employee-subsection-theme),
+    body.employee-subsection-theme,
+    body.employee-subsection-theme #main,
+    body.employee-subsection-theme .oh-wrapper-main,
+    body.employee-subsection-theme #main-section,
+    body.employee-subsection-theme #main-section-data {
+        background: #e8f5f7 !important;
     }
 
-    body:has(#view-container) #view-container {
+    body.employee-subsection-theme #view-container {
         min-height: calc(100vh - 235px);
-        background: #f5faf9;
-    }
-
-    body:has(#view-container) #view-container > .oh-wrapper {
         background: transparent;
-        padding-bottom: 110px;
     }
 
-    body:has(#view-container) #view-container .oh-empty {
+    body.employee-subsection-theme #view-container > .oh-wrapper {
+        background: transparent;
+        padding-bottom: 24px;
+    }
+
+    body.employee-subsection-theme #view-container .oh-empty {
         min-height: 420px;
         border: 1px solid #d6e9e6;
         border-radius: 18px;
@@ -26,11 +28,11 @@
     }
 
     @media (max-width: 640px) {
-        body:has(#view-container) #view-container {
+        body.employee-subsection-theme #view-container {
             min-height: calc(100vh - 185px);
         }
 
-        body:has(#view-container) #view-container .oh-empty {
+        body.employee-subsection-theme #view-container .oh-empty {
             min-height: 330px;
             margin: 0 12px;
         }

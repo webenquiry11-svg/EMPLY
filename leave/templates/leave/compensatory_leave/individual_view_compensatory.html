@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load basefilters %}
 {% if instances_ids %}
-    <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+    <div class="oh-modal__dialog oh-modal__dialog--navigation compensatory-request-detail__navigation m-0 p-0">
         <button
             hx-get="{% url 'compensatory-leave-individual-view' previous %}?instances_ids={{instances_ids}}&my_request={{my_request}}&dashboard={{dashboard}}"
             hx-target="#objectDetailsModalW25Target"
@@ -30,10 +30,13 @@
 {% endif %}
 </div>
 
-<div class="oh-modal__dialog-header">
+<div class="oh-modal__dialog-header compensatory-request-detail__header">
     <h2 class="oh-modal__dialog-title" id="objectDetailsModalLabel">
         {% trans "Details" %}
     </h2>
+    <span class="compensatory-request-detail__status" data-status="{{ comp_leave_req.status }}">
+        {{ comp_leave_req.get_status_display }}
+    </span>
     <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon
             name="close-outline"
@@ -43,7 +46,7 @@
         ></ion-icon>
     </button>
 </div>
-<div class="oh-modal__dialog-body">
+<div class="oh-modal__dialog-body compensatory-request-detail__body">
     <a
         class="oh-timeoff-modal__profile-content"
         style="text-decoration: none"
@@ -68,7 +71,7 @@
             </div>
         </div>
     </a>
-    <div class="oh-modal__dialog-header pt-0">
+    <div class="oh-modal__dialog-header compensatory-request-detail__content pt-0">
         <div class="oh-timeoff-modal__stats-container mt-3">
             <div class="oh-timeoff-modal__stat">
                 <span class="oh-timeoff-modal__stat-title">{% trans "Requested Days" %}</span>
@@ -94,7 +97,7 @@
             <div class="oh-timeoff-modal__stat">
                 <span class="oh-timeoff-modal__stat-title">{% trans "Attendance Days" %}</span>
                 {% for attendance in comp_leave_req.attendance_id.all %}
-                    <div class="oh-timeoff-modal__stat-count">{{ attendance.attendance_date }}</div>
+                    <span class="compensatory-request-detail__date">{{ attendance.attendance_date }}</span>
                 {% endfor %}
             </div>
             <div class="oh-timeoff-modal__stat">

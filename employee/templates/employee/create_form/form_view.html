@@ -1,7 +1,7 @@
 {% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
 <div id="view-container">
     <section
-        class="oh-wrapper oh-main__topbar oh-profile-section__topbar"
+        class="oh-wrapper oh-main__topbar oh-profile-section__topbar employee-create-head"
         x-data="{searchShow: false}"
     >
         <div class="oh-main__titlebar oh-main__titlebar--left">
@@ -25,7 +25,7 @@
             </ul>
         </div>
     </section>
-    <div id="personal-info">
+    <div id="personal-info" class="employee-create-form">
         {% include 'employee/create_form/personal_info.html' %}
     </div>
     {% endblock content %}

@@ -1,0 +1,59 @@
+{% extends "payroll/super_admin_base.html" %}
+{% load i18n %}
+{% block title %}{% trans "System-wide payroll overview" %}{% endblock %}
+{% block content %}
+<section class="oh-card mb-4">
+    <div class="oh-card__header">
+        <h1 class="oh-card__title">{% trans "Super Admin — system-wide payroll overview" %}</h1>
+        <p>{% trans "Cross-company totals and administration are available only to authenticated Django superusers." %}</p>
+    </div>
+    <div class="oh-card__body super-admin-grid">
+        <article class="oh-card-dashboard super-admin-card"><span class="oh-card-dashboard__title">{% trans "Companies" %}</span><strong class="oh-card-dashboard__count">{{ company_count }}</strong></article>
+        <article class="oh-card-dashboard super-admin-card"><span class="oh-card-dashboard__title">{% trans "User accounts" %}</span><strong class="oh-card-dashboard__count">{{ user_count }}</strong></article>
+        <article class="oh-card-dashboard super-admin-card"><span class="oh-card-dashboard__title">{% trans "Paid payslips" %}</span><strong class="oh-card-dashboard__count">{{ paid_count }}</strong></article>
+        <article class="oh-card-dashboard super-admin-card"><span class="oh-card-dashboard__title">{% trans "Saved paid net total" %}</span><strong class="oh-card-dashboard__count">{{ paid_total|floatformat:2 }}</strong></article>
+    </div>
+</section>
+<section class="oh-card mb-4">
+    <div class="oh-card__header"><h2 class="oh-card__title">{% trans "Administration" %}</h2></div>
+    <div class="oh-card__body super-admin-actions">
+        <a class="oh-btn oh-btn--secondary" href="{% url 'super-admin-users' %}">{% trans "Create or manage accounts" %}</a>
+        <a class="oh-btn oh-btn--secondary" href="{% url 'super-admin-groups' %}">{% trans "Manage groups and permissions" %}</a>
+        <a class="oh-btn oh-btn--secondary" href="{% url 'super-admin-companies' %}">{% trans "Manage companies" %}</a>
+        <a class="oh-btn oh-btn--secondary" href="{% url 'super-admin-payroll-settings' %}">{% trans "Configure payroll" %}</a>
+        <a class="oh-btn oh-btn--secondary" href="{% url 'view-payroll-dashboard' %}">{% trans "Payroll operator dashboard" %}</a>
+        <a class="oh-btn oh-btn--secondary" href="{% url 'employee-view' %}">{% trans "Employee directory" %}</a>
+        <a class="oh-btn oh-btn--secondary" href="{% url 'view-payslip' %}">{% trans "Payslip history" %}</a>
+        <a class="oh-btn oh-btn--secondary" href="{% url 'payroll-run-list' %}">{% trans "Run approvals" %}</a>
+        <a class="oh-btn oh-btn--secondary" href="{% url 'super-admin-audit' %}">{% trans "Review audit log" %}</a>
+    </div>
+</section>
+<section class="oh-card mb-4">
+    <div class="oh-card__header d-flex justify-content-between align-items-center">
+        <h2 class="oh-card__title">{% trans "Payroll errors and rejected previews" %}</h2>
+        <a href="{% url 'payroll-run-list' %}">{% trans "All runs" %}</a>
+    </div>
+    <div class="oh-card__body super-admin-table-wrap">
+        <table class="oh-table super-admin-table">
+            <thead><tr><th>{% trans "Company" %}</th><th>{% trans "Period" %}</th><th>{% trans "Attempt" %}</th><th>{% trans "Error details" %}</th><th></th></tr></thead>
+            <tbody>{% for run in error_runs %}
+                <tr><td>{{ run.company }}</td><td>{{ run.start_date }} – {{ run.end_date }}</td><td>{{ run.attempt }}</td><td>{{ run.error_summary|default:"—"|truncatechars:180 }}</td><td><a href="{% url 'payroll-run-detail' run.pk %}">{% trans "Open" %}</a></td></tr>
+            {% empty %}<tr><td colspan="5">{% trans "No payroll run errors are recorded." %}</td></tr>{% endfor %}</tbody>
+        </table>
+    </div>
+</section>
+<section class="oh-card">
+    <div class="oh-card__header d-flex justify-content-between align-items-center">
+        <h2 class="oh-card__title">{% trans "Recent approval events" %}</h2>
+        <a href="{% url 'super-admin-audit' %}">{% trans "Full audit history" %}</a>
+    </div>
+    <div class="oh-card__body super-admin-table-wrap">
+        <table class="oh-table super-admin-table">
+            <thead><tr><th>{% trans "When" %}</th><th>{% trans "Company" %}</th><th>{% trans "Actor" %}</th><th>{% trans "Transition" %}</th><th>{% trans "Comment" %}</th></tr></thead>
+            <tbody>{% for event in audit_events %}
+                <tr><td>{{ event.created_at }}</td><td>{{ event.payroll_run.company }}</td><td>{{ event.actor|default:"—" }}</td><td>{{ event.from_status|default:"created" }} → {{ event.to_status }}</td><td>{{ event.comment|default:"—"|truncatechars:120 }}</td></tr>
+            {% empty %}<tr><td colspan="5">{% trans "No approval events have been recorded." %}</td></tr>{% endfor %}</tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

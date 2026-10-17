@@ -32,10 +32,10 @@
     }
 </style>
 
-<div class="oh-layout--grid-3">
+<div class="oh-layout--grid-3 leave-type-card-grid">
     {% for leave_type in leave_types %}
         <div
-            class="oh-kanban-card {% if leave_type.payment == 'paid' %} row-status--yellow {% else %} row-status--orange {% endif %}"
+            class="oh-kanban-card leave-type-card {% if leave_type.payment == 'paid' %} row-status--yellow {% else %} row-status--orange {% endif %}"
             data-toggle="oh-modal-toggle"
             data-target="#objectDetailsModal"
             hx-get="{% url 'leave-type-individual-view' leave_type.id %}?instances_ids={{requests_ids}}"
@@ -52,16 +52,15 @@
             </div>
 
             <div class="oh-kanban-card__details">
-                <div style="width: 95%; overflow: hidden">
+                <div class="leave-type-card__heading">
                     <span
-                        class="oh-card__title oh-card__title--sm fw-bold"
-                        style="font-size: 18px; word-break: break-word"
+                        class="oh-card__title oh-card__title--sm fw-bold leave-type-card__title"
                     >
                         {{ leave_type.name }}
                     </span>
                 </div>
 
-                <div class="oh-timeoff-modal__stats-container mb-1">
+                <div class="oh-timeoff-modal__stats-container mb-1 leave-type-card__stats">
                     <div class="oh-timeoff-modal__stat mt-1">
                         <span class="oh-timeoff-modal__stat-title fw-bold text-dark">{% trans "Payment" %}</span>
                         <span class="oh-timeoff-modal__stat-title">{{ leave_type.get_payment_display }}</span>
@@ -82,7 +81,7 @@
             {% if perms.leave.change_leavetype or perms.leave.delete_leavetype %}
                 <div class="oh-kanban-card__dots" onclick="event.stopPropagation()">
                     <div class="oh-dropdown" x-data="{show: false}">
-                        <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show">
+                        <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show" aria-label="{% trans 'Leave type actions' %}">
                             <span title='{% trans "Actions" %}'>
                                 <ion-icon name="ellipsis-vertical-sharp"></ion-icon>
                             </span>
@@ -134,7 +133,7 @@
         </div>
     {% endfor %}
 </div>
-<div class="oh-pagination">
+<div class="oh-pagination leave-type-pagination">
     <span class="oh-pagination__page">
         {% trans "Page" %} {{ leave_types.number }}
         {% trans "of" %} {{ leave_types.paginator.num_pages }}.

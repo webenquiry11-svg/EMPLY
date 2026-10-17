@@ -1,23 +1,19 @@
 {% load i18n %}
-<div class="oh-main__titlebar oh-main__titlebar--left">
-    <span class="oh-main__titlebar-title fw-bold mb-0 text-dark">{% trans "Viewed By" %} </span>
-</div>
-<div class="oh-sticky-table mt-3 m-2">
-    <div class="oh-sticky-table__tbody">
-        {% for instance in viewed_by %}
-            <div class="oh-sticky-table__tr">
-                <div class="oh-sticky-table__sd" style="width: 1000px;">
-                    <div class="oh-profile oh-profile--md">
-                        <div class="oh-profile__avatar mr-1">
-                            <img src="{{instance.user.employee_get.get_avatar}}" class="oh-profile__image" />
-                        </div>
-                        <span class="oh-profile__name oh-text--dark">
-                            {{instance.user.employee_get}}
-                            <span class="oh-recuritment_tag" style="font-size: .5rem;">{{instance.created_at}}</span>
-                        </span>
-                    </div>
-                </div>
+{% load tz %}
+<div class="viewed-by-list">
+    {% for instance in viewed_by %}
+        <div class="viewed-by-row">
+            <div class="viewed-by-row__avatar">
+                <img src="{{ instance.user.employee_get.get_avatar }}" alt="" loading="lazy">
             </div>
-        {% endfor %}
-    </div>
+            <div class="viewed-by-row__person">
+                <span class="viewed-by-row__name">{{ instance.user.employee_get }}</span>
+                <time class="viewed-by-row__date" datetime="{{ instance.created_at|date:'c' }}">
+                    {{ instance.created_at|localtime|date:"M j, Y, g:i a" }}
+                </time>
+            </div>
+        </div>
+    {% empty %}
+        <p class="viewed-by-list__empty">{% trans "No views yet." %}</p>
+    {% endfor %}
 </div>

@@ -1,5 +1,6 @@
 {% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
 {% load basefilters %}
+<link rel="stylesheet" href="{% static 'tickets/tickets-theme.css' %}">
 <style>
 	.row-status--grey {
 	  border-left: 4px solid grey;
@@ -37,9 +38,9 @@
 <!-- end of div for showing selected tickets -->
 
 <!-- start of request view  -->
-<div class="oh-wrapper" id="ticketContainer">
+<div class="oh-wrapper ticket-section" id="ticketContainer">
 		{% if request.user.is_superuser %}
-		<div class="oh-card mb-3">
+		<div class="oh-card mb-3 ticket-resolver-panel">
 			<div class="oh-card__body" style="padding: 1rem 1.25rem;">
 				<form method="post" action="{% url 'support-ticket-resolver-update' %}">
 					{% csrf_token %}
@@ -55,7 +56,7 @@
 		</div>
 		{% endif %}
 		<!-- start of Quick filters  -->
-		<div class="d-flex flex-row-reverse mb-2">
+		<div class="d-flex flex-row-reverse mb-2 ticket-status-filters">
 			<span
 				class="me-3 review_ongoing"
 				onclick="$('[name=status]').val('canceled');$('[name=status]').first().change();$('.filterButton').click()"
@@ -116,14 +117,14 @@
 		{% if request.GET.view != 'card' %}
 			<!-- start of selection buttons -->
 			<div
-				class="oh-checkpoint-badge text-success mb-2"
+				class="oh-checkpoint-badge text-success mb-2 ticket-selection-action"
 				id="selectAllTickets"
 				style="cursor: pointer"
 			>
 				{% trans "Select All Tickets" %}
 			</div>
 			<div
-				class="oh-checkpoint-badge text-secondary mb-2 d-none"
+				class="oh-checkpoint-badge text-secondary mb-2 d-none ticket-selection-action"
 				id="unselectAllTickets"
 				style="cursor: pointer"
 			>
@@ -136,12 +137,12 @@
 			>
 			{% trans "Export Tickets" %}
 			</div> {% endcomment %}
-			<div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowTickets" style="display: none"></div>
+			<div class="oh-checkpoint-badge text-danger mb-2 ticket-selection-action" id="selectedShowTickets" style="display: none"></div>
 			<!-- end of selection buttons -->
 		{% endif %}
 		<!-- start of contents -->
-		<div class="oh-tabs">
-			<ul class="oh-tabs__tablist">
+		<div class="oh-tabs ticket-tabs">
+			<ul class="oh-tabs__tablist ticket-tabs__tablist">
 				<li class="oh-tabs__tab" data-target="#tab_1">
 					{% trans "My Tickets" %}
 				</li>

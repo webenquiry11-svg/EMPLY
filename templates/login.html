@@ -10,21 +10,23 @@
         <link
             rel="apple-touch-icon"
             sizes="180x180"
-            href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/apple-touch-icon.png' %}{% endif %}"
+            href="{% if white_label_company.icon %}{{ white_label_company.icon.url }}{% else %}{% static 'images/ui/emply-apple-touch-icon.png' %}?v=20261014{% endif %}"
         >
         <link
             rel="icon"
             type="image/png"
             sizes="32x32"
-            href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-32x32.png' %}{% endif %}"
+            href="{% if white_label_company.icon %}{{ white_label_company.icon.url }}{% else %}{% static 'images/ui/emply-favicon-32.png' %}?v=20261014{% endif %}"
         >
         <link
             rel="icon"
             type="image/png"
             sizes="16x16"
-            href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-16x16.png' %}{% endif %}"
+            href="{% if white_label_company.icon %}{{ white_label_company.icon.url }}{% else %}{% static 'images/ui/emply-favicon-16.png' %}?v=20261014{% endif %}"
         >
+        <link rel="shortcut icon" type="image/png" href="{% if white_label_company.icon %}{{ white_label_company.icon.url }}{% else %}{% static 'images/ui/emply-favicon-32.png' %}?v=20261014{% endif %}">
         <link rel="stylesheet" href="{% static '/build/css/style.min.css' %}?v=20250308">
+        <link rel="stylesheet" href="{% static 'css/emply-alerts.css' %}?v=20261013">
         <link rel="manifest" href="{% static 'build/manifest.json' %}">
 
         <style>
@@ -221,6 +223,623 @@
 
             /* Safety: prevent horizontal overflow */
             html,body,#main{overflow-x:hidden}
+
+            /* EMPLY portal theme */
+            :root {
+                --page-bg: #f2f7f6;
+                --panel-bg: #fff;
+                --accent: #278da0;
+                --deep: #173f50;
+                --muted: #58717a;
+                --soft-border: #dce9e8;
+                --card-radius: 20px;
+            }
+            body {
+                background:
+                    radial-gradient(ellipse at 8% 8%, rgba(39,141,160,.10), transparent 32%),
+                    radial-gradient(ellipse at 92% 88%, rgba(47,87,82,.08), transparent 34%),
+                    #f2f7f6;
+                color: var(--deep);
+            }
+            .login-hero { padding: 40px; }
+            .login-container { max-width: 1180px; }
+            .login-grid {
+                grid-template-columns: minmax(0, 1.08fr) minmax(380px, .92fr);
+                gap: 28px;
+            }
+            .promo {
+                min-height: 510px;
+                align-items: center;
+                padding: 54px;
+                border: 1px solid rgba(255,255,255,.14);
+                border-radius: 24px;
+                background: linear-gradient(145deg, #0a4d60 0%, #176f80 58%, #278da0 100%);
+                box-shadow: 0 24px 60px rgba(10,77,96,.19);
+            }
+            .promo::before {
+                top: -185px;
+                right: -130px;
+                width: 520px;
+                height: 520px;
+                background: radial-gradient(circle, rgba(172,231,226,.24), rgba(172,231,226,.05) 48%, transparent 72%);
+            }
+            .promo::after {
+                right: -40px;
+                bottom: -180px;
+                width: 420px;
+                height: 420px;
+                background: radial-gradient(circle, rgba(122,205,197,.2), rgba(122,205,197,.04) 52%, transparent 72%);
+            }
+            .promo-logo {
+                width: 206px;
+                margin-bottom: 34px;
+                padding: 10px 14px;
+                border-radius: 12px;
+                background: #fff;
+                box-shadow: 0 8px 24px rgba(5,42,51,.12);
+            }
+            .promo-tag {
+                color: rgba(255,255,255,.72);
+                font-size: 11px;
+                letter-spacing: 2.1px;
+            }
+            .promo-tag .accent, .promo-heading .sub { color: #a8e3d5; }
+            .promo-heading {
+                max-width: 590px;
+                margin: 10px 0 18px;
+                color: #fff;
+                font-size: clamp(38px, 4vw, 52px);
+                line-height: 1.08;
+                letter-spacing: -.045em;
+            }
+            .promo-sub {
+                max-width: 470px;
+                color: rgba(255,255,255,.78);
+                font-size: 16px;
+                line-height: 1.65;
+            }
+            .features { flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+            .feature-item {
+                gap: 8px;
+                padding: 9px 12px;
+                border: 1px solid rgba(255,255,255,.18);
+                border-radius: 999px;
+                background: rgba(255,255,255,.09);
+                color: #f4fbfa;
+                font-size: 12px;
+            }
+            .feature-item svg { stroke: #a8e3d5; }
+            .promo-waves { opacity: .65; }
+            .promo-waves svg path { stroke: rgba(255,255,255,.18) !important; }
+            .login-card {
+                max-width: 460px;
+                min-height: 0;
+                padding: 42px 40px 30px;
+                border: 1px solid #e1eae9;
+                border-radius: 20px;
+                box-shadow: 0 22px 55px rgba(23,63,80,.10);
+            }
+            .login-card::before {
+                height: 5px;
+                background: linear-gradient(90deg, #0a4d60, #278da0, #8acbd5);
+            }
+            .card-title { color: #173f50; font-size: 29px; letter-spacing: -.03em; }
+            .card-sub { color: #647b83; line-height: 1.55; }
+            .oh-label { color: #254c5a; font-weight: 650; }
+            .oh-input.auth-input {
+                border-color: #d8e4e4;
+                background: #fbfdfd;
+                color: #173f50;
+            }
+            .oh-input.auth-input::placeholder { color: #91a4a8; }
+            .oh-input.auth-input:focus {
+                border-color: #278da0;
+                box-shadow: 0 0 0 4px rgba(39,141,160,.12);
+            }
+            .input-with-icon .input-icon { color: #63818a; }
+            .oh-password-input-container .oh-btn { color: #58717a; }
+            .oh-checkbox input[type="checkbox"] { accent-color: #176f80; }
+            .oh-link { color: #176f80; }
+            .sign-btn {
+                background: linear-gradient(110deg, #0a4d60, #176f80);
+                box-shadow: 0 9px 20px rgba(10,77,96,.2);
+            }
+            .sign-btn:hover, .sign-btn:focus, .sign-btn:focus-visible {
+                background: linear-gradient(110deg, #083f50, #135e6d);
+                box-shadow: 0 12px 24px rgba(10,77,96,.24);
+            }
+            .card-footer { color: #71858a; }
+
+            @media (max-width: 1024px) {
+                .login-hero { padding: 28px; }
+                .login-grid {
+                    grid-template-columns: minmax(0, 1fr) minmax(340px, .92fr);
+                    gap: 22px;
+                }
+                .promo { min-height: 470px; padding: 38px; }
+                .promo-heading { font-size: clamp(34px, 4.2vw, 44px); }
+                .login-card { padding-inline: 32px; }
+            }
+            @media (max-width: 768px) {
+                .login-hero { align-items: flex-start; padding: 18px 14px 26px; }
+                .login-grid { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+                .promo {
+                    min-height: 0;
+                    padding: 28px;
+                    border-radius: 20px;
+                }
+                .promo-logo { width: 174px; margin-bottom: 22px; }
+                .promo-heading { max-width: 540px; font-size: clamp(32px, 7vw, 44px); }
+                .promo-sub { font-size: 14px; }
+                .features { margin-top: 18px; }
+                .card-wrap { padding: 0; }
+                .login-card { width: 100%; max-width: none; padding: 30px; }
+                .card-title { font-size: 25px; }
+                .card-footer { padding-top: 18px; }
+            }
+            @media (max-width: 390px) {
+                .login-hero { padding: 12px 10px 20px; }
+                .promo { padding: 22px 18px; }
+                .promo-logo { width: 154px; margin-bottom: 18px; }
+                .promo-heading { font-size: 30px; }
+                .features { gap: 7px; }
+                .feature-item { padding: 8px 10px; font-size: 11px; }
+                .login-card { padding: 24px 20px; }
+            }
+
+            /* Reference-matched EMPLY sign-in layout */
+            body {
+                background:
+                    radial-gradient(ellipse at 80% 20%, rgba(130, 216, 216, .22), transparent 34%),
+                    linear-gradient(115deg, #f5fbfb 0%, #effafa 58%, #dff3f4 100%);
+                color: #12465a;
+            }
+            .login-hero {
+                position: relative;
+                min-height: 100vh;
+                box-sizing: border-box;
+                padding: 14px 26px 14px clamp(32px, 4.55vw, 60px);
+                overflow: hidden;
+            }
+            .login-container {
+                position: relative;
+                z-index: 3;
+                width: 90.91%;
+                max-width: none;
+                transform: scale(1.1);
+                transform-origin: center;
+            }
+            .login-grid {
+                grid-template-columns: minmax(0, 1fr) minmax(400px, 485px);
+                gap: clamp(24px, 2.4vw, 34px);
+            }
+            .login-hero::before {
+                content: "";
+                position: absolute;
+                z-index: 0;
+                top: 12px;
+                right: 12px;
+                width: 62px;
+                height: 48px;
+                background-image: radial-gradient(circle, rgba(55, 177, 191, .56) 1.4px, transparent 1.8px);
+                background-size: 13px 13px;
+                pointer-events: none;
+            }
+            .login-hero::after {
+                content: "";
+                position: absolute;
+                z-index: 0;
+                right: 0;
+                bottom: -42px;
+                left: 0;
+                height: 170px;
+                background:
+                    radial-gradient(ellipse 42% 100% at 20% 115%, rgba(121, 218, 229, .32) 0 70%, transparent 71%),
+                    radial-gradient(ellipse 48% 100% at 62% 125%, rgba(99, 200, 216, .24) 0 70%, transparent 71%),
+                    radial-gradient(ellipse 38% 100% at 100% 117%, rgba(91, 197, 207, .24) 0 70%, transparent 71%);
+                pointer-events: none;
+            }
+            .promo {
+                position: relative;
+                min-height: 558px;
+                padding: 0;
+                overflow: visible;
+                border: 0;
+                border-radius: 0;
+                background: transparent;
+                box-shadow: none;
+                align-items: flex-start;
+            }
+            .promo::before, .promo::after { content: none; }
+            .promo-inner {
+                position: relative;
+                z-index: 5;
+                width: 100%;
+                max-width: none;
+                animation: fadeUpSmall .48s cubic-bezier(.2,.9,.2,1) both;
+            }
+            .promo-logo {
+                display: block;
+                width: 280px;
+                height: auto;
+                margin: 0 0 -20px;
+                padding: 0;
+                border-radius: 0;
+                background: transparent;
+                box-shadow: none;
+                object-fit: contain;
+                object-position: center;
+                transform: translate(-35px, -24px);
+            }
+            .promo-tag {
+                display: inline-flex;
+                align-items: center;
+                gap: 7px;
+                margin: 0 0 15px;
+                padding: 7px 12px;
+                border-radius: 999px;
+                background: #e4f3ff;
+                color: #1682df;
+                font-size: 10px;
+                font-weight: 650;
+                letter-spacing: 0;
+                text-transform: none;
+            }
+            .promo-tag .accent, .promo-tag .muted { color: inherit; font-weight: inherit; }
+            .promo-tag svg { width: 14px; height: 14px; fill: currentColor; }
+            .promo-heading {
+                max-width: 460px;
+                margin: 0 0 12px;
+                color: #11465a;
+                font-size: clamp(34px, 2.75vw, 38px);
+                font-weight: 750;
+                line-height: 1.08;
+                letter-spacing: -.045em;
+            }
+            .promo-heading .sub {
+                color: #34a9b1;
+                white-space: nowrap;
+            }
+            .promo-sub {
+                max-width: 340px;
+                margin: 0;
+                color: #577d8b;
+                font-size: 14px;
+                line-height: 1.5;
+            }
+            .promo-illustration {
+                position: absolute;
+                z-index: 5;
+                top: 55px;
+                right: -70px;
+                width: min(68%, 480px);
+                height: auto;
+                filter: drop-shadow(0 18px 20px rgba(23, 121, 137, .16));
+                pointer-events: none;
+            }
+            .features {
+                display: grid;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 12px;
+                max-width: 420px;
+                margin-top: 27px;
+            }
+            .feature-item {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+                min-width: 0;
+                padding: 0;
+                border: 0;
+                border-radius: 0;
+                background: transparent;
+                color: #174c60;
+                font-size: 10px;
+                line-height: 1.35;
+            }
+            .feature-icon {
+                display: grid;
+                width: 46px;
+                height: 46px;
+                place-items: center;
+                border-radius: 14px;
+                background: linear-gradient(145deg, #e0f5fb, #d2f1ef);
+                color: #27a7b3;
+            }
+            .feature-icon svg {
+                width: 24px;
+                height: 24px;
+                fill: none;
+                stroke: currentColor;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                stroke-width: 2;
+            }
+            .feature-copy { display: grid; gap: 4px; }
+            .feature-copy strong { font-size: 10px; font-weight: 700; }
+            .feature-copy span { color: #628593; font-size: 9px; line-height: 1.35; }
+            .promo-signature {
+                position: absolute;
+                z-index: 5;
+                left: 32px;
+                bottom: 48px;
+                color: #3199a1;
+                font-family: "Brush Script MT", "Segoe Script", cursive;
+                font-size: 19px;
+                font-style: italic;
+                line-height: 1.05;
+                transform: rotate(-8deg);
+            }
+            .promo-signature::after {
+                content: "";
+                display: block;
+                width: 84px;
+                margin: 4px 0 0 8px;
+                border-bottom: 2px solid #31a7a6;
+                transform: rotate(-7deg);
+            }
+            .promo-signature--growth {
+                right: 20px;
+                bottom: 42px;
+                left: auto;
+                display: grid;
+                gap: 3px;
+                text-align: left;
+                color: #237f89;
+                font-family: inherit;
+                font-size: 18px;
+                font-style: normal;
+                font-weight: 750;
+                line-height: 1.12;
+                letter-spacing: -.035em;
+                transform: none;
+            }
+            .promo-signature--growth::after {
+                width: 52px;
+                margin: 5px 0 0;
+                border-color: #39aaa7;
+                transform: none;
+            }
+            .promo-signature--growth span:first-child {
+                color: #5b9299;
+                font-size: 9px;
+                font-weight: 700;
+                letter-spacing: .16em;
+                line-height: 1.3;
+                text-transform: uppercase;
+            }
+            .promo-edge-leaves {
+                position: absolute;
+                z-index: 2;
+                bottom: 0;
+                left: 0;
+                width: clamp(120px, 10vw, 150px);
+                height: auto;
+                pointer-events: none;
+            }
+            .promo-waves {
+                position: absolute;
+                z-index: 1;
+                bottom: max(24px, calc(50vh - 342px));
+                left: 0;
+                width: 65%;
+                height: 154px;
+                opacity: 1;
+                pointer-events: none;
+            }
+            .promo-waves svg { width: 100%; height: 100%; }
+            @keyframes promo-wave-flow {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-8px); }
+            }
+            .promo-waves svg path {
+                transform-box: fill-box;
+                transform-origin: center;
+                animation: promo-wave-flow 7s ease-in-out infinite;
+            }
+            .promo-waves svg path:nth-child(2) { animation-duration: 9s; animation-delay: -2s; }
+            .promo-waves svg path:nth-child(3) { animation-duration: 11s; animation-delay: -4s; }
+            .promo-waves svg path:first-child { stroke: rgba(47, 174, 186, .18) !important; }
+            .promo-waves svg path:nth-child(2) { stroke: rgba(47, 174, 186, .12) !important; }
+            .promo-waves svg path:nth-child(3) { stroke: rgba(47, 174, 186, .08) !important; }
+            @media (prefers-reduced-motion: reduce) {
+                .promo-waves svg path { animation: none; }
+            }
+            .card-wrap { min-width: 0; }
+            .login-card {
+                display: flex;
+                isolation: isolate;
+                width: 100%;
+                max-width: 485px;
+                min-height: 558px;
+                box-sizing: border-box;
+                padding: 32px 48px 24px 40px;
+                overflow: hidden;
+                border: 1px solid rgba(255,255,255,.95);
+                border-radius: 17px;
+                background:
+                    radial-gradient(circle at 100% 100%, rgba(126, 214, 225, .16) 0 8%, transparent 8.2%),
+                    radial-gradient(circle at 100% 100%, transparent 0 12%, rgba(126, 214, 225, .12) 12.2% 17%, transparent 17.2%),
+                    rgba(255,255,255,.94);
+                box-shadow: 0 22px 54px rgba(42, 128, 143, .14);
+            }
+            .login-card::before {
+                z-index: -1;
+                top: -114px;
+                right: -94px;
+                left: auto;
+                width: 205px;
+                height: 205px;
+                border: 26px solid rgba(86, 194, 196, .12);
+                border-radius: 50%;
+                background: rgba(81, 194, 187, .14);
+            }
+            .login-card::after {
+                content: "";
+                position: absolute;
+                z-index: -1;
+                top: -72px;
+                right: -64px;
+                width: 120px;
+                height: 120px;
+                border-radius: 50%;
+                background: rgba(62, 189, 175, .35);
+            }
+            .login-card-inner { position: relative; z-index: 1; display: flex; flex: 1; flex-direction: column; }
+            .card-top {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 14px;
+                margin-bottom: 9px;
+            }
+            .card-brand {
+                display: block;
+                width: 58px;
+                height: 58px;
+                object-fit: contain;
+                object-position: center;
+            }
+            .mode-pill {
+                display: inline-flex;
+                flex: 0 0 auto;
+                align-items: center;
+                gap: 7px;
+                min-height: 32px;
+                padding: 0 12px;
+                border: 1px solid #dcebed;
+                border-radius: 999px;
+                background: rgba(255,255,255,.8);
+                color: #587f8d;
+                font-size: 10px;
+            }
+            .mode-pill ion-icon { color: #40899a; font-size: 15px; }
+            .mode-pill .mode-chevron { margin-left: 2px; font-size: 12px; }
+            .card-title {
+                margin: 0;
+                color: #104a63;
+                font-size: 28px;
+                font-weight: 750;
+                letter-spacing: -.04em;
+            }
+            .card-sub {
+                max-width: 300px;
+                margin: 0 0 2px;
+                color: #638596;
+                font-size: 12px;
+                line-height: 1.5;
+            }
+            .oh-input-group { margin-bottom: 19px; }
+            .oh-label {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                margin-bottom: 7px;
+                color: #174c60;
+                font-size: 12px;
+                font-weight: 700;
+            }
+            .oh-label ion-icon { color: #17627a; font-size: 13px; }
+            .input-with-icon .input-icon {
+                left: 12px;
+                width: 18px;
+                height: 18px;
+                color: #247d91;
+                font-size: 16px;
+            }
+            .oh-input.auth-input {
+                height: 40px;
+                padding: 10px 12px;
+                border: 1px solid #d3e5e8;
+                border-radius: 10px;
+                background: rgba(255,255,255,.8);
+                color: #174c60;
+                font-size: 12px;
+            }
+            .oh-input.auth-input::placeholder { color: #85a2ad; }
+            .oh-input.auth-input:focus {
+                border-color: #42b8bd;
+                box-shadow: 0 0 0 3px rgba(58, 180, 184, .12);
+            }
+            .oh-password-input-container .oh-btn {
+                right: 4px;
+                width: 34px;
+                height: 34px;
+                color: #6d929e;
+            }
+            .card-row { margin: 0 0 12px; }
+            .oh-checkbox { gap: 8px; }
+            .oh-checkbox input[type="checkbox"] {
+                width: 15px;
+                height: 15px;
+                accent-color: #20a99f;
+            }
+            .oh-checkbox__label, .oh-link { font-size: 11px; }
+            .oh-checkbox__label { color: #416b7a; }
+            .oh-link { color: #149e9e; }
+            .sign-btn {
+                height: 40px;
+                border-radius: 11px;
+                background: linear-gradient(105deg, #22b7b3, #127c91 52%, #54c5af);
+                box-shadow: 0 8px 17px rgba(26, 160, 163, .22);
+                font-size: 12px;
+            }
+            .sign-btn:hover, .sign-btn:focus, .sign-btn:focus-visible {
+                background: linear-gradient(105deg, #179c9b, #116c82 52%, #3aaf9e);
+                box-shadow: 0 10px 20px rgba(26, 160, 163, .25);
+            }
+            .card-footer {
+                margin-top: auto;
+                padding-top: 21px;
+                color: #83a0aa;
+                font-size: 9px;
+            }
+            @media (max-width: 1050px) and (min-width: 769px) {
+                .login-hero { padding-inline: 30px; }
+                .login-grid { grid-template-columns: minmax(0, 1fr) minmax(360px, 430px); gap: 26px; }
+                .promo-logo { margin-bottom: 51px; }
+                .promo-heading { font-size: clamp(29px, 3.4vw, 36px); }
+                .promo-illustration { right: -12px; width: 47%; }
+                .login-card { min-height: 534px; padding-inline: 30px; }
+            }
+            @media (max-width: 768px) {
+                html, body, #main { height: auto; min-height: 100dvh; }
+                .login-hero { min-height: 100dvh; padding: 24px 18px calc(32px + 12vh); }
+                .login-container { transform-origin: left top; }
+                .login-grid { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+                .promo { min-height: 465px; padding: 0; }
+                .promo-logo {
+                    width: 220px;
+                    height: auto;
+                    margin: 0 0 4px;
+                    transform: none;
+                }
+                .promo-heading { max-width: 440px; font-size: clamp(32px, 7vw, 40px); }
+                .promo-heading .sub { white-space: normal; }
+                .promo-illustration { top: 154px; right: 0; width: min(50%, 310px); }
+                .features { max-width: 440px; margin-top: 24px; }
+                .promo-signature { bottom: 0; }
+                .promo-signature--growth { display: none; }
+                .promo-edge-leaves { width: 110px; }
+                .promo-waves { bottom: 24px; width: 100%; height: 100px; }
+                .card-wrap { padding: 0; }
+                .login-card { width: 100%; max-width: 500px; min-height: 0; padding: 28px 30px 20px; }
+            }
+            @media (max-width: 520px) {
+                .login-hero { padding: 20px 16px calc(28px + 12vh); }
+                .promo { min-height: 0; padding-bottom: 126px; }
+                .promo-logo { width: 220px; height: auto; margin: 0 0 4px; }
+                .promo-heading { max-width: 100%; font-size: clamp(30px, 8vw, 36px); }
+                .promo-illustration { top: auto; right: 0; bottom: -4px; width: 57%; }
+                .features { position: relative; z-index: 2; grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 250px; gap: 14px 10px; margin-top: 20px; }
+                .feature-icon { width: 36px; height: 36px; }
+                .promo-edge-leaves { width: 90px; }
+                .promo-signature { display: none; }
+                .promo-edge-leaves { width: 90px; }
+                .login-card { padding: 26px 22px 18px; }
+                .card-title { font-size: 26px; }
+            }
         </style>
     </head>
 
@@ -239,29 +858,42 @@
                         <!-- LEFT PROMO -->
                         <div class="promo" aria-hidden="false">
                             <div class="promo-inner">
-                                <img src="{% static 'images/ui/emply-logo.png' %}" alt="EMPLY" class="promo-logo">
-                                <p class="promo-tag">SMART <span class="accent">ATTENDANCE</span>. <span class="muted">SEAMLESS WORK.</span></p>
+                                <img src="{% static 'images/ui/emply-logo-transparent.png' %}" alt="EMPLY" class="promo-logo">
+                                <p class="promo-tag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.9 6.1L20 10l-6.1 1.9L12 18l-1.9-6.1L4 10l6.1-1.9L12 2Zm7 13 .9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15Z"/></svg>Smart HR &amp; Payroll Solution</p>
 
-                                <h1 class="promo-heading">Smart Solutions
-                                    <span class="sub">for Modern Workplaces</span>
+                                <h1 class="promo-heading">Modern HR &amp; Payroll
+                                    <span class="sub">for a Better Tomorrow</span>
                                 </h1>
-                                <p class="promo-sub">Streamline attendance, leave, payroll and performance — all in one place.</p>
+                                <p class="promo-sub">Simplify attendance, leave, payroll and performance — all in one place.</p>
 
-                                <!-- Feature highlights -->
-                                <div class="features" aria-hidden="true">
-                                    <div class="feature-item"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 6L9 17l-5-5" /></svg><span>Attendance</span></div>
-                                    <div class="feature-item"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 6L9 17l-5-5" /></svg><span>Leave Management</span></div>
-                                    <div class="feature-item"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 6L9 17l-5-5" /></svg><span>Payroll</span></div>
+                                <div class="features">
+                                    <div class="feature-item">
+                                        <span class="feature-icon"><svg viewBox="0 0 24 24"><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20M10 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM16 4.3a3.5 3.5 0 0 1 0 6.8M17 15h.5a3.5 3.5 0 0 1 3.5 3.5V20"/></svg></span>
+                                        <span class="feature-copy"><strong>Attendance</strong><span>Track work hours<br>with ease</span></span>
+                                    </div>
+                                    <div class="feature-item">
+                                        <span class="feature-icon"><svg viewBox="0 0 24 24"><path d="M7 3v3M17 3v3M4 9h16M5.5 5h13A1.5 1.5 0 0 1 20 6.5v12a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-12A1.5 1.5 0 0 1 5.5 5Z"/><path d="m9 14 2 2 4-4"/></svg></span>
+                                        <span class="feature-copy"><strong>Leave Management</strong><span>Manage leaves<br>without hassle</span></span>
+                                    </div>
+                                    <div class="feature-item">
+                                        <span class="feature-icon"><svg viewBox="0 0 24 24"><path d="M12 3v18M17 7.5c-.8-1.1-2.2-1.7-4.3-1.7-2.4 0-4 1-4 2.7 0 4.3 8.6 1.4 8.6 5.7 0 1.9-1.8 3.2-4.5 3.2-2 0-3.7-.6-4.8-1.8"/></svg></span>
+                                        <span class="feature-copy"><strong>Payroll</strong><span>Accurate &amp; on-time<br>payments</span></span>
+                                    </div>
+                                    <div class="feature-item">
+                                        <span class="feature-icon"><svg viewBox="0 0 24 24"><path d="M4 19V13h4v6H4ZM10 19V9h4v10h-4ZM16 19V5h4v14h-4Z"/></svg></span>
+                                        <span class="feature-copy"><strong>Performance</strong><span>Drive growth<br>with insights</span></span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- subtle decorative waves (SVG) -->
-                            <div class="promo-waves" aria-hidden="true">
-                                <svg viewBox="0 0 1200 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-                                    <path d="M0,120 C200,40 400,40 600,120 C800,200 1000,200 1200,120" fill="none" stroke="rgba(20,184,100,0.14)" stroke-width="2"/>
-                                                                        <path d="M0,140 C240,64 420,64 700,140 C920,200 1060,200 1200,140" fill="none" stroke="rgba(20,184,100,0.09)" stroke-width="1.5"/>
-                                                                        <path d="M0,160 C160,96 360,96 560,160 C760,224 980,224 1200,160" fill="none" stroke="rgba(20,184,100,0.06)" stroke-width="1"/>
-                                </svg>
+                            <img
+                                class="promo-illustration"
+                                src="{% static 'images/ui/emply-login-illustration.png' %}"
+                                alt="EMPLY HR and payroll dashboard illustration"
+                            >
+                            <div class="promo-signature promo-signature--growth" aria-hidden="true">
+                                <span>Your Growth</span>
+                                <span>Our Priority</span>
                             </div>
                         </div>
 
@@ -269,23 +901,26 @@
                         <div class="card-wrap">
                             <div class="login-card">
                                 <div class="login-card-inner">
+                                    <div class="card-top">
+                                        <img src="{% static 'images/ui/emply-fingerprint-icon.png' %}" alt="EMPLY" class="card-brand">
+                                        <span class="mode-pill"><ion-icon name="sunny-outline"></ion-icon>Light Mode<ion-icon class="mode-chevron" name="chevron-down-outline"></ion-icon></span>
+                                    </div>
                                     <h2 class="card-title">Welcome Back!</h2>
-                                    <p class="card-sub">Please login to access the dashboard.</p>
+                                    <p class="card-sub">Login to your account and continue your journey with MPLY.</p>
 
                                     <form method="post" class="oh-form-group" novalidate>
                                         {% csrf_token %}
-                                        <input type="hidden" name="login_mode" value="emply">
+                                        <input type="hidden" name="login_mode" value="{{ login_mode }}">
 
-                                        <div class="oh-input-group no-icon">
-                                            <label class="oh-label" for="username">{% trans "Username" %}</label>
+                                        <div class="oh-input-group">
+                                            <label class="oh-label" for="username"><ion-icon name="person"></ion-icon>{% trans "Username" %}</label>
                                             <input type="text" id="username" name="username" class="oh-input auth-input" placeholder="{% trans 'e.g. john.doe@emply.com' %}">
                                         </div>
 
-                                        <div class="oh-input-group input-with-icon">
-                                            <label class="oh-label" for="password">{% trans "Password" %}</label>
-                                            <span class="input-icon"><ion-icon name="lock-closed-outline"></ion-icon></span>
+                                        <div class="oh-input-group">
+                                            <label class="oh-label" for="password"><ion-icon name="lock-closed"></ion-icon>{% trans "Password" %}</label>
                                             <div class="oh-password-input-container">
-                                                <input type="password" id="password" name="password" class="oh-input auth-input" placeholder="{% trans 'Use alphanumeric characters' %}">
+                                                <input type="password" id="password" name="password" class="oh-input oh-input--password auth-input" placeholder="{% trans 'Use alphanumeric characters' %}">
                                                 <button type="button" class="oh-btn oh-btn--transparent oh-password-input--toggle" aria-label="Toggle password visibility">
                                                     <ion-icon class="oh-passowrd-input__show-icon" title="{% trans 'Show Password' %}" name="eye-outline"></ion-icon>
                                                     <ion-icon class="oh-passowrd-input__hide-icon d-none" title="{% trans 'Hide Password' %}" name="eye-off-outline"></ion-icon>
@@ -312,6 +947,7 @@
                                         <button type="submit" class="oh-btn sign-btn" role="button">
                                             <ion-icon class="me-2" name="lock-closed-outline"></ion-icon>
                                             {% trans "Secure Sign-in" %}
+                                            <ion-icon name="arrow-forward-outline"></ion-icon>
                                         </button>
 
                                         {% if initialize_database %}
@@ -319,15 +955,29 @@
                                                 <a href="{% url 'initialize-database' %}" class="oh-btn auth-btn--ghost w-100">{% trans "Initialize Database" %}</a>
                                             </div>
                                         {% endif %}
+
                                     </form>
 
-                                    <div class="card-footer">© {{ current_year|default:'2024' }} EMPLY. All rights reserved.</div>
+                                    <div class="card-footer">© {% now "Y" %} EMPLY. All rights reserved.</div>
                                 </div>
                             </div>
                         </div>
 
                     </div>
                 </div>
+                <div class="promo-waves" aria-hidden="true">
+                    <svg viewBox="0 0 1200 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                        <path d="M0,120 C200,40 400,40 600,120 C800,200 1000,200 1200,120" fill="none" stroke="rgba(20,184,100,0.14)" stroke-width="2"/>
+                        <path d="M0,140 C240,64 420,64 700,140 C920,200 1060,200 1200,140" fill="none" stroke="rgba(20,184,100,0.09)" stroke-width="1.5"/>
+                        <path d="M0,160 C160,96 360,96 560,160 C760,224 980,224 1200,160" fill="none" stroke="rgba(20,184,100,0.06)" stroke-width="1"/>
+                    </svg>
+                </div>
+                <img
+                    class="promo-edge-leaves"
+                    src="{% static 'images/ui/emply-login-leaves.png' %}?v=20261013"
+                    alt=""
+                    aria-hidden="true"
+                >
             </main>
         </div>
         <script src="{% static '/build/js/web.frontend.min.js' %}"></script>

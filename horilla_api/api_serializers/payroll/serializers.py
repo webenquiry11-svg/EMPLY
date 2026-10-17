@@ -1,3 +1,6 @@
+import math
+
+from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
 
 from employee.models import BonusPoint, Employee
@@ -6,6 +9,7 @@ from payroll.models.models import (
     Allowance,
     Contract,
     Deduction,
+    FilingStatus,
     LoanAccount,
     MultipleCondition,
     Payslip,
@@ -261,6 +265,23 @@ class ReimbursementSerializer(serializers.ModelSerializer):
         return leaves
 
     def validate(self, data):
+        requested_status = data.get("status", "requested")
+        if self.instance is None and requested_status != "requested":
+            raise serializers.ValidationError(
+                {"status": "New reimbursements must be submitted as requested."}
+            )
+        if (
+            self.instance is not None
+            and "status" in data
+            and requested_status != self.instance.status
+        ):
+            raise serializers.ValidationError(
+                {"status": "Use the review endpoint to approve or reject a reimbursement."}
+            )
+        if requested_status not in dict(Reimbursement.status_types):
+            raise serializers.ValidationError(
+                {"status": "Choose a valid reimbursement status."}
+            )
         try:
             employee_id = self.instance.employee_id
             type = self.instance.type
@@ -308,13 +329,63 @@ class ReimbursementSerializer(serializers.ModelSerializer):
                 file_instance.save()
                 multiple_attachment_ids.append(file_instance.pk)
 
-        instance = super().save()
+        instance = super().save(**kwargs)
         instance.other_attachments.add(*multiple_attachment_ids)
 
-        return super().save(**kwargs)
+        return instance
 
 
 class TaxBracketSerializer(serializers.ModelSerializer):
+    filing_status_id = serializers.PrimaryKeyRelatedField(
+        queryset=FilingStatus.objects.all()
+    )
+
     class Meta:
         fields = "__all__"
         model = TaxBracket
+
+    def validate(self, attrs):
+        values = {
+            "filing_status_id": attrs.get(
+                "filing_status_id",
+                getattr(self.instance, "filing_status_id", None),
+            ),
+            "min_income": attrs.get(
+                "min_income", getattr(self.instance, "min_income", None)
+            ),
+            "max_income": attrs.get(
+                "max_income", getattr(self.instance, "max_income", None)
+            ),
+            "tax_rate": attrs.get(
+                "tax_rate", getattr(self.instance, "tax_rate", None)
+            ),
+        }
+        for field in ("min_income", "tax_rate"):
+            value = values[field]
+            if value is None or not math.isfinite(value) or value < 0:
+                raise serializers.ValidationError(
+                    {field: "Enter a finite, non-negative number."}
+                )
+        if values["max_income"] is not None:
+            if (
+                not math.isfinite(values["max_income"])
+                or values["max_income"] <= values["min_income"]
+            ):
+                raise serializers.ValidationError(
+                    {"max_income": "Maximum income must be greater than minimum income."}
+                )
+
+        bracket = TaxBracket(**values)
+        bracket.pk = self.instance.pk if self.instance else None
+        try:
+            bracket.clean()
+        except DjangoValidationError as exc:
+            detail = (
+                exc.message_dict
+                if hasattr(exc, "message_dict")
+                else exc.messages
+            )
+            raise serializers.ValidationError(detail) from exc
+        if "max_income" in attrs and attrs["max_income"] is None:
+            attrs["max_income"] = bracket.max_income
+        return attrs

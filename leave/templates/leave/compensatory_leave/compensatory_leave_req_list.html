@@ -27,7 +27,7 @@
     <div class="oh-tabs__content oh-tabs__content--active" id="tab_1">
         {% if my_comp_leave_requests %}
             <!-- start of sticky table -->
-            <div class="oh-sticky-table">
+            <div class="oh-sticky-table compensatory-request-table">
                 <div class="oh-sticky-table__table">
                     <div class="oh-sticky-table__thead">
                         <div class="oh-sticky-table__tr">
@@ -62,7 +62,7 @@
                             </div>
                             <div class="oh-sticky-table__th">{% trans "Status" %}</div>
                             <div class="oh-sticky-table__th">{% trans "Description" %}</div>
-                            <div class="oh-sticky-table__th" style="width: 115px">{% trans "Comment" %}</div>
+                            <div class="oh-sticky-table__th">{% trans "Comment" %}</div>
                             <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                         </div>
                     </div>
@@ -113,7 +113,11 @@
                                 </div>
                                 <div class="oh-sticky-table__td">{{ comp_leave_request.requested_days }}</div>
                                 <div class="oh-sticky-table__td">{{ comp_leave_request.created_by.employee_get }}</div>
-                                <div class="oh-sticky-table__td">{{ comp_leave_request.get_status_display }}</div>
+                                <div class="oh-sticky-table__td">
+                                    <span class="compensatory-status-badge" data-status="{{ comp_leave_request.status }}">
+                                        {{ comp_leave_request.get_status_display }}
+                                    </span>
+                                </div>
                                 <div class="oh-sticky-table__td">
                                     {{ comp_leave_request.description|truncatechars:25 }}
                                 </div>
@@ -125,9 +129,8 @@
                                         hx-target="#commentContainer"
                                         data-target="#allocationactivitySidebar"
                                         title="{% trans 'View Comment' %}"
-                                        class="oh-btn oh-btn--light oh-activity-sidebar__open w-100"
-                                        title="{% trans 'Add / View Comment' %}"
-                                        style="flex: 1 0 auto; width: 20px; height: 40.68px; padding: 0"
+                                        aria-label="{% trans 'View Comment' %}"
+                                        class="oh-btn oh-activity-sidebar__open compensatory-comment-button"
                                     >
                                         <ion-icon
                                             name="newspaper-outline"
@@ -139,7 +142,7 @@
                                 </div>
 
                                 <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
-                                    <div class="oh-btn-group">
+                                    <div class="oh-btn-group compensatory-action-buttons">
                                         {% if comp_leave_request.status ==  'requested' %}
                                             <button
                                                 class="oh-btn oh-btn--light-bkg w-50"
@@ -264,7 +267,7 @@
         <div class="oh-tabs__content" id="tab_2">
             {% if comp_leave_requests %}
                 <!-- start of sticky table -->
-                <div class="oh-sticky-table">
+                <div class="oh-sticky-table compensatory-request-table">
                     <div class="oh-sticky-table__table">
                         <div class="oh-sticky-table__thead">
                             <div class="oh-sticky-table__tr">
@@ -299,7 +302,7 @@
                                 </div>
                                 <div class="oh-sticky-table__th">{% trans "Status" %}</div>
                                 <div class="oh-sticky-table__th">{% trans "Description" %}</div>
-                                <div class="oh-sticky-table__th" style="width: 115px">{% trans "Comment" %}</div>
+                                <div class="oh-sticky-table__th">{% trans "Comment" %}</div>
                                 <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                                 <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Confirmation" %}</div>
                             </div>
@@ -345,7 +348,11 @@
                                     <div class="oh-sticky-table__td">
                                         {{ comp_leave_request.created_by.employee_get }}
                                     </div>
-                                    <div class="oh-sticky-table__td">{{ comp_leave_request.get_status_display }}</div>
+                                    <div class="oh-sticky-table__td">
+                                        <span class="compensatory-status-badge" data-status="{{ comp_leave_request.status }}">
+                                            {{ comp_leave_request.get_status_display }}
+                                        </span>
+                                    </div>
                                     <div class="oh-sticky-table__td">
                                         {{ comp_leave_request.description|truncatechars:20 }}
                                     </div>
@@ -357,9 +364,8 @@
                                             hx-target="#commentContainer"
                                             data-target="#allocationactivitySidebar"
                                             title="{% trans 'View Comment' %}"
-                                            class="oh-btn oh-btn--light oh-activity-sidebar__open w-100"
-                                            title="{% trans 'Add / View Comment' %}"
-                                            style="flex: 1 0 auto; width: 20px; height: 40.68px; padding: 0"
+                                            aria-label="{% trans 'View Comment' %}"
+                                            class="oh-btn oh-activity-sidebar__open compensatory-comment-button"
                                         >
                                             <ion-icon
                                                 name="newspaper-outline"
@@ -371,7 +377,7 @@
                                     </div>
 
                                     <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
-                                        <div class="oh-btn-group">
+                                        <div class="oh-btn-group compensatory-action-buttons">
                                             {% if comp_leave_request.status ==  'requested' %}
                                                 <button
                                                     class="oh-btn oh-btn--light-bkg w-50"
@@ -413,7 +419,7 @@
                                         class="oh-sticky-table__td oh-sticky-table__right"
                                         onclick="event.stopPropagation()"
                                     >
-                                        <div class="oh-btn-group">
+                                        <div class="oh-btn-group compensatory-confirmation-buttons">
                                             {% if perms.leave.change_leaveallocationrequest or request.user|is_reportingmanager %}
                                                 {% if comp_leave_request.status == 'requested' %}
                                                     <a

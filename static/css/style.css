@@ -2468,43 +2468,56 @@ html body .oh-wrapper-main.super-admin-panel-theme .employee-navbar-greeting {
     flex: 1 1 auto !important;
     min-width: 250px !important;
     margin-right: auto !important;
+    padding: 0.1rem 0;
 }
 
 html body .oh-wrapper-main.super-admin-panel-theme .employee-navbar-greeting__title {
     color: #173f50 !important;
-    font-size: 1.25rem !important;
+    font-size: 1.32rem !important;
     font-weight: 800 !important;
-    letter-spacing: -0.025em;
-    line-height: 1.15;
+    letter-spacing: -0.035em;
+    line-height: 1.2;
 }
 
 html body .oh-wrapper-main.super-admin-panel-theme .employee-navbar-greeting__subtitle {
-    margin-top: 0.3rem;
+    margin-top: 0.42rem;
     color: #557b84 !important;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
+    line-height: 1.35;
 }
 
 html body .oh-wrapper-main.super-admin-panel-theme .employee-navbar-period {
     display: inline-flex !important;
     align-items: center;
-    gap: 0.2rem;
-    padding: 0.22rem;
+    gap: 0.25rem;
+    padding: 0.28rem;
+    border: 1px solid #c6e3e9;
     border-radius: 999px;
-    background: linear-gradient(110deg, #0a4d60, #176f80) !important;
-    color: rgba(255, 255, 255, 0.68) !important;
-    font-size: 0.72rem;
+    background: #eaf6f8 !important;
+    color: #356b77 !important;
+    box-shadow: inset 0 1px 2px rgba(10, 77, 96, 0.06);
+    font-size: 0.78rem;
     font-weight: 700;
 }
 
 html body .oh-wrapper-main.super-admin-panel-theme .employee-navbar-period span {
-    padding: 0.55rem 0.95rem;
+    min-width: 76px;
+    padding: 0.62rem 1rem;
     border-radius: 999px;
     white-space: nowrap;
+    text-align: center;
+    transition: background-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
 }
 
 html body .oh-wrapper-main.super-admin-panel-theme .employee-navbar-period .is-active {
-    background: #0a4d60 !important;
+    background: linear-gradient(135deg, #0a596b, #177f91) !important;
     color: #ffffff !important;
+    box-shadow: 0 3px 8px rgba(10, 77, 96, 0.2);
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .employee-navbar-period span:not(.is-active):hover {
+    background: #d9eef2;
+    color: #0a4d60;
 }
 
 html body .oh-wrapper-main.super-admin-panel-theme .oh-global-search {
@@ -3238,53 +3251,126 @@ html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__action-icons-link
 
 /* Shared EMPLY notification language for Django messages and live alerts. */
 .oh-alert-container {
+    top: 1.5rem;
+    right: 1.5rem;
+    width: min(525px, calc(100vw - 3rem));
     z-index: 2000;
     pointer-events: none;
 }
 
 .oh-alert {
+    min-height: 72px;
+    padding: 1rem 1.2rem;
     pointer-events: auto;
-    color: #ffffff !important;
-    background: #161f18 !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-left-width: 4px !important;
-    border-radius: 10px;
-    box-shadow: 0 14px 30px rgba(2, 8, 5, 0.38);
-    line-height: 1.45;
+    gap: 0.85rem;
+    color: #e8f1eb !important;
+    background: linear-gradient(120deg, #263a30, #1c2d24) !important;
+    border: 1px solid rgba(148, 190, 162, 0.3) !important;
+    border-left: 4px solid #4b9a61 !important;
+    border-radius: 14px;
+    box-shadow: 0 16px 36px rgba(5, 24, 14, 0.28), 0 3px 10px rgba(5, 24, 14, 0.18);
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.5;
     overflow-wrap: anywhere;
 }
 
-.oh-alert--success {
-    background: #1b2a20 !important;
-    border-color: rgba(45, 90, 63, 0.72) !important;
-    border-left-color: #2d5a3f !important;
-    color: #d1e7dd !important;
+.oh-alert::before {
+    content: "✓";
+    display: inline-flex;
+    flex: 0 0 28px;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin-right: 0;
+    border-radius: 50%;
+    background: #4b9a61;
+    color: #14251a;
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1;
+    box-shadow: 0 0 0 4px rgba(75, 154, 97, 0.14);
 }
 
-.oh-alert--danger {
-    background: #351c20 !important;
-    border-color: rgba(190, 92, 103, 0.5) !important;
-    border-left-color: #b85c68 !important;
-    color: #f6d9dc !important;
+.oh-alert--success,
+.oh-alert.success {
+    border-left-color: #4b9a61 !important;
 }
 
-.oh-alert--warning {
-    background: #34281a !important;
-    border-color: rgba(223, 171, 102, 0.5) !important;
-    border-left-color: #dfab66 !important;
-    color: #f3d6a5 !important;
+.oh-alert--danger,
+.oh-alert.error,
+.oh-alert--error {
+    border-color: rgba(205, 119, 126, 0.34) !important;
+    border-left-color: #d4777e !important;
+    color: #f6e5e6 !important;
 }
 
-.oh-alert--info {
-    background: #1b2a20 !important;
-    border-color: rgba(209, 231, 221, 0.3) !important;
-    border-left-color: #d1e7dd !important;
-    color: #d1e7dd !important;
+.oh-alert--danger::before,
+.oh-alert.error::before,
+.oh-alert--error::before {
+    content: "!";
+    background: #d4777e;
+    color: #321b1d;
+    box-shadow: 0 0 0 4px rgba(212, 119, 126, 0.14);
+}
+
+.oh-alert--warning,
+.oh-alert.warning {
+    border-color: rgba(220, 174, 105, 0.34) !important;
+    border-left-color: #dcad62 !important;
+    color: #f5ead5 !important;
+}
+
+.oh-alert--warning::before,
+.oh-alert.warning::before {
+    content: "!";
+    background: #dcad62;
+    color: #342818;
+    box-shadow: 0 0 0 4px rgba(220, 173, 98, 0.14);
+}
+
+.oh-alert--info,
+.oh-alert.info {
+    border-color: rgba(116, 183, 188, 0.34) !important;
+    border-left-color: #74b7bc !important;
+    color: #e1f0f0 !important;
+}
+
+.oh-alert--info::before,
+.oh-alert.info::before {
+    content: "i";
+    background: #74b7bc;
+    color: #173034;
+    box-shadow: 0 0 0 4px rgba(116, 183, 188, 0.14);
 }
 
 .oh-alert a,
 .oh-alert button {
     color: inherit !important;
+}
+
+@media (max-width: 575.98px) {
+    .oh-alert-container {
+        top: 1rem;
+        right: 1rem;
+        left: 1rem;
+        width: auto;
+        max-width: none;
+    }
+
+    .oh-alert {
+        padding: 0.9rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+.oh-wrapper-main .oh-alert .alert {
+    margin: 0;
+    padding: 0;
+    color: inherit !important;
+    background: transparent !important;
+    border: 0 !important;
 }
 
 .toast,
@@ -3397,11 +3483,161 @@ html body .oh-wrapper-main.super-admin-panel-theme .oh-navbar__action-icons-link
     color: var(--panel-text) !important;
 }
 
+#showallnotificationbtn {
+    position: absolute !important;
+    top: auto !important;
+    right: -12px !important;
+    bottom: calc(100% + 12px) !important;
+    width: min(370px, calc(100vw - 34px)) !important;
+    min-height: 360px !important;
+    max-height: 620px !important;
+    border-radius: 20px !important;
+    overflow: hidden !important;
+    z-index: 2200 !important;
+}
+
+.oh-wrapper-main.employee-panel-theme #showallnotificationbtn {
+    background: #ffffff !important;
+    border: 1px solid rgba(42, 132, 155, 0.25) !important;
+    box-shadow: 0 24px 52px rgba(23, 109, 131, 0.18) !important;
+}
+
+.oh-wrapper-main.employee-bottom-nav-active #showallnotificationbtn,
+.oh-wrapper-main.admin-panel-theme #showallnotificationbtn,
+.oh-wrapper-main.super-admin-panel-theme #showallnotificationbtn {
+    background: var(--panel-surface) !important;
+    border: 1px solid var(--panel-border) !important;
+    box-shadow: 0 20px 40px rgba(2, 8, 5, 0.5) !important;
+}
+
+.oh-wrapper-main.employee-bottom-nav-active .oh-activity-sidebar__qa-item,
+.oh-wrapper-main.admin-panel-theme .oh-activity-sidebar__qa-item,
+.oh-wrapper-main.super-admin-panel-theme .oh-activity-sidebar__qa-item {
+    background: var(--panel-surface-elevated) !important;
+    border-color: var(--panel-border) !important;
+    color: var(--panel-copy, #d1e7dd) !important;
+    box-shadow: 0 8px 20px rgba(2, 8, 5, 0.2);
+}
+
+.oh-wrapper-main.employee-bottom-nav-active .oh-activity-sidebar__qa-item:hover,
+.oh-wrapper-main.admin-panel-theme .oh-activity-sidebar__qa-item:hover,
+.oh-wrapper-main.super-admin-panel-theme .oh-activity-sidebar__qa-item:hover {
+    background: var(--panel-accent-soft) !important;
+}
+
+.oh-wrapper-main.employee-bottom-nav-active .oh-activity-sidebar__q,
+.oh-wrapper-main.admin-panel-theme .oh-activity-sidebar__q,
+.oh-wrapper-main.super-admin-panel-theme .oh-activity-sidebar__q,
+.oh-wrapper-main.employee-bottom-nav-active .oh-activity-sidebar__a,
+.oh-wrapper-main.admin-panel-theme .oh-activity-sidebar__a,
+.oh-wrapper-main.super-admin-panel-theme .oh-activity-sidebar__a {
+    color: var(--panel-copy, #d1e7dd) !important;
+}
+
+.oh-wrapper-main.employee-panel-theme .oh-activity-sidebar__qa-item {
+    background: #f5f7f3 !important;
+    border-color: #d1e7dd !important;
+    color: #123d2c !important;
+    box-shadow: 0 8px 20px rgba(18, 61, 44, 0.12);
+}
+
+.oh-wrapper-main.employee-panel-theme .oh-activity-sidebar__qa-item:hover {
+    background: #e8f0ec !important;
+}
+
+.oh-wrapper-main.employee-panel-theme .oh-activity-sidebar__q {
+    color: #123d2c !important;
+}
+
+.oh-wrapper-main.employee-panel-theme .oh-activity-sidebar__a {
+    color: #557b68 !important;
+}
+
+.oh-wrapper-main .alert {
+    border-radius: 10px;
+    border-color: var(--panel-border, rgba(255, 255, 255, 0.12));
+}
+
+.oh-wrapper-main .alert-success {
+    color: #d1e7dd !important;
+    background: #1b2a20 !important;
+}
+
+.oh-wrapper-main .alert-warning {
+    color: #f3d6a5 !important;
+    background: #34281a !important;
+}
+
+.oh-wrapper-main .alert-info {
+    color: #d1e7dd !important;
+    background: #1b2a20 !important;
+}
+
+.oh-wrapper-main .alert-danger {
+    color: #f6d9dc !important;
+    background: #351c20 !important;
+}
+
 ul.errorlist {
     color: #f6d9dc !important;
     background: #351c20 !important;
     border: 1px solid rgba(190, 92, 103, 0.5) !important;
     border-radius: 8px;
+}
+
+html body:has(.oh-wrapper-main.employee-bottom-nav-active) .swal2-popup,
+html body:has(.oh-wrapper-main.admin-panel-theme) .swal2-popup,
+html body:has(.oh-wrapper-main.super-admin-panel-theme) .swal2-popup {
+    background: var(--panel-surface-elevated, #1b2a20) !important;
+    border: 1px solid var(--panel-border, rgba(255, 255, 255, 0.08)) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 20px 48px rgba(2, 8, 5, 0.38) !important;
+    color: var(--panel-text, #ffffff) !important;
+}
+
+html body:has(.oh-wrapper-main.employee-bottom-nav-active) .swal2-title,
+html body:has(.oh-wrapper-main.admin-panel-theme) .swal2-title,
+html body:has(.oh-wrapper-main.super-admin-panel-theme) .swal2-title,
+html body:has(.oh-wrapper-main.employee-bottom-nav-active) .swal2-html-container,
+html body:has(.oh-wrapper-main.admin-panel-theme) .swal2-html-container,
+html body:has(.oh-wrapper-main.super-admin-panel-theme) .swal2-html-container {
+    color: var(--panel-text, #ffffff) !important;
+}
+
+html body:has(.oh-wrapper-main.employee-bottom-nav-active) .swal2-styled.swal2-confirm,
+html body:has(.oh-wrapper-main.admin-panel-theme) .swal2-styled.swal2-confirm,
+html body:has(.oh-wrapper-main.super-admin-panel-theme) .swal2-styled.swal2-confirm {
+    background: var(--panel-accent-hover, #3c7352) !important;
+    color: #ffffff !important;
+}
+
+html body:has(.oh-wrapper-main.employee-bottom-nav-active) .swal2-styled.swal2-cancel,
+html body:has(.oh-wrapper-main.admin-panel-theme) .swal2-styled.swal2-cancel,
+html body:has(.oh-wrapper-main.super-admin-panel-theme) .swal2-styled.swal2-cancel {
+    background: var(--panel-surface, #161f18) !important;
+    border: 1px solid var(--panel-border, rgba(255, 255, 255, 0.08)) !important;
+    color: var(--panel-text, #ffffff) !important;
+}
+
+html body:has(.oh-wrapper-main.employee-bottom-nav-active) .swal2-styled.swal2-deny,
+html body:has(.oh-wrapper-main.admin-panel-theme) .swal2-styled.swal2-deny,
+html body:has(.oh-wrapper-main.super-admin-panel-theme) .swal2-styled.swal2-deny {
+    background: #9d4652 !important;
+    color: #ffffff !important;
+}
+
+html body:has(.oh-wrapper-main.employee-bottom-nav-active) .swal2-timer-progress-bar,
+html body:has(.oh-wrapper-main.admin-panel-theme) .swal2-timer-progress-bar,
+html body:has(.oh-wrapper-main.super-admin-panel-theme) .swal2-timer-progress-bar {
+    background: var(--panel-accent-hover, #3c7352) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .oh-alert--animated {
+        animation: none !important;
+        opacity: 1;
+        transform: none;
+    }
 }
 
 /* Employee table and list surfaces. Keep this scope limited to the employee
@@ -5176,4 +5412,4623 @@ html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-in
 html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .panel.view-employees .oh-sticky-table__tr:hover > .oh-sticky-table__td,
 html body .oh-wrapper-main.super-admin-panel-theme:has(#employeePermission.oh-inner-sidebar__link--active) #permissionContainer .panel.view-employees .oh-sticky-table__tr:hover > .oh-sticky-table__sd {
     background: #f0fafb !important;
+}
+
+/* Keep every super-admin section on the shared light teal theme. */
+html body .oh-wrapper-main.super-admin-panel-theme {
+    --panel-bg: #e8f5f7;
+    --panel-surface: #ffffff;
+    --panel-surface-elevated: #eef8f8;
+    --panel-accent: #176f80;
+    --panel-accent-hover: #0a4d60;
+    --panel-accent-soft: rgba(23, 111, 128, 0.1);
+    --panel-text: #173f50;
+    --panel-muted: #557b84;
+    --panel-border: #c7e5eb;
+    --panel-heading: #173f50;
+    --panel-copy: #456b76;
+    background: var(--panel-bg) !important;
+    color: var(--panel-text) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme > #main,
+html body .oh-wrapper-main.super-admin-panel-theme #main-section,
+html body .oh-wrapper-main.super-admin-panel-theme #main-section-data,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-wrapper,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-dashboard,
+html body .oh-wrapper-main.super-admin-panel-theme #dashboard {
+    background: var(--panel-bg) !important;
+    color: var(--panel-text) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-card,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-card-dashboard,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-list-cards__item,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-sticky-table,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-sticky-table__table,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-tabs,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-tabs__contents,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-tabs__content,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-pagination,
+html body .oh-wrapper-main.super-admin-panel-theme .panel {
+    background: var(--panel-surface) !important;
+    border-color: var(--panel-border) !important;
+    color: var(--panel-text) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-card-dashboard__header,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-card-dashboard__header--divider,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-sticky-table__thead,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-sticky-table__th,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-tabs__tablist,
+html body .oh-wrapper-main.super-admin-panel-theme table thead {
+    background: var(--panel-surface-elevated) !important;
+    border-color: var(--panel-border) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-tabs__tab {
+    background: #e3f3f5 !important;
+    border-color: var(--panel-border) !important;
+    color: var(--panel-accent) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-tabs__tab:hover,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-tabs__tab--active,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-tabs__tab.active {
+    background: #ffffff !important;
+    border-color: #a9d5de !important;
+    color: var(--panel-accent-hover) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-view-types,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-view-types .oh-view-type {
+    background: transparent !important;
+    border-color: transparent !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-view-types .oh-btn--view {
+    background: #e3f3f5 !important;
+    border-color: #c7e5eb !important;
+    color: #176f80 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-view-types .oh-btn--view:hover,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-view-types .oh-btn--view-active {
+    background: #176f80 !important;
+    border-color: #176f80 !important;
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-view-types .oh-btn--view-active ion-icon,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-view-types .oh-btn--view:hover ion-icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme h1,
+html body .oh-wrapper-main.super-admin-panel-theme h2,
+html body .oh-wrapper-main.super-admin-panel-theme h3,
+html body .oh-wrapper-main.super-admin-panel-theme h4,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-card-dashboard__title,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-card-dashboard__count,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-main__titlebar-title,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-accordion-meta__title,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-text--dark,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-sticky-table__th,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-sticky-table__td,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-sticky-table__sd,
+html body .oh-wrapper-main.super-admin-panel-theme table th,
+html body .oh-wrapper-main.super-admin-panel-theme table td {
+    color: var(--panel-text) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-card-dashboard__subtitle,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-empty__subtitle,
+html body .oh-wrapper-main.super-admin-panel-theme small {
+    color: var(--panel-muted) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme input[type="date"],
+html body .oh-wrapper-main.super-admin-panel-theme input[type="time"] {
+    color-scheme: light;
+}
+
+body:has(.oh-wrapper-main.super-admin-panel-theme) .select2-dropdown,
+body:has(.oh-wrapper-main.super-admin-panel-theme) .select2-search--dropdown,
+body:has(.oh-wrapper-main.super-admin-panel-theme) .select2-results,
+body:has(.oh-wrapper-main.super-admin-panel-theme) .select2-results__option {
+    background: #ffffff !important;
+    color: #173f50 !important;
+    border-color: #c7e5eb !important;
+}
+
+body:has(.oh-wrapper-main.super-admin-panel-theme) .select2-results__option--highlighted[aria-selected],
+body:has(.oh-wrapper-main.super-admin-panel-theme) .select2-results__option[aria-selected="true"] {
+    background: #e8f5f7 !important;
+    color: #0a4d60 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-sticky-table,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-sticky-table__table {
+    background: #ffffff !important;
+    border-color: #c7e5eb !important;
+    color: #173f50 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-sticky-table__thead,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-sticky-table__thead .oh-sticky-table__tr,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-sticky-table__th {
+    background: #eef8f8 !important;
+    border-color: #c7e5eb !important;
+    color: #0a4d60 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-sticky-table__tbody,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-sticky-table__tr,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-sticky-table__td,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-sticky-table__sd,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-sticky-table__right {
+    background: #ffffff !important;
+    border-color: #e1eef0 !important;
+    color: #456b76 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-sticky-table__tr:hover > .oh-sticky-table__td,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-sticky-table__tr:hover > .oh-sticky-table__sd {
+    background: #f0fafb !important;
+    color: #173f50 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-dot[style*="yellowgreen"] {
+    background-color: #176f80 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-dot[style*="background-color: black"],
+html body .oh-wrapper-main.super-admin-panel-theme .oh-dot[style*="background-color:#000"] {
+    background-color: #718f98 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-profile__active-badge[style*="yellowgreen"] {
+    background-color: #278da0 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #profile-view .oh-general__tab-link {
+    color: #456b76 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #profile-view .oh-general__tab-link:hover,
+html body .oh-wrapper-main.super-admin-panel-theme #profile-view .oh-general__tab-link:focus-visible {
+    background: #eef8f8 !important;
+    color: #0a4d60 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #profile-view .oh-general__tab-link--active,
+html body .oh-wrapper-main.super-admin-panel-theme #profile-view .oh-general__tab-link--active:hover,
+html body .oh-wrapper-main.super-admin-panel-theme #profile-view .oh-general__tab-link--active:focus-visible {
+    background: #176f80 !important;
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #profile-view .oh-general__tab-link--active * {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(.employee-attendance-status-legend) .employee-attendance-status--approved,
+html body .oh-wrapper-main.super-admin-panel-theme:has(.employee-attendance-status-legend) .employee-attendance-status--validated {
+    background: #176f80 !important;
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(.employee-attendance-status-legend) .employee-attendance-status--requested {
+    background: #0a4d60 !important;
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(.employee-attendance-status-legend) .employee-attendance-status-legend > span:nth-child(1) .oh-dot,
+html body .oh-wrapper-main.super-admin-panel-theme:has(.employee-attendance-status-legend) .employee-attendance-status-legend > span:nth-child(4) .oh-dot {
+    background-color: #278da0 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(.employee-attendance-status-legend) .row-status--green {
+    border-left-color: #278da0 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(.employee-attendance-status-legend) .employee-attendance-status-legend > span:nth-child(2) .oh-dot,
+html body .oh-wrapper-main.super-admin-panel-theme:has(.employee-attendance-status-legend) .employee-attendance-status-legend > span:nth-child(3) .oh-dot {
+    background-color: #0a4d60 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(.employee-attendance-status-legend) .row-status--blue {
+    border-left-color: #176f80 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(.employee-attendance-status-legend) .row-status--orange {
+    border-left-color: #0a4d60 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#offboardingContainer) .oh-empty__subtitle,
+html body .oh-wrapper-main.super-admin-panel-theme:has(#payroll-allowance-container) .oh-empty__subtitle,
+html body .oh-wrapper-main.super-admin-panel-theme:has(#payroll-deduction-container) .oh-empty__subtitle,
+html body .oh-wrapper-main.super-admin-panel-theme:has(#loanContainer) .oh-empty__subtitle {
+    color: #456b76 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-badge--secondary {
+    background: #e3f3f5 !important;
+    border-color: #c7e5eb !important;
+    color: #176f80 !important;
+    -webkit-text-fill-color: #176f80 !important;
+}
+
+html body .oh-wrapper-main.super-admin-bottom-nav-active > #main {
+    padding-bottom: 132px;
+}
+
+html body .oh-wrapper-main.super-admin-bottom-nav-active.super-admin-section-fullscreen > #main {
+    box-sizing: border-box;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme ~ #employeeBottomNav {
+    background: rgba(232, 245, 247, 0.97) !important;
+    border: 1px solid #c7e5eb !important;
+    box-shadow: 0 18px 34px rgba(23, 109, 131, 0.18) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme ~ #employeeBottomNav .oh-bottom-nav__link {
+    color: #3d707b !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme ~ #employeeBottomNav .oh-bottom-nav__link:hover,
+html body .oh-wrapper-main.super-admin-panel-theme ~ #employeeBottomNav .oh-bottom-nav__link:focus-visible {
+    background: #d8edf1 !important;
+    color: #176d83 !important;
+    box-shadow: 0 8px 18px rgba(23, 109, 131, 0.14) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme ~ #employeeBottomNav .oh-bottom-nav__link.active {
+    background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+    border: 1px solid #176d83 !important;
+    color: #ffffff !important;
+    box-shadow: 0 8px 18px rgba(10, 77, 96, 0.22) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme ~ #employeeBottomNav .oh-bottom-nav__link.active .oh-bottom-nav__icon,
+html body .oh-wrapper-main.super-admin-panel-theme ~ #employeeBottomNav .oh-bottom-nav__link.active .oh-bottom-nav__label {
+    color: #ffffff !important;
+}
+
+html body:has(.oh-wrapper-main.super-admin-panel-theme):has(.oh-modal.oh-modal--show) :is(#employeeBottomNav, #employeeMobileNavToggle, #employeeMobileNavOverlay, #employeeMobileNavDrawer, #oh-sidebar-flyout),
+html body:has(.oh-wrapper-main.super-admin-panel-theme):has(.modal.show) :is(#employeeBottomNav, #employeeMobileNavToggle, #employeeMobileNavOverlay, #employeeMobileNavDrawer, #oh-sidebar-flyout),
+html body:has(.oh-wrapper-main.super-admin-panel-theme):has(.employee-payroll-login-modal:not([hidden])) :is(#employeeBottomNav, #employeeMobileNavToggle, #employeeMobileNavOverlay, #employeeMobileNavDrawer, #oh-sidebar-flyout),
+html body:has(.oh-wrapper-main.super-admin-panel-theme).swal2-shown :is(#employeeBottomNav, #employeeMobileNavToggle, #employeeMobileNavOverlay, #employeeMobileNavDrawer, #oh-sidebar-flyout) {
+    display: none !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-view-header {
+    box-sizing: border-box;
+    align-items: center;
+    gap: 24px;
+    margin: 24px 36px 18px;
+    padding: 20px 24px;
+    background: #ffffff !important;
+    border: 1px solid #c7e5eb;
+    border-radius: 18px;
+    box-shadow: 0 10px 28px rgba(23, 109, 131, 0.08);
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-view-header > .oh-main__titlebar--left {
+    flex: 1 1 auto;
+    min-width: 220px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-view-heading .oh-main__titlebar-title {
+    color: #123f50 !important;
+    font-size: 22px;
+    line-height: 1.25;
+    letter-spacing: -0.025em;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-view-heading p {
+    margin: 5px 0 0;
+    color: #557b84;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-view-header > .oh-main__titlebar--right {
+    flex: 0 1 auto;
+    gap: 10px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) #filterForm {
+    align-items: center;
+    gap: 8px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) #filterForm .oh-input__search-group {
+    width: 240px;
+    min-width: 190px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-quick-filters {
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin: 0 0 14px !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-quick-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 12px;
+    color: #315c68 !important;
+    background: #ffffff !important;
+    border: 1px solid #c7e5eb !important;
+    border-radius: 999px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-quick-filter:hover,
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-quick-filter:focus-visible {
+    color: #0a4d60 !important;
+    background: #e8f5f7 !important;
+    border-color: #83c5d1 !important;
+    outline: none;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-quick-filter .oh-dot {
+    width: 8px;
+    height: 8px;
+    margin: 0 !important;
+    background: #278da0 !important;
+    border-radius: 50%;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-card-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr));
+    gap: 16px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-card {
+    box-sizing: border-box;
+    min-width: 0;
+    min-height: 150px;
+    align-items: center;
+    padding: 22px 20px;
+    overflow: visible;
+    background: linear-gradient(135deg, #ffffff 70%, #f6fbfc) !important;
+    border: 1px solid #d5e9ed !important;
+    border-left: 3px solid #54aeba !important;
+    border-radius: 16px;
+    box-shadow: 0 5px 16px rgba(23, 109, 131, 0.055);
+    cursor: pointer;
+    transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-card:hover {
+    transform: translateY(-3px);
+    border-color: #9bcfd8 !important;
+    box-shadow: 0 12px 24px rgba(23, 109, 131, 0.13);
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-card:focus-within {
+    outline: 2px solid #278da0;
+    outline-offset: 2px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-card .oh-kanban-card__avatar {
+    flex: 0 0 54px;
+    width: 54px;
+    height: 54px;
+    margin: 0 16px 0 0;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-card .oh-kanban-card__profile-container,
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-card .oh-kanban-card__profile-image {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-card .oh-kanban-card__profile-container {
+    border: 3px solid #ffffff;
+    box-shadow: 0 2px 8px rgba(23, 63, 80, 0.12);
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-card .oh-kanban-card__details {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding-right: 26px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-card__heading {
+    min-width: 0;
+    margin-bottom: 12px;
+    padding-right: 8px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-card__title {
+    display: block;
+    overflow-wrap: anywhere;
+    color: #123f50 !important;
+    font-size: 16px !important;
+    line-height: 1.35;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-card__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px;
+    margin: 0 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-card__stats .oh-timeoff-modal__stat {
+    min-width: 0;
+    margin: 0 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-card__stats .oh-timeoff-modal__stat-title {
+    display: block;
+    margin: 0 0 3px !important;
+    color: #66828a !important;
+    font-size: 11px;
+    font-weight: 500 !important;
+    line-height: 1.35;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-card__stats .oh-timeoff-modal__stat-title.fw-bold {
+    color: #557b84 !important;
+    font-size: 10px;
+    font-weight: 700 !important;
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-card .oh-kanban-card__dots {
+    top: 12px;
+    right: 12px;
+    z-index: 2;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-card .oh-kanban-card__dots .oh-btn--transparent {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    padding: 0 !important;
+    place-items: center;
+    color: #176f80 !important;
+    background: #e8f5f7 !important;
+    border: 1px solid #c7e5eb !important;
+    border-radius: 11px;
+    box-shadow: none !important;
+    transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-card .oh-kanban-card__dots .oh-btn--transparent:hover,
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-card .oh-kanban-card__dots .oh-btn--transparent:focus-visible {
+    color: #ffffff !important;
+    background: #176f80 !important;
+    border-color: #176f80 !important;
+    outline: none;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-card .oh-kanban-card__dots ion-icon {
+    font-size: 18px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-card .oh-dropdown__menu {
+    z-index: 10;
+    min-width: 170px;
+    padding: 6px;
+    border: 1px solid #c7e5eb;
+    border-radius: 12px;
+    box-shadow: 0 14px 30px rgba(10, 77, 96, 0.16);
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-pagination {
+    min-height: 48px;
+    margin-top: 22px;
+    padding: 6px 14px;
+    background: #ffffff !important;
+    border: 1px solid #d5e9ed;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(23, 109, 131, 0.05);
+}
+
+@media (max-width: 900px) {
+    html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-view-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-view-header > .oh-main__titlebar--right {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 600px) {
+    html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-view-header {
+        margin: 48px 16px 14px;
+        padding: 18px;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-view-header > .oh-main__titlebar--right,
+    html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) #filterForm {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-view-header .oh-btn-group,
+    html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-view-header .oh-btn-group form,
+    html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-view-header .oh-btn-group button {
+        width: 100%;
+        margin: 0 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-view-header .oh-btn-group button {
+        justify-content: center;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) #filterForm .oh-input__search-group {
+        width: 100%;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-card-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme:has(#leaveTypes) .leave-type-pagination {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+        height: auto;
+        padding: 12px;
+    }
+}
+
+/* Give super-admin section headers a consistent surface and aligned controls. */
+html body .oh-wrapper-main.super-admin-panel-theme .oh-main__topbar {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    min-height: 90px;
+    margin: 16px 38px 14px !important;
+    padding: 18px 24px !important;
+    background: #e8f5f7 !important;
+    border: 1px solid #c7e5eb !important;
+    border-radius: 18px;
+    box-shadow: 0 10px 26px rgba(10, 77, 96, 0.08);
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-main__topbar > form {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-main__topbar .oh-main__titlebar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    margin: 0 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-main__topbar .oh-main__titlebar--left {
+    flex: 0 1 auto;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-main__topbar .oh-main__titlebar-title {
+    margin: 0 !important;
+    color: #173f50 !important;
+    line-height: 1.3;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-main__topbar .oh-main__titlebar--right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-main__topbar .oh-input__search-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1 1 210px;
+    width: auto;
+    max-width: 270px;
+    min-width: 150px;
+    height: 42px;
+    margin: 0 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-main__topbar .oh-input__search-group .oh-input {
+    box-sizing: border-box;
+    width: 100%;
+    height: 42px;
+    min-height: 42px;
+    margin: 0 !important;
+    padding: 0 12px 0 38px !important;
+    border: 1px solid #c7e5eb !important;
+    border-radius: 11px;
+    background: #ffffff !important;
+    color: #173f50 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-main__topbar .oh-input-group__icon {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    color: #176f80 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-main__topbar .oh-view-types {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    gap: 4px;
+    height: 42px;
+    margin: 0 !important;
+    padding: 3px;
+    border: 1px solid #c7e5eb !important;
+    border-radius: 12px;
+    background: #f1f9fa !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-main__topbar .oh-view-type {
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-main__topbar .oh-btn--view {
+    display: grid;
+    width: 38px;
+    min-width: 38px;
+    height: 34px;
+    min-height: 34px;
+    margin: 0 !important;
+    padding: 0 !important;
+    place-items: center;
+    border: 0;
+    border-radius: 9px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-main__topbar .oh-dropdown > .oh-btn,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-main__topbar .oh-main__titlebar-button-container > .oh-btn,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-main__topbar .oh-btn--secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 42px;
+    margin: 0 !important;
+    padding: 0 15px !important;
+    border-radius: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-main__topbar .oh-main__titlebar-button-container {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    margin: 0 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .oh-main__topbar .oh-btn ion-icon,
+html body .oh-wrapper-main.super-admin-panel-theme .oh-main__topbar .oh-input-group__icon {
+    flex: 0 0 auto;
+    margin: 0 !important;
+    vertical-align: middle;
+}
+
+@media (max-width: 900px) {
+    html body .oh-wrapper-main.super-admin-panel-theme .oh-main__topbar {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 14px;
+        margin: 14px 18px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme .oh-main__topbar > form,
+    html body .oh-wrapper-main.super-admin-panel-theme .oh-main__topbar .oh-main__titlebar--right {
+        width: 100%;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme .oh-main__topbar .oh-main__titlebar--right {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 600px) {
+    html body .oh-wrapper-main.super-admin-panel-theme .oh-main__topbar {
+        margin: 12px !important;
+        padding: 16px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme .oh-main__topbar .oh-main__titlebar--right {
+        gap: 8px;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme .oh-main__topbar .oh-input__search-group {
+        flex-basis: 100%;
+        max-width: none;
+    }
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .employee-profile-theme .oh-profile-tabs__actions .oh-sticky-dropdown_btn ion-icon {
+    display: block;
+    width: 18px;
+    height: 18px;
+    color: #ffffff !important;
+    font-size: 18px;
+    opacity: 1;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) {
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden !important;
+    padding: 24px;
+    background: rgba(13, 45, 54, 0.58) !important;
+    backdrop-filter: blur(5px);
+    overscroll-behavior: contain;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal.oh-modal--show:has(form[hx-post="/create-announcement"]) {
+    display: flex !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) > #objectCreateModalTarget {
+    display: flex;
+    flex-direction: column;
+    width: min(820px, 100%);
+    max-width: 820px;
+    max-height: calc(100vh - 48px);
+    max-height: calc(100dvh - 48px);
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid #c7e5eb !important;
+    border-radius: 22px !important;
+    background: #f7fbfc !important;
+    box-shadow: 0 28px 80px rgba(7, 38, 47, 0.3) !important;
+    color: #173f50 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-modal__dialog-header {
+    flex: 0 0 auto;
+    min-height: 68px;
+    box-sizing: border-box;
+    padding: 22px 76px 18px 26px !important;
+    border: 0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18) !important;
+    background: linear-gradient(115deg, #0a4d60, #278da0) !important;
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-modal__dialog-title {
+    margin: 0;
+    color: #ffffff !important;
+    font-size: 1.12rem;
+    font-weight: 750;
+    letter-spacing: 0.01em;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-modal__close {
+    top: 50%;
+    right: 20px;
+    display: grid;
+    width: 38px;
+    height: 38px;
+    margin: 0;
+    padding: 0;
+    place-items: center;
+    transform: translateY(-50%);
+    border: 1px solid rgba(255, 255, 255, 0.32) !important;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.14) !important;
+    color: #ffffff !important;
+    opacity: 1;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-modal__close ion-icon {
+    color: #ffffff !important;
+    font-size: 20px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-modal__close:hover,
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-modal__close:focus-visible {
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.24) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-modal__dialog-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 22px 26px 26px !important;
+    background: #f7fbfc !important;
+    color: #285d6b !important;
+    overscroll-behavior: contain;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section {
+    margin: 0;
+    padding: 22px !important;
+    border: 1px solid #d8e9ed !important;
+    border-radius: 16px;
+    background: #ffffff !important;
+    box-shadow: 0 8px 24px rgba(10, 77, 96, 0.06);
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section > p {
+    margin: 0 0 18px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section label,
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section .oh-label {
+    display: block;
+    margin: 0 0 7px;
+    color: #214c59 !important;
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section input:not(.select2-search__field):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="submit"]),
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section select,
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section textarea,
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section .select2-selection {
+    min-height: 44px;
+    border: 1px solid #c7dfe5 !important;
+    border-radius: 11px !important;
+    background: #ffffff !important;
+    color: #173f50 !important;
+    box-shadow: none !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section input:not(.select2-search__field):focus,
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section select:focus,
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section textarea:focus,
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section .select2-container--focus .select2-selection {
+    border-color: #278da0 !important;
+    box-shadow: 0 0 0 3px rgba(39, 141, 160, 0.14) !important;
+    outline: none;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section input[type="file"] {
+    width: 100%;
+    max-width: 100%;
+    padding: 8px;
+    border: 1px solid #d5e7eb;
+    border-radius: 11px;
+    background: #f8fbfc;
+    color: #456b76;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .note-editor {
+    overflow: hidden;
+    border: 1px solid #c7dfe5 !important;
+    border-radius: 12px;
+    box-shadow: none;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .note-toolbar,
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .note-statusbar {
+    border-color: #d8e9ed !important;
+    background: #eef7f8 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .note-editable {
+    color: #173f50 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section button[type="submit"] {
+    min-width: 120px;
+    min-height: 44px;
+    padding: 0 22px !important;
+    border: 1px solid #176f80 !important;
+    border-radius: 11px !important;
+    background: linear-gradient(115deg, #0a596b, #278da0) !important;
+    color: #ffffff !important;
+    font-weight: 750;
+    box-shadow: 0 7px 16px rgba(10, 77, 96, 0.18);
+}
+
+@media (max-width: 600px) {
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) {
+        padding: 12px;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) > #objectCreateModalTarget {
+        width: 100%;
+        max-height: calc(100vh - 24px);
+        max-height: calc(100dvh - 24px);
+        border-radius: 18px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-modal__dialog-header {
+        min-height: 60px;
+        padding: 18px 64px 16px 18px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-modal__dialog-body {
+        padding: 14px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section {
+        padding: 16px !important;
+    }
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) {
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden !important;
+    padding: 24px;
+    background: rgba(13, 45, 54, 0.58) !important;
+    backdrop-filter: blur(5px);
+    overscroll-behavior: contain;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal.oh-modal--show:has(form[hx-post="/create-announcement"]) {
+    display: flex !important;
+}
+
+html.announcement-modal-open,
+body.announcement-modal-open {
+    height: 100%;
+    overflow: hidden !important;
+    overscroll-behavior: none;
+}
+
+html:has(.oh-wrapper-main.super-admin-panel-theme #objectCreateModal.oh-modal--show form[hx-post="/create-announcement"]),
+body:has(.oh-wrapper-main.super-admin-panel-theme #objectCreateModal.oh-modal--show form[hx-post="/create-announcement"]) {
+    overflow: hidden !important;
+    overscroll-behavior: none;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) > #objectCreateModalTarget {
+    display: flex;
+    flex-direction: column;
+    width: min(820px, 100%);
+    max-width: 820px;
+    max-height: calc(100vh - 48px);
+    max-height: calc(100dvh - 48px);
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid #c7e5eb !important;
+    border-radius: 22px !important;
+    background: #f7fbfc !important;
+    box-shadow: 0 28px 80px rgba(7, 38, 47, 0.3) !important;
+    color: #173f50 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-modal__dialog-header {
+    flex: 0 0 auto;
+    min-height: 68px;
+    box-sizing: border-box;
+    padding: 22px 76px 18px 26px !important;
+    border: 0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18) !important;
+    background: linear-gradient(115deg, #0a4d60, #278da0) !important;
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-modal__dialog-title {
+    margin: 0;
+    color: #ffffff !important;
+    font-size: 1.12rem;
+    font-weight: 750;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-modal__close {
+    top: 50%;
+    right: 20px;
+    display: grid;
+    width: 38px;
+    height: 38px;
+    margin: 0;
+    padding: 0;
+    place-items: center;
+    transform: translateY(-50%);
+    border: 1px solid rgba(255, 255, 255, 0.32) !important;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.14) !important;
+    color: #ffffff !important;
+    opacity: 1;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-modal__close ion-icon {
+    color: #ffffff !important;
+    font-size: 20px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-modal__close:hover,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-modal__close:focus-visible {
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.24) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-modal__dialog-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 22px 26px 26px !important;
+    background: #f7fbfc !important;
+    color: #285d6b !important;
+    overscroll-behavior: contain;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section {
+    margin: 0;
+    padding: 22px !important;
+    border: 1px solid #d8e9ed !important;
+    border-radius: 16px;
+    background: #ffffff !important;
+    box-shadow: 0 8px 24px rgba(10, 77, 96, 0.06);
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section > p {
+    margin: 0 0 18px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section label {
+    display: block;
+    margin: 0 0 7px;
+    color: #214c59 !important;
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section input:not(.select2-search__field):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="submit"]),
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section select,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section textarea,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section .select2-selection {
+    min-height: 44px;
+    border: 1px solid #c7dfe5 !important;
+    border-radius: 11px !important;
+    background: #ffffff !important;
+    color: #173f50 !important;
+    box-shadow: none !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section input:not(.select2-search__field):focus,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section select:focus,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section textarea:focus,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section .select2-container--focus .select2-selection {
+    border-color: #278da0 !important;
+    box-shadow: 0 0 0 3px rgba(39, 141, 160, 0.14) !important;
+    outline: none;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section .select2-container {
+    box-sizing: border-box;
+    width: 100% !important;
+    max-width: 100%;
+    min-width: 0;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section .select2-selection--multiple {
+    box-sizing: border-box;
+    display: flex;
+    width: 100%;
+    min-height: 44px;
+    max-height: 112px !important;
+    align-items: center;
+    overflow-x: hidden;
+    overflow-y: auto !important;
+    padding: 6px 8px !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section .select2-selection--multiple .select2-selection__rendered {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section .select2-selection--multiple .select2-search--inline {
+    display: inline-flex;
+    flex: 0 1 auto;
+    min-width: 1.5em;
+    align-items: center;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section .select2-selection--multiple .select2-search__field {
+    box-sizing: border-box;
+    min-width: 1.5em;
+    max-width: 100%;
+    height: 1.5em !important;
+    min-height: 1.5em !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: #173f50 !important;
+    line-height: 1.5;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section .select2-selection--multiple .select2-search__field:focus {
+    border: 0 !important;
+    box-shadow: none !important;
+    outline: none;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section .custom-scroll {
+    box-sizing: border-box;
+    max-width: 100%;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scrollbar-width: none;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section .custom-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section .select2-selection--multiple .select2-selection__choice {
+    box-sizing: border-box;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    margin: 0;
+    color: #285d6b;
+    border-color: #c7dfe5;
+    border-radius: 7px;
+    background: #f2f9fa;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section input[type="file"] {
+    width: 100%;
+    max-width: 100%;
+    padding: 8px;
+    border: 1px solid #d5e7eb;
+    border-radius: 11px;
+    background: #f8fbfc;
+    color: #456b76;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .note-editor {
+    overflow: hidden;
+    border: 1px solid #c7dfe5 !important;
+    border-radius: 12px;
+    box-shadow: none;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .note-toolbar,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .note-statusbar {
+    border-color: #d8e9ed !important;
+    background: #eef7f8 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .note-toolbar .note-btn {
+    color: #176f80 !important;
+    border: 1px solid #c7dfe5 !important;
+    border-radius: 7px;
+    background: #ffffff !important;
+    box-shadow: 0 1px 3px rgba(10, 77, 96, 0.08);
+    transition: color .16s ease, background-color .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .note-toolbar .note-btn:not(.note-current-color-button) > i,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .note-toolbar .note-btn:not(.note-current-color-button) > span {
+    color: #176f80 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .note-toolbar .note-btn:hover,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .note-toolbar .note-btn:focus-visible {
+    color: #ffffff !important;
+    border-color: #0a596b !important;
+    background: #0a596b !important;
+    box-shadow: 0 2px 7px rgba(10, 77, 96, 0.2);
+    outline: none;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .note-toolbar .note-btn:not(.note-current-color-button):hover > i,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .note-toolbar .note-btn:not(.note-current-color-button):hover > span,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .note-toolbar .note-btn:not(.note-current-color-button):focus-visible > i,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .note-toolbar .note-btn:not(.note-current-color-button):focus-visible > span {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .note-toolbar .note-btn.active {
+    color: #0a596b !important;
+    border-color: #9bcbd3 !important;
+    background: #dceff2 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .note-toolbar .note-btn.active:not(.note-current-color-button) > i,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .note-toolbar .note-btn.active:not(.note-current-color-button) > span {
+    color: #0a596b !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .note-editable {
+    color: #173f50 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section button[type="submit"] {
+    min-width: 120px;
+    min-height: 44px;
+    padding: 0 22px !important;
+    border: 1px solid #176f80 !important;
+    border-radius: 11px !important;
+    background: linear-gradient(115deg, #0a596b, #278da0) !important;
+    color: #ffffff !important;
+    font-weight: 750;
+    box-shadow: 0 7px 16px rgba(10, 77, 96, 0.18);
+}
+
+@media (max-width: 600px) {
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) {
+        padding: 12px;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) > #objectCreateModalTarget {
+        width: 100%;
+        max-height: calc(100vh - 24px);
+        max-height: calc(100dvh - 24px);
+        border-radius: 18px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-modal__dialog-header {
+        min-height: 60px;
+        padding: 18px 64px 16px 18px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-modal__dialog-body {
+        padding: 14px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section {
+        padding: 16px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section .select2-container,
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section .select2-selection--multiple {
+        width: 100% !important;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section .select2-selection--multiple {
+        max-height: 96px !important;
+        padding: 6px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .oh-profile-section .select2-selection--multiple .select2-selection__rendered {
+        min-width: 0;
+    }
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal {
+    position: fixed !important;
+    z-index: 13010 !important;
+    inset: 0;
+    display: none !important;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 24px;
+    background: rgba(8, 38, 47, 0.56) !important;
+    backdrop-filter: blur(3px);
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal.oh-modal--show {
+    display: flex !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal__dialog {
+    position: relative;
+    display: flex;
+    flex: 0 1 900px;
+    flex-direction: column;
+    width: min(900px, 100%);
+    max-width: 900px;
+    max-height: min(90vh, 780px);
+    max-height: min(90dvh, 780px);
+    min-height: 0;
+    margin: 0 !important;
+    overflow: hidden;
+    border: 1px solid #b9dce4 !important;
+    border-radius: 20px !important;
+    background: #f7fbfc !important;
+    box-shadow: 0 24px 64px rgba(7, 38, 47, 0.3) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal__header {
+    position: relative;
+    display: flex;
+    flex: 0 0 auto;
+    min-height: 68px;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    padding: 16px 76px 16px 24px !important;
+    border: 0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+    background: linear-gradient(115deg, #0a4d60, #278da0) !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal__title {
+    margin: 0;
+    color: #ffffff !important;
+    font-size: 1.08rem;
+    font-weight: 750;
+    line-height: 1.35;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal__close {
+    position: absolute;
+    top: 50%;
+    right: 18px;
+    display: grid;
+    width: 40px;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+    place-items: center;
+    transform: translateY(-50%);
+    border: 1px solid rgba(255, 255, 255, 0.38) !important;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.14) !important;
+    color: #ffffff !important;
+    opacity: 1;
+    transition: background .18s ease, border-color .18s ease;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal__close ion-icon {
+    color: #ffffff !important;
+    font-size: 21px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal__close:hover,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal__close:focus-visible {
+    transform: translateY(-50%);
+    border-color: rgba(255, 255, 255, 0.72) !important;
+    background: rgba(255, 255, 255, 0.26) !important;
+    outline: none;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 18px 22px 22px !important;
+    background: #f7fbfc !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal__body > .oh-wrapper {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .announcement-multiselect-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    margin: 0 0 14px !important;
+    padding: 14px 16px !important;
+    border: 1px solid #c7e5eb !important;
+    border-radius: 15px;
+    background: #ffffff !important;
+    box-shadow: 0 5px 16px rgba(10, 77, 96, 0.06);
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-main__titlebar--left,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-main__titlebar--right {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    background: transparent !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-main__titlebar--left > div {
+    margin: 0 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-main__titlebar-title {
+    margin: 0;
+    color: #173f50 !important;
+    font-size: 0.98rem;
+    font-weight: 750;
+    line-height: 1.4;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-main__titlebar--right {
+    flex: 0 1 440px;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-input__search-group {
+    display: flex;
+    flex: 1 1 220px;
+    width: auto;
+    max-width: 260px;
+    min-width: 0;
+    margin: 0;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-input__search-group .oh-input {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 42px;
+    margin: 0 !important;
+    border: 1px solid #c7dfe5 !important;
+    border-radius: 10px !important;
+    background: #ffffff !important;
+    color: #173f50 !important;
+    box-shadow: none !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-main__titlebar-button-container {
+    margin: 0;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-btn {
+    display: inline-flex;
+    min-width: 112px;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin: 0 !important;
+    padding: 0 16px;
+    border: 1px solid #176f80 !important;
+    border-radius: 10px !important;
+    background: linear-gradient(135deg, #0a596b, #177f91) !important;
+    color: #ffffff !important;
+    box-shadow: 0 5px 12px rgba(10, 77, 96, 0.14);
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-btn ion-icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-btn:hover,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-btn:focus-visible {
+    border-color: #0a4d60 !important;
+    background: #0a4d60 !important;
+    color: #ffffff !important;
+    outline: none;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .ration-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    margin: 0 0 12px !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .ration-container > div:first-child {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-checkpoint-badge {
+    display: inline-flex;
+    min-height: 36px;
+    align-items: center;
+    justify-content: center;
+    margin: 0 !important;
+    padding: 6px 10px !important;
+    border: 1px solid #c7dfe5 !important;
+    border-radius: 9px !important;
+    background: #ffffff !important;
+    color: #176f80 !important;
+    font-size: 0.82rem;
+    font-weight: 650;
+    line-height: 1.3;
+    white-space: nowrap;
+    transition: border-color .16s ease, background .16s ease, color .16s ease, box-shadow .16s ease;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-checkpoint-badge:hover,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-checkpoint-badge:focus-visible {
+    border-color: #71b8c4 !important;
+    background: #e7f4f6 !important;
+    color: #0a4d60 !important;
+    box-shadow: 0 2px 8px rgba(23, 111, 128, 0.1);
+    outline: none;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-sticky-table {
+    box-sizing: border-box;
+    width: 100%;
+    height: clamp(220px, 40vh, 360px) !important;
+    min-height: 220px;
+    overflow: auto;
+    border: 1px solid #c7e5eb;
+    border-radius: 12px;
+    background: #ffffff !important;
+    scrollbar-color: #7fb8c2 #edf6f7;
+    scrollbar-width: thin;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal #chooseTableHeaderParent,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal #chooseTableHeader,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-sticky-table__tbody,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-sticky-table__tr {
+    box-sizing: border-box;
+    width: 100% !important;
+    min-width: 0 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-sticky-table__table {
+    width: 100% !important;
+    min-width: 0 !important;
+    background: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-sticky-table__thead {
+    position: sticky;
+    z-index: 1;
+    top: 0;
+    background: #eaf5f7 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-sticky-table__th,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-sticky-table__sd {
+    box-sizing: border-box;
+    width: 100% !important;
+    min-width: 0 !important;
+    color: #173f50 !important;
+    border-color: #dcebef !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-sticky-table__th > div,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-sticky-table__sd > div {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 10px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-sticky-table__tbody {
+    display: block;
+    background: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-sticky-table__tr--custom {
+    display: flex;
+    min-height: 56px;
+    align-items: stretch;
+    border-bottom: 1px solid #e3eff1 !important;
+    background: #ffffff !important;
+    transition: background .16s ease;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-sticky-table__tr--custom:hover {
+    background: #f2fafb !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-sticky-table__tr--custom .oh-sticky-table__sd {
+    display: flex;
+    align-items: center;
+    padding: 8px 14px !important;
+    background: transparent !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-profile--md {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-profile__avatar {
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    margin-right: 10px !important;
+    overflow: hidden;
+    border-radius: 50%;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-profile__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-profile__name {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    color: #173f50 !important;
+    line-height: 1.4;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-input__checkbox {
+    flex: 0 0 auto;
+    accent-color: #176f80;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-sticky-table__tr--selected {
+    background: #e7f4f6 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-pagination {
+    min-height: 42px;
+    margin: 10px 0 !important;
+    padding: 8px 12px !important;
+    border: 1px solid #d5e9ec !important;
+    border-radius: 10px;
+    background: #eef8f8 !important;
+    color: #456b76 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-pagination__page {
+    color: #456b76 !important;
+    background: transparent !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal__body > .oh-wrapper > .d-flex.flex-row-reverse {
+    justify-content: flex-start !important;
+    margin-top: 12px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal__body > .oh-wrapper > .d-flex.flex-row-reverse .oh-btn {
+    display: inline-flex;
+    min-width: 112px;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    margin: 0 !important;
+    border: 1px solid #176f80 !important;
+    border-radius: 10px !important;
+    background: linear-gradient(135deg, #0a596b, #177f91) !important;
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal__body > .oh-wrapper > .d-flex.flex-row-reverse .oh-btn:hover,
+html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal__body > .oh-wrapper > .d-flex.flex-row-reverse .oh-btn:focus-visible {
+    border-color: #0a4d60 !important;
+    background: #0a4d60 !important;
+    color: #ffffff !important;
+    outline: none;
+}
+
+@media (max-width: 600px) {
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal {
+        align-items: flex-start;
+        padding: 12px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal__dialog {
+        flex-basis: 100%;
+        width: 100%;
+        max-width: none;
+        max-height: calc(100vh - 24px);
+        max-height: calc(100dvh - 24px);
+        margin: auto 0 !important;
+        border-radius: 16px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal__header {
+        min-height: 58px;
+        padding: 12px 62px 12px 16px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal__title {
+        font-size: 0.96rem;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal__close {
+        right: 12px;
+        width: 36px;
+        height: 36px;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal__body {
+        padding: 12px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .announcement-multiselect-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 12px !important;
+        padding: 12px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-main__titlebar--right {
+        display: flex;
+        flex: 1 1 auto;
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        gap: 8px;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-input__search-group {
+        position: relative;
+        top: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        left: auto !important;
+        flex: 0 0 auto;
+        width: 100%;
+        max-width: none;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-main__titlebar-button-container,
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-main__titlebar-button-container .oh-dropdown {
+        width: 100%;
+        min-width: 0;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-btn {
+        width: 100%;
+        min-width: 94px;
+        padding-inline: 12px;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .ration-container {
+        align-items: stretch;
+        justify-content: flex-start;
+        gap: 8px;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .ration-container > div:first-child {
+        flex: 1 1 100%;
+        gap: 6px;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal #selectAllInstances {
+        margin-left: 0 !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-checkpoint-badge {
+        min-height: 34px;
+        padding-inline: 8px !important;
+        font-size: 0.76rem;
+        white-space: normal;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-sticky-table {
+        height: clamp(220px, 40vh, 340px) !important;
+        min-height: 200px;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal .oh-sticky-table__tr--custom .oh-sticky-table__sd {
+        padding: 8px 10px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme #objectCreateModal:has(form[hx-post="/create-announcement"]) .announcement-multiselect-modal__body > .oh-wrapper > .d-flex.flex-row-reverse .oh-btn {
+        width: 100%;
+    }
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail),
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) {
+    background: rgba(8, 38, 47, 0.5);
+    backdrop-filter: blur(3px);
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) > #objectDetailsModalTarget,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) > #objectDetailsModalTarget {
+    display: flex;
+    flex-direction: column;
+    width: min(calc(100vw - 32px), 660px);
+    max-width: 660px !important;
+    max-height: min(88vh, 720px);
+    max-height: min(88dvh, 720px);
+    min-height: 0;
+    overflow: hidden !important;
+    padding: 0 !important;
+    border: 1px solid #b9dce4 !important;
+    border-radius: 20px !important;
+    background: #f7fbfc !important;
+    box-shadow: 0 24px 64px rgba(7, 38, 47, 0.3) !important;
+    color: #173f50 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__dialog-header,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__dialog-header {
+    position: relative;
+    display: flex;
+    flex: 0 0 auto;
+    min-height: 68px;
+    align-items: center;
+    margin: 0;
+    padding: 16px 72px 16px 24px;
+    border: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 19px 19px 0 0;
+    background: linear-gradient(115deg, #0a4d60, #278da0) !important;
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__dialog-title,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__dialog-title {
+    margin: 0;
+    color: #ffffff !important;
+    font-size: clamp(1.05rem, 2vw, 1.3rem);
+    font-weight: 750;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__close,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__close {
+    top: 14px !important;
+    right: 16px;
+    display: grid;
+    width: 40px;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+    place-items: center;
+    transform: none;
+    border: 1px solid rgba(255, 255, 255, 0.38) !important;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.14) !important;
+    color: #ffffff !important;
+    opacity: 1;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__close ion-icon,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__close ion-icon {
+    display: block;
+    width: 21px;
+    height: 21px;
+    color: #ffffff !important;
+    font-size: 21px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__close:hover,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__close:focus-visible,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__close:hover,
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__close:focus-visible {
+    transform: none;
+    border-color: rgba(255, 255, 255, 0.72) !important;
+    background: rgba(255, 255, 255, 0.26) !important;
+    outline: none;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__dialog-body,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__dialog-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 20px 24px 24px;
+    border-radius: 0 0 19px 19px;
+    background: #f7fbfc !important;
+    color: #285d6b !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__dialog--navigation,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__dialog--navigation {
+    position: static;
+    display: flex;
+    width: 100%;
+    height: auto;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 0 14px !important;
+    padding: 0 !important;
+    overflow: visible;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__diaglog-nav,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__diaglog-nav {
+    position: static;
+    display: grid;
+    width: 38px;
+    height: 38px;
+    margin: 0;
+    padding: 0;
+    place-items: center;
+    transform: none;
+    border: 1px solid #c7e5eb !important;
+    border-radius: 11px;
+    background: #ffffff !important;
+    color: #176f80 !important;
+    box-shadow: 0 4px 12px rgba(10, 77, 96, 0.08);
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__diaglog-nav ion-icon,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__diaglog-nav ion-icon {
+    width: 19px;
+    height: 19px;
+    color: inherit !important;
+    font-size: 19px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__diaglog-nav:hover,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__diaglog-nav:hover {
+    transform: none;
+    border-color: #176f80 !important;
+    background: #eaf6f8 !important;
+    color: #0a596b !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__dialog-body > .row,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__dialog-body > .row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 0;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__dialog-body > .row > [class*="col-"],
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__dialog-body > .row > [class*="col-"] {
+    width: auto;
+    max-width: none;
+    margin: 0 !important;
+    padding: 0;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__group,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__group {
+    display: flex;
+    min-height: 78px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    margin: 0 !important;
+    padding: 12px 14px;
+    border: 1px solid #d7e9ed;
+    border-radius: 13px;
+    background: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(10, 77, 96, 0.045);
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__dialog-body > .row > div:has(.oh-modal__description),
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__dialog-body > .row > div:has(.oh-modal__description),
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .employee-asset-detail__reports,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .employee-asset-detail__reports,
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__button-container,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__button-container {
+    grid-column: 1 / -1;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-timeoff-modal__stat-title,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-timeoff-modal__stat-title {
+    margin: 0;
+    color: #567782 !important;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.045em;
+    line-height: 1.3;
+    text-transform: uppercase;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-timeoff-modal__stat-count,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-timeoff-modal__stat-count,
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__description,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__description {
+    color: #173f50 !important;
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__description,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__description {
+    font-weight: 500;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .employee-asset-detail__reports,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .employee-asset-detail__reports {
+    margin: 0 !important;
+    padding: 14px;
+    border: 1px solid #d7e9ed;
+    border-radius: 13px;
+    background: #ffffff !important;
+    color: #285d6b !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__button-container,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__button-container {
+    padding-top: 4px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__button-container .oh-btn-group,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__button-container .oh-btn-group {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    border: 0;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__button-container .oh-btn,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__button-container .oh-btn {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid #176f80 !important;
+    border-radius: 11px !important;
+    background: linear-gradient(115deg, #0a596b, #278da0) !important;
+    color: #ffffff !important;
+    font-weight: 700;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__button-container .oh-btn--danger,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__button-container .oh-btn--danger {
+    border-color: #d9b6b6 !important;
+    background: #fff7f7 !important;
+    color: #a33b3b !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__button-container .oh-btn ion-icon,
+html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__button-container .oh-btn ion-icon {
+    width: 18px;
+    height: 18px;
+    color: inherit !important;
+    font-size: 18px;
+}
+
+@media (max-width: 600px) {
+    html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) > #objectDetailsModalTarget,
+    html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) > #objectDetailsModalTarget {
+        width: calc(100vw - 24px);
+        max-height: calc(100vh - 24px);
+        max-height: calc(100dvh - 24px);
+        border-radius: 17px !important;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__dialog-header,
+    html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__dialog-header {
+        min-height: 62px;
+        padding: 14px 62px 14px 18px;
+        border-radius: 16px 16px 0 0;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__close,
+    html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__close {
+        top: 11px !important;
+        right: 12px;
+        width: 38px;
+        height: 38px;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__dialog-body,
+    html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__dialog-body {
+        padding: 16px;
+    }
+
+    html body .oh-wrapper-main.super-admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__dialog-body > .row,
+    html body .oh-wrapper-main.admin-panel-theme:not(.employee-bottom-nav-active) #objectDetailsModal:has(.employee-asset-detail) .oh-modal__dialog-body > .row {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 10px;
+    }
+}
+
+.oh-kanban-card--biometric {
+    box-sizing: border-box;
+    min-height: 238px;
+    gap: 14px;
+    padding: 18px 16px 14px 20px;
+    border-radius: 16px;
+    box-shadow: 0 8px 22px rgba(10, 77, 96, 0.08);
+    transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.oh-kanban-card--biometric:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(10, 77, 96, 0.14);
+}
+
+.oh-kanban-card--biometric .oh-kanban-card__details {
+    width: 100%;
+    min-width: 0;
+    padding-right: 38px;
+}
+
+.oh-kanban-card--biometric .oh-kanban-card__title {
+    margin-bottom: 4px;
+    font-size: 1rem;
+    line-height: 1.35;
+}
+
+.oh-kanban-card--biometric .oh-kanban-card__subtitle {
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.oh-kanban-card--biometric .oh-kanban-card__details table {
+    margin: 12px 0 0;
+}
+
+.oh-kanban-card--biometric .oh-kanban-card__details td {
+    padding: 0 8px 0 0;
+    vertical-align: middle;
+}
+
+.oh-kanban-card--biometric .oh-kanban-card__dots {
+    top: 12px;
+    right: 12px;
+    z-index: 2;
+}
+
+.oh-kanban-card--biometric .oh-kanban-card__dots .oh-btn--transparent {
+    display: inline-flex;
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 !important;
+    border: 1px solid #c7e5eb;
+    border-radius: 11px;
+    background: #eef8f8;
+    color: #176f80;
+    box-shadow: none;
+}
+
+.oh-kanban-card--biometric .oh-kanban-card__dots .oh-btn--transparent:hover,
+.oh-kanban-card--biometric .oh-kanban-card__dots .oh-btn--transparent:focus-visible {
+    border-color: #176f80;
+    background: #176f80;
+    color: #ffffff;
+    outline: none;
+}
+
+.oh-kanban-card--biometric .oh-kanban-card__dots ion-icon {
+    width: 18px;
+    height: 18px;
+    color: currentColor !important;
+    font-size: 18px;
+}
+
+.oh-kanban-card--biometric .oh-kanban-card__dots .oh-dropdown__menu {
+    z-index: 20;
+    min-width: 170px;
+    padding: 6px;
+    border: 1px solid #c7e5eb;
+    border-radius: 12px;
+    box-shadow: 0 14px 30px rgba(10, 77, 96, 0.16);
+}
+
+.oh-kanban-card--biometric .oh-kanban-card__biometric-actions {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top-color: #e4eef0;
+}
+
+.oh-kanban-card--biometric .oh-kanban-card__biometric-actions > div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.oh-kanban-card--biometric .oh-kanban-card__biometric-actions .oh-checkpoint-badge {
+    display: inline-flex;
+    min-height: 34px;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    border: 1px solid #d5e8ec;
+    border-radius: 9px;
+    background: #f4fafb;
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+    transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.oh-kanban-card--biometric .oh-kanban-card__biometric-actions .oh-checkpoint-badge:hover,
+.oh-kanban-card--biometric .oh-kanban-card__biometric-actions .oh-checkpoint-badge:focus-visible {
+    border-color: #8ac4d0;
+    background: #e8f5f7;
+}
+
+.oh-kanban-card--biometric .biometric-device-instance {
+    flex: 0 0 auto;
+    margin: 0;
+}
+
+html body .attendance-request-page .oh-sticky-table {
+    min-width: 0;
+}
+
+html body .attendance-request-page #tab_1 .oh-sticky-table__table {
+    width: max-content;
+    min-width: 100%;
+}
+
+html body .attendance-request-page #tab_1 .oh-sticky-table__tr > .oh-sticky-table__th,
+html body .attendance-request-page #tab_1 .oh-sticky-table__tr > .oh-sticky-table__td,
+html body .attendance-request-page #tab_1 .oh-sticky-table__tr > .oh-sticky-table__sd {
+    box-sizing: border-box;
+    flex-shrink: 0;
+    overflow: visible;
+    text-overflow: clip;
+}
+
+html body .attendance-request-page #tab_1 .oh-sticky-table__tr > :first-child {
+    min-width: 44px;
+    width: 44px;
+}
+
+html body .attendance-request-page #tab_1 .oh-sticky-table__tr > :nth-child(2) {
+    min-width: 185px;
+    width: 185px;
+}
+
+html body .attendance-request-page #tab_1 .oh-sticky-table__tr > :nth-child(3) {
+    min-width: 135px;
+    width: 135px;
+}
+
+html body .attendance-request-page #tab_1 .oh-sticky-table__tr > :nth-child(4),
+html body .attendance-request-page #tab_1 .oh-sticky-table__tr > :nth-child(7),
+html body .attendance-request-page #tab_1 .oh-sticky-table__tr > :nth-child(9) {
+    min-width: 132px;
+    width: 132px;
+}
+
+html body .attendance-request-page #tab_1 .oh-sticky-table__tr > :nth-child(5),
+html body .attendance-request-page #tab_1 .oh-sticky-table__tr > :nth-child(10),
+html body .attendance-request-page #tab_1 .oh-sticky-table__tr > :nth-child(12),
+html body .attendance-request-page #tab_1 .oh-sticky-table__tr > :nth-child(13),
+html body .attendance-request-page #tab_1 .oh-sticky-table__tr > :nth-child(14) {
+    min-width: 125px;
+    width: 125px;
+}
+
+html body .attendance-request-page #tab_1 .oh-sticky-table__tr > :nth-child(6),
+html body .attendance-request-page #tab_1 .oh-sticky-table__tr > :nth-child(8) {
+    min-width: 135px;
+    width: 135px;
+}
+
+html body .attendance-request-page #tab_1 .oh-sticky-table__tr > :nth-child(11) {
+    min-width: 145px;
+    width: 145px;
+}
+
+html body .attendance-request-page #tab_1 .oh-sticky-table__tr > :nth-child(15) {
+    min-width: 120px;
+    width: 120px;
+}
+
+html body .attendance-request-page #tab_1 .oh-sticky-table__tr > :nth-child(16) {
+    min-width: 145px;
+    width: 145px;
+}
+
+html body .attendance-request-page #tab_1 .oh-sticky-table__th {
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: nowrap !important;
+}
+
+html body .attendance-request-page .oh-table_sticky--wrapper {
+    overflow-x: auto;
+    border: 1px solid #d5e8ec;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 8px 22px rgba(10, 77, 96, 0.06);
+    scrollbar-color: #8ac4d0 #eef6f7;
+    scrollbar-width: thin;
+}
+
+html body .attendance-request-page .oh-sticky-table__th {
+    min-height: 48px;
+    padding: 12px 14px;
+    background: #eef8f8;
+    color: #164a5d;
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1.35;
+    white-space: nowrap;
+}
+
+html body .attendance-request-page .oh-sticky-table__td,
+html body .attendance-request-page .oh-sticky-table__sd {
+    min-height: 60px;
+    padding: 10px 14px;
+    border-color: #e0ecef;
+    color: #355568;
+    line-height: 1.45;
+}
+
+html body .attendance-request-page .oh-sticky-table__tr:hover > .oh-sticky-table__td,
+html body .attendance-request-page .oh-sticky-table__tr:hover > .oh-sticky-table__sd {
+    background-color: #f2fafb;
+}
+
+html body .attendance-request-page .oh-sticky-table__right {
+    min-width: 116px;
+    padding-right: 14px;
+    text-align: center;
+}
+
+html body .attendance-request-page .oh-sticky-table__right .oh-btn-group {
+    display: inline-flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+html body .attendance-request-page .oh-sticky-table__right .oh-btn-group > .oh-btn {
+    display: inline-flex;
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+    min-height: 38px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 !important;
+    border: 1px solid #c7e5eb !important;
+    border-radius: 10px !important;
+    background: #eef8f8 !important;
+    color: #176f80 !important;
+    box-shadow: none !important;
+}
+
+html body .attendance-request-page .oh-sticky-table__right .oh-btn-group > .oh-btn:hover,
+html body .attendance-request-page .oh-sticky-table__right .oh-btn-group > .oh-btn:focus-visible {
+    border-color: #176f80 !important;
+    background: #176f80 !important;
+    color: #ffffff !important;
+}
+
+html body .attendance-request-page .oh-sticky-table__right .oh-btn-group ion-icon {
+    display: block;
+    width: 18px;
+    height: 18px;
+    margin: 0 !important;
+    color: currentColor !important;
+    font-size: 18px;
+    line-height: 1;
+}
+
+html body .attendance-request-page .oh-activity-sidebar__open {
+    display: inline-flex;
+    width: 38px !important;
+    min-width: 38px;
+    height: 38px !important;
+    min-height: 38px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 !important;
+    border: 1px solid #c7e5eb !important;
+    border-radius: 10px !important;
+    background: #eef8f8 !important;
+    color: #176f80 !important;
+    box-shadow: none !important;
+}
+
+html body .attendance-request-page .oh-activity-sidebar__open:hover,
+html body .attendance-request-page .oh-activity-sidebar__open:focus-visible {
+    border-color: #176f80 !important;
+    background: #176f80 !important;
+    color: #ffffff !important;
+}
+
+html body .attendance-request-page .oh-activity-sidebar__open ion-icon {
+    display: block;
+    width: 18px;
+    height: 18px;
+    margin: 0 !important;
+    color: currentColor !important;
+    font-size: 18px;
+    line-height: 1;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .attendance-request-page .oh-activity-sidebar__open,
+html body .oh-wrapper-main.admin-panel-theme .attendance-request-page .oh-activity-sidebar__open,
+html body .oh-wrapper-main.super-admin-panel-theme .attendance-request-page .oh-sticky-dropdown_btn,
+html body .oh-wrapper-main.admin-panel-theme .attendance-request-page .oh-sticky-dropdown_btn {
+    background: #eef8f8 !important;
+    color: #176f80 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .attendance-request-page .oh-activity-sidebar__open:hover,
+html body .oh-wrapper-main.super-admin-panel-theme .attendance-request-page .oh-activity-sidebar__open:focus-visible,
+html body .oh-wrapper-main.admin-panel-theme .attendance-request-page .oh-activity-sidebar__open:hover,
+html body .oh-wrapper-main.admin-panel-theme .attendance-request-page .oh-activity-sidebar__open:focus-visible,
+html body .oh-wrapper-main.super-admin-panel-theme .attendance-request-page .oh-sticky-dropdown_btn:hover,
+html body .oh-wrapper-main.super-admin-panel-theme .attendance-request-page .oh-sticky-dropdown_btn:focus-visible,
+html body .oh-wrapper-main.admin-panel-theme .attendance-request-page .oh-sticky-dropdown_btn:hover,
+html body .oh-wrapper-main.admin-panel-theme .attendance-request-page .oh-sticky-dropdown_btn:focus-visible {
+    background: #176f80 !important;
+    color: #ffffff !important;
+}
+
+html body .attendance-request-page .oh-sticky-dropdown--header {
+    z-index: 5;
+}
+
+html body .attendance-request-page .oh-sticky-dropdown_btn {
+    display: inline-flex;
+    width: 38px;
+    height: 38px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #c7e5eb;
+    border-radius: 10px;
+    background: #eef8f8;
+    color: #176f80;
+}
+
+html body .attendance-request-page .oh-sticky-dropdown_btn ion-icon {
+    width: 18px;
+    height: 18px;
+    color: currentColor !important;
+    font-size: 18px;
+}
+
+html body .attendance-request-page .oh-sticky-dropdown_btn:hover,
+html body .attendance-request-page .oh-sticky-dropdown_btn:focus-visible {
+    border-color: #176f80;
+    background: #176f80;
+    color: #ffffff;
+}
+
+html body .oh-wrapper-main:has(#view-container) .oh-modal#objectCreateModal:has(#attendanceRequestDiv) {
+    align-items: center;
+    padding: 18px;
+}
+
+html body .oh-wrapper-main:has(#view-container) .oh-modal#objectCreateModal:has(#attendanceRequestDiv) > .oh-modal__dialog {
+    width: min(760px, calc(100vw - 36px));
+    max-width: 760px !important;
+    max-height: min(88vh, 900px);
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid #c7e5eb;
+    border-radius: 20px;
+    background: #f4fafb;
+    box-shadow: 0 24px 64px rgba(10, 77, 96, 0.24);
+}
+
+html body .oh-wrapper-main:has(#view-container) #attendanceRequestDiv .oh-modal__dialog-header {
+    min-height: 74px;
+    padding: 18px 24px;
+    border: 0;
+    background: linear-gradient(110deg, #0a4d60, #278da0);
+}
+
+html body .oh-wrapper-main:has(#view-container) #attendanceRequestDiv .oh-modal__dialog-title {
+    margin: 0;
+    color: #ffffff;
+    font-size: 1.18rem;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+html body .oh-wrapper-main:has(#view-container) #attendanceRequestDiv .oh-modal__close {
+    display: inline-flex;
+    width: 38px;
+    height: 38px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.38);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+}
+
+html body .oh-wrapper-main:has(#view-container) #attendanceRequestDiv .oh-modal__close ion-icon {
+    width: 21px;
+    height: 21px;
+    color: currentColor !important;
+    font-size: 21px;
+}
+
+html body .oh-wrapper-main:has(#view-container) #attendanceRequestDiv .oh-modal__close:hover,
+html body .oh-wrapper-main:has(#view-container) #attendanceRequestDiv .oh-modal__close:focus-visible {
+    background: #ffffff;
+    color: #176f80;
+}
+
+html body .oh-wrapper-main:has(#view-container) #attendanceRequestDiv .oh-modal__dialog-body {
+    max-height: calc(min(88vh, 900px) - 74px);
+    overflow-y: auto;
+    padding: 22px 24px 24px;
+    background: #f4fafb;
+}
+
+html body .oh-wrapper-main:has(#view-container) .attendance-request-form__card,
+html body .oh-wrapper-main:has(#view-container) #attendanceRequestDiv .oh-profile-section {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+html body .oh-wrapper-main:has(#view-container) .attendance-request-form__grid {
+    margin: 0 -10px;
+    row-gap: 18px;
+}
+
+html body .oh-wrapper-main:has(#view-container) .attendance-request-form__field {
+    min-width: 0;
+    padding: 0 10px;
+}
+
+html body .oh-wrapper-main:has(#view-container) .attendance-request-form__field .oh-label__info {
+    min-height: 22px;
+    margin-bottom: 7px;
+}
+
+html body .oh-wrapper-main:has(#view-container) .attendance-request-form__field .oh-label {
+    margin: 0;
+    color: #244b5d;
+    font-size: 0.86rem;
+    font-weight: 650;
+    line-height: 1.4;
+}
+
+html body .oh-wrapper-main:has(#view-container) .attendance-request-form__field input:not([type="checkbox"]):not([type="radio"]),
+html body .oh-wrapper-main:has(#view-container) .attendance-request-form__field select,
+html body .oh-wrapper-main:has(#view-container) .attendance-request-form__field textarea {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid #cfe3e8;
+    border-radius: 11px;
+    background-color: #ffffff;
+    color: #254c5e;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    box-shadow: 0 1px 2px rgba(10, 77, 96, 0.04);
+}
+
+html body .oh-wrapper-main:has(#view-container) .attendance-request-form__field select {
+    padding-right: 34px;
+}
+
+html body .oh-wrapper-main:has(#view-container) .attendance-request-form__field textarea {
+    min-height: 104px;
+    resize: vertical;
+}
+
+html body .oh-wrapper-main:has(#view-container) .attendance-request-form__field input:focus,
+html body .oh-wrapper-main:has(#view-container) .attendance-request-form__field select:focus,
+html body .oh-wrapper-main:has(#view-container) .attendance-request-form__field textarea:focus {
+    border-color: #278da0;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(39, 141, 160, 0.14);
+}
+
+html body .oh-wrapper-main:has(#view-container) .attendance-request-form__field--checkbox {
+    display: flex;
+    align-items: flex-end;
+}
+
+html body .oh-wrapper-main:has(#view-container) .attendance-request-form__checkbox-control {
+    display: flex;
+    width: 100%;
+    min-height: 44px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0;
+    padding: 0 12px;
+    border: 1px solid #d5e8ec;
+    border-radius: 11px;
+    background: #eef8f8;
+    color: #244b5d;
+    cursor: pointer;
+}
+
+html body .oh-wrapper-main:has(#view-container) .attendance-request-form__checkbox-label {
+    font-size: 0.86rem;
+    font-weight: 650;
+}
+
+html body .oh-wrapper-main:has(#view-container) .attendance-request-form__checkbox {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: #176f80;
+    cursor: pointer;
+}
+
+html body .oh-wrapper-main:has(#view-container) .attendance-request-form__field .errorlist {
+    margin: 6px 0 0;
+    padding: 0;
+    color: #b42318;
+    font-size: 0.78rem;
+    list-style: none;
+}
+
+html body .oh-wrapper-main:has(#view-container) .attendance-request-form__actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid #dcebef;
+}
+
+html body .oh-wrapper-main:has(#view-container) .attendance-request-form__submit {
+    min-width: 132px;
+    min-height: 44px;
+    justify-content: center;
+    padding: 0 22px !important;
+    border: 1px solid #176f80 !important;
+    border-radius: 11px !important;
+    background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+    color: #ffffff !important;
+    font-weight: 700;
+    box-shadow: 0 7px 16px rgba(10, 77, 96, 0.18);
+}
+
+html body .oh-wrapper-main:has(#view-container) .attendance-request-form__submit:hover,
+html body .oh-wrapper-main:has(#view-container) .attendance-request-form__submit:focus-visible {
+    background: #0a4d60 !important;
+    box-shadow: 0 0 0 4px rgba(39, 141, 160, 0.16);
+}
+
+@media (max-width: 575.98px) {
+    html body .oh-wrapper-main:has(#view-container) .oh-modal#objectCreateModal:has(#attendanceRequestDiv) {
+        padding: 10px;
+    }
+
+    html body .oh-wrapper-main:has(#view-container) .oh-modal#objectCreateModal:has(#attendanceRequestDiv) > .oh-modal__dialog {
+        width: calc(100vw - 20px);
+        max-height: 92vh;
+        border-radius: 16px;
+    }
+
+    html body .oh-wrapper-main:has(#view-container) #attendanceRequestDiv .oh-modal__dialog-header {
+        min-height: 64px;
+        padding: 14px 16px;
+    }
+
+    html body .oh-wrapper-main:has(#view-container) #attendanceRequestDiv .oh-modal__dialog-body {
+        max-height: calc(92vh - 64px);
+        padding: 18px 14px;
+    }
+
+    html body .oh-wrapper-main:has(#view-container) .attendance-request-form__grid {
+        row-gap: 14px;
+    }
+}
+
+html body .attendance-validation-modal-root {
+    padding: 20px;
+}
+
+html body .attendance-validation-modal-root .attendance-validation-modal {
+    position: relative;
+    display: flex;
+    width: min(760px, calc(100vw - 40px));
+    max-width: 760px;
+    max-height: min(88vh, 860px);
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid #d7e8ed;
+    border-radius: 18px;
+    background: #f7fbfc;
+    box-shadow: 0 24px 64px rgba(10, 55, 68, 0.24);
+}
+
+html body .attendance-validation-modal-root .attendance-validation-modal__header {
+    min-height: 72px;
+    padding: 16px 58px 16px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    background: linear-gradient(112deg, #0a4d60, #278da0);
+    color: #ffffff;
+}
+
+html body .attendance-validation-modal-root .attendance-validation-modal__header .oh-modal__dialog-title {
+    margin: 0;
+    color: #ffffff !important;
+    font-size: 1.15rem;
+    font-weight: 750;
+    line-height: 1.3;
+}
+
+html body .attendance-validation-modal-root .attendance-validation-modal__header .oh-modal__close {
+    top: 17px;
+    right: 18px;
+    display: flex;
+    width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.36);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+}
+
+html body .attendance-validation-modal-root .attendance-validation-modal__header .oh-modal__close:hover,
+html body .attendance-validation-modal-root .attendance-validation-modal__header .oh-modal__close:focus-visible {
+    background: rgba(255, 255, 255, 0.24);
+}
+
+html body .attendance-validation-modal-root .attendance-validation-modal__body {
+    min-height: 0;
+    overflow: auto;
+    padding: 24px;
+    background: #f7fbfc;
+}
+
+html body .attendance-validation-request {
+    position: relative;
+    color: #173f50;
+}
+
+html body .attendance-validation-request__navigation {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    left: 0;
+    display: flex;
+    height: 96px;
+    align-items: center;
+    justify-content: space-between;
+    pointer-events: none;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .attendance-validation-request__navigation .oh-modal__diaglog-nav,
+html body .oh-wrapper-main.admin-panel-theme .attendance-validation-request__navigation .oh-modal__diaglog-nav,
+html body .attendance-validation-request__navigation .oh-modal__diaglog-nav {
+    position: static;
+    display: inline-flex;
+    width: 38px;
+    height: 38px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transform: none;
+    border: 1px solid #cfe3e8 !important;
+    border-radius: 50%;
+    background: #ffffff !important;
+    color: #176f80 !important;
+    box-shadow: 0 5px 14px rgba(10, 77, 96, 0.12);
+    pointer-events: auto;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .attendance-validation-request__navigation .oh-modal__diaglog-nav:hover,
+html body .oh-wrapper-main.super-admin-panel-theme .attendance-validation-request__navigation .oh-modal__diaglog-nav:focus-visible,
+html body .oh-wrapper-main.admin-panel-theme .attendance-validation-request__navigation .oh-modal__diaglog-nav:hover,
+html body .oh-wrapper-main.admin-panel-theme .attendance-validation-request__navigation .oh-modal__diaglog-nav:focus-visible {
+    border-color: #176f80 !important;
+    background: #e8f5f7 !important;
+    color: #0a4d60 !important;
+}
+
+html body .attendance-validation-request__navigation ion-icon {
+    color: inherit !important;
+    font-size: 19px;
+}
+
+html body .attendance-validation-request__profile {
+    display: block;
+    margin: 0 0 22px;
+    padding: 18px 54px;
+    border: 1px solid #d9e9ed;
+    border-radius: 15px;
+    background: linear-gradient(120deg, #ffffff, #eef8f9);
+    color: inherit;
+    text-decoration: none;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+html body .attendance-validation-request__profile:hover,
+html body .attendance-validation-request__profile:focus-visible {
+    border-color: #9ccbd5;
+    box-shadow: 0 8px 22px rgba(10, 77, 96, 0.08);
+    text-decoration: none;
+}
+
+html body .attendance-validation-request__avatar {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 15px;
+}
+
+html body .attendance-validation-request__avatar .oh-profile__avatar {
+    flex: 0 0 auto;
+}
+
+html body .attendance-validation-request__avatar .oh-profile__image {
+    display: block;
+    width: 58px;
+    height: 58px;
+    border: 3px solid #ffffff;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 2px 10px rgba(10, 77, 96, 0.16);
+}
+
+html body .attendance-validation-request__profile-info {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 5px;
+}
+
+html body .attendance-validation-request__employee {
+    overflow-wrap: anywhere;
+    color: #123c4b;
+    font-size: 1.08rem;
+    font-weight: 750;
+    line-height: 1.3;
+}
+
+html body .attendance-validation-request__role {
+    overflow-wrap: anywhere;
+    color: #547481;
+    font-size: 0.86rem;
+    line-height: 1.4;
+}
+
+html body .attendance-validation-request__comparison {
+    padding: 17px;
+    border: 1px solid #dce9ed;
+    border-radius: 14px;
+    background: #ffffff;
+}
+
+html body .attendance-validation-request__comparison-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e6eff1;
+}
+
+html body .attendance-validation-request__comparison-heading h3 {
+    margin: 0;
+    color: #173f50;
+    font-size: 0.98rem;
+    font-weight: 750;
+    line-height: 1.3;
+}
+
+html body .attendance-validation-request__comparison-heading p {
+    margin: 4px 0 0;
+    color: #718c94;
+    font-size: 0.78rem;
+    line-height: 1.4;
+}
+
+html body .attendance-validation-request__comparison-legend {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 7px;
+}
+
+html body .attendance-validation-request__comparison-legend span {
+    display: inline-flex;
+    min-height: 26px;
+    align-items: center;
+    padding: 4px 8px;
+    border: 1px solid #dce9ed;
+    border-radius: 999px;
+    font-size: 0.69rem;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+html body .attendance-validation-request__legend-current {
+    background: #f4f8f9;
+    color: #526f79;
+}
+
+html body .attendance-validation-request__legend-requested {
+    border-color: #bfe2d1 !important;
+    background: #edf8f2;
+    color: #216a49;
+}
+
+html body .attendance-validation-request__changes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 11px;
+}
+
+html body .attendance-validation-request__change {
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid #e0ecef;
+    border-radius: 11px;
+    background: #fbfdfe;
+}
+
+html body .attendance-validation-request__change-title {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 10px;
+    color: #264b5a;
+    font-size: 0.82rem;
+    font-weight: 750;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+html body .attendance-validation-request__change-icon {
+    display: inline-flex;
+    flex: 0 0 27px;
+    width: 27px;
+    height: 27px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #d1e6ea;
+    border-radius: 8px;
+    background: #eef7f8;
+    color: #176f80;
+}
+
+html body .attendance-validation-request__change-icon ion-icon {
+    display: block;
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    color: currentColor !important;
+    font-size: 15px;
+    line-height: 1;
+}
+
+html body .attendance-validation-request__change-values {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+html body .attendance-validation-request__change-value {
+    display: flex;
+    min-width: 0;
+    min-height: 57px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    padding: 8px 9px;
+    border: 1px solid #e1eaed;
+    border-radius: 8px;
+    background: #f5f8f9;
+}
+
+html body .attendance-validation-request__change-value--requested {
+    border-color: #cce7d9;
+    background: #f0faf4;
+}
+
+html body .attendance-validation-request__value-label {
+    color: #718c94;
+    font-size: 0.65rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+html body .attendance-validation-request__change-value--requested .attendance-validation-request__value-label {
+    color: #39805d;
+}
+
+html body .attendance-validation-request__value-text {
+    color: #315765;
+    font-size: 0.82rem;
+    font-weight: 650;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+html body .attendance-validation-request__change-value--requested .attendance-validation-request__value-text {
+    color: #216a49;
+}
+
+html body .attendance-validation-request__empty-value {
+    color: #91a3a9;
+    font-weight: 500;
+}
+
+html body .attendance-validation-request__description {
+    margin-top: 16px;
+    padding: 15px 17px;
+    border: 1px solid #dce9ed;
+    border-left: 4px solid #278da0;
+    border-radius: 11px;
+    background: #ffffff;
+}
+
+html body .attendance-validation-request__description-label {
+    display: block;
+    margin-bottom: 6px;
+    color: #315765;
+    font-size: 0.75rem;
+    font-weight: 750;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+html body .attendance-validation-request__description p {
+    margin: 0;
+    color: #547481;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+html body .attendance-validation-request__actions {
+    position: sticky;
+    z-index: 1;
+    bottom: -24px;
+    margin: 20px -24px -24px;
+    padding: 14px 24px 20px;
+    border-top: 1px solid #dce9ed;
+    background: rgba(247, 251, 252, 0.96);
+    backdrop-filter: blur(8px);
+}
+
+html body .attendance-validation-request__action-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .attendance-validation-request__action,
+html body .oh-wrapper-main.admin-panel-theme .attendance-validation-request__action,
+html body .attendance-validation-request__action {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 0 15px !important;
+    border: 1px solid transparent !important;
+    border-radius: 9px !important;
+    font-size: 0.86rem;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+html body .attendance-validation-request__action ion-icon {
+    font-size: 17px;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .attendance-validation-request__action--edit,
+html body .oh-wrapper-main.admin-panel-theme .attendance-validation-request__action--edit {
+    border-color: #b9dce4 !important;
+    background: #ffffff !important;
+    color: #176f80 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .attendance-validation-request__action--edit:hover,
+html body .oh-wrapper-main.admin-panel-theme .attendance-validation-request__action--edit:hover {
+    background: #e8f5f7 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .attendance-validation-request__action--approve,
+html body .oh-wrapper-main.admin-panel-theme .attendance-validation-request__action--approve {
+    border-color: #24805a !important;
+    background: #27865f !important;
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .attendance-validation-request__action--approve:hover,
+html body .oh-wrapper-main.admin-panel-theme .attendance-validation-request__action--approve:hover {
+    background: #1f704f !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .attendance-validation-request__action--reject,
+html body .oh-wrapper-main.admin-panel-theme .attendance-validation-request__action--reject {
+    border-color: #e8caca !important;
+    background: #fff8f7 !important;
+    color: #a53b36 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .attendance-validation-request__action--reject:hover,
+html body .oh-wrapper-main.admin-panel-theme .attendance-validation-request__action--reject:hover {
+    background: #fceae8 !important;
+}
+
+@media (max-width: 575.98px) {
+    html body .attendance-validation-modal-root {
+        padding: 10px;
+    }
+
+    html body .attendance-validation-modal-root .attendance-validation-modal {
+        width: calc(100vw - 20px);
+        max-height: 92vh;
+        border-radius: 15px;
+    }
+
+    html body .attendance-validation-modal-root .attendance-validation-modal__header {
+        min-height: 64px;
+        padding: 14px 54px 14px 17px;
+    }
+
+    html body .attendance-validation-modal-root .attendance-validation-modal__body {
+        padding: 16px;
+    }
+
+    html body .attendance-validation-request__comparison {
+        padding: 12px;
+    }
+
+    html body .attendance-validation-request__comparison-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 9px;
+    }
+
+    html body .attendance-validation-request__changes {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 9px;
+    }
+
+    html body .attendance-validation-request__profile {
+        margin-bottom: 15px;
+        padding: 15px 42px;
+    }
+
+    html body .attendance-validation-request__navigation .oh-modal__diaglog-nav {
+        width: 32px;
+        height: 32px;
+    }
+
+    html body .attendance-validation-request__actions {
+        bottom: -16px;
+        margin: 16px -16px -16px;
+        padding: 12px 16px 16px;
+    }
+
+    html body .attendance-validation-request__action-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 8px;
+    }
+
+    html body .attendance-validation-request__action-group .attendance-validation-request__action {
+        padding: 0 10px !important;
+    }
+}
+
+html body .oh-wrapper-main:has(.attendance-request-page),
+html body .oh-wrapper-main:has(.attendance-request-page) #main-section,
+html body .oh-wrapper-main:has(.attendance-request-page) #main-section-data,
+html body .oh-wrapper-main:has(.attendance-request-page) #main {
+    background-color: #f4fafb !important;
+}
+
+html body .oh-wrapper-main:has(.attendance-request-page) #filterTagContainerSectionNav {
+    display: flex;
+    min-height: 0;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin: 10px 38px 12px;
+}
+
+html body .oh-wrapper-main:has(.attendance-request-page) #filterTagContainerSectionNav .oh-titlebar__tag {
+    display: inline-flex;
+    min-height: 36px;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin: 0;
+    padding: 6px 11px;
+    border: 1px solid #d4e5e9;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #315765;
+    font-size: 0.82rem;
+    font-weight: 650;
+    line-height: 1.25;
+    text-align: left;
+}
+
+html body .oh-wrapper-main:has(.attendance-request-page) #filterTagContainerSectionNav .oh-titlebar__tag--custom {
+    border-color: #f4b09d;
+    background: #fff1ec !important;
+    color: #a34b32;
+}
+
+html body .oh-wrapper-main:has(.attendance-request-page) #filterTagContainerSectionNav .oh-titlebar__tag.filter-field {
+    border-color: #cfe3e8;
+    background: #ffffff;
+    color: #244b5d;
+}
+
+html body .oh-wrapper-main:has(.attendance-request-page) #filterTagContainerSectionNav .oh-titlebar__tag-close {
+    display: inline-flex;
+    flex: 0 0 22px;
+    width: 22px;
+    height: 22px;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0 0 2px;
+    padding: 0;
+    border: 1px solid #d7e6e9;
+    border-radius: 50%;
+    background: #f1f7f8;
+    color: #55717b;
+    line-height: 1;
+}
+
+html body .oh-wrapper-main:has(.attendance-request-page) #filterTagContainerSectionNav .oh-titlebar__tag-close:hover,
+html body .oh-wrapper-main:has(.attendance-request-page) #filterTagContainerSectionNav .oh-titlebar__tag-close:focus-visible {
+    border-color: #db755e;
+    background: #fff0ec;
+    color: #a84334;
+}
+
+html body .oh-wrapper-main:has(.attendance-request-page) #filterTagContainerSectionNav .oh-titlebar__tag-close ion-icon,
+html body .oh-wrapper-main:has(.attendance-request-page) #filterTagContainerSectionNav .filter-clear-all ion-icon {
+    display: block;
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    color: currentColor !important;
+    font-size: 14px;
+    line-height: 1;
+}
+
+html body .oh-wrapper-main:has(.attendance-request-page) #filterTagContainerSectionNav .filter-clear-all {
+    display: inline-flex;
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    min-height: 34px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid #f0b8a8;
+    border-radius: 10px;
+    background: #fff1ec !important;
+    color: #a84334;
+    cursor: pointer;
+}
+
+html body .oh-wrapper-main:has(.attendance-request-page) #filterTagContainerSectionNav .filter-clear-all:hover,
+html body .oh-wrapper-main:has(.attendance-request-page) #filterTagContainerSectionNav .filter-clear-all:focus-visible {
+    border-color: #d76750;
+    background: #ffe3da !important;
+}
+
+html body .attendance-request-status-legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin: 0 38px 14px;
+}
+
+html body .attendance-request-status-tag {
+    display: inline-flex;
+    min-height: 32px;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 10px;
+    border: 1px solid #d8e7ea;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #315765;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.2;
+    transition: border-color 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
+}
+
+html body .attendance-request-status-tag:hover,
+html body .attendance-request-status-tag:focus-visible {
+    border-color: #a9d2da;
+    background: #f4fbfc;
+    box-shadow: 0 3px 9px rgba(10, 77, 96, 0.08);
+}
+
+html body .attendance-request-status-tag .oh-dot {
+    flex: 0 0 9px;
+    width: 9px;
+    height: 9px;
+    margin: 0;
+    border-radius: 50%;
+}
+
+html body .attendance-request-status-tag--validated .oh-dot {
+    background-color: #27865f;
+}
+
+html body .attendance-request-status-tag--pending .oh-dot {
+    background-color: #d58a16;
+}
+
+html body .attendance-request-status-tag--bulk .oh-dot {
+    background-color: #3178b5;
+}
+
+html body .attendance-request-row__badges {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px;
+    margin: 5px 0 0 39px;
+}
+
+html body .attendance-request-row__badge {
+    display: inline-flex;
+    min-height: 21px;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 7px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 0.67rem;
+    font-weight: 700;
+    line-height: 1.15;
+    white-space: nowrap;
+}
+
+html body .attendance-request-row__badge .oh-dot {
+    display: inline-block;
+    flex: 0 0 7px;
+    width: 7px;
+    height: 7px;
+    margin: 0;
+    border-radius: 50%;
+}
+
+html body .attendance-request-row__badge--bulk {
+    border-color: #c7dff1;
+    background: #edf6fc;
+    color: #285f91 !important;
+}
+
+html body .attendance-request-row__badge--bulk .oh-dot {
+    background: #3178b5;
+}
+
+html body .attendance-request-row__badge--validated {
+    border-color: #bfe2d1;
+    background: #edf8f2;
+    color: #216a49 !important;
+}
+
+html body .attendance-request-row__badge--validated .oh-dot {
+    background: #27865f;
+}
+
+html body .attendance-request-row__badge--pending {
+    border-color: #f0d7a7;
+    background: #fff8e9;
+    color: #8a5a0a !important;
+}
+
+html body .attendance-request-row__badge--pending .oh-dot {
+    background: #d58a16;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .attendance-request-page .row-status--yellow,
+html body .oh-wrapper-main.admin-panel-theme .attendance-request-page .row-status--yellow,
+html body .attendance-request-page .row-status--yellow {
+    border-left: 4px solid #27865f !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .attendance-request-page .row-status--purple,
+html body .oh-wrapper-main.admin-panel-theme .attendance-request-page .row-status--purple,
+html body .attendance-request-page .row-status--purple {
+    border-left: 4px solid #d58a16 !important;
+}
+
+html body .oh-wrapper-main.super-admin-panel-theme .attendance-request-page .row-status--cyan,
+html body .oh-wrapper-main.admin-panel-theme .attendance-request-page .row-status--cyan,
+html body .attendance-request-page .row-status--cyan {
+    border-left: 4px solid #3178b5 !important;
+}
+
+html body .attendance-validation-modal-root .attendance-validation-modal__header .oh-modal__close {
+    display: inline-flex;
+    width: 38px;
+    height: 38px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+html body .attendance-validation-modal-root .attendance-validation-modal__header .oh-modal__close ion-icon {
+    display: block;
+    width: 19px;
+    height: 19px;
+    margin: 0;
+    color: currentColor !important;
+    font-size: 19px;
+    line-height: 1;
+}
+
+@media (max-width: 767.98px) {
+    html body .oh-wrapper-main:has(.attendance-request-page) #filterTagContainerSectionNav,
+    html body .attendance-request-status-legend {
+        justify-content: flex-start;
+        margin-right: 16px;
+        margin-left: 16px;
+    }
+}
+
+/* Keep the admin dashboard header visually aligned with the super-admin dashboard. */
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .oh-navbar {
+    min-height: 92px !important;
+    height: 92px !important;
+    background: #e8f5f7 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .oh-navbar__wrapper {
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 92px !important;
+    height: 92px !important;
+    gap: 12px !important;
+    padding: 0 24px !important;
+    box-sizing: border-box !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .employee-navbar-greeting {
+    flex: 1 1 auto !important;
+    min-width: 250px !important;
+    margin-right: auto !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .employee-navbar-greeting__title {
+    color: #173f50 !important;
+    font-size: 1.32rem !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.035em !important;
+    line-height: 1.2 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .employee-navbar-greeting__subtitle {
+    margin-top: 0.42rem !important;
+    color: #557b84 !important;
+    font-size: 0.8rem !important;
+    line-height: 1.35 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .employee-navbar-period {
+    display: inline-flex !important;
+    flex: 0 0 auto !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding: 4px !important;
+    border: 1px solid #c7e5eb !important;
+    border-radius: 999px !important;
+    background: rgba(255, 255, 255, 0.72) !important;
+    box-shadow: 0 3px 10px rgba(10, 77, 96, 0.05) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .employee-navbar-period span {
+    display: inline-flex !important;
+    min-width: 76px !important;
+    min-height: 38px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0.62rem 1rem !important;
+    border-radius: 999px !important;
+    color: #3f7180 !important;
+    font-weight: 650 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    transition: color 160ms ease, background-color 160ms ease, box-shadow 160ms ease !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .employee-navbar-period .is-active {
+    background: linear-gradient(120deg, #0d7183, #16899a) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 10px rgba(13, 113, 131, 0.22) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .employee-navbar-period span:not(.is-active):hover {
+    background: #e8f5f7 !important;
+    color: #0a4d60 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .oh-global-search {
+    flex: 0 1 280px !important;
+    min-width: 180px !important;
+    max-width: 280px !important;
+    margin: 0 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .oh-global-search__box {
+    display: flex !important;
+    width: 100% !important;
+    min-height: 48px !important;
+    height: 48px !important;
+    align-items: center !important;
+    padding: 0 15px !important;
+    background: #f4fbfc !important;
+    border: 1px solid #c5e1e7 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 12px rgba(10, 77, 96, 0.06), inset 0 1px 0 #ffffff !important;
+    transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .oh-global-search__box:hover {
+    border-color: #8fc9d4 !important;
+    box-shadow: 0 6px 15px rgba(10, 77, 96, 0.1), inset 0 1px 0 #ffffff !important;
+    transform: translateY(-1px) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .oh-global-search__box:focus-within {
+    background: #ffffff !important;
+    border-color: #16899a !important;
+    box-shadow: 0 0 0 3px rgba(22, 137, 154, 0.16), 0 6px 15px rgba(10, 77, 96, 0.08) !important;
+    transform: none !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .oh-global-search__icon {
+    flex: 0 0 auto !important;
+    margin-right: 0.65rem !important;
+    color: #11758a !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .oh-global-search__input {
+    min-width: 0 !important;
+    height: 100% !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: #173f50 !important;
+    caret-color: #11758a !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .oh-global-search__input::placeholder {
+    color: #668994 !important;
+    opacity: 1 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .oh-navbar__systray {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 10px !important;
+    height: 92px !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .oh-navbar__systray > *,
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #notificationIcon,
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #multCompany,
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #mainNavProfile {
+    display: flex !important;
+    flex: 0 0 46px !important;
+    width: 46px !important;
+    min-width: 46px !important;
+    height: 92px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #notificationConfig,
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .oh-navbar__systray > script {
+    display: none !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #mainNavProfile {
+    flex-basis: 52px !important;
+    width: 52px !important;
+    min-width: 52px !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #settingsMenu,
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link,
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link {
+    display: inline-flex !important;
+    flex: 0 0 46px !important;
+    width: 46px !important;
+    min-width: 46px !important;
+    height: 46px !important;
+    min-height: 46px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    border: 1px solid #c5e1e7 !important;
+    border-radius: 15px !important;
+    background: #f4fbfc !important;
+    color: #11758a !important;
+    box-shadow: 0 4px 11px rgba(10, 77, 96, 0.07), inset 0 1px 0 #ffffff !important;
+    transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #settingsMenu .oh-navbar__icon,
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link .oh-navbar__icon,
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link ion-icon {
+    width: 22px !important;
+    height: 22px !important;
+    margin: 0 !important;
+    color: #11758a !important;
+    font-size: 22px !important;
+    line-height: 1 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #settingsMenu:hover,
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #settingsMenu:focus-visible,
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link:hover,
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link:focus-visible,
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link:hover,
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link:focus-visible {
+    transform: translateY(-2px) !important;
+    background: linear-gradient(145deg, #0d7183, #0a4d60) !important;
+    border-color: #0d7183 !important;
+    color: #ffffff !important;
+    box-shadow: 0 9px 18px rgba(10, 77, 96, 0.22), 0 0 0 3px rgba(39, 141, 160, 0.12) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #settingsMenu:hover .oh-navbar__icon,
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link:hover .oh-navbar__icon,
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link:hover ion-icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #notificationIcon .oh-navbar__notification-beacon {
+    top: 7px !important;
+    right: 7px !important;
+    width: 8px !important;
+    min-width: 8px !important;
+    height: 8px !important;
+    min-height: 8px !important;
+    padding: 0 !important;
+    border: 2px solid #f4fbfc !important;
+    border-radius: 50% !important;
+    background: #e16f5c !important;
+    color: transparent !important;
+    font-size: 0 !important;
+    box-shadow: 0 0 0 2px #f4fbfc !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-navbar__user-info {
+    display: flex !important;
+    width: 52px !important;
+    min-width: 52px !important;
+    height: 52px !important;
+    min-height: 52px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border: 3px solid #ffffff !important;
+    border-radius: 50% !important;
+    background: #6f72bd !important;
+    box-shadow: 0 4px 12px rgba(47, 87, 82, 0.2) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-navbar__user-name,
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-navbar__user-info::before,
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-navbar__user-info::after {
+    display: none !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-navbar__user-photo,
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-navbar__user-image {
+    display: block !important;
+    width: 46px !important;
+    min-width: 46px !important;
+    height: 46px !important;
+    min-height: 46px !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    box-shadow: none !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-navbar__user-info:hover,
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #mainNavProfile .oh-navbar__user-info:focus-visible {
+    transform: translateY(-2px) !important;
+    border-color: #c7e5eb !important;
+    box-shadow: 0 9px 20px rgba(10, 77, 96, 0.24), 0 0 0 3px rgba(39, 141, 160, 0.14) !important;
+}
+
+@media (max-width: 850px) {
+    html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .employee-navbar-greeting,
+    html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .employee-navbar-period {
+        display: none !important;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .oh-navbar__wrapper {
+        min-height: 64px !important;
+        height: 64px !important;
+        padding: 0 12px !important;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .oh-navbar__systray {
+        height: 64px !important;
+        gap: 6px !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .oh-global-search__box,
+    html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .employee-navbar-period span,
+    html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #settingsMenu,
+    html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #notificationIcon > .oh-navbar__notification-link,
+    html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active #multCompany .oh-navbar__action-icons-link {
+        transition: none !important;
+    }
+}
+
+html body .oh-wrapper-main.admin-panel-theme #notInYetIdCardBody,
+html body .oh-wrapper-main.super-admin-panel-theme #notInYetIdCardBody {
+    min-width: 0 !important;
+    padding: 10px !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(23, 111, 128, 0.12) !important;
+    border-radius: 14px !important;
+    background: #f4fbfc !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #notInYetIdCardBody .oh-sticky-table,
+html body .oh-wrapper-main.super-admin-panel-theme #notInYetIdCardBody .oh-sticky-table {
+    width: 100% !important;
+    height: 100% !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    border: 1px solid #d6e8ec !important;
+    border-radius: 12px !important;
+    background: #ffffff !important;
+    box-shadow: 0 5px 14px rgba(10, 77, 96, 0.06) !important;
+    scrollbar-color: #7fc4cf #edf7f8 !important;
+    scrollbar-width: thin !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #notInYetIdCardBody .oh-sticky-table__table,
+html body .oh-wrapper-main.super-admin-panel-theme #notInYetIdCardBody .oh-sticky-table__table {
+    width: 100% !important;
+    min-width: 0 !important;
+    table-layout: fixed !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #notInYetIdCardBody .oh-sticky-table__tr,
+html body .oh-wrapper-main.super-admin-panel-theme #notInYetIdCardBody .oh-sticky-table__tr {
+    min-height: 54px !important;
+    height: auto !important;
+    border-bottom: 1px solid #e6f0f2 !important;
+    background: #ffffff !important;
+    transition: background-color 150ms ease !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #notInYetIdCardBody .oh-sticky-table__tr:hover,
+html body .oh-wrapper-main.super-admin-panel-theme #notInYetIdCardBody .oh-sticky-table__tr:hover {
+    background: #f1fafb !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #notInYetIdCardBody .oh-sticky-table__sd,
+html body .oh-wrapper-main.super-admin-panel-theme #notInYetIdCardBody .oh-sticky-table__sd {
+    min-width: 0 !important;
+    padding: 8px 10px !important;
+    overflow: visible !important;
+    white-space: normal !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #notInYetIdCardBody .oh-profile,
+html body .oh-wrapper-main.super-admin-panel-theme #notInYetIdCardBody .oh-profile {
+    display: flex !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    align-items: center !important;
+    gap: 9px !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #notInYetIdCardBody .oh-profile__avatar,
+html body .oh-wrapper-main.super-admin-panel-theme #notInYetIdCardBody .oh-profile__avatar {
+    flex: 0 0 34px !important;
+    width: 34px !important;
+    height: 34px !important;
+    margin: 0 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #notInYetIdCardBody .oh-profile__image,
+html body .oh-wrapper-main.super-admin-panel-theme #notInYetIdCardBody .oh-profile__image {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #notInYetIdCardBody .offline-employee-widget__name,
+html body .oh-wrapper-main.super-admin-panel-theme #notInYetIdCardBody .offline-employee-widget__name {
+    display: grid !important;
+    flex: 1 1 auto !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    gap: 4px 8px !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+    color: #173f50 !important;
+    font-size: 0.8rem !important;
+    font-weight: 700 !important;
+    line-height: 1.35 !important;
+    text-overflow: clip !important;
+    white-space: normal !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #notInYetIdCardBody .offline-employee-widget__employee-name,
+html body .oh-wrapper-main.super-admin-panel-theme #notInYetIdCardBody .offline-employee-widget__employee-name {
+    min-width: 0 !important;
+    overflow-wrap: anywhere !important;
+    color: #173f50 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #notInYetIdCardBody .offline-employee-widget__status,
+html body .oh-wrapper-main.super-admin-panel-theme #notInYetIdCardBody .offline-employee-widget__status {
+    display: inline-flex !important;
+    width: fit-content !important;
+    max-width: 100% !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    padding: 4px 8px !important;
+    border: 1px solid #c9e5ea !important;
+    border-radius: 999px !important;
+    background: #eaf6f8 !important;
+    color: #176f80 !important;
+    font-size: 0.66rem !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    white-space: normal !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #notInYetIdCardBody .oh-sticky-table__td,
+html body .oh-wrapper-main.super-admin-panel-theme #notInYetIdCardBody .oh-sticky-table__td {
+    width: 48px !important;
+    min-width: 48px !important;
+    padding: 6px 8px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #f8fcfd !important;
+    box-shadow: none !important;
+    text-align: center !important;
+    cursor: pointer !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #notInYetIdCardBody .oh-sticky-table__td ion-icon,
+html body .oh-wrapper-main.super-admin-panel-theme #notInYetIdCardBody .oh-sticky-table__td ion-icon {
+    display: inline-block !important;
+    width: 18px !important;
+    height: 18px !important;
+    padding: 7px !important;
+    border: 1px solid #d6e8ec !important;
+    border-radius: 9px !important;
+    background: #ffffff !important;
+    color: #176f80 !important;
+    font-size: 18px !important;
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #notInYetIdCardBody .oh-sticky-table__td:hover ion-icon,
+html body .oh-wrapper-main.super-admin-panel-theme #notInYetIdCardBody .oh-sticky-table__td:hover ion-icon {
+    border-color: #176f80 !important;
+    background: #176f80 !important;
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #OTApproveBody,
+html body .oh-wrapper-main.super-admin-panel-theme #OTApproveBody {
+    min-width: 0 !important;
+    padding: 10px !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(23, 111, 128, 0.12) !important;
+    border-radius: 14px !important;
+    background: #f4fbfc !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #OTApproveBody .oh-sticky-table,
+html body .oh-wrapper-main.super-admin-panel-theme #OTApproveBody .oh-sticky-table {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow: auto !important;
+    border: 1px solid #d6e8ec !important;
+    border-radius: 12px !important;
+    background: #ffffff !important;
+    box-shadow: 0 5px 14px rgba(10, 77, 96, 0.06) !important;
+    scrollbar-color: #7fc4cf #edf7f8 !important;
+    scrollbar-width: thin !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #OTApproveBody .oh-sticky-table__table,
+html body .oh-wrapper-main.super-admin-panel-theme #OTApproveBody .oh-sticky-table__table {
+    width: 100% !important;
+    min-width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #OTApproveBody .oh-sticky-table__th,
+html body .oh-wrapper-main.super-admin-panel-theme #OTApproveBody .oh-sticky-table__th {
+    height: 42px !important;
+    padding: 9px 10px !important;
+    overflow: visible !important;
+    border: 0 !important;
+    border-bottom: 1px solid #d6e8ec !important;
+    background: #eaf6f8 !important;
+    color: #176f80 !important;
+    font-size: 0.74rem !important;
+    font-weight: 800 !important;
+    line-height: 1.3 !important;
+    text-overflow: clip !important;
+    white-space: normal !important;
+    vertical-align: middle !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #OTApproveBody .oh-sticky-table__tbody .oh-sticky-table__tr,
+html body .oh-wrapper-main.super-admin-panel-theme #OTApproveBody .oh-sticky-table__tbody .oh-sticky-table__tr {
+    height: auto !important;
+    min-height: 56px !important;
+    background: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #OTApproveBody .oh-sticky-table__tbody .oh-sticky-table__tr:hover,
+html body .oh-wrapper-main.super-admin-panel-theme #OTApproveBody .oh-sticky-table__tbody .oh-sticky-table__tr:hover {
+    background: #f4fbfc !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #OTApproveBody .oh-sticky-table__sd,
+html body .oh-wrapper-main.super-admin-panel-theme #OTApproveBody .oh-sticky-table__sd,
+html body .oh-wrapper-main.admin-panel-theme #OTApproveBody .oh-sticky-table__td,
+html body .oh-wrapper-main.super-admin-panel-theme #OTApproveBody .oh-sticky-table__td {
+    height: auto !important;
+    min-width: 0 !important;
+    padding: 10px 9px !important;
+    overflow: visible !important;
+    border: 0 !important;
+    border-bottom: 1px solid #e6f0f2 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: #173f50 !important;
+    vertical-align: middle !important;
+    white-space: normal !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #OTApproveBody .oh-sticky-table__th:first-child,
+html body .oh-wrapper-main.super-admin-panel-theme #OTApproveBody .oh-sticky-table__th:first-child,
+html body .oh-wrapper-main.super-admin-panel-theme #OTApproveBody .oh-sticky-table__sd:first-child,
+html body .oh-wrapper-main.admin-panel-theme #OTApproveBody .oh-sticky-table__sd:first-child {
+    width: 50% !important;
+    text-align: left !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #OTApproveBody .oh-sticky-table__th:nth-child(2),
+html body .oh-wrapper-main.admin-panel-theme #OTApproveBody .oh-sticky-table__td:nth-child(2),
+html body .oh-wrapper-main.super-admin-panel-theme #OTApproveBody .oh-sticky-table__th:nth-child(2),
+html body .oh-wrapper-main.super-admin-panel-theme #OTApproveBody .oh-sticky-table__td:nth-child(2) {
+    width: 20% !important;
+    text-align: center !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #OTApproveBody .oh-sticky-table__th:last-child,
+html body .oh-wrapper-main.admin-panel-theme #OTApproveBody .oh-sticky-table__td:last-child,
+html body .oh-wrapper-main.super-admin-panel-theme #OTApproveBody .oh-sticky-table__th:last-child,
+html body .oh-wrapper-main.super-admin-panel-theme #OTApproveBody .oh-sticky-table__td:last-child {
+    width: 30% !important;
+    text-align: center !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #OTApproveBody .oh-profile,
+html body .oh-wrapper-main.super-admin-panel-theme #OTApproveBody .oh-profile {
+    display: flex !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #OTApproveBody .oh-profile__avatar,
+html body .oh-wrapper-main.super-admin-panel-theme #OTApproveBody .oh-profile__avatar {
+    flex: 0 0 32px !important;
+    width: 32px !important;
+    height: 32px !important;
+    margin: 0 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #OTApproveBody .oh-profile__name,
+html body .oh-wrapper-main.super-admin-panel-theme #OTApproveBody .oh-profile__name {
+    display: block !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+    color: #173f50 !important;
+    font-size: 0.76rem !important;
+    font-weight: 700 !important;
+    line-height: 1.35 !important;
+    overflow-wrap: anywhere !important;
+    text-overflow: clip !important;
+    white-space: normal !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #OTApproveBody .oh-sticky-table__td:last-child,
+html body .oh-wrapper-main.super-admin-panel-theme #OTApproveBody .oh-sticky-table__td:last-child {
+    padding: 8px 6px !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #OTApproveBody .oh-sticky-table__td:last-child .oh-btn,
+html body .oh-wrapper-main.super-admin-panel-theme #OTApproveBody .oh-sticky-table__td:last-child .oh-btn {
+    display: inline-flex !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 34px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    padding: 6px 8px !important;
+    border-radius: 9px !important;
+    font-size: 0.7rem !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #OTApproveBody .oh-sticky-table__td:last-child .oh-btn ion-icon,
+html body .oh-wrapper-main.super-admin-panel-theme #OTApproveBody .oh-sticky-table__td:last-child .oh-btn ion-icon {
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #OTApproveBody .oh-empty,
+html body .oh-wrapper-main.super-admin-panel-theme #OTApproveBody .oh-empty {
+    display: flex !important;
+    min-height: 100% !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 20px !important;
+    text-align: center !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #OTApproveBody .oh-empty__title,
+html body .oh-wrapper-main.super-admin-panel-theme #OTApproveBody .oh-empty__title,
+html body .oh-wrapper-main.admin-panel-theme #OTApproveBody .oh-empty__subtitle,
+html body .oh-wrapper-main.super-admin-panel-theme #OTApproveBody .oh-empty__subtitle {
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+}
+
+@media (max-width: 600px) {
+    html body .oh-wrapper-main.admin-panel-theme #notInYetIdCardBody .offline-employee-widget__name,
+    html body .oh-wrapper-main.super-admin-panel-theme #notInYetIdCardBody .offline-employee-widget__name {
+        grid-template-columns: minmax(0, 1fr) !important;
+        justify-items: start !important;
+    }
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .employee-navbar-greeting,
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .employee-navbar-greeting {
+    position: relative !important;
+    flex: 0 1 520px !important;
+    width: min(520px, 100%) !important;
+    min-width: 250px !important;
+    min-height: 66px !important;
+    margin: 0 auto 0 0 !important;
+    padding: 11px 18px 11px 22px !important;
+    overflow: hidden !important;
+    border: 1px solid #d4e9ed !important;
+    border-radius: 16px !important;
+    background: linear-gradient(110deg, #ffffff 0%, #ffffff 76%, #f6fcfd 100%) !important;
+    box-shadow: 0 5px 16px rgba(10, 77, 96, 0.07), inset 0 1px 0 #ffffff !important;
+    box-sizing: border-box !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .employee-navbar-greeting::before,
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .employee-navbar-greeting::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 12px auto 12px 0 !important;
+    width: 4px !important;
+    border-radius: 0 999px 999px 0 !important;
+    background: linear-gradient(180deg, #16899a, #0a4d60) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .employee-navbar-greeting__title,
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .employee-navbar-greeting__title {
+    color: #173f50 !important;
+    font-size: 1.2rem !important;
+    font-weight: 800 !important;
+    line-height: 1.2 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .employee-navbar-greeting__subtitle,
+html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .employee-navbar-greeting__subtitle {
+    margin-top: 5px !important;
+    color: #63838d !important;
+    font-size: 0.76rem !important;
+    line-height: 1.3 !important;
+}
+
+.dashboard-loading-screen {
+    position: fixed;
+    z-index: 2147483647;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    overflow: hidden;
+    background:
+        radial-gradient(ellipse at 50% 43%, rgba(198, 246, 248, 0.56) 0, rgba(230, 248, 249, 0.35) 23%, transparent 52%),
+        linear-gradient(145deg, #f8fcfc 0%, #eff8f9 52%, #f8fcfc 100%);
+    opacity: 1;
+    transition: opacity 220ms ease, visibility 220ms ease;
+}
+
+html:has(.dashboard-loading-screen) {
+    overflow: hidden;
+}
+
+.dashboard-loading-screen::before,
+.dashboard-loading-screen::after {
+    position: absolute;
+    content: "";
+    width: 310px;
+    height: 310px;
+    border-radius: 50%;
+    background: rgba(174, 238, 241, 0.13);
+    filter: blur(2px);
+    pointer-events: none;
+}
+
+.dashboard-loading-screen::before {
+    top: calc(50% - 165px);
+    left: calc(50% - 220px);
+}
+
+.dashboard-loading-screen::after {
+    top: calc(50% - 125px);
+    left: calc(50% - 145px);
+    width: 270px;
+    height: 270px;
+    background: rgba(208, 246, 247, 0.24);
+}
+
+.dashboard-loading-screen.is-leaving {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.dashboard-loading-card {
+    display: flex;
+    width: min(100%, 300px);
+    min-height: 0;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    position: relative;
+    z-index: 1;
+    isolation: isolate;
+}
+
+.dashboard-loading-orbit {
+    position: relative;
+    width: 280px;
+    height: 230px;
+    margin-bottom: 0;
+    display: grid;
+    place-items: center;
+    perspective: 700px;
+}
+
+.dashboard-loading-orbit::before {
+    position: absolute;
+    content: "";
+    width: 202px;
+    height: 202px;
+    border: 1px solid rgba(255, 255, 255, 0.88);
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 31% 22%, rgba(255, 255, 255, 0.94) 0, rgba(255, 255, 255, 0.5) 8%, transparent 24%),
+        radial-gradient(circle at 69% 73%, rgba(50, 222, 217, 0.58) 0, transparent 39%),
+        radial-gradient(circle at 38% 34%, #e9ffff 0, #a8ebed 37%, #56c8d1 70%, #1595a7 100%);
+    box-shadow:
+        inset -18px -22px 34px rgba(3, 103, 126, 0.24),
+        inset 10px 12px 22px rgba(255, 255, 255, 0.74),
+        0 24px 36px rgba(12, 115, 132, 0.2);
+    transform: rotateX(11deg) rotateY(-13deg);
+    animation: dashboard-loading-sphere 4.8s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.dashboard-loading-orbit::after {
+    position: absolute;
+    content: "";
+    bottom: 17px;
+    width: 166px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(11, 102, 122, 0.2);
+    filter: blur(10px);
+    transform: rotateX(62deg);
+    pointer-events: none;
+}
+
+.dashboard-loading-orbit__glow {
+    position: absolute;
+    width: 190px;
+    height: 180px;
+    border-radius: 50%;
+    background: rgba(72, 210, 216, 0.2);
+    filter: blur(28px);
+}
+
+.dashboard-loading-orbit__ring {
+    position: absolute;
+    z-index: 1;
+    width: 270px;
+    height: 100px;
+    border: 2px solid rgba(25, 164, 183, 0.72);
+    border-radius: 50%;
+    transform: rotate(-28deg) rotateX(14deg);
+    box-shadow: 0 0 12px rgba(25, 194, 203, 0.14), inset 0 0 8px rgba(255, 255, 255, 0.32);
+    animation: dashboard-loading-orbit 3.8s linear infinite;
+}
+
+.dashboard-loading-orbit__satellite {
+    position: absolute;
+    z-index: 3;
+    top: 45px;
+    right: 33px;
+    width: 19px;
+    height: 19px;
+    border: 2px solid rgba(255, 255, 255, 0.92);
+    border-radius: 50%;
+    background: radial-gradient(circle at 32% 26%, #ffffff 0, #82f0ea 22%, #09aebd 70%);
+    box-shadow: 0 0 18px rgba(29, 202, 209, 0.58), 0 4px 8px rgba(5, 72, 89, 0.18);
+    animation: dashboard-loading-satellite 3.8s linear infinite;
+}
+
+.dashboard-loading-mark {
+    display: grid;
+    position: relative;
+    z-index: 2;
+    width: 94px;
+    height: 94px;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.76);
+    border-radius: 28px;
+    background:
+        radial-gradient(circle at 27% 20%, rgba(255, 255, 255, 0.54), transparent 33%),
+        linear-gradient(145deg, #29d4d0 0%, #1599a9 50%, #08778b 100%);
+    color: #fff;
+    font-size: 45px;
+    font-weight: 800;
+    line-height: 1;
+    text-shadow: 0 2px 3px rgba(5, 72, 89, 0.22);
+    box-shadow:
+        0 18px 30px rgba(13, 92, 112, 0.3),
+        inset 0 2px 2px rgba(255, 255, 255, 0.48),
+        inset -7px -9px 14px rgba(5, 72, 89, 0.2);
+    transform: rotateX(10deg) rotateY(-13deg) rotateZ(-8deg);
+    animation: dashboard-loading-mark 3.2s ease-in-out infinite;
+}
+
+.dashboard-loading-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.dashboard-loading-dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #45d7d3 0%, #16899a 58%, #0a4d60 100%);
+    box-shadow: 0 3px 8px rgba(10, 77, 96, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.65);
+    animation: dashboard-loading-dot 1.1s ease-in-out infinite;
+    transition: scale 160ms ease, filter 160ms ease, box-shadow 160ms ease;
+}
+
+.dashboard-loading-dots span:hover {
+    scale: 1.5;
+    filter: brightness(1.12);
+    box-shadow: 0 0 0 4px rgba(39, 141, 160, 0.14), 0 5px 12px rgba(10, 77, 96, 0.3);
+}
+
+.dashboard-loading-dots span:nth-child(2) {
+    animation-delay: 150ms;
+    opacity: 0.68;
+}
+
+.dashboard-loading-dots span:nth-child(3) {
+    animation-delay: 300ms;
+    opacity: 0.42;
+}
+
+@keyframes dashboard-loading-dot {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-4px); }
+}
+
+@keyframes dashboard-loading-orbit {
+    to { transform: rotate(332deg) rotateX(14deg); }
+}
+
+@keyframes dashboard-loading-satellite {
+    0% { transform: translate(0, 0); }
+    50% { transform: translate(-228px, 52px); }
+    100% { transform: translate(0, 0); }
+}
+
+@keyframes dashboard-loading-sphere {
+    0%, 100% { transform: rotateX(11deg) rotateY(-13deg) translateY(0); }
+    50% { transform: rotateX(14deg) rotateY(9deg) translateY(-5px); }
+}
+
+@keyframes dashboard-loading-mark {
+    0%, 100% { transform: rotateX(10deg) rotateY(-13deg) rotateZ(-8deg) translateY(0); }
+    50% { transform: rotateX(7deg) rotateY(-7deg) rotateZ(-5deg) translateY(-4px); }
+}
+
+@media (max-width: 480px) {
+    .dashboard-loading-screen {
+        padding: 16px;
+    }
+
+    .dashboard-loading-card {
+        padding: 0;
+    }
+
+    .dashboard-loading-orbit {
+        transform: scale(0.88);
+        margin-bottom: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dashboard-loading-screen,
+    .dashboard-loading-dots span,
+    .dashboard-loading-orbit__ring,
+    .dashboard-loading-orbit__satellite,
+    .dashboard-loading-orbit::before,
+    .dashboard-loading-mark {
+        animation: none;
+        transition: none;
+    }
+}
+
+#viewedBy.viewed-by-modal {
+    z-index: 14000 !important;
+    padding: 20px !important;
+    background: rgba(7, 47, 61, 0.68) !important;
+    backdrop-filter: blur(5px);
+}
+
+#viewedBy .viewed-by-modal__dialog {
+    width: min(620px, calc(100vw - 32px)) !important;
+    max-width: 620px !important;
+    max-height: min(680px, calc(100vh - 40px)) !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(199, 229, 235, 0.9) !important;
+    border-radius: 22px !important;
+    background: #f4fbfc !important;
+    box-shadow: 0 28px 72px rgba(7, 47, 61, 0.38) !important;
+}
+
+#viewedBy .viewed-by-modal__header {
+    display: flex !important;
+    min-height: 72px !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin: 0 !important;
+    padding: 14px 20px 14px 24px !important;
+    border: 0 !important;
+    border-bottom: 1px solid rgba(199, 229, 235, 0.26) !important;
+    background: linear-gradient(115deg, #0a4d60 0%, #176f80 58%, #278da0 100%) !important;
+}
+
+#viewedBy .viewed-by-modal__header .oh-modal__dialog-title {
+    margin: 0 !important;
+    color: #ffffff !important;
+    font-size: 1.05rem !important;
+    font-weight: 750 !important;
+    letter-spacing: 0.01em;
+}
+
+#viewedBy .viewed-by-modal__close {
+    display: inline-flex !important;
+    width: 38px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    border: 1px solid rgba(255, 255, 255, 0.34) !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+    transition: background-color 160ms ease, transform 160ms ease !important;
+}
+
+#viewedBy .viewed-by-modal__close:hover,
+#viewedBy .viewed-by-modal__close:focus-visible {
+    transform: rotate(90deg);
+    background: rgba(255, 255, 255, 0.24) !important;
+}
+
+#viewedBy .viewed-by-modal__close ion-icon {
+    color: #ffffff !important;
+    font-size: 22px !important;
+}
+
+#viewedBy .viewed-by-modal__body {
+    max-height: calc(100vh - 150px) !important;
+    padding: 18px 22px 22px !important;
+    overflow-y: auto !important;
+    background: #f4fbfc !important;
+    color: #173f50 !important;
+}
+
+#viewedBy .viewed-by-list {
+    overflow: hidden;
+    border: 1px solid #d3e8ec;
+    border-radius: 17px;
+    background: #ffffff;
+    box-shadow: 0 8px 22px rgba(10, 77, 96, 0.08);
+}
+
+#viewedBy .viewed-by-row {
+    display: flex;
+    min-height: 70px;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e2eff1;
+    transition: background-color 150ms ease;
+}
+
+#viewedBy .viewed-by-row:last-child {
+    border-bottom: 0;
+}
+
+#viewedBy .viewed-by-row:hover {
+    background: #f0f9fa;
+}
+
+#viewedBy .viewed-by-row__avatar {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    place-items: center;
+    overflow: hidden;
+    border: 2px solid #d1e9ed;
+    border-radius: 50%;
+    background: #e8f5f7;
+}
+
+#viewedBy .viewed-by-row__avatar img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#viewedBy .viewed-by-row__person {
+    display: flex;
+    min-width: 0;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 14px;
+}
+
+#viewedBy .viewed-by-row__name {
+    min-width: 0;
+    color: #173f50 !important;
+    font-size: 0.91rem;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+#viewedBy .viewed-by-row__date {
+    flex: 0 0 auto;
+    padding: 6px 10px;
+    border: 1px solid #c7e5eb;
+    border-radius: 999px;
+    background: #e8f5f7;
+    color: #176f80 !important;
+    font-size: 0.72rem;
+    font-weight: 650;
+    line-height: 1.2;
+}
+
+#viewedBy .viewed-by-list__empty {
+    margin: 0;
+    padding: 24px 16px;
+    color: #63838d;
+    text-align: center;
+}
+
+@media (max-width: 540px) {
+    #viewedBy.viewed-by-modal {
+        padding: 12px !important;
+    }
+
+    #viewedBy .viewed-by-modal__body {
+        padding: 14px !important;
+    }
+
+    #viewedBy .viewed-by-row {
+        align-items: flex-start;
+        padding: 12px;
+    }
+
+    #viewedBy .viewed-by-row__person {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dashboard-loading-dots span,
+    #viewedBy .viewed-by-modal__close {
+        transition: none !important;
+    }
 }

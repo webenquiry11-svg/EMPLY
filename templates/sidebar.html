@@ -111,6 +111,7 @@
 
             /* Tooltip */
             .oh-sidebar-tooltip { position: fixed; left: 80px; background: #062b23; color: #e6fff2; padding: 8px 12px; border-radius: 8px; box-shadow: 0 6px 18px rgba(3,41,30,0.35); font-size: 14px; white-space: nowrap; transform-origin: left center; z-index: 9999; }
+            .oh-sidebar-tooltip[hidden] { display: none !important; }
             .oh-sidebar-tooltip.oh-tooltip-enter { opacity: 0; transform: translateX(-6px); }
             .oh-sidebar-tooltip.oh-tooltip-enter.oh-tooltip-show { transition: all 160ms ease-out; opacity: 1; transform: translateX(0); }
 
@@ -145,6 +146,7 @@
 
             {% for menues in sidebar %}
                 {% comment %} Keep same visibility rules as original sidebar {% endcomment %}
+                {% if menues.menu != "Project" %}
                 {% if not request.user.employee_get or request.user.is_staff or menues.menu != "Performance" %}
                 {% if not request.user.is_staff and not request.user.is_superuser or menues.menu != "Project" and menues.menu != "Performance" %}
                 <li class="oh-collapsed-nav-item">
@@ -182,6 +184,7 @@
                 </li>
                 {% endif %}
                 {% endif %}
+                {% endif %}
             {% endfor %}
 
             <!-- Configuration (icon entry for collapsed sidebar) -->
@@ -217,7 +220,7 @@
                                             <li><a href="{{submenu.redirect}}">{{submenu.menu}}</a></li>
                                         {% endif %}
                                     {% elif menues.menu == "Attendance" %}
-                                        {% if submenu.menu == "Attendances" or submenu.menu == "Attendances" or submenu.menu == "Hour Account" or submenu.menu == "Late Come Early Out" or submenu.menu == "Late Come/Early Out" or submenu.menu == "Late Come / Early Out" %}
+                                        {% if submenu.menu == "Attendances" or submenu.menu == "Hour Account" or submenu.menu == "Late Come Early Out" or submenu.menu == "Late Come/Early Out" or submenu.menu == "Late Come / Early Out" or submenu.menu == "My Attendances" or submenu.redirect == "/attendance/view-my-attendance" or submenu.redirect == "/attendance/view-my-attendance/" %}
                                         {% else %}
                                             <li><a href="{{submenu.redirect}}">{{submenu.menu}}</a></li>
                                         {% endif %}
@@ -291,16 +294,15 @@
                 function showTooltip($link) {
                     var label = $link.data('label') || '';
                     tooltip.text(label);
-                    var offset = $link.offset();
-                    var top = offset.top + ($link.outerHeight()/2) - (tooltip.outerHeight()/2);
-                    tooltip.css({ top: top + 'px', left: (offset.left + $link.outerWidth() + 12) + 'px' });
-                    tooltip.removeAttr('hidden').addClass('oh-tooltip-show');
-                    tooltip.addClass('oh-tooltip-enter');
+                    var linkRect = $link[0].getBoundingClientRect();
+                    tooltip.removeAttr('hidden').attr('aria-hidden', 'false').removeClass('oh-tooltip-show').addClass('oh-tooltip-enter').show();
+                    var top = linkRect.top + (linkRect.height / 2) - (tooltip.outerHeight() / 2);
+                    tooltip.css({ top: top + 'px', left: (linkRect.right + 12) + 'px' });
                     setTimeout(function(){ tooltip.addClass('oh-tooltip-show'); }, 10);
                 }
 
                 function hideTooltip() {
-                    tooltip.hide().attr('hidden', true).removeClass('oh-tooltip-show oh-tooltip-enter');
+                    tooltip.hide().attr({ hidden: true, 'aria-hidden': 'true' }).removeClass('oh-tooltip-show oh-tooltip-enter');
                 }
 
                 function showFlyout(menuId, $link) {

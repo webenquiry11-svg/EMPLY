@@ -26,9 +26,10 @@
             href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-16x16.png' %}{% endif %}"
         >
         <link rel="stylesheet" href='{% static "/build/css/style.min.css" %}'>
+        <link rel="stylesheet" href="{% static 'recruitment/recruitment-theme.css' %}?v=19">
     </head>
 
-    <body>
+    <body class="recruitment-theme recruitment-open-jobs">
         {% if messages %}
             <div class="oh-alert-container">
                 {% for message in messages %}
@@ -74,11 +75,21 @@
                                 <div class="oh-joblist__header">
                                     <div class="oh-job_recruit--detail">
                                         <div class="oh-recruitment-company">
-                                            <img
-                                                src="{{recruitment.company_id.icon.url}}"
-                                                alt=""
-                                                class="oh-job-list_company-logo"
-                                            >
+                                            {% if recruitment.company_id.icon %}
+                                                <img
+                                                    src="{{ recruitment.company_id.icon.url }}"
+                                                    alt="{{ recruitment.company_id }} logo"
+                                                    class="oh-job-list_company-logo"
+                                                    onerror="this.hidden = true; this.nextElementSibling.hidden = false;"
+                                                >
+                                                <span class="oh-joblist__company-logo-fallback" aria-hidden="true" hidden>
+                                                    {{ recruitment.company_id|slice:":1"|upper }}
+                                                </span>
+                                            {% else %}
+                                                <span class="oh-joblist__company-logo-fallback" aria-hidden="true">
+                                                    {{ recruitment.company_id|slice:":1"|upper }}
+                                                </span>
+                                            {% endif %}
                                         </div>
                                         <div class="oh-recuritment__details">
                                             <p class="oh-recuritment_company-name">{{ recruitment.company_id }}</p>

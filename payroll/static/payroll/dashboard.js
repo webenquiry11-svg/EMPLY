@@ -13,7 +13,8 @@ $(document).ready(function () {
   var per_page = 10;
   var initialLoad = true;
 
-  $("#monthYearField").val(formattedDate);
+  var requestedPeriod = new URLSearchParams(window.location.search).get("period");
+  $("#monthYearField").val(requestedPeriod || formattedDate);
 
   function isChartEmpty(chartData) {
     if (!chartData) {
@@ -383,6 +384,9 @@ $(document).ready(function () {
     payslip_details();
     department_chart_view();
     contract_ending(initialLoad);
+    if (this.value) {
+      window.location.search = "?period=" + encodeURIComponent(this.value);
+    }
   });
 
   $("#payroll-employee-next").on("click", function () {

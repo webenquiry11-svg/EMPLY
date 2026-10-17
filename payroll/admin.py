@@ -15,6 +15,9 @@ from payroll.models.models import (
     MultipleCondition,
     Payslip,
     PayslipAutoGenerate,
+    PayrollApprovalEvent,
+    PayrollRun,
+    PayrollRunItem,
     Reimbursement,
     ReimbursementrequestComment,
 )
@@ -27,6 +30,9 @@ admin.site.register(Contract)
 admin.site.register(Allowance)
 admin.site.register(Deduction)
 admin.site.register(Payslip)
+admin.site.register(PayrollRun)
+admin.site.register(PayrollRunItem)
+admin.site.register(PayrollApprovalEvent)
 admin.site.register(PayrollSettings)
 admin.site.register(LoanAccount)
 admin.site.register(Reimbursement)

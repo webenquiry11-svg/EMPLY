@@ -1,7 +1,10 @@
 import gettext
 from collections import defaultdict
+from decimal import Decimal, InvalidOperation
 
 from django.contrib.auth.decorators import permission_required
+from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from rest_framework.pagination import PageNumberPagination
@@ -10,7 +13,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from base.backends import ConfiguredEmailBackend
-from base.methods import eval_validate
 from payroll.filters import (
     AllowanceFilter,
     ContractFilter,
@@ -21,6 +23,7 @@ from payroll.models.models import (
     Allowance,
     Contract,
     Deduction,
+    FilingStatus,
     LoanAccount,
     Payslip,
     Reimbursement,
@@ -46,12 +49,13 @@ class PayslipView(APIView):
 
     def get(self, request, id=None):
         if id:
-            payslip = Payslip.objects.filter(id=id).first()
-            if (
-                request.user.has_perm("payroll.view_payslip")
-                or payslip.employee_id == request.user.employee_get
-            ):
-                serializer = PayslipSerializer(payslip)
+            payslips = Payslip.objects.all()
+            if not request.user.has_perm("payroll.view_payslip"):
+                payslips = payslips.filter(employee_id__employee_user_id=request.user)
+            payslip = payslips.filter(id=id).first()
+            if payslip is None:
+                return Response({"detail": "Payslip not found."}, status=404)
+            serializer = PayslipSerializer(payslip)
             return Response(serializer.data, status=200)
         if request.user.has_perm("payroll.view_payslip"):
             payslips = Payslip.objects.all()
@@ -77,20 +81,23 @@ class PayslipDownloadView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, id):
-        if request.user.has_perm("payroll.view_payslip"):
-            return payslip_pdf(request, id)
-
-        if Payslip.objects.filter(id=id, employee_id=request.user.employee_get):
-            return payslip_pdf(request, id)
-        else:
-            raise Response({"error": "You don't have permission"})
+        payslips = Payslip.objects.all()
+        if not request.user.has_perm("payroll.view_payslip"):
+            payslips = payslips.filter(employee_id__employee_user_id=request.user)
+        if not payslips.filter(id=id).exists():
+            return Response(
+                {"detail": "Payslip not found or you do not have permission."},
+                status=404,
+            )
+        return payslip_pdf(request, id)
 
 
 class PayslipSendMailView(APIView):
     permission_classes = [IsAuthenticated]
 
-    @method_decorator(permission_required("payroll.add_payslip"))
     def post(self, request):
+        if not request.user.has_perm("payroll.add_payslip"):
+            return Response({"detail": "You do not have permission."}, status=403)
         email_backend = ConfiguredEmailBackend()
         if not getattr(
             email_backend, "dynamic_username_with_display_name", None
@@ -98,7 +105,24 @@ class PayslipSendMailView(APIView):
             return Response({"error": "Email server is not configured"}, status=400)
 
         payslip_ids = request.data.get("id", [])
+        if (
+            not isinstance(payslip_ids, list)
+            or not payslip_ids
+            or any(
+                isinstance(pk, bool)
+                or not str(pk).isdigit()
+                or int(pk) <= 0
+                for pk in payslip_ids
+            )
+            or len(set(map(str, payslip_ids))) != len(payslip_ids)
+        ):
+            return Response({"detail": "Invalid payslip selection."}, status=400)
+        payslip_ids = [int(pk) for pk in payslip_ids]
         payslips = Payslip.objects.filter(id__in=payslip_ids)
+        if payslips.count() != len(payslip_ids):
+            return Response(
+                {"detail": "One or more payslips were not found."}, status=404
+            )
         result_dict = defaultdict(
             lambda: {"employee_id": None, "instances": [], "count": 0}
         )
@@ -291,24 +315,29 @@ class ReimbursementView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, pk=None):
+        reimbursements = Reimbursement.objects.all()
+        if not request.user.has_perm("payroll.view_reimbursement"):
+            reimbursements = reimbursements.filter(
+                employee_id__employee_user_id=request.user
+            )
         if pk:
-            reimbursement = Reimbursement.objects.get(id=pk)
+            reimbursement = reimbursements.filter(id=pk).first()
+            if reimbursement is None:
+                return Response({"detail": "Reimbursement not found."}, status=404)
             serializer = self.serializer_class(reimbursement)
             return Response(serializer.data, status=200)
-        reimbursements = Reimbursement.objects.all()
-
-        if request.user.has_perm("payroll.view_reimbursement"):
-            reimbursements = Reimbursement.objects.all()
-        else:
-            reimbursements = Reimbursement.objects.filter(
-                employee_id=request.user.employee_get
-            )
         pagination = PageNumberPagination()
         page = pagination.paginate_queryset(reimbursements, request)
         serializer = self.serializer_class(page, many=True)
         return pagination.get_paginated_response(serializer.data)
 
     def post(self, request):
+        user_employee = getattr(request.user, "employee_get", None)
+        if not request.user.has_perm("payroll.change_reimbursement") and not user_employee:
+            return Response(
+                {"detail": "An employee profile is required to submit a reimbursement."},
+                status=403,
+            )
         serializer = self.serializer_class(
             data=request.data, context={"request": request}
         )
@@ -317,18 +346,28 @@ class ReimbursementView(APIView):
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
-    @method_decorator(permission_required("payroll.change_reimbursement"))
     def put(self, request, pk):
-        reimbursement = Reimbursement.objects.get(id=pk)
-        serializer = self.serializer_class(instance=reimbursement, data=request.data)
+        if not request.user.has_perm("payroll.change_reimbursement"):
+            return Response({"detail": "You do not have permission."}, status=403)
+        reimbursement = Reimbursement.objects.filter(id=pk).first()
+        if reimbursement is None:
+            return Response({"detail": "Reimbursement not found."}, status=404)
+        serializer = self.serializer_class(
+            instance=reimbursement,
+            data=request.data,
+            context={"request": request},
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
-    @method_decorator(permission_required("payroll.delete_reimbursement"))
     def delete(self, request, pk):
-        reimbursement = Reimbursement.objects.get(id=pk)
+        if not request.user.has_perm("payroll.delete_reimbursement"):
+            return Response({"detail": "You do not have permission."}, status=403)
+        reimbursement = Reimbursement.objects.filter(id=pk).first()
+        if reimbursement is None:
+            return Response({"detail": "Reimbursement not found."}, status=404)
         reimbursement.delete()
         return Response(status=200)
 
@@ -337,71 +376,130 @@ class ReimbusementApproveRejectView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
-        from django.shortcuts import get_object_or_404
+        try:
+            with transaction.atomic():
+                reimbursement = (
+                    Reimbursement.objects.select_for_update().filter(id=pk).first()
+                )
+                if reimbursement is None:
+                    return Response({"detail": "Reimbursement not found."}, status=404)
+                user_employee = getattr(request.user, "employee_get", None)
+                owner = reimbursement.employee_id
+                work_info = getattr(owner, "employee_work_info", None)
+                reporting_manager = (
+                    getattr(work_info, "reporting_manager_id", None)
+                    if work_info
+                    else None
+                )
+                is_manager = (
+                    user_employee is not None and reporting_manager == user_employee
+                )
+                has_permission = request.user.has_perm(
+                    "payroll.change_reimbursement"
+                )
 
-        reimbursement = get_object_or_404(Reimbursement, id=pk)
-        user_employee = getattr(request.user, "employee_get", None)
-        owner = reimbursement.employee_id
-        work_info = getattr(owner, "employee_work_info", None)
-        reporting_manager = (
-            getattr(work_info, "reporting_manager_id", None) if work_info else None
-        )
-        is_manager = user_employee is not None and reporting_manager == user_employee
-        has_permission = request.user.has_perm("payroll.change_reimbursement")
+                if not (is_manager or has_permission):
+                    return Response(
+                        {
+                            "error": "You do not have permission to approve/reject this reimbursement."
+                        },
+                        status=403,
+                    )
 
-        if not (is_manager or has_permission):
-            return Response(
-                {
-                    "error": "You do not have permission to approve/reject this reimbursement."
-                },
-                status=403,
-            )
-
-        status = request.data.get("status", None)
-        amount = (
-            eval_validate(request.data.get("amount"))
-            if request.data.get("amount")
-            else 0
-        )
-        amount = max(0, amount)
-        if amount:
-            reimbursement.amount = amount
-        reimbursement.status = status
-        reimbursement.save()
+                new_status = request.data.get("status")
+                if new_status not in {"approved", "rejected"}:
+                    return Response(
+                        {"status": ["Choose either approved or rejected."]},
+                        status=400,
+                    )
+                if reimbursement.status != "requested":
+                    return Response(
+                        {"status": ["Only requested reimbursements can be reviewed."]},
+                        status=400,
+                    )
+                if "amount" in request.data:
+                    try:
+                        amount = Decimal(str(request.data["amount"]))
+                    except (InvalidOperation, TypeError, ValueError):
+                        return Response(
+                            {"amount": ["Enter a valid amount."]}, status=400
+                        )
+                    if not amount.is_finite() or amount < 0:
+                        return Response(
+                            {
+                                "amount": [
+                                    "Amount must be a finite, non-negative number."
+                                ]
+                            },
+                            status=400,
+                        )
+                    reimbursement.amount = float(amount)
+                reimbursement.status = new_status
+                reimbursement.approved_by = user_employee
+                reimbursement.save()
+        except ValidationError as exc:
+            return Response({"detail": exc.messages}, status=400)
         return Response({"status": reimbursement.status}, status=200)
 
 
 class TaxBracketView(APIView):
     permission_classes = [IsAuthenticated]
 
+    def _has_permission(self, request, action):
+        return request.user.has_perm(f"payroll.{action}_taxbracket")
+
+    def _queryset(self):
+        return TaxBracket.objects.filter(
+            filing_status_id__in=FilingStatus.objects.all()
+        )
+
     def get(self, request, pk=None):
+        if not self._has_permission(request, "view"):
+            return Response({"detail": "You do not have permission."}, status=403)
         if pk:
-            tax_bracket = TaxBracket.objects.get(id=pk)
+            tax_bracket = self._queryset().filter(id=pk).first()
+            if tax_bracket is None:
+                return Response({"detail": "Tax bracket not found."}, status=404)
             serializer = TaxBracketSerializer(tax_bracket)
             return Response(serializer.data, status=200)
-        tax_brackets = TaxBracket.objects.all()
+        tax_brackets = self._queryset()
         serializer = TaxBracketSerializer(instance=tax_brackets, many=True)
         return Response(serializer.data, status=200)
 
     def post(self, request):
-        serializer = TaxBracketSerializer(data=request.data)
+        if not self._has_permission(request, "add"):
+            return Response({"detail": "You do not have permission."}, status=403)
+        serializer = TaxBracketSerializer(
+            data=request.data, context={"request": request}
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
     def put(self, request, pk):
-        tax_bracket = TaxBracket.objects.get(id=pk)
+        if not self._has_permission(request, "change"):
+            return Response({"detail": "You do not have permission."}, status=403)
+        tax_bracket = self._queryset().filter(id=pk).first()
+        if tax_bracket is None:
+            return Response({"detail": "Tax bracket not found."}, status=404)
         serializer = TaxBracketSerializer(
-            instance=tax_bracket, data=request.data, partial=True
+            instance=tax_bracket,
+            data=request.data,
+            partial=True,
+            context={"request": request},
         )
-        if serializer.save():
+        if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
     def delete(self, request, pk):
-        tax_bracket = TaxBracket.objects.get(id=pk)
+        if not self._has_permission(request, "delete"):
+            return Response({"detail": "You do not have permission."}, status=403)
+        tax_bracket = self._queryset().filter(id=pk).first()
+        if tax_bracket is None:
+            return Response({"detail": "Tax bracket not found."}, status=404)
         tax_bracket.delete()
         return Response(status=200)
 
@@ -463,7 +561,7 @@ class PayslipPDFAPIView(APIView):
             )
 
         # employee & company date format resolution
-        employee = user.employee_get  # keep same accessor you used
+        employee = getattr(user, "employee_get", None) or payslip.employee_id
         info = EmployeeWorkInformation.objects.filter(employee_id=employee)
         if info.exists():
             # take the last one (mirrors your loop behavior)

@@ -1,6 +1,7 @@
 {% extends "index.html" %}
 {% load static i18n %}
 {% block content %}
+    <link rel="stylesheet" href="{% static 'offboarding/offboarding-theme.css' %}">
     <style>
         .resign-status {
             margin-bottom: 6px;
@@ -12,6 +13,7 @@
             font-size: 0.8rem;
         }
     </style>
+    <div id="resignationPage">
     {% include "offboarding/resignation/nav.html" %}
     {% if letters %}
         {% include "filter_tags.html" %}
@@ -23,18 +25,17 @@
         >
         </div>
     {% else %}
-        <div class="d-flex justify-content-center align-items-center" style="height: 40vh">
-            <div class="text-center">
-                <img
-                    class="oh-404__image mb-3"
-                    style="width: 150px; height: 150px"
-                    src="{% static 'images/ui/no_resignation.png' %}"
-                    alt="{% trans 'No documents' %}"
-                >
-                <h5 class="oh-404__subtitle">{% trans "No resignation has been created yet." %}</h5>
-            </div>
+        <div class="resignation-empty">
+            <img
+                class="oh-404__image mb-3"
+                src="{% static 'images/ui/search.svg' %}"
+                alt="{% trans 'No documents' %}"
+            >
+            <h2 class="oh-empty__title">{% trans "No resignations yet" %}</h2>
+            <p class="oh-empty__subtitle">{% trans "There are no resignation requests to display right now." %}</p>
         </div>
     {% endif %}
+    </div>
 
     <script>
         // toggle columns //

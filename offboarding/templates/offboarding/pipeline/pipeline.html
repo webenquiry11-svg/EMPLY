@@ -1,12 +1,14 @@
 {% extends 'index.html' %}
 {% load static i18n %}
 {% block content %}
+    <link rel="stylesheet" href="{% static 'offboarding/offboarding-theme.css' %}">
     <style>
         .search-highlight {
             background-color: rgba(255, 68, 0, 0.076);
         }
     </style>
 
+    <div id="offboardingPage">
     {% include 'offboarding/pipeline/nav.html' %}
     <div id="offboardingContainer">
         {% if offboardings %}
@@ -22,6 +24,7 @@
                 <p class="oh-empty__subtitle">{% trans "There is no offboardings at this moment." %}</p>
             </div>
         {% endif %}
+    </div>
     </div>
 
     <script>

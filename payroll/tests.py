@@ -1,13 +1,14 @@
 from datetime import date
+from decimal import Decimal
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
-from django.test import SimpleTestCase
+from django.test import TestCase
 
 from payroll import services
 
 
-class PayrollPolicyTests(SimpleTestCase):
+class PayrollPolicyTests(TestCase):
     class Query:
         def __init__(self, items):
             self.items = items
@@ -109,6 +110,31 @@ class PayrollPolicyTests(SimpleTestCase):
         self.assertEqual(result["paid_leave_days"], 1)
         self.assertEqual(result["total_deductions"], result["absence_deduction"] + result["other_unpaid_deduction"] + result["lwp_deduction"] + result["double_lwp_deduction"] + result["sandwich_deduction"])
 
+    def test_partial_october_absence_uses_31_calendar_day_daily_rate(self):
+        result = self.calculate(
+            [],
+            start_date=date(2026, 10, 1),
+            end_date=date(2026, 10, 31),
+            today=date(2026, 10, 15),
+        )
+
+        self.assertEqual(result["absence_days"], 10)
+        self.assertEqual(result["total_deductions"], Decimal("1000.00"))
+        self.assertEqual(result["net_pay"], Decimal("2100.00"))
+        self.assertNotIn(
+            date(2026, 10, 15),
+            {item["date"] for item in result["deduction_details"]},
+        )
+        self.assertEqual(
+            result["deduction_details"][0]["calculation"],
+            "₹3,100.00 ÷ 31 calendar days × 1 day = ₹100.00",
+        )
+        self.assertEqual(
+            result["daily_rate_basis"],
+            "Basic salary ₹3,100.00 ÷ 31 calendar days = ₹100.00 per deduction day.",
+        )
+        self.assertTrue(result["current_day_pending"])
+
     def test_valid_paid_leave_types_do_not_create_deduction_events(self):
         leaves = [
             self.leave(self.cl, date(2026, 1, 5)),
@@ -171,7 +197,32 @@ class PayrollPolicyTests(SimpleTestCase):
         self.assertIn("14th LWP day", events[13]["reason"])
         self.assertTrue(all(item["rate_label"] == "Normal" for item in events[:12]))
         self.assertTrue(all(item["rate_label"] == "Double" for item in events[12:]))
+        self.assertEqual(
+            events[12]["calculation"],
+            "₹3,100.00 ÷ 31 calendar days × 2 (double rate) × 1 day = ₹200.00",
+        )
         self.assertTrue(all(item["policy"] and item["calculation"] for item in events))
+
+    def test_fixed_contract_rate_is_shown_in_daily_calculation(self):
+        contract = SimpleNamespace(
+            is_active=True,
+            contract_status="active",
+            calculate_daily_leave_amount=False,
+            deduction_for_one_leave_amount=125,
+        )
+        self.employee.contract_set = SimpleNamespace(
+            filter=lambda **kwargs: SimpleNamespace(first=lambda: contract)
+        )
+        result = self.calculate([], today=date(2026, 1, 2))
+
+        self.assertEqual(
+            result["daily_rate_basis"],
+            "Contract-configured deduction rate: ₹125.00 per day.",
+        )
+        self.assertEqual(
+            result["deduction_details"][0]["calculation"],
+            "Contract rate ₹125.00 × 1 day = ₹125.00",
+        )
 
     def test_lwp_counter_spans_months(self):
         dates = [

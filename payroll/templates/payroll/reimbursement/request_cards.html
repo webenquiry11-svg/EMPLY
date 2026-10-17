@@ -160,7 +160,8 @@
                                     {% endif %}
                                 </span>
                                 {% if perms.payroll.change_reimbursement %}
-                                    <form action="{% url 'approve-reimbursements' %}">
+                                    <form method="post" action="{% url 'approve-reimbursements' %}">
+                                        {% csrf_token %}
                                         <input type="hidden" name="ids" value="{{ req.id }}">
                                         <input type="hidden" name="status">
                                         {% if req.type == 'reimbursement' %}
@@ -448,7 +449,8 @@
                                     {% endif %}
                                 </span>
                                 {% if perms.payroll.change_reimbursement %}
-                                    <form action="{% url 'approve-reimbursements' %}">
+                                    <form method="post" action="{% url 'approve-reimbursements' %}">
+                                        {% csrf_token %}
                                         <input type="hidden" name="ids" value="{{ req.id }}">
                                         <input type="hidden" name="status">
                                         {% if req.type == 'reimbursement' %}
@@ -736,7 +738,8 @@
                                     {% endif %}
                                 </span>
                                 {% if perms.payroll.change_reimbursement %}
-                                    <form action="{% url 'approve-reimbursements' %}">
+                                    <form method="post" action="{% url 'approve-reimbursements' %}">
+                                        {% csrf_token %}
                                         <input type="hidden" name="ids" value="{{ req.id }}">
                                         <input type="hidden" name="status">
                                         {% if req.type == 'reimbursement' %}

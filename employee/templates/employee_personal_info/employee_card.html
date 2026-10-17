@@ -42,7 +42,7 @@
 
 </style>
 
-<div class="oh-layout--grid-3">
+<div class="oh-layout--grid-3 employee-directory-grid">
   {% if data %}
     {% for emp in data %}
         <div  class="oh-kanban-card" style="color: inherit;text-decoration: none;{% if emp.employee_work_info.reporting_manager_id == request.user.employee_get %} background-color: hsl(38.08deg 100% 50% / 8%);{% endif %}"
@@ -59,10 +59,10 @@
           </div>
 
           <div class="oh-kanban-card__details">
-            <span class="oh-kanban-card__title" {% if emp.email|length >= 30 %}title = "{{emp}}" {% endif %}>{{emp|truncatechars:30}}</span>
-            <span class="oh-kanban-card__subtitle" {% if emp.get_email|length >= 35 %}title = "{{emp.get_email}}" {% endif %}>{{emp.get_email|truncatechars:35}}</span><br>
-            <span class="oh-kanban-card__subtitle">{{emp.employee_work_info.job_position_id}}</span>
-            <div class="oh-kanban-card__subtitle">
+            <span class="oh-kanban-card__title employee-directory-card__name" {% if emp.email|length >= 30 %}title = "{{emp}}" {% endif %}>{{emp|truncatechars:30}}</span>
+            <span class="oh-kanban-card__subtitle employee-directory-card__email" {% if emp.get_email|length >= 35 %}title = "{{emp.get_email}}" {% endif %}>{{emp.get_email|truncatechars:35}}</span><br>
+            <span class="oh-kanban-card__subtitle employee-directory-card__position">{{emp.employee_work_info.job_position_id}}</span>
+            <div class="oh-kanban-card__subtitle employee-directory-card__status">
               {% if "attendance"|app_installed %}
                 {% if emp.check_online %}
                   <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span> {% trans "Online" %}
@@ -144,7 +144,7 @@
       </div>
 
 
-  <div class="oh-pagination">
+  <div class="oh-pagination employee-directory-pagination">
     <span
       class="oh-pagination__page"
       >

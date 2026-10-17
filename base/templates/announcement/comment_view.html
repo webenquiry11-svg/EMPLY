@@ -174,6 +174,146 @@
     #commentContainer .oh-activity-sidebar__q {
         color: var(--text-main, #ffffff) !important;
     }
+
+    html body .oh-wrapper-main.admin-panel-theme #activitySidebar,
+    html body .oh-wrapper-main.super-admin-panel-theme #activitySidebar {
+        position: fixed !important;
+        inset: 0 0 0 auto !important;
+        z-index: 5000 !important;
+        width: min(520px, 94vw) !important;
+        max-width: 100vw !important;
+        height: 100vh !important;
+        height: 100dvh !important;
+        background: #f4fbfc !important;
+        border-left: 1px solid rgba(42, 132, 155, 0.24) !important;
+        box-shadow: -18px 0 48px rgba(10, 77, 96, 0.24) !important;
+        color: #173f50 !important;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #activitySidebar.oh-activity-sidebar--show,
+    html body .oh-wrapper-main.super-admin-panel-theme #activitySidebar.oh-activity-sidebar--show {
+        z-index: 5000 !important;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #commentContainer,
+    html body .oh-wrapper-main.super-admin-panel-theme #commentContainer {
+        min-height: 100% !important;
+        background: #f4fbfc !important;
+        color: #173f50 !important;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #commentContainer .oh-activity-sidebar__header,
+    html body .oh-wrapper-main.super-admin-panel-theme #commentContainer .oh-activity-sidebar__header {
+        min-height: 72px !important;
+        padding: 1rem 1.2rem !important;
+        border-bottom: 1px solid rgba(42, 132, 155, 0.2) !important;
+        background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+        color: #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #commentContainer .oh-activity-sidebar__header-icon,
+    html body .oh-wrapper-main.super-admin-panel-theme #commentContainer .oh-activity-sidebar__header-icon {
+        color: #d5f0f2 !important;
+        transition: transform 160ms ease, color 160ms ease;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #commentContainer .oh-activity-sidebar__header a:hover .oh-activity-sidebar__header-icon,
+    html body .oh-wrapper-main.super-admin-panel-theme #commentContainer .oh-activity-sidebar__header a:hover .oh-activity-sidebar__header-icon {
+        transform: translateX(-2px);
+        color: #ffffff !important;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #commentContainer .oh-activity-sidebar__title,
+    html body .oh-wrapper-main.super-admin-panel-theme #commentContainer .oh-activity-sidebar__title {
+        color: #ffffff !important;
+        font-size: 0.9rem !important;
+        font-weight: 750 !important;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #commentContainer form,
+    html body .oh-wrapper-main.super-admin-panel-theme #commentContainer form {
+        margin: 14px !important;
+        padding: 14px !important;
+        border: 1px solid rgba(42, 132, 155, 0.15) !important;
+        border-radius: 16px !important;
+        background: #e8f5f7 !important;
+        box-shadow: 0 6px 18px rgba(10, 77, 96, 0.07) !important;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #commentContainer #commentInput,
+    html body .oh-wrapper-main.super-admin-panel-theme #commentContainer #commentInput {
+        min-height: 44px !important;
+        border: 1px solid rgba(42, 132, 155, 0.2) !important;
+        border-radius: 12px !important;
+        background: #ffffff !important;
+        color: #173f50 !important;
+        box-shadow: none !important;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #commentContainer #commentInput:focus,
+    html body .oh-wrapper-main.super-admin-panel-theme #commentContainer #commentInput:focus {
+        border-color: #278da0 !important;
+        box-shadow: 0 0 0 3px rgba(39, 141, 160, 0.15) !important;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #commentContainer #commentInput::placeholder,
+    html body .oh-wrapper-main.super-admin-panel-theme #commentContainer #commentInput::placeholder {
+        color: #6b8e98 !important;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #commentContainer #commentButton,
+    html body .oh-wrapper-main.super-admin-panel-theme #commentContainer #commentButton {
+        border: 1px solid #176f80 !important;
+        border-radius: 11px !important;
+        background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+        color: #ffffff !important;
+        box-shadow: 0 6px 14px rgba(10, 77, 96, 0.18) !important;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #commentContainer #commentButton:hover,
+    html body .oh-wrapper-main.super-admin-panel-theme #commentContainer #commentButton:hover {
+        background: linear-gradient(110deg, #073b4a, #176f80) !important;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #commentContainer .oh-activity-sidebar__qa-list,
+    html body .oh-wrapper-main.super-admin-panel-theme #commentContainer .oh-activity-sidebar__qa-list {
+        padding: 12px 16px 24px !important;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #commentContainer .oh-activity-sidebar__qa-item,
+    html body .oh-wrapper-main.super-admin-panel-theme #commentContainer .oh-activity-sidebar__qa-item {
+        margin-bottom: 12px !important;
+        padding: 14px !important;
+        border: 1px solid rgba(42, 132, 155, 0.14) !important;
+        border-radius: 14px !important;
+        background: #ffffff !important;
+        color: #173f50 !important;
+        box-shadow: 0 6px 16px rgba(10, 77, 96, 0.07) !important;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #commentContainer .oh-activity-sidebar__q,
+    html body .oh-wrapper-main.super-admin-panel-theme #commentContainer .oh-activity-sidebar__q {
+        color: #173f50 !important;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #commentContainer .oh-timeoff-modal__stat-title,
+    html body .oh-wrapper-main.super-admin-panel-theme #commentContainer .oh-timeoff-modal__stat-title,
+    html body .oh-wrapper-main.admin-panel-theme #commentContainer .oh-timeoff-title,
+    html body .oh-wrapper-main.super-admin-panel-theme #commentContainer .oh-timeoff-title {
+        color: #557b84 !important;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #commentContainer .oh-404,
+    html body .oh-wrapper-main.super-admin-panel-theme #commentContainer .oh-404 {
+        color: #557b84 !important;
+    }
+
+    @media (max-width: 620px) {
+        html body .oh-wrapper-main.admin-panel-theme #activitySidebar,
+        html body .oh-wrapper-main.super-admin-panel-theme #activitySidebar {
+            width: min(100vw, 520px) !important;
+        }
+    }
 </style>
 
 {% if messages %}

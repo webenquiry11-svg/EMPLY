@@ -1,5 +1,10 @@
 $(document).ready(function(){
-    let myChart; // Declare myChart globally to access it outside the scope
+    const canvas = document.getElementById('candidateChart');
+    if (!canvas) {
+        return;
+    }
+
+    let myChart;
 
     function candidateChart(dataSet, labels){
         const data = {
@@ -10,7 +15,7 @@ $(document).ready(function(){
             }]
         };
 
-        const ctx = document.getElementById('candidateChart').getContext('2d');
+        const ctx = canvas.getContext('2d');
         myChart = new Chart(ctx, {
             type: 'pie',
             data: data,
@@ -21,28 +26,20 @@ $(document).ready(function(){
     }
 
     function handleClick(event, chartElements) {
-        if (chartElements.length > 0) {
-            // Get the index of the clicked element
-            const index = chartElements[0].index;
+        if (!chartElements.length) {
+            return;
+        }
 
-            if(index === 0){
-                // Assuming each data point corresponds to a URL
-                url = '/recruitment/candidate-view?offer_letter_status=not_sent'
-            }else if(index === 1){
-
-                url = '/recruitment/candidate-view?offer_letter_status=sent'
-            }else if(index === 2){
-
-                url = '/recruitment/candidate-view?offer_letter_status=accepted'
-            }else if(index === 3){
-
-                url = '/recruitment/candidate-view?offer_letter_status=rejected'
-            }else{
-
-                url = '/recruitment/candidate-view?offer_letter_status=joined'
-            }
-            // Redirect to the corresponding URL
-            window.location.href = url;
+        const statusUrls = [
+            'not_sent',
+            'sent',
+            'accepted',
+            'rejected',
+            'joined',
+        ];
+        const status = statusUrls[chartElements[0].index];
+        if (status) {
+            window.location.href = `/recruitment/candidate-view?offer_letter_status=${status}`;
         }
     }
 

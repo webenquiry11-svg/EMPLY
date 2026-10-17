@@ -1,27 +1,27 @@
 $(document).ready(function () {
+    let myChart1;
+
     function hiringChart(dataSet, labels) {
       const data = {
-        labels: labels,
+        labels,
         datasets: dataSet,
       };
-      // Create chart using the Chart.js library
-      // $("#hiringChart").html("<canvas id='hiring'></canvas>")
-      window['myChart1'] = {}
-      var ctx = document.getElementById("hiringChart");
-
-      if (ctx != null) {
-        ctx = ctx.getContext("2d")
-        myChart1 = new Chart(ctx, {
-          type: 'bar',
-          data: data,
-          options: {
-          },
-        });
+      const canvas = document.getElementById("hiringChart");
+      if (!canvas) {
+        return;
       }
+
+      myChart1 = new Chart(canvas.getContext("2d"), {
+        type: "bar",
+        data,
+      });
     }
 
     function joining(){
-      var year = $("#year").val()
+      const year = $("#year").val();
+      if (!year || !document.getElementById("hiringChart")) {
+        return;
+      }
 
       $.ajax({
         url: "/recruitment/dashboard-hiring",
@@ -30,22 +30,25 @@ $(document).ready(function () {
           id : year
         },
         success: function (response) {
-          dataSet = response.dataSet;
-          labels = response.labels;
-          hiringChart(dataSet, labels);
+          hiringChart(response.dataSet, response.labels);
         },
       });
     }
 
-    $("#year").on("change", function (e) {
-      myChart1.destroy();
+    $("#year").on("change", function () {
+      if (myChart1) {
+        myChart1.destroy();
+      }
       joining()
     });
 
     joining()
 
-    $('#chart2').click(function (e) {
-      var chartType = myChart1.config.type
+    $('#chart2').on("click", function () {
+      if (!myChart1) {
+        return;
+      }
+      let chartType = myChart1.config.type
       if (chartType === 'line') {
         chartType = 'bar';
       } else if(chartType==='bar') {

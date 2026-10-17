@@ -9,9 +9,10 @@ from datetime import date, datetime, timedelta
 
 from django import forms
 from django.apps import apps
+from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import models, transaction
 from django.http import QueryDict
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -115,6 +116,87 @@ class FilingStatus(HorillaModel):
         ordering = ["-id"]
         verbose_name = _("Filing Status")
         verbose_name_plural = _("Filing Statuses")
+
+
+class PayrollRun(HorillaModel):
+    """A dated, auditable payroll calculation and approval workflow."""
+
+    STATUS_CHOICES = [
+        ("draft", _("Draft")),
+        ("submitted", _("Submitted")),
+        ("approved", _("Approved")),
+        ("rejected", _("Rejected")),
+        ("finalized", _("Finalized")),
+    ]
+
+    company = models.ForeignKey(
+        Company, on_delete=models.PROTECT, related_name="payroll_runs"
+    )
+    start_date = models.DateField()
+    end_date = models.DateField()
+    attempt = models.PositiveSmallIntegerField(default=1)
+    status = models.CharField(
+        max_length=12, choices=STATUS_CHOICES, default="draft"
+    )
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="created_payroll_runs",
+    )
+    warnings = models.JSONField(default=list, blank=True)
+    error_summary = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    objects = HorillaCompanyManager("company")
+
+    class Meta:
+        ordering = ["-created_at", "-id"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=("company", "start_date", "end_date", "attempt"),
+                name="payroll_run_company_period_attempt_uniq",
+            )
+        ]
+        permissions = [
+            ("submit_payrollrun", "Can submit payroll runs"),
+            ("approve_payrollrun", "Can approve or reject payroll runs"),
+            ("finalize_payrollrun", "Can finalize payroll runs"),
+        ]
+
+    def clean(self):
+        super().clean()
+        if self.end_date < self.start_date:
+            raise ValidationError(
+                {"end_date": _("The end date must be on or after the start date.")}
+            )
+
+    def __str__(self):
+        return f"{self.company} payroll {self.start_date} to {self.end_date} (#{self.attempt})"
+
+
+class PayrollApprovalEvent(HorillaModel):
+    """Immutable record of each payroll-run workflow transition."""
+
+    payroll_run = models.ForeignKey(
+        PayrollRun, on_delete=models.CASCADE, related_name="approval_events"
+    )
+    actor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="payroll_approval_events",
+    )
+    from_status = models.CharField(max_length=12, blank=True)
+    to_status = models.CharField(max_length=12)
+    comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at", "id"]
+
+    def __str__(self):
+        return f"{self.payroll_run}: {self.from_status or 'created'} → {self.to_status}"
 
 
 class Contract(HorillaModel):
@@ -1354,6 +1436,13 @@ class Payslip(HorillaModel):
     employee_id = models.ForeignKey(
         Employee, on_delete=models.PROTECT, verbose_name=_("Employee")
     )
+    payroll_run = models.ForeignKey(
+        PayrollRun,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="payslips",
+    )
     start_date = models.DateField()
     end_date = models.DateField()
     pay_head_data = models.JSONField()
@@ -1395,20 +1484,68 @@ class Payslip(HorillaModel):
             raise ValidationError(_("The start date cannot be in the future."))
 
     def save(self, *args, **kwargs):
-        if (
-            Payslip.objects.filter(
+        with transaction.atomic():
+            Employee._base_manager.select_for_update().filter(
+                pk=self.employee_id_id
+            ).first()
+            matching_payslips = Payslip._base_manager.filter(
                 employee_id=self.employee_id,
                 start_date=self.start_date,
                 end_date=self.end_date,
-            ).count()
-            > 1
-        ):
-            raise ValidationError(_("Employee ,start and end date must be unique"))
+            ).exclude(pk=self.pk)
+            if matching_payslips.exists():
+                raise ValidationError(
+                    _("Employee, start date and end date must be unique.")
+                )
 
-        if not isinstance(self.pay_head_data, (QueryDict, dict)):
-            raise ValidationError(_("The data must be in dictionary or querydict type"))
+            if not isinstance(self.pay_head_data, (QueryDict, dict)):
+                raise ValidationError(
+                    _("The data must be in dictionary or querydict type")
+                )
 
-        super().save(*args, **kwargs)
+            if self.pk:
+                previous = Payslip._base_manager.filter(pk=self.pk).first()
+                if previous:
+                    if previous.status == "paid" and self.status != "paid":
+                        raise ValidationError(
+                            {
+                                "status": _(
+                                    "A paid payslip cannot return to an earlier status."
+                                )
+                            }
+                        )
+                    if previous.status == "confirmed" and self.status not in {
+                        "confirmed",
+                        "paid",
+                    }:
+                        raise ValidationError(
+                            {
+                                "status": _(
+                                    "A confirmed payslip cannot return to an earlier status."
+                                )
+                            }
+                        )
+                    if previous.status in {"confirmed", "paid"} and any(
+                        getattr(previous, field) != getattr(self, field)
+                        for field in (
+                            "employee_id_id",
+                            "start_date",
+                            "end_date",
+                            "pay_head_data",
+                            "contract_wage",
+                            "basic_pay",
+                            "gross_pay",
+                            "deduction",
+                            "net_pay",
+                        )
+                    ):
+                        raise ValidationError(
+                            _(
+                                "Confirmed or paid payslips are finalized and cannot be recalculated."
+                            )
+                        )
+
+            super().save(*args, **kwargs)
 
     def get_name(self):
         """
@@ -1457,6 +1594,42 @@ class Payslip(HorillaModel):
         ordering = [
             "-end_date",
         ]
+
+
+class PayrollRunItem(HorillaModel):
+    """Frozen authoritative calculation output prepared for a payroll run."""
+
+    payroll_run = models.ForeignKey(
+        PayrollRun, on_delete=models.CASCADE, related_name="items"
+    )
+    employee = models.ForeignKey(Employee, on_delete=models.PROTECT)
+    payslip = models.OneToOneField(
+        Payslip,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="payroll_run_item",
+    )
+    start_date = models.DateField()
+    end_date = models.DateField()
+    basic_pay = models.FloatField()
+    gross_pay = models.FloatField()
+    deduction = models.FloatField()
+    net_pay = models.FloatField()
+    snapshot = models.JSONField()
+    warnings = models.JSONField(default=list, blank=True)
+
+    class Meta:
+        ordering = ["employee__badge_id", "employee_id"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=("payroll_run", "employee"),
+                name="payroll_run_employee_uniq",
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.payroll_run}: {self.employee}"
 
 
 class LoanAccount(HorillaModel):
@@ -1662,10 +1835,21 @@ class Reimbursement(HorillaModel):
             else 1
         )
 
-        # Setting the created use if the used dont have the permission
-        has_perm = request.user.has_perm("payroll.change_reimbursement")
-        if not has_perm:
-            self.employee_id = request.user.employee_get
+        # New self-service requests always belong to the authenticated employee.
+        has_perm = (
+            request is not None
+            and request.user.has_perm("payroll.change_reimbursement")
+        )
+        if request is not None and not has_perm:
+            existing = (
+                Reimbursement._base_manager.filter(pk=self.pk).first()
+                if self.pk
+                else None
+            )
+            if existing:
+                self.employee_id_id = existing.employee_id_id
+            else:
+                self.employee_id = request.user.employee_get
         if self.type == "reimbursement" and self.attachment is None:
             raise ValidationError({"attachment": "This field is required"})
         if self.type == "leave_encashment" and self.leave_type_id is None:
@@ -1748,7 +1932,9 @@ class Reimbursement(HorillaModel):
                     reimbursement.save()
                     self.allowance_id = reimbursement
                     if request:
-                        self.approved_by = request.user.employee_get
+                        self.approved_by = getattr(
+                            request.user, "employee_get", None
+                        )
                 else:
                     self.status = "requested"
                 super().save(*args, **kwargs)
