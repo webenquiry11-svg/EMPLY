@@ -42,22 +42,33 @@ function fill_notification_badge(data) {
     var notification_sound = false;
     var previousUnreadCount = parseInt(localStorage.getItem('previousUnreadCount')) || 0;
     var notificationConfig = document.getElementById('notificationConfig');
+    var unreadCount = Number(data.unread_count) || 0;
+    var notificationIcon = document.getElementById('notificationIcon');
 
     if (notificationConfig) {
         notification_sound = notificationConfig.dataset.notificationSound === 'true';
     }
 
     if (notification_sound) {
-        if (previousUnreadCount !== null && previousUnreadCount < data.unread_count) {
+        if (previousUnreadCount < unreadCount) {
             var audio = new Audio(staticUrl + "audio/notification-sound.wav");
             audio.play().catch(function () {});
         }
     }
 
-    for (var i = 0; i < badges.length; i++) {
-        badges[i].innerHTML = data.unread_count;
+    if (notificationIcon) {
+        notificationIcon.classList.toggle('has-unread', unreadCount > 0);
+        var notificationLink = notificationIcon.querySelector('.oh-navbar__notification-link');
+        if (notificationLink) {
+            var notificationLabel = notificationLink.dataset.notificationLabel || 'Notifications';
+            notificationLink.setAttribute('aria-label', notificationLabel + ' (' + unreadCount + ')');
+        }
     }
-    localStorage.setItem('previousUnreadCount', data.unread_count);
+
+    for (var i = 0; i < badges.length; i++) {
+        badges[i].textContent = unreadCount > 99 ? '99+' : unreadCount;
+    }
+    localStorage.setItem('previousUnreadCount', unreadCount);
 }
 
 function register_notifier(func) {

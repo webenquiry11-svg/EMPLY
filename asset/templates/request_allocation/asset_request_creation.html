@@ -8,7 +8,7 @@
     {% endif %}
 {% endif %}
 
-<div class="oh-modal__dialog-header employee-asset-modal-header pb-0">
+<div class="oh-modal__dialog-header pb-0">
     <span class="oh-modal__dialog-title" id="createModalLabel">
         {{ asset_request_form.verbose_name }}
     </span>
@@ -17,7 +17,7 @@
     </button>
 </div>
 <!-- htmx form -->
-<div class="oh-modal__dialog-body employee-asset-modal-body">
+<div class="oh-modal__dialog-body">
     {% if asset_request_form.errors %}
         <div class="oh-wrapper">
             {% for error in asset_request_form.non_field_errors %}

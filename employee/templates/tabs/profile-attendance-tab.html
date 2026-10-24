@@ -1,103 +1,403 @@
 {% load i18n %}
-<div class="oh-btn-group p-2 justify-content-end">
-    <div>
-        <button
-            class="oh-btn oh-btn--secondary"
-            title="{% trans 'New attendance request' %}"
-            data-toggle="oh-modal-toggle"
-            data-target="#objectCreateModal"
-            hx-get="{% url 'request-new-attendance' %}"
-            hx-target="#objectCreateModalTarget"
-        >
-            <ion-icon
-                name="add-sharp"
-                class="mr-2 md hydrated"
-                role="img"
-                aria-label="{% trans 'add sharp' %}"
-            ></ion-icon>
-            {% trans "Create" %}
-        </button>
-    </div>
-</div>
-{% if attendances %}
-    <div class="oh-sticky-table">
-        <div class="oh-sticky-table__table oh-table--sortable">
-            <div class="oh-sticky-table__thead">
-                <div class="oh-sticky-table__tr">
-                    <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Date" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Day" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Check-In" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "In Date" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Check-Out" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Out Date" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Shift" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Work Type" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Min Hour" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "At Work" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Overtime" %}</div>
-                </div>
-            </div>
-            <div class="oh-sticky-table__tbody">
-                {% for attendance in attendances %}
-                    <div
-                        class="oh-sticky-table__tr"
-                        draggable="false"
-                        data-toggle="oh-modal-toggle"
-                        data-target="#objectDetailsModalW25"
-                        hx-target="#objectDetailsModalW25Target"
-                        hx-get="{% url 'user-request-one-view' attendance.id %}?my_attendance=true&instances_ids={{attendances_ids}}"
-                    >
-                        <div class="oh-sticky-table__sd">
-                            <div class="oh-profile oh-profile--md">
-                                <div class="oh-profile__avatar mr-1">
-                                    <img
-                                        src="https://ui-avatars.com/api/?name={{attendance.employee_id.employee_first_name}}+{{attendance.employee_id.employee_last_name}}&background=random"
-                                        class="oh-profile__image"
-                                        alt="{% trans 'Mary Magdalene' %}"
-                                    >
-                                </div>
-                                <span class="oh-profile__name oh-text--dark">{{ attendance.employee_id }}</span>
-                            </div>
-                        </div>
-                        <div class="oh-sticky-table__td dateformat_changer">
-                            {{ attendance.attendance_date }}
-                        </div>
-                        <div class="oh-sticky-table__td">
-                            {{ attendance.attendance_day|capfirst }}
-                        </div>
-                        <div class="oh-sticky-table__td">
-                            {{ attendance.attendance_clock_in }}
-                        </div>
-                        <div class="oh-sticky-table__td dateformat_changer">
-                            {{ attendance.attendance_clock_in_date }}
-                        </div>
-                        <div class="oh-sticky-table__td">
-                            {{ attendance.attendance_clock_out }}
-                        </div>
-                        <div class="oh-sticky-table__td dateformat_changer">
-                            {{ attendance.attendance_clock_out_date }}
-                        </div>
-                        <div class="oh-sticky-table__td">{{ attendance.shift_id }}</div>
-                        <div class="oh-sticky-table__td">
-                            {{ attendance.work_type_id }}
-                        </div>
-                        <div class="oh-sticky-table__td">
-                            {{ attendance.minimum_hour }}
-                        </div>
-                        <div class="oh-sticky-table__td">
-                            {{ attendance.attendance_worked_hour }}
-                        </div>
-                        <div class="oh-sticky-table__td">
-                            {{ attendance.attendance_overtime }}
-                        </div>
+<style>
+  :root {
+    --pat-bg: #F7F8FA;
+    --pat-surface: #FFFFFF;
+    --pat-border: #E6E8EC;
+    --pat-border-strong: #DDE1E7;
+    --pat-text: #0F172A;
+    --pat-text-2: #475569;
+    --pat-text-3: #94A3B8;
+    --pat-text-4: #CBD5E1;
+    --pat-accent: #0F766E;
+    --pat-accent-2: #14B8A6;
+    --pat-accent-soft: #F0FDFA;
+    --pat-accent-border: #CCFBF1;
+    --pat-pill: #F1F5F9;
+    --pat-radius-sm: 10px;
+    --pat-radius-md: 14px;
+    --pat-radius-lg: 18px;
+    --pat-radius-pill: 999px;
+    --pat-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+    --pat-shadow-md: 0 4px 16px rgba(15, 23, 42, 0.05);
+  }
+
+  .pat-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* ---------- ACTION BAR ---------- */
+  .pat-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  .pat-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 16px;
+    border-radius: var(--pat-radius-pill);
+    background: var(--pat-accent);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid var(--pat-accent);
+    transition: all .18s ease;
+    cursor: pointer;
+    text-decoration: none;
+    line-height: 1;
+  }
+  .pat-btn:hover {
+    background: #0D6B64;
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(15, 118, 110, 0.20);
+  }
+  .pat-btn ion-icon {
+    font-size: 15px;
+    --ionicon-stroke-width: 48px;
+  }
+
+  /* ---------- CARD ---------- */
+  .pat-card {
+    background: var(--pat-surface);
+    border: 1px solid var(--pat-border);
+    border-radius: var(--pat-radius-lg);
+    overflow: hidden;
+  }
+
+  /* ---------- TABLE (sticky compat + clean style) ---------- */
+  .pat-table-wrap {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--pat-text-4) transparent;
+  }
+  .pat-table-wrap::-webkit-scrollbar {
+    height: 8px;
+  }
+  .pat-table-wrap::-webkit-scrollbar-thumb {
+    background: var(--pat-text-4);
+    border-radius: 999px;
+  }
+  .pat-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    min-width: 980px;
+  }
+  .pat-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--pat-pill);
+    color: var(--pat-text-3);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--pat-border);
+    white-space: nowrap;
+  }
+  .pat-table thead th:first-child {
+    padding-left: 20px;
+  }
+  .pat-table thead th:last-child {
+    padding-right: 20px;
+  }
+
+  .pat-table tbody tr {
+    transition: background .15s ease;
+    cursor: pointer;
+  }
+  .pat-table tbody tr:hover {
+    background: var(--pat-accent-soft);
+  }
+  .pat-table tbody td {
+    padding: 14px 16px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--pat-text);
+    border-bottom: 1px dashed var(--pat-border);
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  .pat-table tbody tr:last-child td {
+    border-bottom: 0;
+  }
+  .pat-table tbody td:first-child {
+    padding-left: 20px;
+  }
+  .pat-table tbody td:last-child {
+    padding-right: 20px;
+  }
+  .pat-table tbody td.muted {
+    color: var(--pat-text-2);
+    font-weight: 500;
+  }
+  .pat-table tbody td.subtle {
+    color: var(--pat-text-3);
+    font-weight: 500;
+  }
+  .pat-table tbody td.num {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Employee cell (avatar + name) */
+  .pat-emp {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-width: 0;
+  }
+  .pat-avatar {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+    overflow: hidden;
+    background: var(--pat-pill);
+    border: 1px solid var(--pat-border);
+  }
+  .pat-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .pat-emp-name {
+    color: var(--pat-text);
+    font-size: 13.5px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .pat-day-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: var(--pat-radius-pill);
+    background: var(--pat-pill);
+    color: var(--pat-text-2);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+  }
+  .pat-day-chip.weekend {
+    background: #FEF2F2;
+    color: #DC2626;
+  }
+  .pat-shift {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: var(--pat-radius-pill);
+    background: var(--pat-accent-soft);
+    color: var(--pat-accent);
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid var(--pat-accent-border);
+  }
+  .pat-shift::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--pat-accent);
+  }
+  .pat-worktype {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: var(--pat-radius-pill);
+    background: #EFF6FF;
+    color: #2563EB;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid #DBEAFE;
+  }
+  .pat-ot {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: var(--pat-radius-pill);
+    background: #FFFBEB;
+    color: #D97706;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1px solid #FDE68A;
+    font-variant-numeric: tabular-nums;
+  }
+  .pat-ot.none {
+    background: var(--pat-pill);
+    color: var(--pat-text-3);
+    border-color: var(--pat-border);
+    font-weight: 600;
+  }
+
+  /* Empty state */
+  .pat-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 72px 20px;
+    text-align: center;
+  }
+  .pat-empty-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+    display: grid;
+    place-items: center;
+    background: var(--pat-accent-soft);
+    color: var(--pat-accent);
+  }
+  .pat-empty-icon ion-icon {
+    font-size: 26px;
+  }
+  .pat-empty-title {
+    color: var(--pat-text);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.1px;
+    margin: 0;
+  }
+  .pat-empty-sub {
+    color: var(--pat-text-3);
+    font-size: 13px;
+    font-weight: 500;
+    margin: 0;
+  }
+
+  @media (max-width: 720px) {
+    .pat-table-wrap { -webkit-overflow-scrolling: touch; }
+    .pat-table thead th,
+    .pat-table tbody td { padding-left: 12px; padding-right: 12px; }
+    .pat-table thead th:first-child,
+    .pat-table tbody td:first-child { padding-left: 16px; }
+    .pat-table thead th:last-child,
+    .pat-table tbody td:last-child { padding-right: 16px; }
+  }
+</style>
+
+<div class="pat-wrap">
+  <div class="pat-actions">
+    <button
+      class="pat-btn"
+      title="{% trans 'New attendance request' %}"
+      data-toggle="oh-modal-toggle"
+      data-target="#objectCreateModal"
+      hx-get="{% url 'request-new-attendance' %}"
+      hx-target="#objectCreateModalTarget"
+      type="button"
+    >
+      <ion-icon name="add-sharp"></ion-icon>
+      {% trans "Create" %}
+    </button>
+  </div>
+
+  {% if attendances %}
+    <div class="pat-card">
+      <div class="pat-table-wrap">
+        <table class="pat-table">
+          <thead>
+            <tr>
+              <th>{% trans "Employee" %}</th>
+              <th>{% trans "Date" %}</th>
+              <th>{% trans "Day" %}</th>
+              <th>{% trans "Check-In" %}</th>
+              <th>{% trans "In Date" %}</th>
+              <th>{% trans "Check-Out" %}</th>
+              <th>{% trans "Out Date" %}</th>
+              <th>{% trans "Shift" %}</th>
+              <th>{% trans "Work Type" %}</th>
+              <th>{% trans "Min Hour" %}</th>
+              <th>{% trans "At Work" %}</th>
+              <th>{% trans "Overtime" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for attendance in attendances %}
+              <tr
+                data-toggle="oh-modal-toggle"
+                data-target="#objectDetailsModalW25"
+                hx-target="#objectDetailsModalW25Target"
+                hx-get="{% url 'user-request-one-view' attendance.id %}?my_attendance=true&instances_ids={{attendances_ids}}"
+              >
+                <td>
+                  <div class="pat-emp">
+                    <div class="pat-avatar">
+                      <img
+                        src="https://ui-avatars.com/api/?name={{attendance.employee_id.employee_first_name}}+{{attendance.employee_id.employee_last_name}}&background=random"
+                        alt="{% trans 'Avatar' %}"
+                      >
                     </div>
-                {% endfor %}
-            </div>
+                    <span class="pat-emp-name">{{ attendance.employee_id }}</span>
+                  </div>
+                </td>
+                <td class="dateformat_changer">{{ attendance.attendance_date }}</td>
+                <td>
+                  <span class="pat-day-chip{% if attendance.attendance_day == 'saturday' or attendance.attendance_day == 'sunday' %} weekend{% endif %}">
+                    {{ attendance.attendance_day|capfirst }}
+                  </span>
+                </td>
+                <td class="num">{{ attendance.attendance_clock_in }}</td>
+                <td class="dateformat_changer muted">{{ attendance.attendance_clock_in_date }}</td>
+                <td class="num{% if not attendance.attendance_clock_out %} subtle{% endif %}">
+                  {{ attendance.attendance_clock_out|default:"?" }}
+                </td>
+                <td class="dateformat_changer muted">
+                  {{ attendance.attendance_clock_out_date|default:"?" }}
+                </td>
+                <td>
+                  {% if attendance.shift_id %}
+                    <span class="pat-shift">{{ attendance.shift_id }}</span>
+                  {% else %}
+                    <span class="subtle">?</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if attendance.work_type_id %}
+                    <span class="pat-worktype">{{ attendance.work_type_id }}</span>
+                  {% else %}
+                    <span class="subtle">?</span>
+                  {% endif %}
+                </td>
+                <td class="num subtle">{{ attendance.minimum_hour|default:"?" }}</td>
+                <td class="num">{{ attendance.attendance_worked_hour|default:"?" }}</td>
+                <td>
+                  {% with ot=attendance.attendance_overtime|default:'' %}
+                    {% if ot and ot != '0' and ot != '0:00' and ot != '00:00' %}
+                      <span class="pat-ot">{{ ot }}</span>
+                    {% else %}
+                      <span class="pat-ot none">{{ ot|default:"0:00" }}</span>
+                    {% endif %}
+                  {% endwith %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% else %}
+    <div class="pat-card">
+      <div class="pat-empty">
+        <div class="pat-empty-icon">
+          <ion-icon name="checkbox-outline"></ion-icon>
         </div>
+        <h5 class="pat-empty-title">{% trans "No attendance requests" %}</h5>
+        <p class="pat-empty-sub">{% trans "No attendance requests have been generated." %}</p>
+      </div>
     </div>
-{% else %}
-    <div class="d-flex justify-content-center align-items-center" style="height: 40vh">
-        <h5 class="oh-404__subtitle">{% trans "No attendance requests have been generated." %}</h5>
-    </div>
-{% endif %}
+  {% endif %}
+</div>

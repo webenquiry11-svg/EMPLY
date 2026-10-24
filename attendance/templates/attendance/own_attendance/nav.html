@@ -1,80 +1,306 @@
 {% load i18n %}
-<section class="oh-wrapper oh-main__topbar employee-subsection-head" x-data="{searchShow: false}">
-    <div class="oh-main__titlebar oh-main__titlebar--left">
-        <h1 class="oh-main__titlebar-title fw-bold">{% trans "My Attendances" %}</h1>
-        <a
-            class="oh-main__titlebar-search-toggle"
-            role="button"
-            aria-label="{% trans 'Toggle Search' %}"
-            @click="searchShow = !searchShow"
-        >
-            <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
-        </a>
+<style>
+    .my-attendance-nav {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        width: 100%;
+        max-width: 95%;
+        min-height: 58px;
+        box-sizing: border-box;
+        margin: 16px auto 14px;
+        padding: 0 22px 0 24px;
+        position: relative;
+        overflow: visible;
+        flex-wrap: wrap;
+        z-index: 30;
+        background: #ffffff;
+        border: 1px solid #dce9e2;
+        border-radius: 20px;
+        box-shadow: 0 2px 8px rgba(18, 60, 40, 0.04), 0 10px 28px rgba(18, 60, 40, 0.07);
+    }
+    .my-attendance-nav::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, #1f7a5c 0%, #38a97b 55%, #8dcfb0 100%) top / 100% 3px no-repeat;
+        border-radius: inherit;
+        pointer-events: none;
+    }
+    .my-attendance-nav__title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-shrink: 0;
+    }
+    .my-attendance-nav__icon {
+        display: grid;
+        place-items: center;
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+        border: 1px solid rgba(31, 122, 92, 0.14);
+        border-radius: 12px;
+        background: linear-gradient(135deg, #e8f5ef, #d0eddf);
+    }
+    .my-attendance-nav__icon ion-icon {
+        color: #1f7a5c !important;
+        font-size: 20px;
+    }
+    .my-attendance-nav__heading {
+        margin: 0;
+        color: #0f2d1e !important;
+        font-size: 1.05rem;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        white-space: nowrap;
+    }
+    .my-attendance-nav__spacer { flex: 1; }
+    .my-attendance-nav__controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .my-attendance-nav .oh-dropdown {
+        position: relative;
+        z-index: 31;
+    }
+    .my-attendance-nav .oh-dropdown__filter {
+        z-index: 40;
+        width: min(560px, calc(100vw - 32px));
+        max-height: min(75vh, 680px);
+        overflow-y: auto;
+        border: 1px solid #dce9e2;
+        border-radius: 16px;
+        box-shadow: 0 18px 44px rgba(18, 60, 40, 0.16);
+    }
+    .my-attendance-nav .oh-dropdown > .oh-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        height: 34px;
+        box-sizing: border-box;
+        margin: 0 !important;
+        padding: 0 13px;
+        border: 1.5px solid #d3e5db;
+        border-radius: 10px;
+        background: #f6fbf8;
+        color: #2e6649 !important;
+        font-size: 0.82rem;
+        font-weight: 700;
+        box-shadow: none;
+        transition: background 0.15s, border-color 0.15s;
+    }
+    .my-attendance-nav .oh-dropdown > .oh-btn ion-icon {
+        color: #2e6649 !important;
+        font-size: 15px;
+    }
+    .my-attendance-nav .oh-dropdown > .oh-btn:hover {
+        border-color: #b0d4c1;
+        background: #e4f3eb;
+    }
+    .my-attendance-nav .oh-dropdown__menu {
+        z-index: 40;
+        max-height: min(75vh, 680px);
+        overflow-y: auto;
+        border: 1px solid #dce9e2;
+        border-radius: 16px;
+        box-shadow: 0 18px 44px rgba(18, 60, 40, 0.16);
+    }
+    body:has(.employee-attendance-page) .my-attendance-nav {
+        border-color: rgba(42, 132, 155, 0.2);
+        box-shadow: 0 2px 8px rgba(10, 77, 96, 0.04), 0 10px 28px rgba(10, 77, 96, 0.08);
+    }
+    body:has(.employee-attendance-page) .my-attendance-nav::before {
+        background-image: linear-gradient(90deg, #0a4d60 0%, #278da0 55%, #b8dfe6 100%);
+    }
+    body:has(.employee-attendance-page) .my-attendance-nav__icon {
+        border-color: rgba(39, 141, 160, 0.2);
+        background: linear-gradient(135deg, #e8f5f7, #d8edf1);
+    }
+    body:has(.employee-attendance-page) .my-attendance-nav__icon ion-icon {
+        color: #176d83 !important;
+    }
+    body:has(.employee-attendance-page) .my-attendance-nav__heading {
+        color: #173f50 !important;
+    }
+    body:has(.employee-attendance-page) .my-attendance-nav .oh-dropdown > .oh-btn {
+        border-color: rgba(39, 141, 160, 0.28);
+        background: linear-gradient(110deg, #0a4d60, #278da0);
+        color: #ffffff !important;
+        box-shadow: 0 5px 12px rgba(10, 77, 96, 0.16);
+    }
+    body:has(.employee-attendance-page) .my-attendance-nav .oh-dropdown > .oh-btn ion-icon {
+        color: #ffffff !important;
+    }
+    body:has(.employee-attendance-page) .my-attendance-nav .oh-dropdown > .oh-btn:hover {
+        border-color: #0a4d60;
+        background: linear-gradient(110deg, #083f50, #176d83);
+    }
+    body:has(.employee-attendance-page) .my-attendance-nav .my-attendance-period {
+        display: flex;
+        width: 100%;
+        box-sizing: border-box;
+        align-items: stretch;
+        gap: 4px;
+        padding: 3px;
+        border: 1px solid #c7e5eb;
+        border-radius: 10px;
+        background: #f3f9fa;
+    }
+    body:has(.employee-attendance-page) .my-attendance-nav .my-attendance-period__button {
+        flex: 1 1 0;
+        min-width: 0;
+        min-height: 36px;
+        margin: 0;
+        padding: 0 10px;
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
+        color: #557b84;
+        font-size: .72rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+    body:has(.employee-attendance-page) .my-attendance-nav .my-attendance-period__button[aria-pressed="true"] {
+        background: linear-gradient(110deg, #0a4d60, #278da0);
+        color: #ffffff;
+        box-shadow: 0 3px 8px rgba(10, 77, 96, .18);
+    }
+    body:has(.employee-attendance-page) .my-attendance-nav .my-attendance-nav__controls {
+        display: block;
+        width: 100%;
+        margin: 0;
+    }
+    body:has(.employee-attendance-page) .my-attendance-nav .my-attendance-nav__controls > .oh-dropdown {
+        display: block;
+        width: 100%;
+    }
+    body:has(.employee-attendance-page) .my-attendance-nav .my-attendance-nav__controls > .oh-dropdown > .oh-btn {
+        width: 100%;
+        min-height: 36px;
+    }
+    @media (max-width: 768px) {
+        .my-attendance-nav {
+            width: 100%;
+            max-width: 100%;
+            min-height: auto;
+            margin: 0 auto 12px;
+            padding: 14px 16px;
+            gap: 10px;
+        }
+        .my-attendance-nav__controls {
+            width: 100%;
+            justify-content: flex-end;
+        }
+    }
+</style>
+
+<section class="my-attendance-nav" x-data="{searchShow: false}">
+    <div class="my-attendance-nav__title">
+        <div class="my-attendance-nav__icon">
+            <ion-icon name="calendar-outline" aria-hidden="true"></ion-icon>
+        </div>
+        <h2 class="my-attendance-nav__heading">{% trans "Attendance controls" %}</h2>
+    </div>
+    <div class="my-attendance-nav__spacer"></div>
+    <div class="my-attendance-period" role="group" aria-label="{% trans 'Attendance date range' %}">
+        <button
+            type="button"
+            class="my-attendance-period__button"
+            data-attendance-range="week"
+            aria-pressed="false"
+        >{% trans "Week" %}</button>
+        <button
+            type="button"
+            class="my-attendance-period__button"
+            data-attendance-range="month"
+            aria-pressed="true"
+        >{% trans "Month" %}</button>
     </div>
     <form
+        class="my-attendance-nav__controls"
         hx-get='{% url "filter-own-attendance" %}'
         id="filterForm"
         hx-swap="innerHTML"
         hx-target="#attendance-container"
         onsubmit="event.preventDefault()"
     >
-        <div class="oh-main__titlebar oh-main__titlebar--right">
-            {% comment %} <div class="oh-input-group oh-input__search-group"
-            :class="searchShow ? 'oh-input__search-group--show' : ''">
-            <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
-            <input type="text" class="oh-input oh-input__icon" aria-label="{% trans 'Search Input' %}" placeholder="{% trans 'Search' %}" />
-          </div> {% endcomment %}
-
-            <div class="oh-main__titlebar-button-container">
-                <div class="oh-btn-group ml-2">
-                    {% include 'attendance/own_attendance/filters.html' %}
-                </div>
-            </div>
-
-            {% comment %} <div class="oh-dropdown" x-data="{open: false}">
-            <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
-              <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
-              <div id="filterCount"></div>
-            </button>
-            <div
-            class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-            x-show="open"
-            @click.outside="open = false"
-            style="display: none"
-            >
-            <div class="oh-accordion">
-              <label>{% trans "Group By" %}</label>
-                <div class="row">
-                  <div class="col-sm-12 col-md-12 col-lg-6">
-                    <div class="oh-input-group">
-                      <label class="oh-label">{% trans "Field" %}</label>
-                    </div>
-                  </div>
-                  <div class="col-sm-12 col-md-12 col-lg-6">
-                    <div class="oh-input-group">
-                      <select
-                        class="oh-select mt-1 w-100"
-                        id="id_field"
-                        name="field"
-                        class="select2-selection select2-selection--single"
-                      >
-                        {% for field in gp_fields %}
-                        <option value="{{ field.0 }}">{% trans field.1 %}</option>
-                        {% endfor %}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div> {% endcomment %}
-        </div>
+        {% include 'attendance/own_attendance/filters.html' %}
     </form>
 </section>
 <script>
+    $(document).on('click', '.my-attendance-period__button', function () {
+      const now = new Date();
+      const formatDate = (date) => [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, '0'),
+        String(date.getDate()).padStart(2, '0')
+      ].join('-');
+      let startDate;
+
+      if (this.dataset.attendanceRange === 'week') {
+        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        startDate.setDate(startDate.getDate() - ((startDate.getDay() + 6) % 7));
+      } else {
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+      }
+
+      $('.my-attendance-period__button').attr('aria-pressed', 'false');
+      $(this).attr('aria-pressed', 'true');
+      const params = new URLSearchParams({
+        'attendance_date__gte': formatDate(startDate),
+        'attendance_date__lte': formatDate(now)
+      });
+      htmx.ajax('GET', `{% url "filter-own-attendance" %}?${params.toString()}`, {
+        target: '#attendance-container',
+        swap: 'innerHTML'
+      });
+    });
+
+    $(document).on('click', '.my-attendance-nav .filterButton, .employee-attendance-status-legend > span', function () {
+      $('.my-attendance-period__button').attr('aria-pressed', 'false');
+    });
+
+    $(document).on('click', '.oh-sticky-dropdown_btn[data-attendance-columns-toggle]', function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      const menu = document.getElementById(this.getAttribute('aria-controls'));
+      if (!menu) return;
+
+      const isExpanded = this.getAttribute('aria-expanded') === 'true';
+      document.querySelectorAll('.oh-sticky-dropdown_btn[data-attendance-columns-toggle]').forEach((button) => {
+        button.setAttribute('aria-expanded', 'false');
+        const controlledMenu = document.getElementById(button.getAttribute('aria-controls'));
+        if (controlledMenu) controlledMenu.hidden = true;
+      });
+      this.setAttribute('aria-expanded', String(!isExpanded));
+      menu.hidden = isExpanded;
+    });
+
+    $(document).on('click', function (event) {
+      if (event.target.closest('.oh-sticky-dropdown--header')) return;
+      document.querySelectorAll('.oh-sticky-dropdown_btn[data-attendance-columns-toggle]').forEach((button) => {
+        button.setAttribute('aria-expanded', 'false');
+        const menu = document.getElementById(button.getAttribute('aria-controls'));
+        if (menu) menu.hidden = true;
+      });
+    });
+
+    $(document).on('keydown', function (event) {
+      if (event.key !== 'Escape') return;
+      document.querySelectorAll('.oh-sticky-dropdown_btn[data-attendance-columns-toggle]').forEach((button) => {
+        button.setAttribute('aria-expanded', 'false');
+        const menu = document.getElementById(button.getAttribute('aria-controls'));
+        if (menu) menu.hidden = true;
+      });
+    });
+
     $(document).ready(function () {
       $('#id_field').on('change',function(){
         $('.filterButton')[0].click();
       })
+      $('.my-attendance-period__button[data-attendance-range="month"]').trigger('click');
     })
 </script>

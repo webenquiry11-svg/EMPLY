@@ -1,181 +1,269 @@
 {% load i18n %}
-<section class="oh-wrapper oh-main__topbar employee-policies-head" style="padding-bottom: 1rem">
-    <style>
-        .employee-policies-head {
-            background: #ffffff;
-            border: 1px solid #d6e9e6;
-            border-radius: 20px;
-            margin: 26px 28px 18px;
-            padding: 20px 24px !important;
-            box-shadow: 0 10px 26px rgba(29, 86, 79, .08);
-        }
-        .employee-policies-head .oh-main__titlebar-title {
-            color: #174f4b;
-        }
-        .employee-policies-head * {
-            color: #315244;
-        }
-        .employee-policies-head .oh-main__titlebar-title {
-            color: #17241d !important;
-        }
-        .employee-policies-head .oh-input::placeholder {
-            color: #849088;
-        }
-        .employee-policies-head .oh-input {
-            border-color: #cfe2e0;
-            border-radius: 12px;
-            background: #f8fcfb;
-            box-shadow: 0 4px 12px rgba(29, 86, 79, .05);
-        }
-        .employee-policies-head .oh-btn--secondary {
-            background: linear-gradient(135deg, #155f6d, #238da0);
-            border: 0;
-            color: #fff;
-            border-radius: 11px;
-            box-shadow: 0 6px 14px rgba(21, 95, 109, .16);
-        }
-        .employee-policies-head .oh-btn--secondary:hover {
-            background: linear-gradient(135deg, #0d5362, #167b8d);
-            color: #fff;
-            transform: translateY(-1px);
-        }
-        html body .oh-wrapper-main.super-admin-panel-theme .employee-policies-head {
-            justify-content: space-between;
-            gap: 24px;
-            background: #ffffff !important;
-            border-color: #b9dce4 !important;
-            box-shadow: 0 10px 26px rgba(10, 77, 96, 0.12);
-        }
-        .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-main__titlebar--left,
-        .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-main__titlebar-title {
-            color: #173f50 !important;
-        }
-        .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-main__titlebar-title {
-            font-size: 1rem !important;
-            font-weight: 700 !important;
-        }
-        .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-main__titlebar--right {
-            display: flex;
-            flex: 0 1 auto;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 14px;
-            margin: 0;
-        }
-        .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-input__search-group {
-            display: flex;
-            flex: 0 1 270px;
-            align-items: center;
-            min-width: 200px;
-            margin: 0 !important;
-            padding: 0;
-            background: transparent !important;
-            border: 0 !important;
-            box-shadow: none !important;
-        }
-        .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-input {
+<style>
+    .policy-nav {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        width: 100%;
+        max-width: 95%;
+        min-height: 68px;
+        box-sizing: border-box;
+        margin: 24px auto 16px;
+        padding: 0 26px 0 28px;
+        position: relative;
+        overflow: visible;
+        flex-wrap: wrap;
+        z-index: 30;
+        background: #ffffff;
+        border: 1px solid #dce9e2;
+        border-radius: 20px;
+        box-shadow: 0 2px 8px rgba(18, 60, 40, 0.04), 0 10px 28px rgba(18, 60, 40, 0.07);
+    }
+    .policy-nav::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, #1f7a5c 0%, #38a97b 55%, #8dcfb0 100%) top / 100% 3px no-repeat;
+        border-radius: inherit;
+        pointer-events: none;
+    }
+    .policy-nav__title-block {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-shrink: 0;
+    }
+    .policy-nav__icon {
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        border: 1px solid rgba(31, 122, 92, 0.14);
+        border-radius: 12px;
+        background: linear-gradient(135deg, #e8f5ef, #d0eddf);
+    }
+    .policy-nav__icon ion-icon {
+        color: #1f7a5c !important;
+        font-size: 20px;
+    }
+    .policy-nav__title {
+        margin: 0;
+        color: #0f2d1e !important;
+        font-size: 1.2rem;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        white-space: nowrap;
+    }
+    .policy-nav__spacer { flex: 1; }
+    .policy-nav__controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .policy-nav .oh-dropdown {
+        position: relative;
+        z-index: 31;
+    }
+    .policy-nav .oh-dropdown__filter,
+    .policy-nav .oh-dropdown__menu {
+        z-index: 40;
+        width: min(560px, calc(100vw - 32px));
+        max-height: min(75vh, 680px);
+        overflow-y: auto;
+        border: 1px solid #dce9e2;
+        border-radius: 16px;
+        box-shadow: 0 18px 44px rgba(18, 60, 40, 0.16);
+    }
+    .policy-nav .oh-dropdown > .oh-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        height: 38px;
+        box-sizing: border-box;
+        margin: 0 !important;
+        padding: 0 14px;
+        border: 1.5px solid #d3e5db;
+        border-radius: 10px;
+        background: #f6fbf8;
+        color: #2e6649 !important;
+        font-size: 0.82rem;
+        font-weight: 700;
+        box-shadow: none;
+        transition: background 0.15s, border-color 0.15s;
+    }
+    .policy-nav .oh-dropdown > .oh-btn ion-icon {
+        color: #2e6649 !important;
+        font-size: 15px;
+    }
+    .policy-nav .oh-dropdown > .oh-btn:hover {
+        border-color: #b0d4c1;
+        background: #e4f3eb;
+    }
+    .policy-nav__search-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    .policy-nav__search-wrap ion-icon {
+        position: absolute;
+        left: 11px;
+        color: #7a9e8b !important;
+        font-size: 15px;
+        pointer-events: none;
+    }
+    .policy-nav__search {
+        width: 220px;
+        height: 38px;
+        box-sizing: border-box;
+        padding: 0 12px 0 34px;
+        border: 1.5px solid #d3e5db;
+        border-radius: 10px;
+        outline: none;
+        background: #f6fbf8;
+        color: #1b3a28;
+        font-size: 0.83rem;
+        transition: border-color 0.16s, box-shadow 0.16s;
+    }
+    .policy-nav__search::placeholder { color: #9db8a9; }
+    .policy-nav__search:focus {
+        border-color: #38a97b;
+        background: #ffffff;
+        box-shadow: 0 0 0 3px rgba(56, 169, 123, 0.1);
+    }
+    .policy-nav__create {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        height: 38px;
+        box-sizing: border-box;
+        padding: 0 14px;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #1f7a5c, #28936e);
+        color: #ffffff !important;
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-decoration: none !important;
+        white-space: nowrap;
+        box-shadow: 0 4px 12px rgba(31, 122, 92, 0.24);
+        transition: opacity 0.15s, box-shadow 0.15s;
+    }
+    .policy-nav__create ion-icon {
+        color: #ffffff !important;
+        font-size: 15px;
+    }
+    .policy-nav__create:hover,
+    .policy-nav__create:focus,
+    .policy-nav__create:focus-visible {
+        color: #ffffff !important;
+        text-decoration: none !important;
+    }
+    .policy-nav__create:hover {
+        opacity: 0.9;
+        box-shadow: 0 6px 16px rgba(31, 122, 92, 0.32);
+    }
+    body:has(#policyContainer) .policy-nav {
+        border-color: rgba(42, 132, 155, 0.2);
+        box-shadow: 0 2px 8px rgba(10, 77, 96, 0.04), 0 10px 28px rgba(10, 77, 96, 0.08);
+    }
+    body:has(#policyContainer) .policy-nav::before {
+        background-image: linear-gradient(90deg, #0a4d60 0%, #278da0 55%, #b8dfe6 100%);
+    }
+    body:has(#policyContainer) .policy-nav__icon {
+        border-color: rgba(39, 141, 160, 0.2);
+        background: linear-gradient(135deg, #e8f5f7, #d8edf1);
+    }
+    body:has(#policyContainer) .policy-nav__icon ion-icon {
+        color: #176d83 !important;
+    }
+    body:has(#policyContainer) .policy-nav__title {
+        color: #173f50 !important;
+    }
+    body:has(#policyContainer) .policy-nav .oh-dropdown > .oh-btn {
+        border-color: rgba(39, 141, 160, 0.28);
+        background: linear-gradient(110deg, #0a4d60, #278da0);
+        color: #ffffff !important;
+        box-shadow: 0 5px 12px rgba(10, 77, 96, 0.16);
+    }
+    body:has(#policyContainer) .policy-nav .oh-dropdown > .oh-btn ion-icon {
+        color: #ffffff !important;
+    }
+    body:has(#policyContainer) .policy-nav .oh-dropdown > .oh-btn:hover {
+        border-color: #0a4d60;
+        background: linear-gradient(110deg, #083f50, #176d83);
+    }
+    body:has(#policyContainer) .policy-nav__search {
+        border-color: rgba(39, 141, 160, 0.28);
+        background: #f6fbfc;
+        color: #173f50;
+    }
+    body:has(#policyContainer) .policy-nav__search:focus {
+        border-color: #278da0;
+        box-shadow: 0 0 0 3px rgba(39, 141, 160, 0.12);
+    }
+    body:has(#policyContainer) .policy-nav__create {
+        background: linear-gradient(110deg, #0a4d60, #278da0);
+        box-shadow: 0 5px 12px rgba(10, 77, 96, 0.16);
+    }
+    @media (max-width: 768px) {
+        .policy-nav {
             width: 100%;
-            margin: 0 !important;
-            background: #ffffff !important;
-            border-color: #c7e5eb !important;
-            color: #173f50 !important;
-            box-shadow: none;
+            max-width: 100%;
+            min-height: auto;
+            margin: 0 auto 12px;
+            padding: 14px 16px;
+            gap: 10px;
         }
-        .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-input::placeholder {
-            color: #557b84;
+        .policy-nav__controls {
+            width: 100%;
+            justify-content: flex-end;
         }
-        .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-input-group__icon {
-            color: #176f80 !important;
+        .policy-nav__search-wrap,
+        .policy-nav__search {
+            width: 100%;
         }
-        .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-main__titlebar-button-container {
-            margin: 0;
+        .policy-nav__controls {
+            flex-wrap: wrap;
         }
-        .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-btn--secondary {
-            min-width: 120px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 7px;
-            background: linear-gradient(135deg, #0a596b, #177f91) !important;
-            border-color: #176f80 !important;
-            color: #ffffff !important;
-        }
-        .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-btn--secondary ion-icon {
-            flex: 0 0 auto;
-            color: #ffffff !important;
-            font-size: 18px;
-            line-height: 1;
-        }
-        .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-btn--secondary:hover {
-            background: #0a4d60 !important;
-            border-color: #0a4d60 !important;
-        }
-        @media (max-width: 640px) {
-            .employee-policies-head {
-                margin: 14px 12px 14px;
-                padding: 16px !important;
-            }
-            .employee-policies-head .oh-main__titlebar--right {
-                gap: 10px;
-            }
-            .employee-policies-head .oh-input__search-group,
-            .employee-policies-head .oh-input,
-            .employee-policies-head .oh-main__titlebar-button-container,
-            .employee-policies-head .oh-btn {
-                width: 100%;
-                margin-right: 0 !important;
-            }
-            .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-main__titlebar--right {
-                width: 100%;
-                align-items: stretch;
-            }
-            .oh-wrapper-main.super-admin-panel-theme .employee-policies-head .oh-input__search-group {
-                flex-basis: 100%;
-                min-width: 0;
-            }
-        }
-    </style>
-    <div class="oh-main__titlebar oh-main__titlebar--left oh-d-flex-column--resp oh-mb-3--small">
-        <h1 class="oh-main__titlebar-title fw-bold">{% trans 'Policies' %}</h1>
-    </div>
+    }
+</style>
 
-    <div class="oh-main__titlebar oh-main__titlebar--right oh-d-flex-column--resp oh-mb-3--small">
-        <div class="oh-input-group oh-input__search-group mr-4">
-            <ion-icon
-                name="search-outline"
-                class="oh-input-group__icon oh-input-group__icon--left md hydrated"
-                role="img"
-                aria-label="{% trans 'search outline' %}"
-            ></ion-icon>
+<section class="policy-nav">
+    <div class="policy-nav__title-block">
+        <div class="policy-nav__icon"><ion-icon name="document-text-outline"></ion-icon></div>
+        <h1 class="policy-nav__title">{% trans "Policies" %}</h1>
+    </div>
+    <div class="policy-nav__spacer"></div>
+    <div class="policy-nav__controls">
+        <label class="policy-nav__search-wrap">
+            <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
             <input
                 hx-get="{% url 'search-policies' %}"
                 name="search"
                 hx-trigger="keyup changed delay:.2s"
                 hx-target="#policyContainer"
-                type="text"
+                type="search"
                 placeholder="{% trans 'Search' %}"
-                style="margin-right: 10px"
-                class="oh-input oh-input__icon mr-3"
-                autocomplete="false"
-                aria-label="{% trans 'Search Input' %}"
+                class="policy-nav__search"
+                autocomplete="off"
+                aria-label="{% trans 'Search policies' %}"
             >
-        </div>
+        </label>
         {% include 'policies/filter.html' %}
         {% if perms.employee.add_policy %}
-            <div class="oh-main__titlebar-button-container">
-                <div class="oh-main__titlebar-button-container">
-                    <a
-                        hx-get="{% url 'create-policy' %}"
-                        hx-target="#objectCreateModalTarget"
-                        data-toggle="oh-modal-toggle"
-                        data-target="#objectCreateModal"
-                        class="oh-btn oh-btn--secondary"
-                    >
-                        <ion-icon name="add-outline"></ion-icon>
-                        {% trans 'Create' %}
-                    </a>
-                </div>
-            </div>
+            <a
+                hx-get="{% url 'create-policy' %}"
+                hx-target="#objectCreateModalTarget"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectCreateModal"
+                class="policy-nav__create"
+            >
+                <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+                {% trans "Create" %}
+            </a>
         {% endif %}
     </div>
 </section>

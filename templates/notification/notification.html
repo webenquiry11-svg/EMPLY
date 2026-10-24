@@ -5,7 +5,7 @@
 {% notifications_unread as unread_count %}
 
 <div
-    class="oh-navbar__notifications"
+    class="oh-navbar__notifications{% if unread_count %} has-unread{% endif %}"
     id="notificationIcon"
     x-data="{open: false}"
     hx-get="{% url 'notifications' %}"
@@ -15,13 +15,16 @@
         href="#"
         class="oh-navbar__notification-link"
         @click="open = !open"
+        aria-label="{% trans 'Notifications' %} ({{ unread_count }})"
         title="{% trans 'Notifications' %}"
+        data-notification-label="{% trans 'Notifications' %}"
+        data-tooltip="{% trans 'Notifications' %}"
     >
         <ion-icon
             name="notifications-outline"
             class="oh-navbar__icon"
         ></ion-icon>
-        <span class="oh-navbar__notification-beacon">
+        <span class="oh-navbar__notification-beacon" aria-hidden="true">
             {% live_notify_badge %}
         </span>
     </a>

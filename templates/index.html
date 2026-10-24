@@ -6406,6 +6406,44 @@
             box-shadow: 0 0 0 2px #176d83 !important;
         }
 
+        html body .oh-wrapper-main.employee-panel-theme #notificationIcon:not(.has-unread) .oh-navbar__notification-beacon {
+            display: none !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme #notificationIcon.has-unread .oh-navbar__notification-beacon {
+            top: -5px !important;
+            right: -7px !important;
+            display: flex !important;
+            min-width: 20px !important;
+            height: 20px !important;
+            padding: 0 5px !important;
+            border: 2px solid #ffffff !important;
+            border-radius: 999px !important;
+            background: #d92d43 !important;
+            color: #ffffff !important;
+            box-sizing: border-box !important;
+        }
+
+        html body .oh-wrapper-main.employee-panel-theme #notificationIcon.has-unread > .oh-navbar__notification-link .oh-navbar__icon {
+            animation: notification-bell-ring 4.8s ease-in-out infinite;
+        }
+
+        @keyframes notification-bell-ring {
+            0%, 84%, 100% { transform: rotate(0); }
+            86% { transform: rotate(13deg); }
+            88% { transform: rotate(-12deg); }
+            90% { transform: rotate(9deg); }
+            92% { transform: rotate(-7deg); }
+            94% { transform: rotate(4deg); }
+            96% { transform: rotate(0); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html body .oh-wrapper-main.employee-panel-theme #notificationIcon.has-unread > .oh-navbar__notification-link .oh-navbar__icon {
+                animation: none;
+            }
+        }
+
         html body .oh-wrapper-main.employee-panel-theme .oh-navbar__user-info {
             border-color: rgba(42, 132, 155, 0.28) !important;
             box-shadow: 0 5px 14px rgba(23, 109, 131, 0.14) !important;

@@ -2,6 +2,7 @@
 {% block content %}
     {% load i18n %}
     {% load static %}
+    <div class="employee-policies-page">
     {% include 'policies/nav.html' %}
     <style>
         html:has(#policyContainer),
@@ -10,235 +11,321 @@
         .oh-wrapper-main:has(#policyContainer) > #main {
             background: #f5faf9 !important;
         }
-        html body .oh-wrapper-main.super-admin-panel-theme:has(#policyContainer),
-        html body .oh-wrapper-main.super-admin-panel-theme:has(#policyContainer) > #main,
-        html body .oh-wrapper-main.super-admin-panel-theme:has(#policyContainer) #main-section,
-        html body .oh-wrapper-main.super-admin-panel-theme:has(#policyContainer) #main-section-data,
-        html body .oh-wrapper-main.super-admin-panel-theme:has(#policyContainer) #policyContainer {
-            background: #e8f5f7 !important;
-            color: #173f50 !important;
-        }
-        #policyContainer {
-            width: auto;
-            margin: 0 28px;
-            padding-bottom: 135px;
+        .employee-policies-page {
+            min-height: calc(100vh - 80px);
+            box-sizing: border-box;
+            padding: 30px 32px 120px;
+            background: #f5faf9;
             color: #245b63;
         }
-        #policyContainer *,
-        .employee-policies-head * {
-            color: #263b30;
+        #policyContainer {
+            width: 95%;
+            max-width: none;
+            box-sizing: border-box;
+            margin: 0 auto;
+            padding-bottom: 15px;
+            background: #f5faf9 !important;
+            color: #245b63;
         }
         #policyContainer .oh-faq-cards {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 22px;
+            align-items: stretch;
+            gap: 20px;
+            padding: 12px 0;
         }
         #policyContainer .oh-faq-card {
+            position: relative;
             display: flex;
             flex-direction: column;
-            min-height: 430px;
+            min-width: 0;
+            min-height: 360px;
+            overflow: hidden;
             background: #ffffff;
-            border: 1px solid #cfe4e9;
+            border: 1px solid #d6e9e6;
             border-top: 3px solid #238da0;
-            border-radius: 18px;
-            box-shadow: 0 8px 24px rgba(10, 77, 96, .08);
-            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 26px rgba(29, 86, 79, .08);
+            padding: 0 !important;
             transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
         }
         #policyContainer .oh-faq-card:hover {
             transform: translateY(-3px);
-            border-color: #9bcfd8;
-            border-top-color: #176f80;
-            box-shadow: 0 14px 30px rgba(10, 77, 96, .14);
+            border-color: #8ecbc7;
+            box-shadow: 0 16px 32px rgba(21, 95, 109, .13);
         }
-        #policyContainer .oh-faq-card > div:first-child {
+        #policyContainer .oh-faq-card__header {
             display: flex;
-            flex: 1;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            min-height: 82px;
+            padding: 16px 18px;
+            border-bottom: 1px solid #e0edf0;
+            background: #ffffff;
+        }
+        #policyContainer .oh-faq-card__heading,
+        #policyContainer .oh-faq-card__title-row {
+            display: flex;
+            align-items: center;
+            min-width: 0;
+        }
+        #policyContainer .oh-faq-card__title-row {
+            gap: 12px;
+        }
+        #policyContainer .oh-faq-card__icon {
+            display: grid;
+            flex: 0 0 40px;
+            width: 40px;
+            height: 40px;
+            place-items: center;
+            border: 1px solid #d8e9ed;
+            border-radius: 12px;
+            background: #f1f8fa;
+            color: #176f80;
+        }
+        #policyContainer .oh-faq-card__icon ion-icon {
+            color: inherit;
+            font-size: 20px;
+        }
+        #policyContainer .oh-faq-card__title-content {
+            display: flex;
             flex-direction: column;
-            min-height: 0;
+            gap: 5px;
+            min-width: 0;
         }
         #policyContainer .oh-faq-card__title {
-            display: flex;
-            height: 64px;
-            min-height: 64px;
-            align-items: center;
-            gap: 12px;
-            box-sizing: border-box;
-            color: #173f50;
-            border-bottom: 1px solid #e0edf0;
-            padding-bottom: 12px;
-            margin-bottom: 14px !important;
+            margin: 0 !important;
+            color: #173f50 !important;
+            font-size: 1rem;
+            font-weight: 750;
             line-height: 1.35;
-        }
-        #policyContainer .oh-faq-card__title > span {
-            display: flex;
-            flex: 1;
-            min-width: 0;
-            align-items: center;
             overflow-wrap: anywhere;
         }
-        #policyContainer .oh-faq-card__title .oh-dot {
-            flex: 0 0 auto;
+        #policyContainer .oh-faq-card__scope {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #6d8581;
+            font-size: .75rem;
+            font-weight: 600;
         }
-        #policyContainer .oh-faq-card__title > div {
+        #policyContainer .oh-faq-card__scope ion-icon {
+            color: #6d8581;
+            font-size: 13px;
+        }
+        #policyContainer .oh-faq-card__actions {
             display: flex;
             flex: 0 0 auto;
             align-items: center;
             gap: 7px;
         }
-        #policyContainer .oh-faq-card__title a {
+        #policyContainer .oh-faq-card__actions a {
             display: grid;
             width: 32px;
             height: 32px;
             place-items: center;
-            margin: 0;
-            color: #176f80;
-            background: #f1f8fa;
             border: 1px solid #d8e9ed;
             border-radius: 9px;
-            transition: background .2s ease, border-color .2s ease, color .2s ease;
+            background: #f7fbfc;
+            color: #176f80;
+            text-decoration: none;
+            transition: background .18s ease, border-color .18s ease, color .18s ease;
         }
-        #policyContainer .oh-faq-card__title a:hover {
-            color: #ffffff;
-            background: #176f80;
+        #policyContainer .oh-faq-card__actions a:hover {
             border-color: #176f80;
+            background: #176f80;
+            color: #ffffff;
         }
-        #policyContainer .oh-faq-card__title ion-icon {
+        #policyContainer .oh-faq-card__actions ion-icon {
+            color: inherit;
             font-size: 17px;
         }
-        #policyContainer .oh-faq-card .oh-btn--secondary {
-            margin-top: auto;
-            background: linear-gradient(135deg, #155f6d, #238da0);
-            border: 0;
-            color: #fff;
-            border-radius: 11px;
-            box-shadow: 0 6px 14px rgba(21, 95, 109, .16);
-            transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+        #policyContainer .oh-faq-card__actions .oh-faq-card__delete {
+            color: #b54747;
+            border-color: #f0d9d9;
+            background: #fffafa;
         }
-        #policyContainer .oh-faq-card .oh-btn--secondary:hover {
-            background: linear-gradient(135deg, #0d5362, #167b8d);
-            color: #fff;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(21, 95, 109, .23);
+        #policyContainer .oh-faq-card__actions .oh-faq-card__delete:hover {
+            color: #ffffff;
+            border-color: #b54747;
+            background: #b54747;
         }
-        #policyContainer .oh-faq-card .truncated-text {
-            flex: 1;
-            min-height: 0 !important;
-            max-height: 250px !important;
-            padding: 14px;
+        #policyContainer .oh-faq-card__body {
+            flex: 1 1 auto;
+            min-height: 120px;
+            max-height: 250px;
+            padding: 16px 18px;
+            overflow: auto;
             overflow-wrap: anywhere;
             color: #5d7775;
+            font-size: .88rem;
             line-height: 1.65;
-            margin-bottom: 16px;
-            background: #f6fafb;
-            border: 1px solid #e3eef1;
-            border-radius: 12px;
             scrollbar-color: #8ecbc7 #eff8f7;
         }
-        #policyContainer .oh-faq-card .truncated-text::after {
-            display: none;
-        }
-        #policyContainer .oh-faq-card .truncated-text > * {
+        #policyContainer .oh-faq-card__body > * {
             max-width: 100%;
-            white-space: normal !important;
             overflow-wrap: anywhere;
+            white-space: normal !important;
         }
-        #policyContainer .oh-faq-card .truncated-text img {
+        #policyContainer .oh-faq-card__body img {
             max-width: 100%;
             height: auto;
         }
-        #policyContainer .oh-faq-card .truncated-text table {
+        #policyContainer .oh-faq-card__body table {
             display: block;
             max-width: 100%;
             overflow-x: auto;
         }
-        #policyContainer .oh-faq-card__title span,
-        #policyContainer .oh-faq-card__title span *,
-        #policyContainer .oh-faq-card .truncated-text *,
-        #policyContainer .oh-faq-card p,
-        #policyContainer .oh-faq-card li {
-            color: #5d7775 !important;
+        #policyContainer .oh-faq-card__body p,
+        #policyContainer .oh-faq-card__body li,
+        #policyContainer .oh-faq-card__body span,
+        #policyContainer .oh-faq-card__body div {
+            color: #5d7775;
         }
-        #policyContainer .oh-faq-card__title span {
-            color: #174f4b !important;
-            font-weight: 800;
+        #policyContainer .oh-faq-card__footer {
+            padding: 12px 18px;
+            border-top: 1px solid #e0edf0;
+            background: #fbfdfd;
         }
-        #policyContainer .oh-faq-card .oh-btn--secondary,
-        #policyContainer .oh-faq-card .oh-btn--secondary * {
-            color: #ffffff !important;
+        #policyContainer .oh-faq-card__view {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            color: #176f80;
+            font-size: .86rem;
+            font-weight: 750;
+            text-decoration: none;
+        }
+        #policyContainer .oh-faq-card__view:hover {
+            color: #0a4d60;
+        }
+        #policyContainer .oh-faq-card__view ion-icon {
+            color: inherit;
+            font-size: 18px;
         }
         #policyContainer .oh-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 360px;
+            box-sizing: border-box;
             background: #ffffff;
-            border: 1px solid #dce8df;
+            border: 1px solid #d6e9e6;
+            border-top: 4px solid #238da0;
             border-radius: 18px;
             box-shadow: 0 8px 24px rgba(22, 52, 37, 0.07);
-            padding: 70px 20px;
+            padding: 40px 20px;
             text-align: center;
         }
-        .oh-wrapper-main.super-admin-panel-theme:has(#policyContainer) .oh-pagination {
-            min-height: 48px;
-            margin: 24px 0 0;
-            padding: 8px 14px;
-            background: #eef8f8 !important;
-            border: 1px solid #c7e5eb;
-            border-radius: 12px;
-            color: #173f50 !important;
+        #policyContainer .oh-empty .oh-404__image {
+            width: 64px !important;
+            height: 64px !important;
+            margin-bottom: 14px;
+            opacity: .72;
         }
-        .oh-wrapper-main.super-admin-panel-theme:has(#policyContainer) .oh-pagination__page,
-        .oh-wrapper-main.super-admin-panel-theme:has(#policyContainer) .oh-pagination__label {
+        #policyContainer .oh-empty .oh-empty__title {
+            margin: 0 0 6px;
+            color: #174f4b !important;
+            font-size: 1.05rem;
+            font-weight: 800;
+        }
+        #policyContainer .oh-empty .oh-empty__subtitle {
             margin: 0;
+            color: #6d8581 !important;
+            font-size: .88rem;
+        }
+        #policyContainer .oh-pagination {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            box-shadow: none;
+        }
+        #policyContainer .oh-faq-pagination {
+            display: flex;
+            justify-content: center;
+            margin: 18px 0 0;
+            padding: 12px;
+            border: 1px solid #d6e9e6;
+            border-radius: 14px;
+            background: #ffffff;
+            box-shadow: 0 6px 18px rgba(29, 86, 79, .06);
+        }
+        #policyContainer .oh-pagination__items {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        #policyContainer .oh-pagination__item {
+            display: grid;
+            width: 34px;
+            min-width: 34px;
+            height: 34px;
+            padding: 0 !important;
+            place-items: center;
+            border: 0 !important;
+            border-radius: 50% !important;
             background: transparent !important;
-            color: #456b76 !important;
-        }
-        .oh-wrapper-main.super-admin-panel-theme:has(#policyContainer) .oh-pagination__input-container,
-        .oh-wrapper-main.super-admin-panel-theme:has(#policyContainer) .oh-pagination__items {
-            margin-bottom: 0;
-            background: transparent !important;
-        }
-        .oh-wrapper-main.super-admin-panel-theme:has(#policyContainer) .oh-pagination__nav,
-        .oh-wrapper-main.super-admin-panel-theme:has(#policyContainer) .oh-pagination__nav:hover,
-        .oh-wrapper-main.super-admin-panel-theme:has(#policyContainer) .oh-pagination__nav:focus-within {
-            background: transparent !important;
-        }
-        .oh-wrapper-main.super-admin-panel-theme:has(#policyContainer) .oh-pagination__input {
-            background: #ffffff !important;
-            border: 1px solid #c7e5eb !important;
-            border-radius: 9px;
-            color: #173f50 !important;
-            transition: border-color .2s ease, box-shadow .2s ease;
-        }
-        .oh-wrapper-main.super-admin-panel-theme:has(#policyContainer) .oh-pagination__input:hover,
-        .oh-wrapper-main.super-admin-panel-theme:has(#policyContainer) .oh-pagination__input:focus,
-        .oh-wrapper-main.super-admin-panel-theme:has(#policyContainer) .oh-pagination__input:focus-visible {
-            background: #ffffff !important;
-            border: 1px solid #71b8c4 !important;
-            border-radius: 9px;
-            box-shadow: 0 0 0 3px rgba(23, 111, 128, .12);
-            outline: none;
-        }
-        .oh-wrapper-main.super-admin-panel-theme:has(#policyContainer) .oh-pagination__page:hover {
-            background: transparent !important;
-            color: #173f50 !important;
-        }
-        .oh-wrapper-main.super-admin-panel-theme:has(#policyContainer) .oh-pagination__item {
-            background: #ffffff !important;
-            border-color: #c7e5eb !important;
-        }
-        .oh-wrapper-main.super-admin-panel-theme:has(#policyContainer) .oh-pagination__link {
             color: #176f80 !important;
+        }
+        #policyContainer .oh-pagination__link {
+            display: grid;
+            width: 34px;
+            min-width: 34px;
+            height: 34px;
+            padding: 0;
+            place-items: center;
+            border: 1px solid #c7e5eb;
+            border-radius: 50%;
+            background: #ffffff;
+            color: #176f80;
+            font-weight: 700;
+            text-decoration: none;
+            transition: color .16s ease, background .16s ease, border-color .16s ease, box-shadow .16s ease;
+        }
+        #policyContainer .oh-pagination__link:hover {
+            border-color: #78bbc7;
+            background: #e8f5f7;
+            color: #0a4d60;
+        }
+        #policyContainer .oh-pagination__item--current .oh-pagination__link {
+            border-color: #176d83;
+            background: linear-gradient(135deg, #0a4d60, #278da0);
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(10, 77, 96, .2);
+        }
+        #policyContainer .oh-pagination__item--disabled .oh-pagination__link {
+            border-color: #e2ebef;
+            background: #ffffff;
+            color: #a5b8bd;
+            pointer-events: none;
+        }
+        #policyContainer .oh-pagination__item--disabled .oh-pagination__link ion-icon {
+            color: inherit;
         }
         @media (max-width: 900px) {
             #policyContainer .oh-faq-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         }
         @media (max-width: 640px) {
-            #policyContainer { margin: 0 12px; padding-bottom: 112px; }
+            .employee-policies-page { padding: 20px 14px 105px; }
             #policyContainer .oh-faq-cards { grid-template-columns: 1fr; }
-            #policyContainer .oh-faq-card { min-height: 440px; padding: 16px; }
-            #policyContainer .oh-faq-card__title {
-                height: auto;
-                min-height: 54px;
-            }
-            #policyContainer .oh-faq-card .truncated-text { max-height: 260px !important; }
+            #policyContainer .oh-faq-card { min-height: 0; }
+            #policyContainer .oh-faq-card__header { min-height: 74px; padding: 14px; }
+            #policyContainer .oh-faq-card__body { max-height: 260px; padding: 14px; }
+            #policyContainer .oh-faq-card__footer { padding: 12px 14px; }
+            #policyContainer .oh-empty { min-height: 280px; padding: 30px 16px; }
+            #policyContainer .oh-pagination { flex-wrap: wrap; justify-content: center; }
         }
     </style>
     <div class="oh-wrapper" id="policyContainer">
@@ -251,9 +338,10 @@
                     class="oh-404__image"
                     alt="{% trans 'Page not found. 404.' %}"
                 >
-                <h2 class="oh-empty__title">{% trans "No Records found." %}</h1>
+                <h2 class="oh-empty__title">{% trans "No Records found." %}</h2>
                 <p class="oh-empty__subtitle">{% trans "There are currently no policies to consider." %}</p>
             </div>
         {% endif %}
+    </div>
     </div>
 {% endblock %}

@@ -9,6 +9,17 @@
         background: #f5f7f3;
         border-radius: 0;
         padding-bottom: 3.5rem;
+        width: calc(100% - 48px) !important;
+        max-width: 1560px !important;
+        margin-right: auto !important;
+        margin-left: auto !important;
+        box-sizing: border-box;
+    }
+
+    @media (max-width: 767px) {
+        .employee-home-wrapper #dashboard {
+            width: calc(100% - 24px) !important;
+        }
     }
 
     .employee-home-wrapper #dashboard .oh-dashboard__cards {
@@ -137,8 +148,60 @@
                 <div class="oh-dashboard__cards row" style="margin:0;">
                     <div class="col-12">
                         <div id="employeeDashboardSummaryPlaceholder" hx-get="{% url 'employee-dashboard-summary' %}" hx-trigger="load" hx-swap="innerHTML">
-                            <div class="oh-card-dashboard tile">
-                                <div class="oh-card-dashboard__body"><div class="animated-background" style="height:180px"></div></div>
+                            <div class="ep-skeleton-dashboard">
+                                <style>
+                                    .ep-skeleton-dashboard {
+                                        width: 100%;
+                                        max-width: 1440px;
+                                        margin: 0 auto;
+                                        padding: 1.25rem clamp(1rem, 2vw, 2.5rem) 2rem;
+                                        box-sizing: border-box;
+                                        display: grid;
+                                        grid-template-columns: minmax(0, 1.65fr) minmax(320px, 1fr);
+                                        gap: 1.5rem;
+                                    }
+                                    .ep-sk-hero {
+                                        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                                        border: 1px solid #334155;
+                                        height: 220px;
+                                        border-radius: 18px;
+                                        margin-bottom: 1.5rem;
+                                    }
+                                    .ep-sk-kpi-row {
+                                        display: grid;
+                                        grid-template-columns: repeat(2, 1fr);
+                                        gap: 1.25rem;
+                                        margin-bottom: 1.5rem;
+                                    }
+                                    .ep-sk-card {
+                                        background: #ffffff;
+                                        border: 1px solid #e2e8f0;
+                                        border-radius: 18px;
+                                        box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04);
+                                        box-sizing: border-box;
+                                    }
+                                    .ep-sk-kpi { height: 125px; }
+                                    .ep-sk-announcements { height: 180px; }
+                                    .ep-sk-leave { height: 260px; margin-bottom: 1.5rem; }
+                                    .ep-sk-bday { height: 140px; margin-bottom: 1.5rem; }
+                                    .ep-sk-team { height: 180px; }
+                                    @media (max-width: 1024px) {
+                                        .ep-skeleton-dashboard { grid-template-columns: 1fr; }
+                                    }
+                                </style>
+                                <div class="ep-sk-col-main">
+                                    <div class="ep-sk-hero"></div>
+                                    <div class="ep-sk-kpi-row">
+                                        <div class="ep-sk-card ep-sk-kpi"></div>
+                                        <div class="ep-sk-card ep-sk-kpi"></div>
+                                    </div>
+                                    <div class="ep-sk-card ep-sk-announcements"></div>
+                                </div>
+                                <div class="ep-sk-col-side">
+                                    <div class="ep-sk-card ep-sk-leave"></div>
+                                    <div class="ep-sk-card ep-sk-bday"></div>
+                                    <div class="ep-sk-card ep-sk-team"></div>
+                                </div>
                             </div>
                         </div>
                     </div>

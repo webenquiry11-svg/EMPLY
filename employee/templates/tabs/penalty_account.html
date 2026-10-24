@@ -1,4 +1,80 @@
 {% load i18n %}{% load horillafilters %}
-{% if "attendance"|app_installed %}
-<div hx-get="{% url "view-penalties" %}?employee_id={{employee.id}}" hx-trigger="load"></div>
-{% endif %}
+<style>
+#profile-view #penaltyTarget .pna-wrapper {
+    padding: 0;
+    background: transparent;
+    min-height: 0;
+}
+#profile-view #penaltyTarget .pna-card {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+}
+#profile-view #penaltyTarget .pna-content {
+    padding: 0;
+}
+#profile-view #penaltyTarget .oh-sticky-table__table.mt-3 {
+    margin-top: 0 !important;
+    overflow: hidden;
+    border: 1px solid #e3edf0;
+    border-radius: 14px;
+    background: #ffffff;
+}
+#profile-view #penaltyTarget .oh-sticky-table__table > .oh-404__subtitle {
+    display: flex;
+    min-height: 220px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    padding: 28px 16px;
+    text-align: center;
+}
+#profile-view #penaltyTarget .oh-sticky-table__table > .oh-404__subtitle img {
+    width: 100px !important;
+    height: 100px !important;
+    margin: 0 !important;
+    object-fit: contain;
+}
+#profile-view #penaltyTarget .oh-sticky-table__table > .oh-404__subtitle h5 {
+    margin: 0;
+    color: #557b84;
+}
+.pna-wrapper {
+    padding: 24px;
+    background: #F8FAFC;
+    min-height: 100%;
+}
+.pna-card {
+    background: #FFFFFF;
+    border: 1px solid #E6E8EC;
+    border-radius: 18px;
+    overflow: hidden;
+}
+.pna-content {
+    padding: 24px;
+}
+.pna-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #94A3B8;
+}
+.pna-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0F172A;
+}
+</style>
+<div class="pna-wrapper">
+    <div class="pna-card">
+        <div class="pna-content">
+            {% if "attendance"|app_installed %}
+            <div hx-get="{% url "view-penalties" %}?employee_id={{employee.id}}" hx-trigger="load"></div>
+            {% endif %}
+        </div>
+    </div>
+</div>

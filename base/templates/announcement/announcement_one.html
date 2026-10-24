@@ -743,49 +743,6 @@
         color: #b14b5d !important;
         -webkit-text-fill-color: #b14b5d !important;
     }
-
-    html body .oh-wrapper-main.admin-panel-theme #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown > .oh-btn,
-    html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown > .oh-btn {
-        border: 1px solid rgba(213, 240, 242, 0.8) !important;
-        border-radius: 50% !important;
-        background: linear-gradient(145deg, #5eb8c8, #176f80) !important;
-        color: #ffffff !important;
-        box-shadow: 0 4px 10px rgba(10, 77, 96, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
-    }
-
-    html body .oh-wrapper-main.admin-panel-theme #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown,
-    html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown {
-        width: 36px !important;
-        height: 36px !important;
-        padding: 0 !important;
-        border: 0 !important;
-        border-radius: 50% !important;
-        background: transparent !important;
-        box-shadow: none !important;
-    }
-
-    html body .oh-wrapper-main.admin-panel-theme #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown > .oh-btn ion-icon,
-    html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown > .oh-btn ion-icon {
-        color: #ffffff !important;
-        filter: none !important;
-    }
-
-    html body .oh-wrapper-main.admin-panel-theme #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown > .oh-btn:hover,
-    html body .oh-wrapper-main.admin-panel-theme #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown > .oh-btn:focus-visible,
-    html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown > .oh-btn:hover,
-    html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown > .oh-btn:focus-visible {
-        border-color: #ffffff !important;
-        background: linear-gradient(145deg, #d5f0f2, #b9dce4) !important;
-        color: #0a4d60 !important;
-        box-shadow: 0 5px 12px rgba(10, 77, 96, 0.2) !important;
-    }
-
-    html body .oh-wrapper-main.admin-panel-theme #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown > .oh-btn:hover ion-icon,
-    html body .oh-wrapper-main.admin-panel-theme #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown > .oh-btn:focus-visible ion-icon,
-    html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown > .oh-btn:hover ion-icon,
-    html body .oh-wrapper-main.super-admin-panel-theme #objectDetailsModalTarget .announcement-detail-card > .oh-dropdown > .oh-btn:focus-visible ion-icon {
-        color: #0a4d60 !important;
-    }
 </style>
 {% if messages %}
     <script>
@@ -799,11 +756,7 @@
         <span>{% trans "Announcement" %}</span>
     </div>
 
-    <button
-        class="oh-modal__close"
-        aria-label="{% trans 'Close' %}"
-        onclick="document.getElementById('objectDetailsModal')?.setAttribute('aria-hidden', 'true')"
-    >
+    <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
@@ -1015,5 +968,19 @@
             <p class="oh-empty__subtitle">{% trans "There are no announcements at the moment." %}</p>
         </div>
     {% endif %}
+
+    <div class="oh-modal" id="viewedBy" role="dialog" aria-hidden="true">
+        <div class="oh-modal__dialog" style="max-width: 550px">
+            <div class="oh-modal__dialog-header">
+                <button
+                    class="oh-modal__close--custom"
+                    onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
+                >
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="oh-modal__dialog-body" id="viewedByBody"></div>
+        </div>
+    </div>
 </div>
 </div>

@@ -3,7 +3,7 @@ function toggleColumns(tableId, fieldContainer) {
     table.hide()
     var tableTitle = table.attr("data-table-name")
     let trs = []
-    $.each($(`[data-table-name=${tableTitle}] [data-cell-title]`), function (indexInArray, valueOfElement) {
+    $.each(table.find("[data-cell-title]"), function (indexInArray, valueOfElement) {
         trs.push(`
             <li class="oh-dropdown__item oh-sticy-dropdown-item">
                 <span>${$(valueOfElement).attr("data-cell-title")}</span>
@@ -16,16 +16,22 @@ function toggleColumns(tableId, fieldContainer) {
 
     // toggle cells
     var visibleCells = localStorage.getItem(tableTitle)
-    if (visibleCells && visibleCells != "[]") {
-        table.hide();
-        $("[data-cell-index]").hide();
-    }
-    else {
-        table.show();
-        $("[data-cell-index]").show();
-    }
+    var defaultVisibleCells = table.attr("data-default-visible-cells")
+    var storedIds =
+        visibleCells === null
+            ? defaultVisibleCells === undefined
+                ? null
+                : defaultVisibleCells.split(",")
+            : JSON.parse(visibleCells)
+    var storedIdStrings = storedIds === null ? null : storedIds.map(String)
+    table.toggleClass("employee-attendance-columns-customized", visibleCells !== null)
+    table.find("[data-cell-index]").each(function () {
+        $(this).toggle(
+            storedIdStrings === null || storedIdStrings.includes(String($(this).attr("data-cell-index")))
+        )
+    })
 
-    trsString = ""
+    var trsString = ""
     for (let tr = 0; tr < trs.length; tr++) {
         const element = trs[tr];
         trsString = trsString + element
@@ -38,23 +44,22 @@ function toggleColumns(tableId, fieldContainer) {
     `)
     $(`#${fieldContainer}`).parent().prepend(selectButtons)
     $(`#${fieldContainer}`).html(trsString);
-    if (visibleCells) {
-        storedIds = JSON.parse(visibleCells)
-        $(`#${fieldContainer} input[type=checkbox]`).prop("checked", false)
-        for (let id = 0; id < storedIds.length; id++) {
-            const element = storedIds[id];
-            $(`#${fieldContainer} input[type=checkbox][value=${element}]`).prop("checked", true)
-            hideCells($(`#${fieldContainer} input[type=checkbox][value=${element}]`), tableTitle, fieldContainer)
-        }
-        $(`[data-table-name][data-table-name=${tableTitle}]`).show();
-    }
+    $(`#${fieldContainer} input[type=checkbox]`).each(function () {
+        $(this).prop(
+            "checked",
+            storedIdStrings === null || storedIdStrings.includes(String($(this).val()))
+        )
+    })
+    table.show();
 }
 function hideCells(jqElement, tableTitle, fieldContainer) {
-    visibleCells = $(`#${fieldContainer}`).find("input[type=checkbox]:checked")
-    let visibleCellsids = []
-    $(`[data-table-name=${tableTitle}] [data-cell-index]`).hide();
+    var visibleCells = $(`#${fieldContainer}`).find("input[type=checkbox]:checked")
+    var visibleCellsids = []
+    var table = $(`[data-table-name="${tableTitle}"]`)
+    table.addClass("employee-attendance-columns-customized")
+    table.find("[data-cell-index]").hide();
     $.each(visibleCells, function (indexInArray, valueOfElement) {
-        $(`[data-table-name=${tableTitle}] [data-cell-index=${$(valueOfElement).val()}]`).show();
+        table.find(`[data-cell-index="${$(valueOfElement).val()}"]`).show();
         visibleCellsids.push($(valueOfElement).val())
     });
     if (jqElement.is(":checked")) {
@@ -70,5 +75,5 @@ function hideCells(jqElement, tableTitle, fieldContainer) {
             localStorage.setItem(tableTitle, JSON.stringify(storedIds));
         }
     }
-    $(`[data-table-name=${tableTitle}][data-table-name]`).show();
+    table.show();
 }

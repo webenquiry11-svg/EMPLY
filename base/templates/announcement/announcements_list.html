@@ -3,9 +3,9 @@
 {% load tz %}
 {% now "Y-m-d" as current_date %}
 {% if not announcements %}
-    <div class="oh-empty h-100" style="padding-top: 50px">
-        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="{% trans 'Page not found. 404.' %}">
-        <h2 class="oh-empty__title">{% trans "No Records found." %}</h1>
+    <div class="oh-empty ep-announcement-empty">
+        <span class="material-symbols-outlined ep-announcement-empty__icon" aria-hidden="true">campaign</span>
+        <h2 class="oh-empty__title">{% trans "No announcements yet" %}</h2>
         <p class="oh-empty__subtitle">{% trans "There are no announcements at the moment." %}</p>
     </div>
 {% else %}
@@ -18,6 +18,7 @@
                             <a
                                 class="oh-profile oh-profile--md"
                                 style="text-decoration: none"
+                                hx-on:click="$('#objectDetailsModal').addClass('oh-modal--show');"
                                 hx-get="{% url 'announcement-single-view' announcement.id %}?instance_ids={{instance_ids}}"
                                 hx-target="#objectDetailsModalTarget"
                                 onclick="closeNew(this)"

@@ -1,0 +1,381 @@
+{% load static %}
+{% load i18n %}
+<style class="employee-profile-dropdown-styles">
+    html body .oh-wrapper-main.employee-panel-theme .oh-navbar__systray > style.employee-profile-dropdown-styles {
+        display: none !important;
+    }
+
+    #mainNavProfile .oh-navbar__user-image {
+        display: block !important;
+        width: 46px !important;
+        min-width: 46px !important;
+        max-width: 46px !important;
+        height: 46px !important;
+        min-height: 46px !important;
+        max-height: 46px !important;
+        object-fit: cover !important;
+        object-position: center !important;
+        pointer-events: none !important;
+    }
+
+    #mainNavProfile.employee-profile-dropdown-open {
+        position: relative !important;
+        z-index: 2201 !important;
+    }
+
+    #mainNavProfile.employee-profile-dropdown-open::before {
+        position: fixed !important;
+        z-index: 2190 !important;
+        inset: 0 !important;
+        background: rgba(14, 42, 52, 0.06) !important;
+        backdrop-filter: blur(4px) !important;
+        -webkit-backdrop-filter: blur(4px) !important;
+        content: "" !important;
+        pointer-events: none !important;
+    }
+
+    #mainNavProfile .oh-navbar__user-info {
+        position: relative !important;
+        z-index: 2191 !important;
+    }
+
+    #mainNavProfile .oh-navbar__user-info {
+        transform-origin: center !important;
+        border-radius: 50% !important;
+    }
+
+    #mainNavProfile.employee-profile-dropdown-open .oh-navbar__user-info::after {
+        position: absolute !important;
+        inset: -4px !important;
+        border: 2px solid rgba(220, 53, 69, 0.72) !important;
+        border-radius: 50% !important;
+        box-shadow: 0 0 12px rgba(220, 53, 69, 0.52) !important;
+        content: "" !important;
+        pointer-events: none !important;
+        animation: employee-profile-trigger-alert 1.35s ease-out infinite !important;
+    }
+
+    @keyframes employee-profile-trigger-alert {
+        0% {
+            opacity: 0.9;
+            transform: scale(0.96);
+        }
+
+        100% {
+            opacity: 0;
+            transform: scale(1.42);
+        }
+    }
+
+    #mainNavProfile .oh-dropdown__menu {
+        position: absolute !important;
+        top: calc(100% + 10px) !important;
+        right: 0 !important;
+        left: auto !important;
+        width: min(272px, calc(100vw - 24px)) !important;
+        min-width: min(272px, calc(100vw - 24px)) !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        border: 1px solid #d8e8e9 !important;
+        border-radius: 20px !important;
+        background: #ffffff !important;
+        color: #123d49 !important;
+        box-shadow: 0 22px 54px rgba(13, 53, 65, 0.2) !important;
+        z-index: 2200 !important;
+    }
+
+    #mainNavProfile .employee-profile-menu-transition {
+        transform-origin: top right !important;
+        transition: opacity 180ms ease, transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+    }
+
+    #mainNavProfile .employee-profile-menu-enter-start,
+    #mainNavProfile .employee-profile-menu-leave-end {
+        opacity: 0 !important;
+        transform: translateY(-6px) scale(0.97) !important;
+    }
+
+    #mainNavProfile .employee-profile-menu-enter-end,
+    #mainNavProfile .employee-profile-menu-leave-start {
+        opacity: 1 !important;
+        transform: translateY(0) scale(1) !important;
+    }
+
+    #mainNavProfile .employee-profile-menu__header {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        padding: 12px 14px !important;
+        background:
+            radial-gradient(circle at 100% 0%, rgba(103, 221, 207, 0.16), transparent 42%),
+            linear-gradient(135deg, #f3fbfa, #e8f5f4) !important;
+        border-bottom: 1px solid #e0eeee !important;
+    }
+
+    #mainNavProfile .employee-profile-menu__avatar {
+        width: 44px !important;
+        height: 44px !important;
+        flex: 0 0 44px !important;
+        overflow: hidden !important;
+        border: 2px solid #ffffff !important;
+        border-radius: 50% !important;
+        background: #d9eeeb !important;
+        box-shadow: 0 2px 8px rgba(10, 77, 96, 0.14) !important;
+    }
+
+    #mainNavProfile .employee-profile-menu__avatar img {
+        display: block !important;
+        position: static !important;
+        width: 40px !important;
+        min-width: 40px !important;
+        max-width: 40px !important;
+        height: 40px !important;
+        min-height: 40px !important;
+        max-height: 40px !important;
+        object-fit: cover !important;
+        object-position: center !important;
+        transform: none !important;
+        pointer-events: none !important;
+    }
+
+    #mainNavProfile .employee-profile-menu__identity {
+        display: flex !important;
+        min-width: 0 !important;
+        flex-direction: column !important;
+        gap: 2px !important;
+    }
+
+    #mainNavProfile .employee-profile-menu__eyebrow,
+    #mainNavProfile .employee-profile-menu__username {
+        overflow: hidden !important;
+        color: #718990 !important;
+        font-size: 0.72rem !important;
+        line-height: 1.25 !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+
+    #mainNavProfile .employee-profile-menu__identity strong {
+        overflow: hidden !important;
+        color: #123d49 !important;
+        font-size: 0.94rem !important;
+        font-weight: 750 !important;
+        line-height: 1.3 !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+
+    #mainNavProfile .employee-profile-menu__section-label {
+        padding: 9px 14px 4px !important;
+        color: #7b9298 !important;
+        font-size: 0.65rem !important;
+        font-weight: 750 !important;
+        letter-spacing: 0.09em !important;
+        line-height: 1.2 !important;
+        text-transform: uppercase !important;
+    }
+
+    #mainNavProfile .employee-profile-menu__items {
+        padding: 0 7px 4px !important;
+        margin: 0 !important;
+        list-style: none !important;
+    }
+
+    #mainNavProfile .employee-profile-menu__items .oh-dropdown__item {
+        margin: 2px 0 !important;
+        list-style: none !important;
+    }
+
+    #mainNavProfile .employee-profile-menu__items .oh-dropdown__link,
+    #mainNavProfile .employee-profile-menu__items .oh-dropdown__link:hover,
+    #mainNavProfile .employee-profile-menu__items .oh-dropdown__link:focus-visible {
+        display: flex !important;
+        align-items: center !important;
+        gap: 11px !important;
+        min-height: 50px !important;
+        padding: 5px 8px !important;
+        border: 1px solid transparent !important;
+        border-radius: 12px !important;
+        background: transparent !important;
+        color: #123d49 !important;
+        text-decoration: none !important;
+        transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease !important;
+    }
+
+    #mainNavProfile .employee-profile-menu__icon {
+        display: grid !important;
+        width: 32px !important;
+        height: 32px !important;
+        flex: 0 0 32px !important;
+        place-items: center !important;
+        border: 1px solid #dceeed !important;
+        border-radius: 11px !important;
+        background: #f0f8f7 !important;
+        color: #176f80 !important;
+        font-family: "Material Symbols Outlined" !important;
+        font-size: 18px !important;
+        line-height: 1 !important;
+    }
+
+    #mainNavProfile .employee-profile-menu__link-copy {
+        display: flex !important;
+        min-width: 0 !important;
+        flex: 1 1 auto !important;
+        flex-direction: column !important;
+        gap: 3px !important;
+    }
+
+    #mainNavProfile .employee-profile-menu__link-copy strong {
+        color: #123d49 !important;
+        font-size: 0.81rem !important;
+        font-weight: 700 !important;
+        line-height: 1.2 !important;
+    }
+
+    #mainNavProfile .employee-profile-menu__link-copy small {
+        color: #7b9298 !important;
+        font-size: 0.68rem !important;
+        font-weight: 500 !important;
+        line-height: 1.25 !important;
+    }
+
+    #mainNavProfile .employee-profile-menu__arrow {
+        flex: 0 0 auto !important;
+        color: #a0b4b8 !important;
+        font-family: "Material Symbols Outlined" !important;
+        font-size: 14px !important;
+        opacity: 0 !important;
+        transform: translateX(-3px) !important;
+        transition: opacity 0.16s ease, transform 0.16s ease !important;
+    }
+
+    #mainNavProfile .employee-profile-menu__items .oh-dropdown__link:hover,
+    #mainNavProfile .employee-profile-menu__items .oh-dropdown__link:focus-visible {
+        border-color: #dceeed !important;
+        background: #f1f9f8 !important;
+        color: #0a4d60 !important;
+        outline: none !important;
+        transform: translateX(2px) !important;
+    }
+
+    #mainNavProfile .employee-profile-menu__items .oh-dropdown__link:hover .employee-profile-menu__arrow,
+    #mainNavProfile .employee-profile-menu__items .oh-dropdown__link:focus-visible .employee-profile-menu__arrow {
+        opacity: 1 !important;
+        transform: translateX(0) !important;
+    }
+
+    #mainNavProfile .employee-profile-menu__divider {
+        height: 1px !important;
+        margin: 1px 14px 5px !important;
+        background: #e4edef !important;
+    }
+
+    #mainNavProfile .employee-profile-menu__items--footer {
+        padding-bottom: 6px !important;
+    }
+
+    #mainNavProfile .employee-profile-menu__logout .employee-profile-menu__icon {
+        border-color: #f1dddd !important;
+        background: #fff6f5 !important;
+        color: #bd5651 !important;
+    }
+
+    #mainNavProfile .employee-profile-menu__logout .employee-profile-menu__link-copy strong {
+        color: #a74743 !important;
+    }
+
+    #mainNavProfile .employee-profile-menu__logout:hover,
+    #mainNavProfile .employee-profile-menu__logout:focus-visible {
+        border-color: #f2dddd !important;
+        background: #fff7f6 !important;
+        color: #9e3734 !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        #mainNavProfile .employee-profile-menu-transition,
+        #mainNavProfile .oh-navbar__user-photo {
+            transition: none !important;
+        }
+
+        #mainNavProfile.employee-profile-dropdown-open .oh-navbar__user-info::after {
+            animation: none !important;
+            opacity: 0.8 !important;
+            transform: scale(1.04) !important;
+        }
+    }
+</style>
+<div class="oh-dropdown" x-data="{open: false}" :class="{ 'employee-profile-dropdown-open': open }" id="mainNavProfile">
+    <div class="oh-navbar__user-info" @click="open = !open" @click.outside="open = false">
+        <div class="oh-navbar__user-photo">
+            <img src="{{request.user.employee_get.get_avatar}}" class="oh-navbar__user-image"
+                loading="lazy" />
+        </div>
+        <span class="oh-navbar__user-name">{{user.employee_get.employee_first_name | title}}</span>
+    </div>
+    <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open"
+        x-transition:enter="employee-profile-menu-transition"
+        x-transition:enter-start="employee-profile-menu-enter-start"
+        x-transition:enter-end="employee-profile-menu-enter-end"
+        x-transition:leave="employee-profile-menu-transition"
+        x-transition:leave-start="employee-profile-menu-leave-start"
+        x-transition:leave-end="employee-profile-menu-leave-end"
+        style="display: none;">
+        <div class="employee-profile-menu__header">
+            <div class="employee-profile-menu__avatar">
+                <img src="{{ request.user.employee_get.get_avatar }}" alt="" loading="lazy">
+            </div>
+            <div class="employee-profile-menu__identity">
+                <span class="employee-profile-menu__eyebrow">{% trans "Signed in as" %}</span>
+                <strong>{{ user.employee_get.employee_first_name | title }}</strong>
+                <span class="employee-profile-menu__username">{{ request.user.username }}</span>
+            </div>
+        </div>
+        <div class="employee-profile-menu__section-label">{% trans "Account settings" %}</div>
+        <ul class="oh-dropdown__items employee-profile-menu__items">
+            {% if request.session.selected_company == "all" or request.user.employee_get.employee_work_info.company_id.id == request.session.selected_company|default:"-1"|add:"0" %}
+                <li class="oh-dropdown__item">
+                    <a href="{% url 'employee-profile' %}" class="oh-dropdown__link">
+                        <span class="employee-profile-menu__icon material-symbols-outlined" aria-hidden="true">badge</span>
+                        <span class="employee-profile-menu__link-copy">
+                            <strong>{% trans "My Profile" %}</strong>
+                            <small>{% trans "View your employee details" %}</small>
+                        </span>
+                        <span class="employee-profile-menu__arrow material-symbols-outlined" aria-hidden="true">arrow_forward_ios</span>
+                    </a>
+                </li>
+                <li class="oh-dropdown__item">
+                    <a href="/change-username" class="oh-dropdown__link">
+                        <span class="employee-profile-menu__icon material-symbols-outlined" aria-hidden="true">manage_accounts</span>
+                        <span class="employee-profile-menu__link-copy">
+                            <strong>{% trans "Change Username" %}</strong>
+                            <small>{% trans "Update your sign-in name" %}</small>
+                        </span>
+                        <span class="employee-profile-menu__arrow material-symbols-outlined" aria-hidden="true">arrow_forward_ios</span>
+                    </a>
+                </li>
+                <li class="oh-dropdown__item">
+                    <a href="/change-password" class="oh-dropdown__link">
+                        <span class="employee-profile-menu__icon material-symbols-outlined" aria-hidden="true">lock_reset</span>
+                        <span class="employee-profile-menu__link-copy">
+                            <strong>{% trans "Change Password" %}</strong>
+                            <small>{% trans "Keep your account secure" %}</small>
+                        </span>
+                        <span class="employee-profile-menu__arrow material-symbols-outlined" aria-hidden="true">arrow_forward_ios</span>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+        <div class="employee-profile-menu__divider"></div>
+        <ul class="oh-dropdown__items employee-profile-menu__items employee-profile-menu__items--footer">
+            <li class="oh-dropdown__item">
+                <a href="/logout" class="oh-dropdown__link employee-profile-menu__logout">
+                    <span class="employee-profile-menu__icon material-symbols-outlined" aria-hidden="true">logout</span>
+                    <span class="employee-profile-menu__link-copy">
+                        <strong>{% trans "Logout" %}</strong>
+                        <small>{% trans "Sign out of your account" %}</small>
+                    </span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>

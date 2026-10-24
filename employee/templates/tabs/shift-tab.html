@@ -1,266 +1,452 @@
 {% load i18n static basefilters horillafilters %}
+<style>
+    :root {
+        --pt-bg: #F7F8FA;
+        --pt-surface: #FFFFFF;
+        --pt-border: #E6E8EC;
+        --pt-border-strong: #DDE1E7;
+        --pt-text: #0F172A;
+        --pt-text-2: #475569;
+        --pt-text-3: #94A3B8;
+        --pt-text-4: #CBD5E1;
+        --pt-accent: #0F766E;
+        --pt-accent-2: #14B8A6;
+        --pt-accent-soft: #F0FDFA;
+        --pt-accent-border: #CCFBF1;
+        --pt-pill: #F1F5F9;
+        --pt-danger: #DC2626;
+        --pt-danger-soft: #FEF2F2;
+        --pt-danger-border: #FECACA;
+        --pt-success: #059669;
+        --pt-success-soft: #ECFDF5;
+        --pt-success-border: #A7F3D0;
+        --pt-warning: #D97706;
+        --pt-warning-soft: #FFFBEB;
+        --pt-warning-border: #FDE68A;
+        --pt-radius-sm: 10px;
+        --pt-radius-md: 14px;
+        --pt-radius-lg: 16px;
+        --pt-radius-xl: 18px;
+        --pt-radius-pill: 999px;
+        --pt-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+        --pt-shadow-md: 0 4px 14px rgba(15, 23, 42, 0.05);
+    }
+    .pt-page { padding: 16px 0; }
+    .pt-card {
+        background: var(--pt-surface);
+        border: 1px solid var(--pt-border);
+        border-radius: var(--pt-radius-xl);
+        overflow: hidden;
+        transition: border-color .2s ease, box-shadow .2s ease;
+    }
+    .pt-card:hover { border-color: var(--pt-border-strong); box-shadow: var(--pt-shadow-md); }
+    .pt-card-head {
+        padding: 16px 20px 14px;
+        border-bottom: 1px solid var(--pt-border);
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        background: #FDFDFE;
+        flex-wrap: wrap;
+    }
+    .pt-card-title {
+        color: var(--pt-text);
+        font-size: 14px; font-weight: 700; letter-spacing: -0.1px;
+        display: inline-flex; align-items: center; gap: 9px;
+    }
+    .pt-card-title .ic {
+        width: 26px; height: 26px; border-radius: 8px;
+        display: grid; place-items: center;
+        background: var(--pt-accent-soft);
+        color: var(--pt-accent);
+    }
+    .pt-card-title .ic.blue { background: #EFF6FF; color: #2563EB; }
+    .pt-card-title .ic.amber { background: #FFFBEB; color: #D97706; }
+    .pt-card-title .ic.rose { background: #FFF1F2; color: #E11D48; }
+    .pt-card-title .ic.violet { background: #EEF2FF; color: #6366F1; }
+    .pt-card-body { padding: 14px 20px 18px; }
+
+    .pt-btn {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 7px 13px;
+        border-radius: var(--pt-radius-sm);
+        font-size: 13px; font-weight: 600;
+        cursor: pointer;
+        border: 1px solid var(--pt-border);
+        background: var(--pt-surface);
+        color: var(--pt-text-2);
+        transition: all .18s ease;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+    .pt-btn:hover { border-color: var(--pt-border-strong); color: var(--pt-text); background: #FAFBFC; }
+    .pt-btn.primary { background: var(--pt-accent); color: #fff; border-color: var(--pt-accent); }
+    .pt-btn.primary:hover { background: #0D655D; border-color: #0D655D; }
+    .pt-btn.ghost { background: var(--pt-pill); border-color: transparent; }
+    .pt-btn.ghost:hover { background: #E2E8F0; }
+    .pt-btn.success { background: var(--pt-success); color: #fff; border-color: var(--pt-success); }
+    .pt-btn.success:hover { background: #047857; border-color: #047857; }
+    .pt-btn.danger { background: var(--pt-surface); color: var(--pt-danger); border-color: var(--pt-danger-border); }
+    .pt-btn.danger:hover { background: var(--pt-danger-soft); }
+    .pt-btn:disabled, .pt-btn.disabled { opacity: .45; cursor: not-allowed; pointer-events: none; }
+    .pt-btn-icon {
+        width: 32px; height: 32px;
+        padding: 0;
+        justify-content: center;
+    }
+    .pt-btn-group {
+        display: inline-flex; align-items: stretch;
+        border: 1px solid var(--pt-border);
+        border-radius: var(--pt-radius-sm);
+        overflow: hidden;
+        background: var(--pt-surface);
+    }
+    .pt-btn-group .pt-btn {
+        border: 0;
+        border-radius: 0;
+        border-right: 1px solid var(--pt-border);
+    }
+    .pt-btn-group .pt-btn:last-child { border-right: 0; }
+    .pt-btn-group .pt-btn-icon { width: 36px; height: 34px; }
+
+    .pt-inner-tabs-wrap {
+        border-bottom: 1px solid var(--pt-border);
+        background: #FDFDFE;
+    }
+    .pt-inner-tabs {
+        display: inline-flex; align-items: center;
+        gap: 2px; padding: 0 12px;
+        flex-wrap: wrap;
+    }
+    .pt-inner-tab {
+        position: relative;
+        border: 0; background: transparent; cursor: pointer;
+        padding: 14px 14px 13px;
+        display: inline-flex; align-items: center; gap: 8px;
+        color: var(--pt-text-3);
+        font-size: 13.5px; font-weight: 600;
+        transition: color .2s ease;
+        white-space: nowrap;
+    }
+    .pt-inner-tab:hover { color: var(--pt-text); }
+    .pt-inner-tab::after {
+        content: "";
+        position: absolute; left: 14px; right: 14px; bottom: 0;
+        height: 2px;
+        background: var(--pt-accent);
+        border-radius: 2px 2px 0 0;
+        transform: scaleX(0); transform-origin: left center;
+        transition: transform .24s ease;
+    }
+    .pt-inner-tab.is-active { color: var(--pt-text); }
+    .pt-inner-tab.is-active::after { transform: scaleX(1); }
+    .pt-inner-tab .ic {
+        width: 24px; height: 24px; border-radius: 7px;
+        display: grid; place-items: center;
+        background: var(--pt-pill);
+        color: var(--pt-text-2);
+        font-size: 13px;
+    }
+    .pt-inner-tab.is-active .ic { background: var(--pt-accent-soft); color: var(--pt-accent); }
+    .pt-add-btn {
+        margin-left: auto;
+        margin-top: 6px;
+        margin-bottom: 6px;
+    }
+    .pt-inner-panel { display: none; }
+    .pt-inner-panel.is-open { display: block; }
+
+    .pt-list { list-style: none; margin: 0; padding: 0; }
+    .pt-row {
+        padding: 10px 0;
+        border-bottom: 1px dashed #EEF0F4;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 3px;
+    }
+    .pt-row:last-child { border-bottom: 0; }
+    .pt-label {
+        color: var(--pt-text-3);
+        font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+        display: inline-flex; align-items: center; gap: 7px;
+    }
+    .pt-label ion-icon { color: var(--pt-text-4); font-size: 13px; }
+    .pt-value {
+        color: var(--pt-text);
+        font-size: 14px; font-weight: 600;
+        word-break: break-word;
+    }
+    .pt-value.muted { color: var(--pt-text-2); font-weight: 500; }
+
+    .pt-tag {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 4px 10px;
+        font-size: 12px; font-weight: 700;
+        border-radius: var(--pt-radius-pill);
+        white-space: nowrap;
+    }
+    .pt-tag.success { background: var(--pt-success-soft); color: var(--pt-success); border: 1px solid var(--pt-success-border); }
+    .pt-tag.danger { background: var(--pt-danger-soft); color: var(--pt-danger); border: 1px solid var(--pt-danger-border); }
+    .pt-tag.warning { background: var(--pt-warning-soft); color: var(--pt-warning); border: 1px solid var(--pt-warning-border); }
+    .pt-tag.info { background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE; }
+    .pt-tag.muted { background: var(--pt-pill); color: var(--pt-text-2); border: 1px solid var(--pt-border); }
+
+    .pt-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 28px;
+    }
+    .pt-grid-2 .pt-list { padding: 0; }
+    .pt-grid-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 0 24px;
+    }
+
+    .pt-records {
+        display: flex; flex-direction: column;
+        gap: 14px;
+    }
+    .pt-record {
+        background: var(--pt-surface);
+        border: 1px solid var(--pt-border);
+        border-radius: var(--pt-radius-lg);
+        overflow: hidden;
+        transition: all .2s ease;
+    }
+    .pt-record:hover {
+        border-color: var(--pt-border-strong);
+        box-shadow: var(--pt-shadow-sm);
+    }
+    .pt-record-head {
+        padding: 14px 18px 12px;
+        border-bottom: 1px dashed #EEF0F4;
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        flex-wrap: wrap;
+    }
+    .pt-avatar {
+        display: inline-flex; align-items: center; gap: 10px;
+    }
+    .pt-avatar-img {
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid var(--pt-border);
+        background: var(--pt-pill);
+    }
+    .pt-avatar-name {
+        color: var(--pt-text);
+        font-size: 14px; font-weight: 700;
+    }
+    .pt-record-body { padding: 4px 18px 14px; }
+    .pt-record-actions {
+        padding: 10px 18px 14px;
+        border-top: 1px dashed #EEF0F4;
+        display: flex; align-items: center; justify-content: space-between; gap: 10px;
+        flex-wrap: wrap;
+    }
+    .pt-record-actions-col {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .pt-record-clickable { cursor: pointer; }
+
+    .pt-empty {
+        padding: 48px 20px;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 10px;
+    }
+    .pt-empty .ic-lg {
+        width: 52px; height: 52px; border-radius: 14px;
+        display: grid; place-items: center;
+        background: var(--pt-pill);
+        color: var(--pt-text-3);
+        font-size: 24px;
+        margin-bottom: 6px;
+    }
+    .pt-empty-title {
+        color: var(--pt-text-2);
+        font-size: 14px; font-weight: 600;
+    }
+
+    @media (max-width: 960px) {
+        .pt-grid-2, .pt-grid-3 { grid-template-columns: 1fr; gap: 0; }
+    }
+</style>
 
 {% if messages %}
-    <div class="oh-wrapper">
+    <div style="padding: 0 0 12px;">
         {% for message in messages %}
-            <div class="oh-alert-container">
-                <div class="oh-alert oh-alert--animated {{message.tags}}">
-                    {{ message }}
-                </div>
+            <div style="margin-bottom:8px;padding:12px 16px;border-radius:var(--pt-radius-sm);background:var(--pt-accent-soft);border:1px solid var(--pt-accent-border);color:var(--pt-accent);font-size:13.5px;font-weight:600;">
+                {{ message }}
             </div>
         {% endfor %}
     </div>
 {% endif %}
 
-<div class="oh-wrapper mt-4">
-    {% if employee.employee_work_info.shift_id %}
-        <span class="fw-bold" style="font-size: 17px">
-            {% if employee.employee_work_info.shift_id %}
-                {% trans "Current Shift" %} &nbsp : &nbsp {{ employee.employee_work_info.shift_id }}
-            {% endif %}
-        </span>
-        <button
-            style="display: inline-block"
-            class="oh-btn oh-btn--secondary ms-3"
-            data-toggle="oh-modal-toggle"
-            data-target="#shiftRequestModal"
-            hx-get="{% url 'shift-request-reallocate' %}?emp_id={{request.user.employee_get.id}}"
-            hx-target="#shiftRequestTargetModal"
-        >
-            <ion-icon
-                name="add-sharp"
-                class="mr-1 md hydrated"
-                role="img"
-                aria-label="{% trans 'add sharp' %}"
-            ></ion-icon>{% trans "Reallocate Shift." %}
-        </button>
-    {% endif %}
+<div class="pt-page">
+    <section class="pt-card">
+        {% if employee.employee_work_info.shift_id %}
+            <div class="pt-card-head">
+                <div class="pt-card-title">
+                    <span class="ic"><ion-icon name="time-outline"></ion-icon></span>
+                    <span>{% trans "Current Shift" %}&nbsp;&nbsp;:&nbsp;&nbsp;{{ employee.employee_work_info.shift_id }}</span>
+                </div>
+                <button
+                    class="pt-btn primary"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#shiftRequestModal"
+                    hx-get="{% url 'shift-request-reallocate' %}?emp_id={{request.user.employee_get.id}}"
+                    hx-target="#shiftRequestTargetModal"
+                >
+                    <ion-icon name="add-sharp"></ion-icon>{% trans "Reallocate Shift." %}
+                </button>
+            </div>
+        {% endif %}
 
-    <div class="oh-tabs mt-3">
-        <ul class="oh-tabs__tablist">
-            <li
-                class="oh-tabs__tab oh-tabs__tab--active"
-                data-target="#shift_tab_1"
-            >
-                <div>
-                    <img
-                        src="{% static 'images/ui/work-from-home (1).png' %}"
-                        alt=""
-                        style="width: 25px; height: 25px; margin-right: 3px"
-                    >
-                    {% trans "Work type request" %}
-                </div>
-                <button
-                    class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
-                    title="{% trans 'Add' %}"
-                    hx-get="{% url 'work-type-request' %}?emp_id={{emp_id}}"
-                    hx-target="#objectCreateModalTarget"
-                    data-target="#objectCreateModal"
-                    data-toggle="oh-modal-toggle"
-                >
-                    <ion-icon
-                        class="md hydrated"
-                        name="add-outline"
-                        role="img"
-                        aria-label="{% trans 'add outline' %}"
-                    ></ion-icon>
-                </button>
-            </li>
-            <li class="oh-tabs__tab" data-target="#shift_tab_3">
-                <div>
-                    <img
-                        src="{% static 'images/ui/work-from-home.png' %}"
-                        alt=""
-                        style="width: 25px; height: 25px; margin-right: 3px"
-                    >
-                    {% trans "Rotating work type" %}
-                </div>
-                {% if not request.GET.profile and perms.base.add_rotatingworktypeassign or request.user|is_reportingmanager %}
+        <div class="pt-inner-tabs-wrap">
+            <nav class="pt-inner-tabs" role="tablist" aria-label="Shift sections">
+                <button type="button" class="pt-inner-tab is-active" data-target="#shift_tab_1" role="tab" aria-selected="true">
+                    <span class="ic"><ion-icon name="home-outline"></ion-icon></span>
+                    <span>{% trans "Work type request" %}</span>
                     <button
-                        class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
+                        class="pt-btn pt-btn-icon ghost pt-add-btn"
                         title="{% trans 'Add' %}"
-                        hx-get="{% url 'rotating-work-type-assign-add' %}?emp_id={{emp_id}}"
+                        hx-get="{% url 'work-type-request' %}?emp_id={{emp_id}}"
                         hx-target="#objectCreateModalTarget"
                         data-target="#objectCreateModal"
                         data-toggle="oh-modal-toggle"
+                        onclick="event.stopPropagation()"
                     >
-                        <ion-icon
-                            class="md hydrated"
-                            name="add-outline"
-                            role="img"
-                            aria-label="{% trans 'add outline' %}"
-                        ></ion-icon>
+                        <ion-icon name="add-outline"></ion-icon>
                     </button>
-                {% endif %}
-            </li>
-            <li class="oh-tabs__tab" data-target="#shift_tab_4">
-                <div>
-                    <img
-                        src="{% static 'images/ui/time-management.png' %}"
-                        alt=""
-                        style="width: 25px; height: 25px; margin-right: 3px; opacity: 0.5"
-                    >
-                    {% trans "Shift request" %}
-                </div>
-                <button
-                    class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
-                    title="{% trans 'Add' %}"
-                    hx-get="{% url 'shift-request' %}?emp_id={{emp_id}}"
-                    hx-target="#objectCreateModalTarget"
-                    data-target="#objectCreateModal"
-                    data-toggle="oh-modal-toggle"
-                >
-                    <ion-icon
-                        class="md hydrated"
-                        name="add-outline"
-                        role="img"
-                        aria-label="{% trans 'add outline' %}"
-                    ></ion-icon>
                 </button>
-            </li>
-            <li class="oh-tabs__tab" data-target="#shift_tab_2">
-                <div>
-                    <img
-                        src="{% static 'images/ui/shift.png' %}"
-                        alt=""
-                        style="width: 25px; height: 25px; margin-right: 3px"
-                    >
-                    {% trans "Rotating Shift" %}
-                </div>
-                {% if not request.GET.profile and perms.add_rotatingworktypeassign or request.user|is_reportingmanager %}
+                <button type="button" class="pt-inner-tab" data-target="#shift_tab_3" role="tab" aria-selected="false">
+                    <span class="ic"><ion-icon name="sync-outline"></ion-icon></span>
+                    <span>{% trans "Rotating work type" %}</span>
+                    {% if not request.GET.profile and perms.base.add_rotatingworktypeassign or request.user|is_reportingmanager %}
+                        <button
+                            class="pt-btn pt-btn-icon ghost pt-add-btn"
+                            title="{% trans 'Add' %}"
+                            hx-get="{% url 'rotating-work-type-assign-add' %}?emp_id={{emp_id}}"
+                            hx-target="#objectCreateModalTarget"
+                            data-target="#objectCreateModal"
+                            data-toggle="oh-modal-toggle"
+                            onclick="event.stopPropagation()"
+                        >
+                            <ion-icon name="add-outline"></ion-icon>
+                        </button>
+                    {% endif %}
+                </button>
+                <button type="button" class="pt-inner-tab" data-target="#shift_tab_4" role="tab" aria-selected="false">
+                    <span class="ic"><ion-icon name="calendar-time-outline"></ion-icon></span>
+                    <span>{% trans "Shift request" %}</span>
                     <button
-                        class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
+                        class="pt-btn pt-btn-icon ghost pt-add-btn"
                         title="{% trans 'Add' %}"
-                        hx-get="{% url 'rotating-shift-assign-add' %}?emp_id={{emp_id}}"
+                        hx-get="{% url 'shift-request' %}?emp_id={{emp_id}}"
                         hx-target="#objectCreateModalTarget"
                         data-target="#objectCreateModal"
                         data-toggle="oh-modal-toggle"
+                        onclick="event.stopPropagation()"
                     >
-                        <ion-icon
-                            class="md hydrated"
-                            name="add-outline"
-                            role="img"
-                            aria-label="{% trans 'add outline' %}"
-                        ></ion-icon>
+                        <ion-icon name="add-outline"></ion-icon>
                     </button>
-                {% endif %}
-            </li>
-        </ul>
-        <div class="oh-tabs__contents" id="view-container">
-            <div
-                class="oh-tabs__content oh-tabs__content--active"
-                id="shift_tab_1"
-            >
-                <!-- Sticky Table -->
-                {% if work_data %}
-                    <div class="oh-sticky-table">
-                        <div class="oh-sticky-table__table oh-table--sortable">
-                            <div class="oh-sticky-table__thead">
-                                <div class="oh-sticky-table__tr">
-                                    <div class="oh-sticky-table__td">
-                                        {% trans "Employee" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Requested Work Type" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Previous/Current Work Type" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Requested Date" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Requested Till" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Description" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Status" %}
-                                    </div>
-                                    <div
-                                        class="oh-sticky-table__th"
-                                        style="width: 195px"
-                                    >
-                                        {% trans "Actions" %}
-                                    </div>
-                                    {% if not request.GET.profile %}
-                                        {% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
-                                            <div class="oh-sticky-table__th"></div>
-                                        {% endif %}
-                                    {% endif %}
-                                </div>
-                            </div>
+                </button>
+                <button type="button" class="pt-inner-tab" data-target="#shift_tab_2" role="tab" aria-selected="false">
+                    <span class="ic"><ion-icon name="refresh-outline"></ion-icon></span>
+                    <span>{% trans "Rotating Shift" %}</span>
+                    {% if not request.GET.profile and perms.add_rotatingworktypeassign or request.user|is_reportingmanager %}
+                        <button
+                            class="pt-btn pt-btn-icon ghost pt-add-btn"
+                            title="{% trans 'Add' %}"
+                            hx-get="{% url 'rotating-shift-assign-add' %}?emp_id={{emp_id}}"
+                            hx-target="#objectCreateModalTarget"
+                            data-target="#objectCreateModal"
+                            data-toggle="oh-modal-toggle"
+                            onclick="event.stopPropagation()"
+                        >
+                            <ion-icon name="add-outline"></ion-icon>
+                        </button>
+                    {% endif %}
+                </button>
+            </nav>
+        </div>
+
+        <div id="view-container">
+            <!-- TAB 1: Work Type Request -->
+            <div class="pt-inner-panel is-open" id="shift_tab_1">
+                <div class="pt-card-body">
+                    {% if work_data %}
+                        <div class="pt-records">
                             {% for work_type_request in work_data %}
-                                <div class="oh-sticky-table__tbody">
-                                    <div
-                                        class="oh-sticky-table__tr"
-                                        hx-get="{% url 'work-type-request-single-view' work_type_request.id %}?instances_ids={{work_type_requests_ids}}"
-                                        hx-target="#objectDetailsModalTarget"
-                                        data-target="#objectDetailsModal"
-                                        data-toggle="oh-modal-toggle"
-                                        draggable="true"
-                                    >
-                                        <div class="oh-sticky-table__td">
-                                            <div class="d-flex">
-                                                <div class="oh-profile oh-profile--md">
-                                                    <div class="oh-profile__avatar mr-1">
-                                                        <img
-                                                            src="https://ui-avatars.com/api/?name={{work_type_request.employee_id}}&amp;background=random"
-                                                            class="oh-profile__image"
-                                                            alt="{% trans 'Username' %}"
-                                                        >
-                                                    </div>
-                                                    <span
-                                                        class="oh-profile__name oh-text--dark"
-                                                    >{{ work_type_request.employee_id }}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="oh-sticky-table__td">
-                                            {{ work_type_request.work_type_id }}
-                                        </div>
-                                        <div class="oh-sticky-table__td">
-                                            {{ work_type_request.previous_work_type_id }}
-                                        </div>
-                                        <div class="oh-sticky-table__td dateformat_changer">
-                                            {{ work_type_request.requested_date }}
-                                        </div>
-                                        <div class="oh-sticky-table__td dateformat_changer">
-                                            {{ work_type_request.requested_till }}
-                                        </div>
-                                        <div class="oh-sticky-table__td">
-                                            {{ work_type_request.description }}
-                                        </div>
-                                        <div class="oh-sticky-table__td">
-                                            {{ work_type_request.request_status }}
-                                        </div>
-                                        <div class="oh-sticky-table__td">
-                                            <div
-                                                class="oh-btn-group"
-                                                onclick="event.stopPropagation()"
+                                <div
+                                    class="pt-record pt-record-clickable"
+                                    hx-get="{% url 'work-type-request-single-view' work_type_request.id %}?instances_ids={{work_type_requests_ids}}"
+                                    hx-target="#objectDetailsModalTarget"
+                                    data-target="#objectDetailsModal"
+                                    data-toggle="oh-modal-toggle"
+                                >
+                                    <div class="pt-record-head">
+                                        <div class="pt-avatar">
+                                            <img
+                                                src="https://ui-avatars.com/api/?name={{work_type_request.employee_id}}&amp;background=random"
+                                                class="pt-avatar-img"
+                                                alt="{% trans 'Username' %}"
                                             >
+                                            <span class="pt-avatar-name">{{ work_type_request.employee_id }}</span>
+                                        </div>
+                                        <span class="pt-tag
+                                            {% if work_type_request.approved %}success
+                                            {% elif work_type_request.canceled %}danger
+                                            {% else %}warning{% endif %}">
+                                            {{ work_type_request.request_status }}
+                                        </span>
+                                    </div>
+                                    <div class="pt-record-body">
+                                        <div class="pt-grid-2">
+                                            <ul class="pt-list">
+                                                <li class="pt-row">
+                                                    <span class="pt-label"><ion-icon name="briefcase-outline"></ion-icon>{% trans "Requested Work Type" %}</span>
+                                                    <span class="pt-value">{{ work_type_request.work_type_id }}</span>
+                                                </li>
+                                                <li class="pt-row">
+                                                    <span class="pt-label"><ion-icon name="calendar-outline"></ion-icon>{% trans "Requested Date" %}</span>
+                                                    <span class="pt-value dateformat_changer">{{ work_type_request.requested_date }}</span>
+                                                </li>
+                                                <li class="pt-row" style="border-bottom:0">
+                                                    <span class="pt-label"><ion-icon name="document-text-outline"></ion-icon>{% trans "Description" %}</span>
+                                                    <span class="pt-value muted">{{ work_type_request.description|default:"-" }}</span>
+                                                </li>
+                                            </ul>
+                                            <ul class="pt-list">
+                                                <li class="pt-row">
+                                                    <span class="pt-label"><ion-icon name="archive-outline"></ion-icon>{% trans "Previous/Current Work Type" %}</span>
+                                                    <span class="pt-value">{{ work_type_request.previous_work_type_id }}</span>
+                                                </li>
+                                                <li class="pt-row" style="border-bottom:0">
+                                                    <span class="pt-label"><ion-icon name="hourglass-outline"></ion-icon>{% trans "Requested Till" %}</span>
+                                                    <span class="pt-value dateformat_changer">{{ work_type_request.requested_till }}</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="pt-record-actions" onclick="event.stopPropagation()">
+                                        <div class="pt-record-actions-col">
+                                            <div class="pt-btn-group">
                                                 {% if work_type_request.approved == False and not work_type_request.canceled %}
                                                     <a
                                                         hx-get="{% url 'work-type-request-update' work_type_request.id %}"
                                                         hx-target="#objectUpdateModalTarget"
                                                         data-toggle="oh-modal-toggle"
                                                         data-target="#objectUpdateModal"
-                                                        class="oh-btn oh-btn--light-bkg w-50"
+                                                        class="pt-btn pt-btn-icon"
                                                         title="{% trans 'Edit' %}"
                                                     ><ion-icon name="create-outline"></ion-icon></a>
                                                 {% else %}
-                                                    <button
-                                                        class="oh-btn oh-btn--light-bkg w-50"
-                                                        disabled
-                                                        aria-label="{% trans 'Edit unavailable' %}"
-                                                        title="{% trans 'Edit unavailable' %}"
-                                                    >
+                                                    <button class="pt-btn pt-btn-icon" disabled title="{% trans 'Edit' %}">
                                                         <ion-icon name="create-outline"></ion-icon>
                                                     </button>
                                                 {% endif %}
                                                 <a
-                                                    class="oh-btn oh-btn--light-bkg w-50"
+                                                    class="pt-btn pt-btn-icon"
                                                     title="{% trans 'Duplicate' %}"
                                                     style="cursor: pointer"
                                                     data-toggle="oh-modal-toggle"
@@ -275,24 +461,19 @@
                                                         hx-confirm="{% trans 'Are you sure you want to delete this work type request?' %}"
                                                         hx-post="{% url 'work-type-request-delete' work_type_request.id  %}"
                                                         hx-target="#shift_target"
-                                                        class="w-50"
+                                                        style="display:inline"
                                                     >
                                                         {% csrf_token %}
                                                         <button
                                                             type="submit"
-                                                            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                            class="pt-btn pt-btn-icon danger"
                                                             title="{% trans 'Remove' %}"
                                                         >
                                                             <ion-icon name="trash-outline"></ion-icon>
                                                         </button>
                                                     </form>
                                                 {% else %}
-                                                    <button
-                                                        class="oh-btn oh-btn--light-bkg w-50"
-                                                        disabled
-                                                        aria-label="{% trans 'Remove unavailable' %}"
-                                                        title="{% trans 'Remove unavailable' %}"
-                                                    >
+                                                    <button class="pt-btn pt-btn-icon" disabled title="{% trans 'Remove' %}">
                                                         <ion-icon name="trash-outline"></ion-icon>
                                                     </button>
                                                 {% endif %}
@@ -300,35 +481,23 @@
                                         </div>
                                         {% if not request.GET.profile %}
                                             {% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
-                                                <div
-                                                    class="oh-sticky-table__td oh-sticky-table__right"
-                                                    onclick="event.stopPropagation()"
-                                                >
-                                                    <div class="oh-btn-group">
+                                                <div class="pt-record-actions-col">
+                                                    <div class="pt-btn-group">
                                                         {% if work_type_request.approved == False and work_type_request.canceled == False %}
                                                             <a
                                                                 title="{% trans 'Approve' %}"
                                                                 hx-confirm="{% trans 'Do you want to approve this request?' %}"
                                                                 hx-post="/work-type-request-approve/{{work_type_request.id}}/?{{pd}}"
                                                                 hx-target="#shift_target"
-                                                                class="oh-btn oh-btn--success w-100"
+                                                                class="pt-btn success"
                                                             >
-                                                                <ion-icon
-                                                                    class="me-1"
-                                                                    name="checkmark-outline"
-                                                                ></ion-icon>
+                                                                <ion-icon name="checkmark-outline"></ion-icon>
+                                                                <span style="font-size:12.5px">{% trans "Approve" %}</span>
                                                             </a>
                                                         {% else %}
-                                                            <button
-                                                                class="oh-btn oh-btn--success w-100"
-                                                                disabled
-                                                                aria-label="{% trans 'Approve unavailable' %}"
-                                                                title="{% trans 'Approve unavailable' %}"
-                                                            >
-                                                                <ion-icon
-                                                                    class="me-1"
-                                                                    name="checkmark-outline"
-                                                                ></ion-icon>
+                                                            <button class="pt-btn success" disabled>
+                                                                <ion-icon name="checkmark-outline"></ion-icon>
+                                                                <span style="font-size:12.5px">{% trans "Approve" %}</span>
                                                             </button>
                                                         {% endif %}
                                                         {% if work_type_request.canceled == False %}
@@ -337,24 +506,15 @@
                                                                 hx-post="/work-type-request-cancel/{{work_type_request.id}}/?{{pd}}"
                                                                 hx-target="#shift_target"
                                                                 title="{% trans 'Reject' %}"
-                                                                class="oh-btn oh-btn--danger w-100"
+                                                                class="pt-btn danger"
                                                             >
-                                                                <ion-icon
-                                                                    class="me-1"
-                                                                    name="close-circle-outline"
-                                                                ></ion-icon>
+                                                                <ion-icon name="close-circle-outline"></ion-icon>
+                                                                <span style="font-size:12.5px">{% trans "Reject" %}</span>
                                                             </a>
                                                         {% else %}
-                                                            <button
-                                                                disabled
-                                                                class="oh-btn oh-btn--danger w-100"
-                                                                aria-label="{% trans 'Reject unavailable' %}"
-                                                                title="{% trans 'Reject unavailable' %}"
-                                                            >
-                                                                <ion-icon
-                                                                    class="me-1"
-                                                                    name="close-circle-outline"
-                                                                ></ion-icon>
+                                                            <button disabled class="pt-btn danger">
+                                                                <ion-icon name="close-circle-outline"></ion-icon>
+                                                                <span style="font-size:12.5px">{% trans "Reject" %}</span>
                                                             </button>
                                                         {% endif %}
                                                     </div>
@@ -365,135 +525,100 @@
                                 </div>
                             {% endfor %}
                         </div>
-                    </div>
-                {% else %}
-                    <div
-                        class="d-flex justify-content-center align-items-center"
-                        style="height: 40vh"
-                    >
-                        <h5 class="oh-404__subtitle">
-                            {% trans "No work type request has been created." %}
-                        </h5>
-                    </div>
-                {% endif %}
+                    {% else %}
+                        <div class="pt-empty">
+                            <div class="ic-lg"><ion-icon name="document-text-outline"></ion-icon></div>
+                            <div class="pt-empty-title">{% trans "No work type request has been created." %}</div>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
-            <div class="oh-tabs__content" id="shift_tab_2">
-                {% if rshift_assign %}
-                    <div class="oh-sticky-table">
-                        <div class="oh-sticky-table__table oh-table--sortable">
-                            <div class="oh-sticky-table__thead">
-                                <div class="oh-sticky-table__tr">
-                                    <div class="oh-sticky-table__td">
-                                        {% trans "Employee" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Title" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Based On" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Rotate" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Start Date" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Current Shift" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Next Switch" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Next Shift" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Status" %}
-                                    </div>
-                                    {% if not request.GET.profile and perms.base.change_rotatingworktypeassign or perms.base.delete_rotatingshiftassign or request.user|check_manager:rshift_assign.0 or request.user|is_reportingmanager %}
-                                        <div
-                                            class="oh-sticky-table__th"
-                                            style="width: 250px"
-                                        >
-                                            {% trans "Actions" %}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <div class="oh-sticky-table__tbody">
-                                {% for rshift in rshift_assign %}
-                                    <div
-                                        class="oh-sticky-table__tr"
-                                        draggable="true"
-                                        data-toggle="oh-modal-toggle"
-                                        data-target="#objectDetailsModal"
-                                        hx-get="{% url 'rshift-individual-view' rshift.id %}?instances_ids={{rshift_assign_ids}}"
-                                        hx-target="#objectDetailsModalTarget"
-                                    >
-                                        <div class="oh-sticky-table__td">
-                                            <div class="oh-profile oh-profile--md">
-                                                <div class="oh-profile__avatar mr-1">
-                                                    <img
-                                                        src="https://ui-avatars.com/api/?name={{rshift.employee_id.employee_first_name}}+{{rshift.employee_id.employee_last_name}}&background=random"
-                                                        class="oh-profile__image"
-                                                        alt="{% trans 'Username' %}"
-                                                    >
-                                                </div>
-                                                <span
-                                                    class="oh-profile__name oh-text--dark"
-                                                >{{ rshift.employee_id }}</span>
+
+            <!-- TAB 2: Rotating Shift -->
+            <div class="pt-inner-panel" id="shift_tab_2">
+                <div class="pt-card-body">
+                    {% if rshift_assign %}
+                        <div class="pt-records">
+                            {% for rshift in rshift_assign %}
+                                <div
+                                    class="pt-record pt-record-clickable"
+                                    data-toggle="oh-modal-toggle"
+                                    data-target="#objectDetailsModal"
+                                    hx-get="{% url 'rshift-individual-view' rshift.id %}?instances_ids={{rshift_assign_ids}}"
+                                    hx-target="#objectDetailsModalTarget"
+                                >
+                                    <div class="pt-record-head">
+                                        <div class="pt-avatar">
+                                            <img
+                                                src="https://ui-avatars.com/api/?name={{rshift.employee_id.employee_first_name}}+{{rshift.employee_id.employee_last_name}}&background=random"
+                                                class="pt-avatar-img"
+                                                alt="{% trans 'Username' %}"
+                                            >
+                                            <div style="display:flex;flex-direction:column;gap:2px">
+                                                <span class="pt-avatar-name">{{ rshift.employee_id }}</span>
+                                                <span style="color:var(--pt-text-2);font-size:12.5px;font-weight:500">{{ rshift.rotating_shift_id }}</span>
                                             </div>
                                         </div>
-                                        <div class="oh-sticky-table__td">
-                                            {{ rshift.rotating_shift_id }}
+                                        <span class="pt-tag {% if rshift.is_active %}success{% else %}muted{% endif %}">
+                                            {% if rshift.is_active %}{% trans "Is Active" %}{% else %}{% trans "Archived" %}{% endif %}
+                                        </span>
+                                    </div>
+                                    <div class="pt-record-body">
+                                        <div class="pt-grid-3">
+                                            <ul class="pt-list">
+                                                <li class="pt-row">
+                                                    <span class="pt-label"><ion-icon name="layers-outline"></ion-icon>{% trans "Based On" %}</span>
+                                                    <span class="pt-value">{{ rshift.get_based_on_display }}</span>
+                                                </li>
+                                                <li class="pt-row" style="border-bottom:0">
+                                                    <span class="pt-label"><ion-icon name="calendar-outline"></ion-icon>{% trans "Start Date" %}</span>
+                                                    <span class="pt-value dateformat_changer">{{ rshift.start_date }}</span>
+                                                </li>
+                                            </ul>
+                                            <ul class="pt-list">
+                                                <li class="pt-row">
+                                                    <span class="pt-label"><ion-icon name="repeat-outline"></ion-icon>{% trans "Rotate" %}</span>
+                                                    <span class="pt-value muted">
+                                                        {% if rshift.based_on == 'after' %}
+                                                            {% trans "Rotate after" %} {{ rshift.rotate_after_day }} {% trans "days" %}
+                                                        {% elif rshift.based_on == "weekly" %}
+                                                            {% trans "Weekly every" %} {{ rshift.rotate_every_weekend }}
+                                                        {% elif rshift.based_on == "monthly" %}
+                                                            {% if rshift.rotate_every == "1" %}
+                                                                {% trans "Rotate every 1st day of month" %}
+                                                            {% elif rshift.rotate_every == "2" %}
+                                                                {% trans "Rotate every 2nd day of month" %}
+                                                            {% elif rshift.rotate_every == "3" %}
+                                                                {% trans "Rotate every 3rd day of month" %}
+                                                            {% elif rshift.rotate_every == "last" %}
+                                                                {% trans "Rotate every last day of month" %}
+                                                            {% else %}
+                                                                {% trans "Rotate every" %} {{ rshift.rotate_every }}{% trans "th day of month" %}
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    </span>
+                                                </li>
+                                                <li class="pt-row" style="border-bottom:0">
+                                                    <span class="pt-label"><ion-icon name="time-outline"></ion-icon>{% trans "Current Shift" %}</span>
+                                                    <span class="pt-value">{{ rshift.current_shift }}</span>
+                                                </li>
+                                            </ul>
+                                            <ul class="pt-list">
+                                                <li class="pt-row">
+                                                    <span class="pt-label"><ion-icon name="arrow-forward-outline"></ion-icon>{% trans "Next Switch" %}</span>
+                                                    <span class="pt-value dateformat_changer">{{ rshift.next_change_date }}</span>
+                                                </li>
+                                                <li class="pt-row" style="border-bottom:0">
+                                                    <span class="pt-label"><ion-icon name="play-forward-outline"></ion-icon>{% trans "Next Shift" %}</span>
+                                                    <span class="pt-value">{{ rshift.next_shift }}</span>
+                                                </li>
+                                            </ul>
                                         </div>
-                                        <div class="oh-sticky-table__td">
-                                            {{ rshift.get_based_on_display }}
-                                        </div>
-                                        <div class="oh-sticky-table__td">
-                                            {% if rshift.based_on == 'after' %}
-                                                {% trans "Rotate after" %}{{ rshift.rotate_after_day }}{% trans "days" %}
-                                            {% elif rshift.based_on == "weekly" %}
-                                                {% trans "Weekly every" %}{{ rshift.rotate_every_weekend }}
-                                            {% elif rshift.based_on == "monthly" %}
-                                                {% if rshift.rotate_every == "1" %}
-                                                    {% trans "Rotate every 1st day of month " %}
-                                                {% elif rshift.rotate_every == "2" %}
-                                                    {% trans "Rotate every 2nd day of month " %}
-                                                {% elif rshift.rotate_every == "3" %}
-                                                    {% trans "Rotate every 3rd day of month" %}
-                                                {% elif rshift.rotate_every == "last" %}
-                                                    {% trans "Rotate every last day of month" %}
-                                                {% else %}
-                                                    {% trans "Rotate every " %}{{ rshift.rotate_every }}{% trans "th day ofmonth " %}
-                                                {% endif %}
-                                            {% endif %}
-                                        </div>
-                                        <div class="oh-sticky-table__td dateformat_changer">
-                                            {{ rshift.start_date }}
-                                        </div>
-                                        <div class="oh-sticky-table__td">
-                                            {{ rshift.current_shift }}
-                                        </div>
-                                        <div class="oh-sticky-table__td dateformat_changer">
-                                            {{ rshift.next_change_date }}
-                                        </div>
-                                        <div class="oh-sticky-table__td">
-                                            {{ rshift.next_shift }}
-                                        </div>
-                                        <div class="oh-sticky-table__td">
-                                            {% if rshift.is_active %}
-                                                {% trans "Is Active" %}
-                                            {% else %}
-                                                {% trans "Archived" %}
-                                            {% endif %}
-                                        </div>
-                                        {% if not request.GET.profile and perms.base.change_rotatingworktypeassign or perms.base.delete_rotatingshiftassign or request.user|check_manager:rshift or request.user|is_reportingmanager %}
-                                            <div
-                                                class="oh-sticky-table__td"
-                                                onclick="event.stopPropagation()"
-                                            >
-                                                <div class="oh-btn-group">
+                                    </div>
+                                    {% if not request.GET.profile and perms.base.change_rotatingworktypeassign or perms.base.delete_rotatingshiftassign or request.user|check_manager:rshift or request.user|is_reportingmanager %}
+                                        <div class="pt-record-actions" onclick="event.stopPropagation()">
+                                            <div class="pt-record-actions-col">
+                                                <div class="pt-btn-group">
                                                     {% if perms.base.change_rotatingshiftassign or request.user|check_manager:rshift or request.user|is_reportingmanager %}
                                                         <a
                                                             hx-get="{% url 'rotating-shift-assign-update' rshift.id %}"
@@ -502,12 +627,12 @@
                                                             data-target="#objectUpdateModal"
                                                             data-toggle="oh-modal-toggle"
                                                             type="button"
-                                                            class="oh-btn oh-btn--light-bkg w-50"
+                                                            class="pt-btn pt-btn-icon"
                                                             title="{% trans 'Update' %}"
                                                         >
                                                             <ion-icon name="create-outline"></ion-icon></a>
                                                         <a
-                                                            class="oh-btn oh-btn--light-bkg w-100"
+                                                            class="pt-btn pt-btn-icon"
                                                             style="cursor: pointer"
                                                             title="{% trans 'Duplicate' %}"
                                                             data-toggle="oh-modal-toggle"
@@ -524,7 +649,7 @@
                                                                 hx-confirm="{% trans 'Do you want to archive this rotating shift assign?' %}"
                                                                 hx-get="{% url 'rotating-shift-assign-archive' rshift.id %}?{{pd}}"
                                                                 hx-target="#shift_target"
-                                                                style="width: 100%"
+                                                                style="display:inline"
                                                             >
                                                                 <input
                                                                     type="hidden"
@@ -533,7 +658,7 @@
                                                                     id=""
                                                                 >
                                                                 <button
-                                                                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                                    class="pt-btn pt-btn-icon"
                                                                     title="{% trans 'Archive' %}"
                                                                 >
                                                                     <ion-icon name="archive"></ion-icon>
@@ -544,10 +669,10 @@
                                                                 hx-confirm="{% trans 'Do you Want to un-archive this rotating shift assign?' %}"
                                                                 hx-get="{% url 'rotating-shift-assign-archive' rshift.id %}?{{pd}}"
                                                                 hx-target="#shift_target"
-                                                                style="width: 100%"
+                                                                style="display:inline"
                                                             >
                                                                 <button
-                                                                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                                    class="pt-btn pt-btn-icon"
                                                                     title="{% trans 'Un-Archive' %}"
                                                                 >
                                                                     <ion-icon name="archive"></ion-icon>
@@ -560,12 +685,12 @@
                                                             hx-confirm="{% trans 'Are you sure you want to delete this rotating shift assign?' %}"
                                                             hx-post="{% url 'rotating-shift-assign-delete' rshift.id %}"
                                                             hx-target="#shift_target"
-                                                            class="w-50"
+                                                            style="display:inline"
                                                         >
                                                             {% csrf_token %}
                                                             <button
                                                                 type="submit"
-                                                                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                                class="pt-btn pt-btn-icon danger"
                                                                 title="{% trans 'Remove' %}"
                                                             >
                                                                 <ion-icon name="trash-outline"></ion-icon>
@@ -574,142 +699,105 @@
                                                     {% endif %}
                                                 </div>
                                             </div>
-                                        {% endif %}
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                {% else %}
-                    <div
-                        class="d-flex justify-content-center align-items-center"
-                        style="height: 40vh"
-                    >
-                        <h5 class="oh-404__subtitle">
-                            {% trans "No rotating shift has been assigned." %}
-                        </h5>
-                    </div>
-                {% endif %}
-            </div>
-            <div class="oh-tabs__content" id="shift_tab_3">
-                {% if rwork_type_assign %}
-                    <div class="oh-sticky-table">
-                        <div class="oh-sticky-table__table oh-table--sortable">
-                            <div class="oh-sticky-table__thead">
-                                <div class="oh-sticky-table__tr">
-                                    <div class="oh-sticky-table__td">
-                                        {% trans "Employee" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Title" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Based On" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Rotate" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Start Date" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Current Work Type" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Next Switch" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Next Work Type" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Status" %}
-                                    </div>
-                                    {% if not request.GET.profile and perms.base.change_rotatingworktypeassign or perms.base.delete_rotatingworktypeassign or request.user|check_manager:rwork_type_assign.0 or request.user|is_reportingmanager %}
-                                        <div
-                                            class="oh-sticky-table__sd oh-sticky-table__right"
-                                            style="width: 250px"
-                                        >
-                                            <div class="d-flex">
-                                                <div>{% trans "Actions" %}</div>
-                                            </div>
                                         </div>
                                     {% endif %}
                                 </div>
-                            </div>
-                            <div class="oh-sticky-table__tbody">
-                                {% for rwork_type in rwork_type_assign %}
-                                    <div
-                                        class="oh-sticky-table__tr"
-                                        hx-get='{% url "rwork-individual-view" rwork_type.id %}?instances_ids={{rwork_type_assign_ids}}'
-                                        data-toggle="oh-modal-toggle"
-                                        data-target="#objectDetailsModal"
-                                        hx-target="#objectDetailsModalTarget"
-                                        draggable="true"
-                                    >
-                                        <div class="oh-sticky-table__td">
-                                            <div class="oh-profile oh-profile--md">
-                                                <div class="oh-profile__avatar mr-1">
-                                                    <img
-                                                        src="https://ui-avatars.com/api/?name={{rwork_type.employee_id.employee_first_name}}+{{rwork_type.employee_id.employee_last_name}}&background=random"
-                                                        class="oh-profile__image"
-                                                        alt="{% trans 'Username' %}"
-                                                    >
-                                                </div>
-                                                <span
-                                                    class="oh-profile__name oh-text--dark"
-                                                >{{ rwork_type.employee_id }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="pt-empty">
+                            <div class="ic-lg"><ion-icon name="refresh-outline"></ion-icon></div>
+                            <div class="pt-empty-title">{% trans "No rotating shift has been assigned." %}</div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- TAB 3: Rotating Work Type -->
+            <div class="pt-inner-panel" id="shift_tab_3">
+                <div class="pt-card-body">
+                    {% if rwork_type_assign %}
+                        <div class="pt-records">
+                            {% for rwork_type in rwork_type_assign %}
+                                <div
+                                    class="pt-record pt-record-clickable"
+                                    hx-get='{% url "rwork-individual-view" rwork_type.id %}?instances_ids={{rwork_type_assign_ids}}'
+                                    data-toggle="oh-modal-toggle"
+                                    data-target="#objectDetailsModal"
+                                    hx-target="#objectDetailsModalTarget"
+                                >
+                                    <div class="pt-record-head">
+                                        <div class="pt-avatar">
+                                            <img
+                                                src="https://ui-avatars.com/api/?name={{rwork_type.employee_id.employee_first_name}}+{{rwork_type.employee_id.employee_last_name}}&background=random"
+                                                class="pt-avatar-img"
+                                                alt="{% trans 'Username' %}"
+                                            >
+                                            <div style="display:flex;flex-direction:column;gap:2px">
+                                                <span class="pt-avatar-name">{{ rwork_type.employee_id }}</span>
+                                                <span style="color:var(--pt-text-2);font-size:12.5px;font-weight:500">{{ rwork_type.rotating_work_type_id }}</span>
                                             </div>
                                         </div>
-                                        <div class="oh-sticky-table__td">
-                                            {{ rwork_type.rotating_work_type_id }}
+                                        <span class="pt-tag {% if rwork_type.is_active %}success{% else %}muted{% endif %}">
+                                            {% if rwork_type.is_active %}{% trans "Is Active" %}{% else %}{% trans "Archived" %}{% endif %}
+                                        </span>
+                                    </div>
+                                    <div class="pt-record-body">
+                                        <div class="pt-grid-3">
+                                            <ul class="pt-list">
+                                                <li class="pt-row">
+                                                    <span class="pt-label"><ion-icon name="layers-outline"></ion-icon>{% trans "Based On" %}</span>
+                                                    <span class="pt-value">{{ rwork_type.get_based_on_display }}</span>
+                                                </li>
+                                                <li class="pt-row" style="border-bottom:0">
+                                                    <span class="pt-label"><ion-icon name="calendar-outline"></ion-icon>{% trans "Start Date" %}</span>
+                                                    <span class="pt-value dateformat_changer">{{ rwork_type.start_date }}</span>
+                                                </li>
+                                            </ul>
+                                            <ul class="pt-list">
+                                                <li class="pt-row">
+                                                    <span class="pt-label"><ion-icon name="repeat-outline"></ion-icon>{% trans "Rotate" %}</span>
+                                                    <span class="pt-value muted">
+                                                        {% if rwork_type.based_on == 'after' %}
+                                                            {% trans "Rotate after" %} {{ rwork_type.rotate_after_day }} {% trans "days" %}
+                                                        {% elif rwork_type.based_on == "weekly" %}
+                                                            {% trans "Weekly every" %} {{ rwork_type.rotate_every_weekend }}
+                                                        {% elif rwork_type.based_on == "monthly" %}
+                                                            {% if rwork_type.rotate_every == "1" %}
+                                                                {% trans "Rotate every 1st day of month" %}
+                                                            {% elif rwork_type.rotate_every == "2" %}
+                                                                {% trans "Rotate every 2nd day of month" %}
+                                                            {% elif rwork_type.rotate_every == "3" %}
+                                                                {% trans "Rotate every 3rd day of month" %}
+                                                            {% elif rwork_type.rotate_every == "last" %}
+                                                                {% trans "Rotate every last day of month" %}
+                                                            {% else %}
+                                                                {% trans "Rotate every" %} {{ rwork_type.rotate_every }}{% trans "th day of month" %}
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    </span>
+                                                </li>
+                                                <li class="pt-row" style="border-bottom:0">
+                                                    <span class="pt-label"><ion-icon name="home-outline"></ion-icon>{% trans "Current Work Type" %}</span>
+                                                    <span class="pt-value">{{ rwork_type.current_work_type }}</span>
+                                                </li>
+                                            </ul>
+                                            <ul class="pt-list">
+                                                <li class="pt-row">
+                                                    <span class="pt-label"><ion-icon name="arrow-forward-outline"></ion-icon>{% trans "Next Switch" %}</span>
+                                                    <span class="pt-value dateformat_changer">{{ rwork_type.next_change_date }}</span>
+                                                </li>
+                                                <li class="pt-row" style="border-bottom:0">
+                                                    <span class="pt-label"><ion-icon name="play-forward-outline"></ion-icon>{% trans "Next Work Type" %}</span>
+                                                    <span class="pt-value">{{ rwork_type.next_work_type }}</span>
+                                                </li>
+                                            </ul>
                                         </div>
-                                        <div class="oh-sticky-table__td">
-                                            {{ rwork_type.get_based_on_display }}
-                                        </div>
-                                        <div class="oh-sticky-table__td">
-                                            {% if rwork_type.based_on == 'after' %}
-                                                {% trans "Rotate after " %}{{ rwork_type.rotate_after_day }}{% trans " days" %}
-                                            {% elif rwork_type.based_on == "weekly" %}
-                                                {% trans "Weekly every " %}{{ rwork_type.rotate_every_weekend }}
-                                            {% elif rwork_type.based_on == "monthly" %}
-                                                {% if rwork_type.rotate_every == "1" %}
-                                                    {% trans "Rotate every 1st day of month " %}
-                                                {% elif rwork_type.rotate_every == "2" %}
-                                                    {% trans "Rotate every 2nd day of month " %}
-                                                {% elif rwork_type.rotate_every == "3" %}
-                                                    {% trans "Rotate every 3rd day of month" %}
-                                                {% elif rwork_type.rotate_every == "last" %}
-                                                    {% trans "Rotate every last day of month " %}
-                                                {% else %}
-                                                    {% trans "Rotate every " %}{{ rwork_type.rotate_every }}{% trans "th day of month " %}
-                                                {% endif %}
-                                            {% endif %}
-                                        </div>
-                                        <div class="oh-sticky-table__td dateformat_changer">
-                                            {{ rwork_type.start_date }}
-                                        </div>
-                                        <div class="oh-sticky-table__td">
-                                            {{ rwork_type.current_work_type }}
-                                        </div>
-                                        <div class="oh-sticky-table__td dateformat_changer">
-                                            {{ rwork_type.next_change_date }}
-                                        </div>
-                                        <div class="oh-sticky-table__td">
-                                            {{ rwork_type.next_work_type }}
-                                        </div>
-                                        <div class="oh-sticky-table__td">
-                                            {% if rwork_type.is_active %}
-                                                {% trans "Is Active" %}
-                                            {% else %}
-                                                {% trans "Archived" %}
-                                            {% endif %}
-                                        </div>
-                                        {% if not request.GET.profile and perms.base.change_rotatingworktypeassign or perms.base.delete_rotatingworktypeassign or request.user|check_manager:rwork_type %}
-                                            <div
-                                                class="oh-sticky-table__td oh-sticky-table__right"
-                                                onclick="event.stopPropagation()"
-                                            >
-                                                <div class="oh-btn-group">
+                                    </div>
+                                    {% if not request.GET.profile and perms.base.change_rotatingworktypeassign or perms.base.delete_rotatingworktypeassign or request.user|check_manager:rwork_type %}
+                                        <div class="pt-record-actions" onclick="event.stopPropagation()">
+                                            <div class="pt-record-actions-col">
+                                                <div class="pt-btn-group">
                                                     {% if perms.base.change_rotatingworktypeassign or request.user|is_reportingmanager %}
                                                         <a
                                                             hx-get="{% url 'rotating-work-type-assign-update' rwork_type.id %}"
@@ -717,7 +805,7 @@
                                                             data-target="#objectUpdateModal"
                                                             data-toggle="oh-modal-toggle"
                                                             type="button"
-                                                            class="oh-btn oh-btn--light-bkg w-50"
+                                                            class="pt-btn pt-btn-icon"
                                                             title="{% trans 'Update' %}"
                                                         >
                                                             <ion-icon name="create-outline"></ion-icon>
@@ -728,7 +816,7 @@
                                                             data-target="#objectCreateModal"
                                                             data-toggle="oh-modal-toggle"
                                                             type="button"
-                                                            class="oh-btn oh-btn--light-bkg w-50"
+                                                            class="pt-btn pt-btn-icon"
                                                             title="{% trans 'Duplicate' %}"
                                                         >
                                                             <ion-icon name="copy-outline"></ion-icon>
@@ -740,10 +828,10 @@
                                                                 hx-confirm="{% trans 'Do you want to archive this rotating work type assign?' %}"
                                                                 hx-get="{% url 'rotating-work-type-assign-archive' rwork_type.id %}?{{pd}}"
                                                                 hx-target="#shift_target"
-                                                                style="width: 100%"
+                                                                style="display:inline"
                                                             >
                                                                 <button
-                                                                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                                    class="pt-btn pt-btn-icon"
                                                                     title="{% trans 'Archive' %}"
                                                                 >
                                                                     <ion-icon name="archive"></ion-icon>
@@ -754,10 +842,10 @@
                                                                 hx-confirm="{% trans 'Do you want to un-archive this rotating work type assign?' %}"
                                                                 hx-get="{% url 'rotating-work-type-assign-archive' rwork_type.id %}?{{pd}}"
                                                                 hx-target="#shift_target"
-                                                                style="width: 100%"
+                                                                style="display:inline"
                                                             >
                                                                 <button
-                                                                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                                    class="pt-btn pt-btn-icon"
                                                                     title="{% trans 'Un-Archive' %}"
                                                                 >
                                                                     <ion-icon name="archive"></ion-icon>
@@ -770,12 +858,12 @@
                                                             hx-confirm="{% trans 'Are you sure you want to delete this rotating work type assign?' %}"
                                                             hx-post="{% url 'rotating-work-type-assign-delete' rwork_type.id %}?{{pd}}"
                                                             hx-target="#shift_target"
-                                                            style="width: 100%"
+                                                            style="display:inline"
                                                         >
                                                             {% csrf_token %}
                                                             <button
                                                                 type="submit"
-                                                                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                                class="pt-btn pt-btn-icon danger"
                                                                 title="{% trans 'Remove' %}"
                                                             >
                                                                 <ion-icon name="trash-outline"></ion-icon>
@@ -784,105 +872,47 @@
                                                     {% endif %}
                                                 </div>
                                             </div>
-                                        {% endif %}
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                {% else %}
-                    <div
-                        class="d-flex justify-content-center align-items-center"
-                        style="height: 40vh"
-                    >
-                        <h5 class="oh-404__subtitle">
-                            {% trans "No rotating work type has been assigned." %}
-                        </h5>
-                    </div>
-                {% endif %}
-            </div>
-
-            <div class="oh-tabs__content" id="shift_tab_4">
-                {% if shift_data %}
-                    <div class="oh-sticky-table">
-                        <div class="oh-sticky-table__table oh-table--sortable">
-                            <div class="oh-sticky-table__thead">
-                                <div class="oh-sticky-table__tr">
-                                    <div class="oh-sticky-table__th">
-                                        <div class="d-flex">
-                                            <div>{% trans "Employee" %}</div>
                                         </div>
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Requested Shift" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Previous/Current Shift" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Requested Date" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Requested Till" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Description" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th">
-                                        {% trans "Status" %}
-                                    </div>
-                                    <div class="oh-sticky-table__th" style="width: 195px">
-                                        {% trans "Actions" %}
-                                    </div>
-                                    {% if not request.GET.profile %}
-                                        {% if perms.base.change_shiftrequest or request.user|check_manager:shift_data.0 %}
-                                            <div class="oh-sticky-table__th"></div>
-                                        {% endif %}
                                     {% endif %}
                                 </div>
-                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="pt-empty">
+                            <div class="ic-lg"><ion-icon name="sync-outline"></ion-icon></div>
+                            <div class="pt-empty-title">{% trans "No rotating work type has been assigned." %}</div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- TAB 4: Shift Request -->
+            <div class="pt-inner-panel" id="shift_tab_4">
+                <div class="pt-card-body">
+                    {% if shift_data %}
+                        <div class="pt-records">
                             {% for shift_request in shift_data %}
-                                <div class="oh-sticky-table__tbody">
-                                    <div
-                                        draggable="true"
-                                        class="oh-sticky-table__tr"
-                                        data-toggle="oh-modal-toggle"
-                                        data-target="#objectDetailsModal"
-                                        hx-get="{% url 'shift-request-details' shift_request.id %}?instances_ids={{shift_requests_ids}}"
-                                        hx-target="#objectDetailsModalTarget"
-                                    >
-                                        <div class="oh-sticky-table__sd">
-                                            <div class="d-flex">
-                                                <div class="oh-profile oh-profile--md">
-                                                    <div class="oh-profile__avatar mr-1">
-                                                        <img
-                                                            src="https://ui-avatars.com/api/?name={{shift_request.employee_id}}&amp;background=random"
-                                                            class="oh-profile__image"
-                                                            alt="{% trans 'Username' %}"
-                                                        >
-                                                    </div>
-                                                    <span
-                                                        class="oh-profile__name oh-text--dark"
-                                                    >{{ shift_request.employee_id }}</span>
-                                                </div>
-                                            </div>
+                                <div
+                                    class="pt-record pt-record-clickable"
+                                    draggable="true"
+                                    data-toggle="oh-modal-toggle"
+                                    data-target="#objectDetailsModal"
+                                    hx-get="{% url 'shift-request-details' shift_request.id %}?instances_ids={{shift_requests_ids}}"
+                                    hx-target="#objectDetailsModalTarget"
+                                >
+                                    <div class="pt-record-head">
+                                        <div class="pt-avatar">
+                                            <img
+                                                src="https://ui-avatars.com/api/?name={{shift_request.employee_id}}&amp;background=random"
+                                                class="pt-avatar-img"
+                                                alt="{% trans 'Username' %}"
+                                            >
+                                            <span class="pt-avatar-name">{{ shift_request.employee_id }}</span>
                                         </div>
-                                        <div class="oh-sticky-table__td">
-                                            {{ shift_request.shift_id }}
-                                        </div>
-                                        <div class="oh-sticky-table__td">
-                                            {{ shift_request.previous_shift_id }}
-                                        </div>
-                                        <div class="oh-sticky-table__td dateformat_changer">
-                                            {{ shift_request.requested_date }}
-                                        </div>
-                                        <div class="oh-sticky-table__td dateformat_changer">
-                                            {{ shift_request.requested_till }}
-                                        </div>
-                                        <div class="oh-sticky-table__td">
-                                            {{ shift_request.description }}
-                                        </div>
-                                        <div class="oh-sticky-table__td">
+                                        <span class="pt-tag
+                                            {% if shift_request.approved %}success
+                                            {% elif shift_request.canceled %}danger
+                                            {% else %}warning{% endif %}">
                                             {% if shift_request.approved %}
                                                 {% trans "Approved" %}
                                             {% elif shift_request.canceled %}
@@ -890,33 +920,55 @@
                                             {% else %}
                                                 {% trans "Requested" %}
                                             {% endif %}
+                                        </span>
+                                    </div>
+                                    <div class="pt-record-body">
+                                        <div class="pt-grid-2">
+                                            <ul class="pt-list">
+                                                <li class="pt-row">
+                                                    <span class="pt-label"><ion-icon name="time-outline"></ion-icon>{% trans "Requested Shift" %}</span>
+                                                    <span class="pt-value">{{ shift_request.shift_id }}</span>
+                                                </li>
+                                                <li class="pt-row">
+                                                    <span class="pt-label"><ion-icon name="calendar-outline"></ion-icon>{% trans "Requested Date" %}</span>
+                                                    <span class="pt-value dateformat_changer">{{ shift_request.requested_date }}</span>
+                                                </li>
+                                                <li class="pt-row" style="border-bottom:0">
+                                                    <span class="pt-label"><ion-icon name="document-text-outline"></ion-icon>{% trans "Description" %}</span>
+                                                    <span class="pt-value muted">{{ shift_request.description|default:"-" }}</span>
+                                                </li>
+                                            </ul>
+                                            <ul class="pt-list">
+                                                <li class="pt-row">
+                                                    <span class="pt-label"><ion-icon name="archive-outline"></ion-icon>{% trans "Previous/Current Shift" %}</span>
+                                                    <span class="pt-value">{{ shift_request.previous_shift_id }}</span>
+                                                </li>
+                                                <li class="pt-row" style="border-bottom:0">
+                                                    <span class="pt-label"><ion-icon name="hourglass-outline"></ion-icon>{% trans "Requested Till" %}</span>
+                                                    <span class="pt-value dateformat_changer">{{ shift_request.requested_till }}</span>
+                                                </li>
+                                            </ul>
                                         </div>
-                                        <div class="oh-sticky-table__td">
-                                            <div
-                                                class="oh-btn-group"
-                                                onclick="event.stopPropagation()"
-                                            >
+                                    </div>
+                                    <div class="pt-record-actions" onclick="event.stopPropagation()">
+                                        <div class="pt-record-actions-col">
+                                            <div class="pt-btn-group">
                                                 {% if shift_request.approved == False and not shift_request.canceled %}
                                                     <a
                                                         hx-get="{% url 'shift-request-update' shift_request.id %}"
                                                         hx-target="#shiftRequestModalUpdateBody"
                                                         data-toggle="oh-modal-toggle"
                                                         data-target="#shiftRequestModalUpdate"
-                                                        class="oh-btn oh-btn--light-bkg w-50"
+                                                        class="pt-btn pt-btn-icon"
                                                         title="{% trans 'Edit' %}"
                                                     ><ion-icon name="create-outline"></ion-icon></a>
                                                 {% else %}
-                                                    <button
-                                                        class="oh-btn oh-btn--light-bkg w-50"
-                                                        disabled
-                                                        aria-label="{% trans 'Edit unavailable' %}"
-                                                        title="{% trans 'Edit unavailable' %}"
-                                                    >
+                                                    <button class="pt-btn pt-btn-icon" disabled title="{% trans 'Edit' %}">
                                                         <ion-icon name="create-outline"></ion-icon>
                                                     </button>
                                                 {% endif %}
                                                 <a
-                                                    class="oh-btn oh-btn--light-bkg w-50"
+                                                    class="pt-btn pt-btn-icon"
                                                     title="{% trans 'Duplicate' %}"
                                                     style="cursor: pointer"
                                                     data-toggle="oh-modal-toggle"
@@ -931,24 +983,19 @@
                                                         hx-confirm='{% trans "Are you sure you want to delete this shift request?" %}'
                                                         hx-post="{% url 'shift-request-delete' shift_request.id %}"
                                                         hx-target="#shift_target"
-                                                        class="w-50"
+                                                        style="display:inline"
                                                     >
                                                         {% csrf_token %}
                                                         <button
                                                             type="submit"
-                                                            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                            class="pt-btn pt-btn-icon danger"
                                                             title="{% trans 'Remove' %}"
                                                         >
                                                             <ion-icon name="trash-outline"></ion-icon>
                                                         </button>
                                                     </form>
                                                 {% else %}
-                                                    <button
-                                                        class="oh-btn oh-btn--light-bkg w-50"
-                                                        disabled
-                                                        aria-label="{% trans 'Remove unavailable' %}"
-                                                        title="{% trans 'Remove unavailable' %}"
-                                                    >
+                                                    <button class="pt-btn pt-btn-icon" disabled title="{% trans 'Remove' %}">
                                                         <ion-icon name="trash-outline"></ion-icon>
                                                     </button>
                                                 {% endif %}
@@ -956,33 +1003,26 @@
                                         </div>
                                         {% if not request.GET.profile %}
                                             {% if perms.base.change_shiftrequest or request.user|is_reportingmanager %}
-                                                <div
-                                                    class="oh-sticky-table__td oh-sticky-table__right"
-                                                    onclick="event.stopPropagation()"
-                                                >
-                                                    <div class="oh-btn-group">
+                                                <div class="pt-record-actions-col">
+                                                    <div class="pt-btn-group">
                                                         {% if shift_request.approved == False and shift_request.canceled == False %}
                                                             <a
                                                                 href="{% url 'shift-request-approve' shift_request.id %}"
                                                                 title="{% trans 'Approve' %}"
                                                                 onclick="return confirm('{% trans "Do you want to approve this request?" %}')"
-                                                                class="oh-btn oh-btn--success"
+                                                                class="pt-btn success"
                                                             >
-                                                                <ion-icon
-                                                                    class="me-1"
-                                                                    name="checkmark-outline"
-                                                                ></ion-icon>
+                                                                <ion-icon name="checkmark-outline"></ion-icon>
+                                                                <span style="font-size:12.5px">{% trans "Approve" %}</span>
                                                             </a>
                                                         {% else %}
                                                             <a
                                                                 href="#"
                                                                 title="{% trans 'Approve' %}"
-                                                                class="oh-btn oh-btn--success oh-btn--disabled"
+                                                                class="pt-btn success disabled"
                                                             >
-                                                                <ion-icon
-                                                                    class="me-1"
-                                                                    name="checkmark-outline"
-                                                                ></ion-icon>
+                                                                <ion-icon name="checkmark-outline"></ion-icon>
+                                                                <span style="font-size:12.5px">{% trans "Approve" %}</span>
                                                             </a>
                                                         {% endif %}
                                                         {% if shift_request.canceled == False %}
@@ -990,24 +1030,20 @@
                                                                 href="{% url 'shift-request-cancel' shift_request.id %}"
                                                                 title="{% trans 'Reject' %}"
                                                                 onclick="return confirm('{% trans "Do you want to reject this request?" %}')"
-                                                                class="oh-btn oh-btn--danger"
+                                                                class="pt-btn danger"
                                                             >
-                                                                <ion-icon
-                                                                    class="me-1"
-                                                                    name="close-circle-outline"
-                                                                ></ion-icon>
+                                                                <ion-icon name="close-circle-outline"></ion-icon>
+                                                                <span style="font-size:12.5px">{% trans "Reject" %}</span>
                                                             </a>
                                                         {% else %}
                                                             <a
                                                                 type="submit"
                                                                 href="#"
                                                                 title="{% trans 'Reject' %}"
-                                                                class="oh-btn oh-btn--danger oh-btn--disabled"
+                                                                class="pt-btn danger disabled"
                                                             >
-                                                                <ion-icon
-                                                                    class="me-1"
-                                                                    name="close-circle-outline"
-                                                                ></ion-icon>
+                                                                <ion-icon name="close-circle-outline"></ion-icon>
+                                                                <span style="font-size:12.5px">{% trans "Reject" %}</span>
                                                             </a>
                                                         {% endif %}
                                                     </div>
@@ -1018,20 +1054,16 @@
                                 </div>
                             {% endfor %}
                         </div>
-                    </div>
-                {% else %}
-                    <div
-                        class="d-flex justify-content-center align-items-center"
-                        style="height: 40vh"
-                    >
-                        <h5 class="oh-404__subtitle">
-                            {% trans "No Shift request has been created." %}
-                        </h5>
-                    </div>
-                {% endif %}
+                    {% else %}
+                        <div class="pt-empty">
+                            <div class="ic-lg"><ion-icon name="calendar-time-outline"></ion-icon></div>
+                            <div class="pt-empty-title">{% trans "No Shift request has been created." %}</div>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 </div>
 
 <div
@@ -1095,33 +1127,48 @@
 </div>
 
 <script>
-    $(document).ready(function () {
-        const activeTab = localStorage.getItem("EmployeeShiftActiveTab");
-        if (activeTab != null) {
-            $(".oh-tabs__content--active").toggleClass(
-                "oh-tabs__content--active"
-            );
-            $(".oh-tabs__tab--active").toggleClass("oh-tabs__tab--active");
-            $(`[data-target="${activeTab}"]`).toggleClass(
-                "oh-tabs__tab--active"
-            );
-            $(activeTab).toggleClass("oh-tabs__content--active");
+    (function () {
+        var STORAGE_KEY = "EmployeeShiftActiveTab";
+        function activateTab(sel) {
+            document.querySelectorAll(".pt-inner-tab").forEach(function (t) {
+                var active = t.getAttribute("data-target") === sel;
+                t.classList.toggle("is-active", active);
+                t.setAttribute("aria-selected", active ? "true" : "false");
+            });
+            document.querySelectorAll(".pt-inner-panel").forEach(function (p) {
+                p.classList.toggle("is-open", p.id === sel.substring(1));
+            });
         }
-        $(".oh-tabs__tab[data-target]").click(function (e) {
-            e.preventDefault();
-            localStorage.setItem(
-                "EmployeeShiftActiveTab",
-                $(this).attr("data-target")
-            );
-            var newActiveTab = $(this).attr("data-target");
-            $(".oh-tabs__content--active").toggleClass(
-                "oh-tabs__content--active"
-            );
-            $(".oh-tabs__tab--active").toggleClass("oh-tabs__tab--active");
-            $(`[data-target="${newActiveTab}"]`).toggleClass(
-                "oh-tabs__tab--active"
-            );
-            $(newActiveTab).toggleClass("oh-tabs__content--active");
+        var tabs = document.querySelectorAll(".pt-inner-tab[data-target]");
+        var stored = null;
+        try { stored = localStorage.getItem(STORAGE_KEY); } catch (e) {}
+        if (stored && document.querySelector('.pt-inner-tab[data-target="' + stored + '"]')) {
+            activateTab(stored);
+        }
+        tabs.forEach(function (tab) {
+            tab.addEventListener("click", function (e) {
+                e.preventDefault();
+                var sel = tab.getAttribute("data-target");
+                try { localStorage.setItem(STORAGE_KEY, sel); } catch (e) {}
+                activateTab(sel);
+                // Legacy compat: keep Horilla's original oh-tabs__tab--active data in sync
+                try {
+                    var legacy = document.querySelector('.oh-tabs__tab[data-target="' + sel + '"]');
+                    if (legacy && legacy.click) legacy.click();
+                } catch (e) {}
+            });
         });
-    });
+        // Mirror legacy tab clicks back to pt tabs (in case external code triggers them)
+        try {
+            document.querySelectorAll(".oh-tabs__tab[data-target]").forEach(function (ltab) {
+                ltab.addEventListener("click", function () {
+                    var sel = ltab.getAttribute("data-target");
+                    if (document.querySelector('.pt-inner-tab[data-target="' + sel + '"]')) {
+                        activateTab(sel);
+                        try { localStorage.setItem(STORAGE_KEY, sel); } catch (e) {}
+                    }
+                });
+            });
+        } catch (e) {}
+    })();
 </script>

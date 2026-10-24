@@ -1,81 +1,359 @@
 {% load i18n %}
 {% load basefilters %}
 {% load horillafilters %}
-<div class="oh-wrapper d-flex justify-content-between mt-4">
-    <div class="oh-faq-card">
-        <div class="d-flex justify-content-between align-items-center">
-            <h3 class="oh-faq-card__title">{% trans "Bonus Points" %}</h3>
-            {% if perms.employee.add_bonuspoint or request.user|check_manager:employee %}
-                <div class="oh-dropdown">
-                    <button
-                        class="oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
-                        title="{% trans 'Add points' %}"
-                        data-toggle="oh-modal-toggle"
-                        data-target="#objectDetailsModal"
-                        {% if "pms"|app_installed %}
-                            hx-get="{% url 'create-employee-bonus-point'%}?employee_id={{employee.id}} "
-                        {% else %}
-                            hx-get="{% url 'add-bonus-points' employee.id %}"
-                        {% endif %}
-                        hx-target="#objectDetailsModalTarget"
-                    >
-                        <ion-icon
-                            name="add-outline"
-                            role="img"
-                            class="md hydrated"
-                            aria-label="{% trans 'ellipsis vertical' %}"
-                        ></ion-icon>
-                    </button>
-                </div>
-            {% endif %}
-        </div>
-        <div class="oh-timeoff-modal__profile-content">
-            <div class="oh-profile mb-2">
-                <div class="oh-profile__avatar">
-                    <img src="{{employee.get_avatar}}" class="oh-profile__image me-2">
-                </div>
-                <div class="oh-timeoff-modal__profile-info">
-                    <span class="oh-timeoff-modal__user m-0 fw-bold">{{ employee }}</span>
-                    <span class="oh-timeoff-modal__user m-0" style="font-size: 12px; color: #4d4a4a">
-                        {{ employee.get_department }} / {{ employee.get_job_position }}</span>
+<style>
+    .bpt-wrapper {
+        padding: 20px;
+    }
+
+    .bpt-grid {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        align-items: flex-start;
+    }
+
+    .bpt-card {
+        background: #FFFFFF;
+        border: 1px solid #E6E8EC;
+        border-radius: 18px;
+        padding: 24px;
+    }
+
+    .bpt-card--left {
+        flex: 0 0 36%;
+        max-width: 36%;
+    }
+
+    .bpt-card--right {
+        flex: 0 0 60%;
+        max-width: 60%;
+        max-height: 340px;
+        overflow-y: auto;
+    }
+
+    .bpt-card--right::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .bpt-card--right::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .bpt-card--right::-webkit-scrollbar-thumb {
+        background: #CBD5E1;
+        border-radius: 3px;
+    }
+
+    .bpt-card--right::-webkit-scrollbar-thumb:hover {
+        background: #94A3B8;
+    }
+
+    .bpt-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .bpt-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #0F172A;
+        margin: 0;
+        letter-spacing: -0.01em;
+    }
+
+    .bpt-add-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: #F0FDFA;
+        color: #0F766E;
+        border: 1px solid #99F6E4;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        padding: 0;
+    }
+
+    .bpt-add-btn:hover {
+        background: #0F766E;
+        color: #FFFFFF;
+        border-color: #0F766E;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(15, 118, 110, 0.15);
+    }
+
+    .bpt-profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px;
+        background: #F8FAFC;
+        border-radius: 12px;
+        margin-bottom: 18px;
+    }
+
+    .bpt-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        overflow: hidden;
+        flex-shrink: 0;
+        border: 2px solid #FFFFFF;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    }
+
+    .bpt-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .bpt-profile-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+    }
+
+    .bpt-username {
+        font-size: 14px;
+        font-weight: 700;
+        color: #0F172A;
+        margin: 0;
+        line-height: 1.3;
+    }
+
+    .bpt-userrole {
+        font-size: 12px;
+        font-weight: 500;
+        color: #64748B;
+        margin: 0;
+        line-height: 1.3;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .bpt-balance-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px 16px;
+        background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%);
+        border: 1px solid #99F6E4;
+        border-radius: 14px;
+        margin-bottom: 16px;
+        min-height: 80px;
+    }
+
+    .bpt-balance-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #0F766E;
+        width: 60%;
+        line-height: 1.5;
+    }
+
+    .bpt-balance-value {
+        font-size: 24px;
+        font-weight: 800;
+        color: #0F766E;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .bpt-redeem-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 12px 20px;
+        background: #0F766E;
+        color: #FFFFFF;
+        border: none;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        text-decoration: none;
+    }
+
+    .bpt-redeem-btn:hover {
+        background: #0D6159;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(15, 118, 110, 0.2);
+        text-decoration: none;
+        color: #FFFFFF;
+    }
+
+    .bpt-activity-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 14px 2px;
+        border-bottom: 1px dashed #E6E8EC;
+    }
+
+    .bpt-activity-item:last-child {
+        border-bottom: none;
+    }
+
+    .bpt-activity-text {
+        font-size: 13px;
+        font-weight: 500;
+        color: #334155;
+        line-height: 1.5;
+        flex: 1;
+    }
+
+    .bpt-activity-text strong {
+        color: #0F766E;
+        font-weight: 700;
+    }
+
+    .bpt-activity-date {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: #94A3B8;
+        white-space: nowrap;
+        flex-shrink: 0;
+        padding-top: 2px;
+    }
+
+    .bpt-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #94A3B8;
+    }
+
+    .bpt-value {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1E293B;
+    }
+
+    .oh-wrapper,
+    .d-flex,
+    .justify-content-between,
+    .justify-content-center,
+    .align-items-center,
+    .mt-4,
+    .mb-2,
+    .p-3,
+    .float-end,
+    .fw-bold,
+    .pb-0,
+    .oh-faq-card,
+    .oh-faq-card__title,
+    .oh-dropdown,
+    .oh-btn,
+    .oh-btn--secondary-outline,
+    .oh-btn--secondary,
+    .oh-btn--block,
+    .oh-stop-prop,
+    .oh-accordion-meta__btn,
+    .oh-timeoff-modal__profile-content,
+    .oh-profile,
+    .oh-profile__avatar,
+    .oh-profile__image,
+    .me-2,
+    .oh-timeoff-modal__profile-info,
+    .oh-timeoff-modal__user,
+    .oh-helpdesk__chat-update,
+    .card-body,
+    .dateformat_changer {
+        all: revert;
+    }
+</style>
+<div class="bpt-wrapper">
+    <div class="bpt-grid">
+        <div class="bpt-card bpt-card--left">
+            <div class="bpt-header">
+                <h3 class="bpt-title">{% trans "Bonus Points" %}</h3>
+                {% if perms.employee.add_bonuspoint or request.user|check_manager:employee %}
+                    <div class="oh-dropdown">
+                        <button
+                            class="bpt-add-btn oh-btn oh-btn--secondary-outline oh-stop-prop oh-accordion-meta__btn p-2"
+                            title="{% trans 'Add points' %}"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#objectDetailsModal"
+                            {% if "pms"|app_installed %}
+                                hx-get="{% url 'create-employee-bonus-point'%}?employee_id={{employee.id}} "
+                            {% else %}
+                                hx-get="{% url 'add-bonus-points' employee.id %}"
+                            {% endif %}
+                            hx-target="#objectDetailsModalTarget"
+                        >
+                            <ion-icon
+                                name="add-outline"
+                                role="img"
+                                class="md hydrated"
+                                aria-label="{% trans 'ellipsis vertical' %}"
+                            ></ion-icon>
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="oh-timeoff-modal__profile-content">
+                <div class="bpt-profile">
+                    <div class="bpt-avatar">
+                        <img src="{{employee.get_avatar}}" class="oh-profile__image me-2">
+                    </div>
+                    <div class="bpt-profile-info">
+                        <span class="bpt-username oh-timeoff-modal__user m-0 fw-bold">{{ employee }}</span>
+                        <span class="bpt-userrole oh-timeoff-modal__user m-0">
+                            {{ employee.get_department }} / {{ employee.get_job_position }}</span>
+                    </div>
                 </div>
             </div>
+            <div class="bpt-balance-row">
+                <span class="bpt-balance-label">{% trans "Balance points to redeem:" %}</span>
+                <span class="bpt-balance-value fw-bold">{{ points.points }}</span>
+            </div>
+            <a
+                hx-get="{% url 'redeem-points' employee.id %}"
+                hx-target="#objectDetailsModalW25Target"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectDetailsModalW25"
+                class="bpt-redeem-btn oh-btn oh-btn--secondary oh-btn--block"
+            >{% trans "Redeem Now" %}</a>
         </div>
-        <div class="card-body d-flex justify-content-between align-items-center p-3" style="height: 100px">
-            <h4 style="font-size: 16px; color: #4f5153; width: 60%">{% trans "Balance points to redeem:" %}</h4>
-            <h4 class="float-end fw-bold">{{ points.points }}</h4>
-        </div>
-        <a
-            hx-get="{% url 'redeem-points' employee.id %}"
-            hx-target="#objectDetailsModalW25Target"
-            data-toggle="oh-modal-toggle"
-            data-target="#objectDetailsModalW25"
-            class="oh-btn oh-btn--secondary oh-btn--block"
-        >{% trans "Redeem Now" %}</a>
-    </div>
-    <div class="oh-faq-card" style="width: 60%; max-height: 320px; overflow-y: auto">
-        <div>
-            {% for activity in activity_list %}
-                <div class="oh-helpdesk__chat-update pb-0">
-                    {% if activity.type == 'Bonus point created' %}
-                        <span> <strong>--></strong> {% trans "Bonus Account created" %} </span>
-                        <span class="dateformat_changer">{{ activity.date|date:"d N. Y" }}</span>
-                    {% elif activity.type == "requested" %}
-                        <span><strong> --> </strong> {% trans "Redeem request created for" %}
-                            <strong>{{ activity.points }} </strong> {% trans "points" %}</span>
-                        <span class="dateformat_changer">{{ activity.date|date:"d N. Y" }}</span>
-                    {% else %}
-                        <span>{% if activity.reason == 'bonus points has been redeemed.' %}
-                                <strong> --> {{ activity.points|abs_value }} </strong>
-                            {% else %}<strong>--> {{ activity.user }}</strong> {% trans "Added " %}
-                                <strong>{{ activity.points }} </strong> {% trans "bonus points for " %}{% endif %} <span
-                                title="{{activity.reason}}"
-                            >{{ activity.reason|truncatechars:40 }}</span>
+        <div class="bpt-card bpt-card--right">
+            <div>
+                {% for activity in activity_list %}
+                    <div class="bpt-activity-item oh-helpdesk__chat-update pb-0">
+                        <span class="bpt-activity-text">
+                            {% if activity.type == 'Bonus point created' %}
+                                <strong>--></strong> {% trans "Bonus Account created" %}
+                            {% elif activity.type == "requested" %}
+                                <strong> --> </strong> {% trans "Redeem request created for" %}
+                                    <strong>{{ activity.points }} </strong> {% trans "points" %}
+                            {% else %}
+                                {% if activity.reason == 'bonus points has been redeemed.' %}
+                                        <strong> --> {{ activity.points|abs_value }} </strong>
+                                    {% else %}<strong>--> {{ activity.user }}</strong> {% trans "Added " %}
+                                        <strong>{{ activity.points }} </strong> {% trans "bonus points for " %}{% endif %} <span
+                                        title="{{activity.reason}}"
+                                    >{{ activity.reason|truncatechars:40 }}</span>
+                            {% endif %}
                         </span>
-                        <span class="dateformat_changer">{{ activity.date|date:"d N. Y" }}</span>
-                    {% endif %}
-                </div>
-            {% endfor %}
+                        <span class="bpt-activity-date dateformat_changer">{{ activity.date|date:"d N. Y" }}</span>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </div>

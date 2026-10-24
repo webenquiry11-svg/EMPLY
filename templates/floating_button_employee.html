@@ -1,0 +1,487 @@
+{% load static i18n %}
+{% load horillafilters %}
+<style>
+    .round {
+        border-radius: 14px;
+    }
+
+    #employeeQuickActionMenu {
+        position: fixed !important;
+        right: max(14px, env(safe-area-inset-right)) !important;
+        bottom: max(14px, env(safe-area-inset-bottom)) !important;
+        left: auto !important;
+        top: auto !important;
+        width: 88px;
+        height: 88px;
+        overflow: visible;
+        isolation: isolate;
+        z-index: 2147483647 !important;
+        pointer-events: none;
+    }
+
+    #employeeQuickActionMenu::before {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        content: "";
+        background: rgba(36, 54, 60, 0.24);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 220ms ease;
+    }
+
+    #employeeQuickActionMenu.show::before {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    #employeeQuickActionMenu .quick-action-fab {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 66px;
+        height: 66px;
+        margin: 0 !important;
+        padding: 0;
+        border: 1px solid #e2e5e7;
+        border-radius: 50%;
+        background: #f3f4f5;
+        box-shadow: 0 7px 18px rgba(22, 34, 40, 0.14);
+        color: #155f6d;
+        cursor: pointer;
+        user-select: none;
+        text-decoration: none;
+        transition: right 280ms cubic-bezier(0.2, 0.8, 0.2, 1), bottom 280ms cubic-bezier(0.2, 0.8, 0.2, 1), transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 220ms ease, box-shadow 220ms ease, border-color 220ms ease, background 220ms ease;
+        transform-origin: bottom right;
+        transform: translateY(0) scale(1);
+    }
+
+    #employeeQuickActionMenu .quick-action-fab:not(#employeeQuickActionButton) {
+        opacity: 0;
+        transform: translate(12px, 12px) scale(0.72);
+        pointer-events: none;
+    }
+
+    #employeeQuickActionMenu.show .quick-action-fab:not(#employeeQuickActionButton) {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+    }
+
+    #employeeQuickActionMenu #fab5 { transition-delay: 220ms; }
+    #employeeQuickActionMenu #fab4 { transition-delay: 190ms; }
+    #employeeQuickActionMenu #fab3 { transition-delay: 160ms; }
+    #employeeQuickActionMenu #fab6 { transition-delay: 150ms; }
+    #employeeQuickActionMenu #fab9 { transition-delay: 120ms; }
+    #employeeQuickActionMenu #fab8 { transition-delay: 90ms; }
+    #employeeQuickActionMenu #fab2 { transition-delay: 60ms; }
+    #employeeQuickActionMenu #fab7 { transition-delay: 30ms; }
+
+    #employeeQuickActionMenu.show #fab5 { transition-delay: 30ms; }
+    #employeeQuickActionMenu.show #fab4 { transition-delay: 70ms; }
+    #employeeQuickActionMenu.show #fab3 { transition-delay: 110ms; }
+    #employeeQuickActionMenu.show #fab6 { transition-delay: 100ms; }
+    #employeeQuickActionMenu.show #fab9 { transition-delay: 130ms; }
+    #employeeQuickActionMenu.show #fab8 { transition-delay: 160ms; }
+    #employeeQuickActionMenu.show #fab2 { transition-delay: 190ms; }
+    #employeeQuickActionMenu.show #fab7 { transition-delay: 220ms; }
+
+    #employeeQuickActionButton {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+    }
+
+    #employeeQuickActionMenu .quick-action-fab:not(#employeeQuickActionButton) i,
+    #employeeQuickActionMenu .quick-action-fab:not(#employeeQuickActionButton) span {
+        color: #155f6d;
+    }
+
+    #employeeQuickActionMenu #fab5 i {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        margin: 0 !important;
+        color: #155f6d !important;
+        font-family: "Material Icons" !important;
+        font-size: 1.65rem !important;
+        font-style: normal;
+        line-height: 1;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+
+    .quick-action-fab i,
+    .quick-action-fab span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.65rem;
+        color: #155f6d;
+        transition: transform 220ms ease;
+    }
+
+    #employeeQuickActionMenu.show .quick-action-fab:not(#employeeQuickActionButton) {
+        border-color: #d7e0e2;
+    }
+
+    #employeeQuickActionMenu.show .quick-action-fab:not(#employeeQuickActionButton):hover,
+    #employeeQuickActionMenu.show .quick-action-fab:not(#employeeQuickActionButton):focus-visible {
+        background: #ffffff;
+        border-color: #9bcbd0;
+        box-shadow: 0 10px 22px rgba(21, 95, 109, 0.22);
+        transform: translateY(0) scale(1.08);
+        z-index: 2147483646;
+        outline: none;
+    }
+
+    #employeeQuickActionButton {
+        position: absolute !important;
+        right: 0;
+        bottom: 0;
+        width: 88px;
+        height: 88px;
+        border-radius: 50%;
+        background: #facc15 !important;
+        border-color: #eab308 !important;
+        box-shadow: 0 10px 24px rgba(180, 132, 0, 0.28);
+        z-index: 2147483647 !important;
+    }
+
+    #employeeQuickActionButton.is-open {
+        background: #facc15 !important;
+        box-shadow: 0 12px 26px rgba(180, 132, 0, 0.34);
+    }
+
+    #employeeQuickActionButton i {
+        transition: transform 220ms ease;
+        color: #172026;
+        font-size: 2rem;
+    }
+
+    #employeeQuickActionButton.is-open i {
+        transform: rotate(90deg) scale(0.9);
+    }
+
+    .quick-action-fab:before {
+        content: attr(data-tooltip);
+        position: absolute;
+        right: calc(100% + 10px);
+        top: 50%;
+        z-index: 1;
+        pointer-events: none;
+        transform: translateY(-50%) translateX(4px) scale(0.96);
+        transform-origin: right center;
+        padding: 7px 12px 7px 23px;
+        border-radius: 10px;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        background:
+            radial-gradient(circle at 12px 50%, #278da0 0 3px, rgba(39, 141, 160, 0.14) 3.5px 5px, transparent 5.5px),
+            linear-gradient(145deg, #ffffff, #e8f5f7);
+        color: #0a4d60;
+        border: 1px solid rgba(39, 141, 160, 0.3);
+        box-shadow: 0 8px 20px rgba(10, 77, 96, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+        opacity: 0;
+        visibility: hidden;
+        white-space: nowrap;
+        transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .quick-action-fab:after {
+        content: "";
+        position: absolute;
+        right: calc(100% + 4px);
+        top: 50%;
+        width: 6px;
+        height: 6px;
+        border-top: 1px solid rgba(39, 141, 160, 0.3);
+        border-right: 1px solid rgba(39, 141, 160, 0.3);
+        background: #e8f5f7;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translateY(-50%) rotate(45deg);
+        transition: opacity 160ms ease;
+    }
+
+    .quick-action-fab:hover:before,
+    .quick-action-fab:focus-visible:before {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(-50%) translateX(0) scale(1);
+    }
+
+    .quick-action-fab:hover:after,
+    .quick-action-fab:focus-visible:after {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    #employeeQuickActionMenu a {
+        display: inline-flex;
+        width: 100%;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        text-decoration: none;
+    }
+
+    #employeeQuickActionButton:focus-visible {
+        outline: 3px solid rgba(35, 141, 160, 0.38);
+        outline-offset: 3px;
+    }
+
+    #employeeQuickActionButton:hover {
+        background: #fbbf24 !important;
+        box-shadow: 0 12px 28px rgba(180, 132, 0, 0.36);
+        transform: scale(1.05);
+    }
+
+    @media (max-width: 640px) {
+        #employeeQuickActionMenu {
+            right: max(10px, env(safe-area-inset-right)) !important;
+            bottom: max(82px, calc(env(safe-area-inset-bottom) + 76px)) !important;
+            width: 72px;
+            height: 72px;
+            gap: 8px;
+        }
+
+        #employeeQuickActionMenu .quick-action-fab {
+            width: 58px;
+            height: 58px;
+        }
+
+        #employeeQuickActionButton {
+            width: 72px;
+            height: 72px;
+        }
+
+        .quick-action-fab:before {
+            display: none;
+        }
+
+        .quick-action-fab:after {
+            display: none;
+        }
+    }
+
+    @media (max-width: 420px) {
+        #employeeQuickActionMenu {
+            right: max(8px, env(safe-area-inset-right)) !important;
+            bottom: max(76px, calc(env(safe-area-inset-bottom) + 70px)) !important;
+        }
+
+        #employeeQuickActionMenu .quick-action-fab {
+            width: 58px;
+            height: 58px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        #employeeQuickActionMenu .quick-action-fab,
+        #employeeQuickActionButton i,
+        .quick-action-fab:before,
+        .quick-action-fab:after {
+            transition-duration: 1ms;
+            transition-delay: 0ms !important;
+        }
+    }
+</style>
+
+<div id="employeeQuickActionMenu" class="inner-fabs">
+    <div id="fab9" class="quick-action-fab round" data-tooltip="{% trans 'Dashboard Charts' %}">
+        <a
+            class="text-light"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectDetailsModal"
+            hx-get="{% url 'employee-chart-show' %}"
+            hx-target="#objectDetailsModalTarget"
+        >
+            <i class="material-icons">leaderboard</i>
+        </a>
+    </div>
+    {% if "helpdesk"|app_installed %}
+        <div id="fab8" class="quick-action-fab round" data-tooltip="{% trans 'Create Ticket' %}">
+            <a
+                class="text-light"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectCreateModal"
+                hx-get="{% url 'ticket-create' %}"
+                hx-target="#objectCreateModalTarget"
+                >
+                <i class="material-icons">sell</i>
+            </a>
+        </div>
+    {% endif %}
+    {% if "asset"|app_installed %}
+    <div id="fab7" class="quick-action-fab round" data-tooltip="{% trans 'Create Asset Request' %}">
+        <a
+            class="text-light"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            hx-get="{% url 'asset-request-creation' %}"
+            hx-target="#objectCreateModalTarget"
+        >
+            <i class="material-icons">devices</i>
+        </a>
+    </div>
+    {% endif %}
+    {% if "payroll"|app_installed %}
+    <div id="fab6" class="quick-action-fab round" data-tooltip="{% trans 'Create Reimbursement' %}">
+        <a
+            class="text-light"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            hx-get="{% url 'create-reimbursement' %}"
+            hx-target="#objectCreateModalTarget"
+        >
+            <i class="material-icons">paid</i>
+        </a>
+    </div>
+    {% endif %}
+    <div id="fab5" class="quick-action-fab round" data-tooltip="{% trans 'Create Work Type Request' %}">
+        <a
+            class="text-light"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            hx-get="{% url 'work-type-request' %}"
+            hx-target="#objectCreateModalTarget"
+        >
+            <i class="material-icons">work</i>
+        </a>
+    </div>
+    <div id="fab4" class="quick-action-fab round" data-tooltip="{% trans 'Create Shift Request' %}">
+        <a
+            class="text-light"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            hx-get="{% url 'shift-request' %}?emp_id={{request.user.employee_get.id}}"
+            hx-target="#objectCreateModalTarget"
+        >
+            <i class="material-icons">history</i>
+        </a>
+    </div>
+    {% if "leave"|app_installed %}
+        <div id="fab3" class="quick-action-fab round" data-tooltip="{% trans 'Create Leave Request' %}">
+            <a
+                class="text-light"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectCreateModal"
+                {% if perms.leave.create_leaverequest %}
+                    hx-get="{% url 'request-creation' %}"
+                {% else %}
+                    hx-get="{% url 'leave-request-create' %}"
+                {% endif %}
+                hx-target="#objectCreateModalTarget"
+            >
+                <span class="material-symbols-outlined">
+                calendar_add_on
+                </span>
+            </a>
+        </div>
+    {% endif %}
+    {% if "attendance"|app_installed %}
+    <div id="fab2" class="quick-action-fab round" data-tooltip= "{% trans 'Create Attendance Request' %}">
+        <a
+            class="text-light"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            hx-get="{% url 'request-new-attendance' %}"
+            hx-target="#objectCreateModalTarget"
+        >
+            <span class="material-symbols-outlined">
+                person_add
+            </span>
+        </a>
+    </div>
+    {% endif %}
+    <div id="employeeQuickActionButton" class="quick-action-fab round" data-tooltip="{% trans 'Quick Action' %}" aria-label="{% trans 'Quick Actions' %}" aria-expanded="false" tabindex="0" role="button">
+        <i id="fabIcon" class="material-icons" aria-hidden="true">add</i>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+    const menu = document.getElementById("employeeQuickActionMenu");
+    if (menu && menu.parentElement && menu.parentElement !== document.body) {
+        document.body.appendChild(menu);
+    }
+    if (menu && window.htmx) {
+        window.htmx.process(menu);
+    }
+
+    let fab1 = $("#employeeQuickActionButton");
+    let innerFabs = $("#employeeQuickActionMenu");
+    let fabIcon = $("#fabIcon");
+
+    function syncQuickActionsState() {
+        const isOpen = innerFabs.hasClass("show");
+        fab1.toggleClass("is-open", isOpen);
+        fab1.attr("aria-expanded", isOpen ? "true" : "false");
+        fab1.removeAttr("title");
+        fabIcon.text(isOpen ? "close" : "add");
+    }
+
+    function positionQuickActionItems() {
+        const isOpen = innerFabs.hasClass("show");
+        const actions = innerFabs.children(".quick-action-fab").not("#employeeQuickActionButton");
+        const scale = window.innerWidth <= 640 ? 0.9 : 1;
+        const positions = {
+            fab5: [-13, 110],
+            fab4: [-81, 81],
+            fab3: [-110, 13],
+            fab6: [-18, 209],
+            fab9: [-89, 190],
+            fab8: [-148, 148],
+            fab2: [-190, 89],
+            fab7: [-209, 18]
+        };
+
+        actions.each(function () {
+            const position = positions[this.id] || [0, 0];
+            const horizontalOffset = isOpen ? position[0] * scale : 0;
+            const verticalOffset = isOpen ? position[1] * scale : 0;
+            $(this).css({
+                right: -horizontalOffset + "px",
+                bottom: verticalOffset + "px",
+                left: "auto",
+                top: "auto"
+            });
+        });
+    }
+
+    fab1.on("click", function (event) {
+        event.stopPropagation();
+        innerFabs.toggleClass("show");
+        syncQuickActionsState();
+        positionQuickActionItems();
+    });
+
+    fab1.on("keydown", function (event) {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            fab1.trigger("click");
+        }
+    });
+
+    $(document).on("click", function (e) {
+        if (!$(e.target).closest(".quick-action-fab").length) {
+            innerFabs.removeClass("show");
+            syncQuickActionsState();
+            positionQuickActionItems();
+        }
+    });
+
+    syncQuickActionsState();
+    positionQuickActionItems();
+    $(window).on("resize", positionQuickActionItems);
+});
+</script>

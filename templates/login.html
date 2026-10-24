@@ -10,23 +10,21 @@
         <link
             rel="apple-touch-icon"
             sizes="180x180"
-            href="{% if white_label_company.icon %}{{ white_label_company.icon.url }}{% else %}{% static 'images/ui/emply-apple-touch-icon.png' %}?v=20261014{% endif %}"
+            href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/apple-touch-icon.png' %}{% endif %}"
         >
         <link
             rel="icon"
             type="image/png"
             sizes="32x32"
-            href="{% if white_label_company.icon %}{{ white_label_company.icon.url }}{% else %}{% static 'images/ui/emply-favicon-32.png' %}?v=20261014{% endif %}"
+            href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-32x32.png' %}{% endif %}"
         >
         <link
             rel="icon"
             type="image/png"
             sizes="16x16"
-            href="{% if white_label_company.icon %}{{ white_label_company.icon.url }}{% else %}{% static 'images/ui/emply-favicon-16.png' %}?v=20261014{% endif %}"
+            href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-16x16.png' %}{% endif %}"
         >
-        <link rel="shortcut icon" type="image/png" href="{% if white_label_company.icon %}{{ white_label_company.icon.url }}{% else %}{% static 'images/ui/emply-favicon-32.png' %}?v=20261014{% endif %}">
         <link rel="stylesheet" href="{% static '/build/css/style.min.css' %}?v=20250308">
-        <link rel="stylesheet" href="{% static 'css/emply-alerts.css' %}?v=20261013">
         <link rel="manifest" href="{% static 'build/manifest.json' %}">
 
         <style>
@@ -221,624 +219,1043 @@
                 .sign-btn{height:50px}
             }
 
-            /* Safety: prevent horizontal overflow */
-            html,body,#main{overflow-x:hidden}
-
-            /* EMPLY portal theme */
-            :root {
-                --page-bg: #f2f7f6;
-                --panel-bg: #fff;
-                --accent: #278da0;
-                --deep: #173f50;
-                --muted: #58717a;
-                --soft-border: #dce9e8;
-                --card-radius: 20px;
-            }
-            body {
-                background:
-                    radial-gradient(ellipse at 8% 8%, rgba(39,141,160,.10), transparent 32%),
-                    radial-gradient(ellipse at 92% 88%, rgba(47,87,82,.08), transparent 34%),
-                    #f2f7f6;
-                color: var(--deep);
-            }
-            .login-hero { padding: 40px; }
-            .login-container { max-width: 1180px; }
-            .login-grid {
-                grid-template-columns: minmax(0, 1.08fr) minmax(380px, .92fr);
-                gap: 28px;
-            }
-            .promo {
-                min-height: 510px;
-                align-items: center;
-                padding: 54px;
-                border: 1px solid rgba(255,255,255,.14);
-                border-radius: 24px;
-                background: linear-gradient(145deg, #0a4d60 0%, #176f80 58%, #278da0 100%);
-                box-shadow: 0 24px 60px rgba(10,77,96,.19);
-            }
-            .promo::before {
-                top: -185px;
-                right: -130px;
-                width: 520px;
-                height: 520px;
-                background: radial-gradient(circle, rgba(172,231,226,.24), rgba(172,231,226,.05) 48%, transparent 72%);
-            }
-            .promo::after {
-                right: -40px;
-                bottom: -180px;
-                width: 420px;
-                height: 420px;
-                background: radial-gradient(circle, rgba(122,205,197,.2), rgba(122,205,197,.04) 52%, transparent 72%);
-            }
-            .promo-logo {
-                width: 206px;
-                margin-bottom: 34px;
-                padding: 10px 14px;
-                border-radius: 12px;
-                background: #fff;
-                box-shadow: 0 8px 24px rgba(5,42,51,.12);
-            }
-            .promo-tag {
-                color: rgba(255,255,255,.72);
-                font-size: 11px;
-                letter-spacing: 2.1px;
-            }
-            .promo-tag .accent, .promo-heading .sub { color: #a8e3d5; }
-            .promo-heading {
-                max-width: 590px;
-                margin: 10px 0 18px;
-                color: #fff;
-                font-size: clamp(38px, 4vw, 52px);
-                line-height: 1.08;
-                letter-spacing: -.045em;
-            }
-            .promo-sub {
-                max-width: 470px;
-                color: rgba(255,255,255,.78);
-                font-size: 16px;
-                line-height: 1.65;
-            }
-            .features { flex-wrap: wrap; gap: 10px; margin-top: 28px; }
-            .feature-item {
-                gap: 8px;
-                padding: 9px 12px;
-                border: 1px solid rgba(255,255,255,.18);
-                border-radius: 999px;
-                background: rgba(255,255,255,.09);
-                color: #f4fbfa;
-                font-size: 12px;
-            }
-            .feature-item svg { stroke: #a8e3d5; }
-            .promo-waves { opacity: .65; }
-            .promo-waves svg path { stroke: rgba(255,255,255,.18) !important; }
-            .login-card {
-                max-width: 460px;
-                min-height: 0;
-                padding: 42px 40px 30px;
-                border: 1px solid #e1eae9;
-                border-radius: 20px;
-                box-shadow: 0 22px 55px rgba(23,63,80,.10);
-            }
-            .login-card::before {
-                height: 5px;
-                background: linear-gradient(90deg, #0a4d60, #278da0, #8acbd5);
-            }
-            .card-title { color: #173f50; font-size: 29px; letter-spacing: -.03em; }
-            .card-sub { color: #647b83; line-height: 1.55; }
-            .oh-label { color: #254c5a; font-weight: 650; }
-            .oh-input.auth-input {
-                border-color: #d8e4e4;
-                background: #fbfdfd;
-                color: #173f50;
-            }
-            .oh-input.auth-input::placeholder { color: #91a4a8; }
-            .oh-input.auth-input:focus {
-                border-color: #278da0;
-                box-shadow: 0 0 0 4px rgba(39,141,160,.12);
-            }
-            .input-with-icon .input-icon { color: #63818a; }
-            .oh-password-input-container .oh-btn { color: #58717a; }
-            .oh-checkbox input[type="checkbox"] { accent-color: #176f80; }
-            .oh-link { color: #176f80; }
-            .sign-btn {
-                background: linear-gradient(110deg, #0a4d60, #176f80);
-                box-shadow: 0 9px 20px rgba(10,77,96,.2);
-            }
-            .sign-btn:hover, .sign-btn:focus, .sign-btn:focus-visible {
-                background: linear-gradient(110deg, #083f50, #135e6d);
-                box-shadow: 0 12px 24px rgba(10,77,96,.24);
-            }
-            .card-footer { color: #71858a; }
-
-            @media (max-width: 1024px) {
-                .login-hero { padding: 28px; }
-                .login-grid {
-                    grid-template-columns: minmax(0, 1fr) minmax(340px, .92fr);
-                    gap: 22px;
-                }
-                .promo { min-height: 470px; padding: 38px; }
-                .promo-heading { font-size: clamp(34px, 4.2vw, 44px); }
-                .login-card { padding-inline: 32px; }
-            }
-            @media (max-width: 768px) {
-                .login-hero { align-items: flex-start; padding: 18px 14px 26px; }
-                .login-grid { grid-template-columns: minmax(0, 1fr); gap: 14px; }
-                .promo {
-                    min-height: 0;
-                    padding: 28px;
-                    border-radius: 20px;
-                }
-                .promo-logo { width: 174px; margin-bottom: 22px; }
-                .promo-heading { max-width: 540px; font-size: clamp(32px, 7vw, 44px); }
-                .promo-sub { font-size: 14px; }
-                .features { margin-top: 18px; }
-                .card-wrap { padding: 0; }
-                .login-card { width: 100%; max-width: none; padding: 30px; }
-                .card-title { font-size: 25px; }
-                .card-footer { padding-top: 18px; }
-            }
-            @media (max-width: 390px) {
-                .login-hero { padding: 12px 10px 20px; }
-                .promo { padding: 22px 18px; }
-                .promo-logo { width: 154px; margin-bottom: 18px; }
-                .promo-heading { font-size: 30px; }
-                .features { gap: 7px; }
-                .feature-item { padding: 8px 10px; font-size: 11px; }
-                .login-card { padding: 24px 20px; }
+            /* Match the login screen to EMPLY's navy and teal dashboard theme. */
+            :root{
+                --page-bg:#f2f7f8;
+                --panel-bg:#ffffff;
+                --accent:#278da0;
+                --deep:#102f3b;
+                --muted:#647b84;
+                --soft-border:#d5e4e8;
+                --card-radius:22px;
             }
 
-            /* Reference-matched EMPLY sign-in layout */
-            body {
+            body{
                 background:
-                    radial-gradient(ellipse at 80% 20%, rgba(130, 216, 216, .22), transparent 34%),
-                    linear-gradient(115deg, #f5fbfb 0%, #effafa 58%, #dff3f4 100%);
-                color: #12465a;
+                    radial-gradient(circle at 12% 10%,rgba(39,141,160,.1),transparent 32%),
+                    radial-gradient(circle at 90% 88%,rgba(10,77,96,.08),transparent 34%),
+                    linear-gradient(135deg,#f7fafb 0%,#edf4f6 100%);
+                color:var(--deep);
             }
-            .login-hero {
-                position: relative;
-                min-height: 100vh;
-                box-sizing: border-box;
-                padding: 14px 26px 14px clamp(32px, 4.55vw, 60px);
-                overflow: hidden;
-            }
-            .login-container {
-                position: relative;
-                z-index: 3;
-                width: 90.91%;
-                max-width: none;
-                transform: scale(1.1);
-                transform-origin: center;
-            }
-            .login-grid {
-                grid-template-columns: minmax(0, 1fr) minmax(400px, 485px);
-                gap: clamp(24px, 2.4vw, 34px);
-            }
-            .login-hero::before {
-                content: "";
-                position: absolute;
-                z-index: 0;
-                top: 12px;
-                right: 12px;
-                width: 62px;
-                height: 48px;
-                background-image: radial-gradient(circle, rgba(55, 177, 191, .56) 1.4px, transparent 1.8px);
-                background-size: 13px 13px;
-                pointer-events: none;
-            }
-            .login-hero::after {
-                content: "";
-                position: absolute;
-                z-index: 0;
-                right: 0;
-                bottom: -42px;
-                left: 0;
-                height: 170px;
+
+            .promo{
                 background:
-                    radial-gradient(ellipse 42% 100% at 20% 115%, rgba(121, 218, 229, .32) 0 70%, transparent 71%),
-                    radial-gradient(ellipse 48% 100% at 62% 125%, rgba(99, 200, 216, .24) 0 70%, transparent 71%),
-                    radial-gradient(ellipse 38% 100% at 100% 117%, rgba(91, 197, 207, .24) 0 70%, transparent 71%);
-                pointer-events: none;
+                    radial-gradient(circle at 92% 10%,rgba(75,197,184,.22),transparent 38%),
+                    linear-gradient(135deg,#0a2935 0%,#0a4d60 58%,#176c7b 100%);
+                border-color:rgba(75,197,184,.28);
+                box-shadow:0 22px 52px rgba(9,43,56,.2);
             }
-            .promo {
-                position: relative;
-                min-height: 558px;
-                padding: 0;
-                overflow: visible;
-                border: 0;
-                border-radius: 0;
-                background: transparent;
-                box-shadow: none;
-                align-items: flex-start;
+
+            .promo-tag,
+            .promo-sub,
+            .feature-item{
+                color:rgba(255,255,255,.76);
             }
-            .promo::before, .promo::after { content: none; }
-            .promo-inner {
-                position: relative;
-                z-index: 5;
-                width: 100%;
-                max-width: none;
-                animation: fadeUpSmall .48s cubic-bezier(.2,.9,.2,1) both;
+
+            .promo-tag .accent,
+            .promo-heading .sub{
+                color:#67ddcf;
             }
-            .promo-logo {
-                display: block;
-                width: 280px;
-                height: auto;
-                margin: 0 0 -20px;
-                padding: 0;
-                border-radius: 0;
-                background: transparent;
-                box-shadow: none;
-                object-fit: contain;
-                object-position: center;
-                transform: translate(-35px, -24px);
+
+            .promo-heading{
+                color:#ffffff;
             }
-            .promo-tag {
-                display: inline-flex;
-                align-items: center;
-                gap: 7px;
-                margin: 0 0 15px;
-                padding: 7px 12px;
-                border-radius: 999px;
-                background: #e4f3ff;
-                color: #1682df;
-                font-size: 10px;
-                font-weight: 650;
-                letter-spacing: 0;
-                text-transform: none;
+
+            .promo::before{
+                background:radial-gradient(circle at 30% 30%,rgba(75,197,184,.2),rgba(75,197,184,.08) 42%,transparent 72%);
             }
-            .promo-tag .accent, .promo-tag .muted { color: inherit; font-weight: inherit; }
-            .promo-tag svg { width: 14px; height: 14px; fill: currentColor; }
-            .promo-heading {
-                max-width: 460px;
-                margin: 0 0 12px;
-                color: #11465a;
-                font-size: clamp(34px, 2.75vw, 38px);
-                font-weight: 750;
-                line-height: 1.08;
-                letter-spacing: -.045em;
+
+            .promo::after{
+                background:radial-gradient(circle at 60% 60%,rgba(75,197,184,.14),rgba(75,197,184,.05) 45%,transparent 70%);
             }
-            .promo-heading .sub {
-                color: #34a9b1;
-                white-space: nowrap;
+
+            .promo-waves svg path:first-child{stroke:rgba(103,221,207,.3)}
+            .promo-waves svg path:nth-child(2){stroke:rgba(103,221,207,.2)}
+            .promo-waves svg path:nth-child(3){stroke:rgba(103,221,207,.12)}
+
+            .feature-item{
+                padding:8px 12px;
+                background:rgba(255,255,255,.08);
+                border:1px solid rgba(255,255,255,.14);
+                border-radius:999px;
             }
-            .promo-sub {
-                max-width: 340px;
-                margin: 0;
-                color: #577d8b;
-                font-size: 14px;
-                line-height: 1.5;
+
+            .feature-item svg{
+                stroke:#67ddcf;
             }
-            .promo-illustration {
-                position: absolute;
-                z-index: 5;
-                top: 55px;
-                right: -70px;
-                width: min(68%, 480px);
-                height: auto;
-                filter: drop-shadow(0 18px 20px rgba(23, 121, 137, .16));
-                pointer-events: none;
+
+            .login-card{
+                border-color:rgba(16,74,91,.1);
+                box-shadow:0 22px 56px rgba(19,57,69,.12);
             }
-            .features {
-                display: grid;
-                grid-template-columns: repeat(4, minmax(0, 1fr));
-                gap: 12px;
-                max-width: 420px;
-                margin-top: 27px;
+
+            .login-card::before{
+                height:5px;
+                background:linear-gradient(90deg,#0a4d60,#278da0,#67ddcf);
             }
-            .feature-item {
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
-                min-width: 0;
-                padding: 0;
-                border: 0;
-                border-radius: 0;
-                background: transparent;
-                color: #174c60;
-                font-size: 10px;
-                line-height: 1.35;
+
+            .oh-label{
+                color:#173b48;
+                font-weight:650;
             }
-            .feature-icon {
-                display: grid;
-                width: 46px;
-                height: 46px;
-                place-items: center;
-                border-radius: 14px;
-                background: linear-gradient(145deg, #e0f5fb, #d2f1ef);
-                color: #27a7b3;
+
+            .oh-input.auth-input{
+                border-color:#d5e4e8;
+                box-shadow:0 1px 2px rgba(16,47,59,.03);
             }
-            .feature-icon svg {
-                width: 24px;
-                height: 24px;
-                fill: none;
-                stroke: currentColor;
-                stroke-linecap: round;
-                stroke-linejoin: round;
-                stroke-width: 2;
+
+            .oh-input.auth-input::placeholder{
+                color:#9aadb4;
             }
-            .feature-copy { display: grid; gap: 4px; }
-            .feature-copy strong { font-size: 10px; font-weight: 700; }
-            .feature-copy span { color: #628593; font-size: 9px; line-height: 1.35; }
-            .promo-signature {
-                position: absolute;
-                z-index: 5;
-                left: 32px;
-                bottom: 48px;
-                color: #3199a1;
-                font-family: "Brush Script MT", "Segoe Script", cursive;
-                font-size: 19px;
-                font-style: italic;
-                line-height: 1.05;
-                transform: rotate(-8deg);
+
+            .oh-input.auth-input:focus{
+                border-color:#278da0;
+                box-shadow:0 0 0 4px rgba(39,141,160,.12);
             }
-            .promo-signature::after {
-                content: "";
-                display: block;
-                width: 84px;
-                margin: 4px 0 0 8px;
-                border-bottom: 2px solid #31a7a6;
-                transform: rotate(-7deg);
+
+            .input-with-icon .input-icon{
+                color:#6c8992;
             }
-            .promo-signature--growth {
-                right: 20px;
-                bottom: 42px;
-                left: auto;
-                display: grid;
-                gap: 3px;
-                text-align: left;
-                color: #237f89;
-                font-family: inherit;
-                font-size: 18px;
-                font-style: normal;
-                font-weight: 750;
-                line-height: 1.12;
-                letter-spacing: -.035em;
-                transform: none;
+
+            .oh-password-input-container .oh-btn:hover{
+                background:rgba(39,141,160,.09);
+                color:#176f80;
             }
-            .promo-signature--growth::after {
-                width: 52px;
-                margin: 5px 0 0;
-                border-color: #39aaa7;
-                transform: none;
+
+            .oh-checkbox input[type="checkbox"]{
+                accent-color:#176f80;
             }
-            .promo-signature--growth span:first-child {
-                color: #5b9299;
-                font-size: 9px;
-                font-weight: 700;
-                letter-spacing: .16em;
-                line-height: 1.3;
-                text-transform: uppercase;
+
+            .oh-link{
+                color:#176f80;
             }
-            .promo-edge-leaves {
-                position: absolute;
-                z-index: 2;
-                bottom: 0;
-                left: 0;
-                width: clamp(120px, 10vw, 150px);
-                height: auto;
-                pointer-events: none;
+
+            .sign-btn{
+                background:linear-gradient(135deg,#0a4d60,#278da0);
+                box-shadow:0 10px 22px rgba(10,77,96,.22);
             }
-            .promo-waves {
-                position: absolute;
-                z-index: 1;
-                bottom: max(24px, calc(50vh - 342px));
-                left: 0;
-                width: 65%;
-                height: 154px;
-                opacity: 1;
-                pointer-events: none;
+
+            .sign-btn:hover,
+            .sign-btn:focus,
+            .sign-btn:focus-visible{
+                background:linear-gradient(135deg,#083e4e,#217d8e);
+                box-shadow:0 12px 26px rgba(10,77,96,.28);
             }
-            .promo-waves svg { width: 100%; height: 100%; }
-            @keyframes promo-wave-flow {
-                0%, 100% { transform: translateY(0); }
-                50% { transform: translateY(-8px); }
+
+            .login-hero{
+                padding:clamp(24px,5vw,72px);
+                background:#ffffff;
             }
-            .promo-waves svg path {
-                transform-box: fill-box;
-                transform-origin: center;
-                animation: promo-wave-flow 7s ease-in-out infinite;
+
+            .login-container{
+                max-width:1240px;
             }
-            .promo-waves svg path:nth-child(2) { animation-duration: 9s; animation-delay: -2s; }
-            .promo-waves svg path:nth-child(3) { animation-duration: 11s; animation-delay: -4s; }
-            .promo-waves svg path:first-child { stroke: rgba(47, 174, 186, .18) !important; }
-            .promo-waves svg path:nth-child(2) { stroke: rgba(47, 174, 186, .12) !important; }
-            .promo-waves svg path:nth-child(3) { stroke: rgba(47, 174, 186, .08) !important; }
-            @media (prefers-reduced-motion: reduce) {
-                .promo-waves svg path { animation: none; }
+
+            .login-grid{
+                grid-template-columns:minmax(360px,.82fr) minmax(0,1.18fr);
+                gap:clamp(32px,6vw,88px);
+                align-items:center;
+                min-height:min(720px,calc(100vh - 96px));
             }
-            .card-wrap { min-width: 0; }
-            .login-card {
-                display: flex;
-                isolation: isolate;
-                width: 100%;
-                max-width: 485px;
-                min-height: 558px;
-                box-sizing: border-box;
-                padding: 32px 48px 24px 40px;
-                overflow: hidden;
-                border: 1px solid rgba(255,255,255,.95);
-                border-radius: 17px;
-                background:
-                    radial-gradient(circle at 100% 100%, rgba(126, 214, 225, .16) 0 8%, transparent 8.2%),
-                    radial-gradient(circle at 100% 100%, transparent 0 12%, rgba(126, 214, 225, .12) 12.2% 17%, transparent 17.2%),
-                    rgba(255,255,255,.94);
-                box-shadow: 0 22px 54px rgba(42, 128, 143, .14);
+
+            .card-wrap{
+                order:1;
+                padding:0;
             }
-            .login-card::before {
-                z-index: -1;
-                top: -114px;
-                right: -94px;
-                left: auto;
-                width: 205px;
-                height: 205px;
-                border: 26px solid rgba(86, 194, 196, .12);
-                border-radius: 50%;
-                background: rgba(81, 194, 187, .14);
+
+            .login-card{
+                width:100%;
+                max-width:440px;
+                min-height:0;
+                padding:36px 38px 28px;
+                border:1px solid #e1eaed;
+                border-radius:24px;
+                box-shadow:0 22px 64px rgba(15,54,66,.1);
             }
-            .login-card::after {
-                content: "";
-                position: absolute;
-                z-index: -1;
-                top: -72px;
-                right: -64px;
-                width: 120px;
-                height: 120px;
-                border-radius: 50%;
-                background: rgba(62, 189, 175, .35);
+
+            .login-card-inner{
+                height:auto;
             }
-            .login-card-inner { position: relative; z-index: 1; display: flex; flex: 1; flex-direction: column; }
-            .card-top {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                gap: 14px;
-                margin-bottom: 9px;
+
+            .login-logo{
+                display:block;
+                width:160px;
+                max-height:58px;
+                object-fit:contain;
+                object-position:center;
+                margin:0 auto 28px;
             }
-            .card-brand {
-                display: block;
-                width: 58px;
-                height: 58px;
-                object-fit: contain;
-                object-position: center;
+
+            .promo{
+                order:2;
+                min-height:600px;
+                padding:64px 24px;
+                align-items:flex-start;
+                justify-content:center;
+                background:linear-gradient(135deg,#f5fbfa,#e9f7f4);
+                border:0;
+                border-radius:32px;
+                box-shadow:none;
             }
-            .mode-pill {
-                display: inline-flex;
-                flex: 0 0 auto;
-                align-items: center;
-                gap: 7px;
-                min-height: 32px;
-                padding: 0 12px;
-                border: 1px solid #dcebed;
-                border-radius: 999px;
-                background: rgba(255,255,255,.8);
-                color: #587f8d;
-                font-size: 10px;
+
+            .promo::before{
+                right:-22%;
+                top:-18%;
+                width:108%;
+                height:auto;
+                aspect-ratio:1;
+                padding:0;
+                filter:none;
+                background:linear-gradient(135deg,#b7eee5 0%,#74d3c5 100%);
+                opacity:.9;
             }
-            .mode-pill ion-icon { color: #40899a; font-size: 15px; }
-            .mode-pill .mode-chevron { margin-left: 2px; font-size: 12px; }
-            .card-title {
-                margin: 0;
-                color: #104a63;
-                font-size: 28px;
-                font-weight: 750;
-                letter-spacing: -.04em;
+
+            .promo::after{
+                right:-8%;
+                bottom:-30%;
+                width:86%;
+                height:auto;
+                aspect-ratio:1;
+                filter:none;
+                background:linear-gradient(135deg,rgba(73,194,177,.34),rgba(39,141,160,.14));
             }
-            .card-sub {
-                max-width: 300px;
-                margin: 0 0 2px;
-                color: #638596;
-                font-size: 12px;
-                line-height: 1.5;
+
+            .promo-inner{
+                width:min(100%,520px);
+                max-width:520px;
+                margin:0 auto;
+                align-self:flex-start;
+                animation:none;
             }
-            .oh-input-group { margin-bottom: 19px; }
-            .oh-label {
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                margin-bottom: 7px;
-                color: #174c60;
-                font-size: 12px;
-                font-weight: 700;
+
+            .promo-tag{
+                color:#176f80;
+                font-weight:700;
+                letter-spacing:1.7px;
             }
-            .oh-label ion-icon { color: #17627a; font-size: 13px; }
-            .input-with-icon .input-icon {
-                left: 12px;
-                width: 18px;
-                height: 18px;
-                color: #247d91;
-                font-size: 16px;
+
+            .promo-tag .accent{
+                color:#278da0;
             }
-            .oh-input.auth-input {
-                height: 40px;
-                padding: 10px 12px;
-                border: 1px solid #d3e5e8;
-                border-radius: 10px;
-                background: rgba(255,255,255,.8);
-                color: #174c60;
-                font-size: 12px;
+
+            .promo-tag .muted{
+                color:#66858a;
             }
-            .oh-input.auth-input::placeholder { color: #85a2ad; }
-            .oh-input.auth-input:focus {
-                border-color: #42b8bd;
-                box-shadow: 0 0 0 3px rgba(58, 180, 184, .12);
+
+            .promo-heading{
+                max-width:460px;
+                font-size:clamp(30px,3.5vw,44px);
+                color:#123d49;
             }
-            .oh-password-input-container .oh-btn {
-                right: 4px;
-                width: 34px;
-                height: 34px;
-                color: #6d929e;
+
+            .promo-heading .sub{
+                color:#278da0;
             }
-            .card-row { margin: 0 0 12px; }
-            .oh-checkbox { gap: 8px; }
-            .oh-checkbox input[type="checkbox"] {
-                width: 15px;
-                height: 15px;
-                accent-color: #20a99f;
+
+            .promo-sub{
+                max-width:380px;
+                color:#56777e;
             }
-            .oh-checkbox__label, .oh-link { font-size: 11px; }
-            .oh-checkbox__label { color: #416b7a; }
-            .oh-link { color: #149e9e; }
-            .sign-btn {
-                height: 40px;
-                border-radius: 11px;
-                background: linear-gradient(105deg, #22b7b3, #127c91 52%, #54c5af);
-                box-shadow: 0 8px 17px rgba(26, 160, 163, .22);
-                font-size: 12px;
+
+            .promo-art{
+                position:absolute;
+                z-index:2;
+                right:-3%;
+                bottom:0;
+                width:min(100%,610px);
+                height:auto;
+                overflow:visible;
             }
-            .sign-btn:hover, .sign-btn:focus, .sign-btn:focus-visible {
-                background: linear-gradient(105deg, #179c9b, #116c82 52%, #3aaf9e);
-                box-shadow: 0 10px 20px rgba(26, 160, 163, .25);
+
+            .promo-waves,
+            .features{
+                display:none;
             }
-            .card-footer {
-                margin-top: auto;
-                padding-top: 21px;
-                color: #83a0aa;
-                font-size: 9px;
+
+            .login-card::before{
+                height:4px;
             }
-            @media (max-width: 1050px) and (min-width: 769px) {
-                .login-hero { padding-inline: 30px; }
-                .login-grid { grid-template-columns: minmax(0, 1fr) minmax(360px, 430px); gap: 26px; }
-                .promo-logo { margin-bottom: 51px; }
-                .promo-heading { font-size: clamp(29px, 3.4vw, 36px); }
-                .promo-illustration { right: -12px; width: 47%; }
-                .login-card { min-height: 534px; padding-inline: 30px; }
-            }
-            @media (max-width: 768px) {
-                html, body, #main { height: auto; min-height: 100dvh; }
-                .login-hero { min-height: 100dvh; padding: 24px 18px calc(32px + 12vh); }
-                .login-container { transform-origin: left top; }
-                .login-grid { grid-template-columns: minmax(0, 1fr); gap: 24px; }
-                .promo { min-height: 465px; padding: 0; }
-                .promo-logo {
-                    width: 220px;
-                    height: auto;
-                    margin: 0 0 4px;
-                    transform: none;
+
+            @media (max-width:900px){
+                .login-hero{
+                    padding:28px;
                 }
-                .promo-heading { max-width: 440px; font-size: clamp(32px, 7vw, 40px); }
-                .promo-heading .sub { white-space: normal; }
-                .promo-illustration { top: 154px; right: 0; width: min(50%, 310px); }
-                .features { max-width: 440px; margin-top: 24px; }
-                .promo-signature { bottom: 0; }
-                .promo-signature--growth { display: none; }
-                .promo-edge-leaves { width: 110px; }
-                .promo-waves { bottom: 24px; width: 100%; height: 100px; }
-                .card-wrap { padding: 0; }
-                .login-card { width: 100%; max-width: 500px; min-height: 0; padding: 28px 30px 20px; }
+
+                .login-grid{
+                    grid-template-columns:minmax(320px,.9fr) minmax(0,1.1fr);
+                    gap:24px;
+                }
+
+                .login-card{
+                    padding:30px 26px 24px;
+                }
+
+                .promo{
+                    min-height:560px;
+                    padding:48px 20px;
+                }
+
+                .promo-art{
+                    right:-12%;
+                    width:112%;
+                }
             }
-            @media (max-width: 520px) {
-                .login-hero { padding: 20px 16px calc(28px + 12vh); }
-                .promo { min-height: 0; padding-bottom: 126px; }
-                .promo-logo { width: 220px; height: auto; margin: 0 0 4px; }
-                .promo-heading { max-width: 100%; font-size: clamp(30px, 8vw, 36px); }
-                .promo-illustration { top: auto; right: 0; bottom: -4px; width: 57%; }
-                .features { position: relative; z-index: 2; grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 250px; gap: 14px 10px; margin-top: 20px; }
-                .feature-icon { width: 36px; height: 36px; }
-                .promo-edge-leaves { width: 90px; }
-                .promo-signature { display: none; }
-                .promo-edge-leaves { width: 90px; }
-                .login-card { padding: 26px 22px 18px; }
-                .card-title { font-size: 26px; }
+
+            @media (max-width:700px){
+                .login-hero{
+                    min-height:100dvh;
+                    padding:24px 18px;
+                    align-items:flex-start;
+                }
+
+                .login-grid{
+                    grid-template-columns:minmax(0,1fr);
+                    gap:26px;
+                    min-height:0;
+                }
+
+                .card-wrap{
+                    grid-row:1;
+                    padding:0;
+                }
+
+                .login-card{
+                    max-width:500px;
+                    margin:0 auto;
+                    padding:28px 26px 22px;
+                    border-radius:22px;
+                }
+
+                .login-logo{
+                    width:116px;
+                    margin-bottom:22px;
+                }
+
+                .promo{
+                    grid-row:2;
+                    min-height:390px;
+                    padding:30px 24px;
+                    border-radius:24px;
+                }
+
+                .promo-inner{
+                    width:100%;
+                }
+
+                .promo-tag{
+                    margin-bottom:8px;
+                    font-size:10px;
+                }
+
+                .promo-heading{
+                    max-width:390px;
+                    margin-top:4px;
+                    font-size:clamp(26px,7vw,36px);
+                }
+
+                .promo-sub{
+                    max-width:300px;
+                    font-size:14px;
+                }
+
+                .promo-art{
+                    right:-5%;
+                    bottom:-5%;
+                    width:min(82%,440px);
+                }
+            }
+
+            @media (max-width:420px){
+                .login-hero{
+                    padding:16px 12px;
+                }
+
+                .login-card{
+                    padding:24px 20px 20px;
+                }
+
+                .promo{
+                    min-height:340px;
+                    padding:24px 18px;
+                }
+
+                .promo-art{
+                    width:88%;
+                    right:-9%;
+                }
+            }
+
+            /* Reference-inspired purple frame and compact sign-in panel. */
+            :root{
+                --deep:#123d49;
+                --muted:#647b84;
+                --accent:#67ddcf;
+                --soft-border:#d5e4e8;
+            }
+
+            html,body,#main{min-height:100%;overflow-x:hidden}
+            body{
+                background:linear-gradient(135deg,#0a4d60 0%,#176b7d 52%,#278da0 100%);
+                color:var(--deep);
+            }
+            #main{
+                display:flow-root;
+                position:relative;
+                isolation:isolate;
+                height:auto;
+                min-height:100vh;
+                margin:0;
+                overflow:visible;
+                box-sizing:border-box;
+                border:0;
+                background:transparent;
+                box-shadow:none;
+            }
+            #main::before{
+                position:fixed;
+                z-index:-1;
+                inset:-18%;
+                background:
+                    radial-gradient(circle at 14% 24%,rgba(103,221,207,.3) 0 52px,transparent 54px),
+                    radial-gradient(circle at 75% 18%,rgba(255,255,255,.16) 0 82px,transparent 84px),
+                    radial-gradient(circle at 82% 76%,rgba(103,221,207,.2) 0 118px,transparent 120px),
+                    radial-gradient(circle at 28% 83%,rgba(10,77,96,.16) 0 68px,transparent 70px),
+                    linear-gradient(135deg,#0a4d60 0%,#176b7d 52%,#278da0 100%);
+                content:"";
+                pointer-events:none;
+                animation:login-background-bubbles 22s ease-in-out infinite alternate;
+            }
+            @keyframes login-background-bubbles{
+                from{transform:translate3d(-1.5%,0,0) scale(1)}
+                to{transform:translate3d(1.5%,-1%,0) scale(1.04)}
+            }
+            .login-hero{
+                position:relative;
+                width:calc(100% - 112px);
+                min-height:calc(100vh - 140px);
+                margin:40px auto;
+                padding:clamp(12px,2vw,28px);
+                box-sizing:border-box;
+                overflow:hidden;
+                border-radius:36px;
+                background:#ffffff;
+                box-shadow:0 14px 38px rgba(10,77,96,.12);
+            }
+            .login-hero::before,
+            .login-hero::after{
+                position:absolute;
+                z-index:0;
+                border:1px solid rgba(39,141,160,.18);
+                border-radius:50%;
+                background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.96),rgba(103,221,207,.2) 55%,rgba(39,141,160,.08));
+                box-shadow:inset 0 2px 10px rgba(255,255,255,.75),0 8px 28px rgba(10,77,96,.08);
+                content:"";
+                pointer-events:none;
+                animation:login-hero-bubble-drift 9s ease-in-out infinite alternate;
+            }
+            .login-hero::before{
+                top:9%;
+                right:8%;
+                width:clamp(64px,9vw,132px);
+                aspect-ratio:1;
+            }
+            .login-hero::after{
+                bottom:10%;
+                left:7%;
+                width:clamp(34px,5vw,72px);
+                aspect-ratio:1;
+                animation-delay:-3.5s;
+            }
+            .login-hero__bubble{
+                position:absolute;
+                z-index:0;
+                width:var(--bubble-size);
+                aspect-ratio:1;
+                border:1px solid rgba(39,141,160,.16);
+                border-radius:50%;
+                background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.94),rgba(103,221,207,.18) 58%,rgba(39,141,160,.06));
+                box-shadow:inset 0 1px 7px rgba(255,255,255,.68),0 6px 20px rgba(10,77,96,.06);
+                pointer-events:none;
+                animation:login-hero-bubble-drift var(--bubble-duration) ease-in-out var(--bubble-delay) infinite alternate;
+            }
+            .login-hero__bubble--one{top:24%;left:29%;--bubble-size:clamp(24px,3vw,44px);--bubble-duration:7s;--bubble-delay:-2s}
+            .login-hero__bubble--two{top:17%;left:52%;--bubble-size:clamp(16px,2vw,30px);--bubble-duration:8s;--bubble-delay:-5s}
+            .login-hero__bubble--three{top:68%;left:44%;--bubble-size:clamp(34px,4vw,58px);--bubble-duration:9s;--bubble-delay:-3s}
+            .login-hero__bubble--four{top:76%;right:25%;--bubble-size:clamp(20px,2.5vw,36px);--bubble-duration:6.5s;--bubble-delay:-1s}
+            .login-hero__bubble--five{top:46%;right:5%;--bubble-size:clamp(14px,1.8vw,26px);--bubble-duration:7.5s;--bubble-delay:-4s}
+            .login-hero__bubble--six{top:8%;left:17%;--bubble-size:clamp(12px,1.5vw,22px);--bubble-duration:6s;--bubble-delay:-2.5s}
+            .login-hero__bubble--seven{top:35%;left:66%;--bubble-size:clamp(18px,2.2vw,32px);--bubble-duration:8.5s;--bubble-delay:-6s}
+            .login-hero__bubble--eight{top:56%;left:19%;--bubble-size:clamp(26px,3.2vw,46px);--bubble-duration:7.8s;--bubble-delay:-3.7s}
+            .login-hero__bubble--nine{top:88%;left:61%;--bubble-size:clamp(12px,1.6vw,24px);--bubble-duration:6.8s;--bubble-delay:-1.8s}
+            .login-hero__bubble--ten{top:27%;right:17%;--bubble-size:clamp(22px,2.8vw,40px);--bubble-duration:9.2s;--bubble-delay:-5.2s}
+            .login-hero__bubble--eleven{top:12%;right:31%;--bubble-size:clamp(14px,1.8vw,26px);--bubble-duration:7.2s;--bubble-delay:-2.8s}
+            .login-hero__bubble--twelve{top:51%;left:53%;--bubble-size:clamp(18px,2.3vw,34px);--bubble-duration:8.8s;--bubble-delay:-4.6s}
+            .login-hero__bubble--thirteen{top:83%;left:34%;--bubble-size:clamp(12px,1.6vw,24px);--bubble-duration:6.4s;--bubble-delay:-1.4s}
+            .login-hero__bubble--fourteen{top:61%;right:14%;--bubble-size:clamp(24px,3vw,42px);--bubble-duration:9.5s;--bubble-delay:-6.3s}
+            .login-hero__bubble--fifteen{top:6%;right:48%;--bubble-size:clamp(10px,1.3vw,19px);--bubble-duration:7.6s;--bubble-delay:-3.3s}
+            .login-hero__bubble--sixteen{top:31%;left:12%;--bubble-size:clamp(74px,9vw,132px);--bubble-duration:8.4s;--bubble-delay:-2.2s}
+            .login-hero__bubble--seventeen{top:12%;right:22%;--bubble-size:clamp(58px,7vw,102px);--bubble-duration:9.3s;--bubble-delay:-5.1s}
+            .login-hero__bubble--eighteen{right:9%;bottom:17%;--bubble-size:clamp(82px,10vw,146px);--bubble-duration:8.8s;--bubble-delay:-3.6s}
+            .login-hero__bubble--nineteen{top:18%;left:5%;--bubble-size:clamp(24px,3vw,44px);--bubble-duration:7.3s;--bubble-delay:-2.9s}
+            .login-hero__bubble--twenty{top:49%;left:3%;--bubble-size:clamp(42px,5.2vw,76px);--bubble-duration:9.1s;--bubble-delay:-5.6s}
+            .login-hero__bubble--twenty-one{bottom:12%;left:25%;--bubble-size:clamp(18px,2.2vw,32px);--bubble-duration:6.9s;--bubble-delay:-1.7s}
+            .login-hero__bubble--twenty-two{top:7%;left:36%;--bubble-size:clamp(15px,1.9vw,28px);--bubble-duration:7.7s;--bubble-delay:-4.2s}
+            .login-hero__bubble--twenty-three{top:39%;left:22%;--bubble-size:clamp(28px,3.5vw,50px);--bubble-duration:8.2s;--bubble-delay:-2.4s}
+            .login-hero__bubble--twenty-four{bottom:6%;left:8%;--bubble-size:clamp(34px,4.2vw,60px);--bubble-duration:9.4s;--bubble-delay:-6.1s}
+            .login-hero__bubble--twenty-five{top:72%;left:36%;--bubble-size:clamp(13px,1.7vw,24px);--bubble-duration:6.6s;--bubble-delay:-3.1s}
+            .login-hero__bubble--twenty-six{top:5%;left:7%;--bubble-size:clamp(28px,3.4vw,48px);--bubble-duration:7.9s;--bubble-delay:-2.6s}
+            .login-hero__bubble--twenty-seven{top:11%;left:27%;--bubble-size:clamp(16px,2vw,29px);--bubble-duration:6.7s;--bubble-delay:-4.8s}
+            .login-hero__bubble--twenty-eight{top:25%;left:4%;--bubble-size:clamp(20px,2.6vw,38px);--bubble-duration:8.6s;--bubble-delay:-3.4s}
+            .login-hero__bubble--twenty-nine{top:3%;left:43%;--bubble-size:clamp(12px,1.6vw,23px);--bubble-duration:7.1s;--bubble-delay:-5.7s}
+            .login-hero__bubble--thirty{bottom:8%;left:47%;--bubble-size:clamp(30px,3.8vw,56px);--bubble-duration:8.1s;--bubble-delay:-2.7s}
+            .login-hero__bubble--thirty-one{bottom:19%;left:57%;--bubble-size:clamp(16px,2vw,30px);--bubble-duration:7.4s;--bubble-delay:-4.3s}
+            .login-hero__bubble--thirty-two{bottom:5%;left:68%;--bubble-size:clamp(22px,2.8vw,40px);--bubble-duration:9s;--bubble-delay:-6.2s}
+            @keyframes login-hero-bubble-drift{
+                from{transform:translate3d(-5px,5px,0) scale(.97)}
+                to{transform:translate3d(8px,-9px,0) scale(1.04)}
+            }
+            @keyframes login-welcome-enter{
+                from{opacity:0;transform:translate3d(-22px,0,0) scale(.985)}
+                to{opacity:1;transform:translate3d(0,0,0) scale(1)}
+            }
+            @keyframes login-form-enter{
+                from{opacity:0;transform:translate3d(18px,12px,0)}
+                to{opacity:1;transform:translate3d(0,0,0)}
+            }
+            @keyframes promo-bubble-enter{
+                from{opacity:0}
+                to{opacity:.72}
+            }
+            .login-container{position:relative;z-index:1;max-width:1480px}
+            .login-grid{
+                grid-template-columns:minmax(0,1.12fr) minmax(370px,.88fr);
+                gap:clamp(28px,6vw,92px);
+                min-height:calc(100vh - 200px);
+            }
+            .promo{
+                order:1;
+                min-height:0;
+                height:min(560px,calc(100vh - 200px));
+                box-sizing:border-box;
+                padding:clamp(28px,7vh,72px) clamp(34px,7vw,96px);
+                overflow:hidden;
+                align-items:flex-start;
+                justify-content:center;
+                background:linear-gradient(140deg,#0a4d60 0%,#12687a 54%,#278da0 100%);
+                border:0;
+                border-radius:22px 42% 42% 22px / 22px 50% 50% 22px;
+                box-shadow:0 18px 46px rgba(10,77,96,.16);
+                animation:login-welcome-enter 700ms cubic-bezier(.2,.8,.2,1) both;
+            }
+            .promo::before{
+                display:block;
+                position:absolute;
+                top:-28%;
+                right:-28%;
+                width:78%;
+                height:78%;
+                border-radius:50%;
+                background:rgba(103,221,207,.14);
+                content:"";
+                pointer-events:none;
+            }
+            .promo::after{
+                display:block;
+                position:absolute;
+                right:-7%;
+                bottom:-32%;
+                width:54%;
+                aspect-ratio:1;
+                border-radius:50%;
+                background:linear-gradient(145deg,rgba(103,221,207,.32),rgba(39,141,160,.72));
+                content:"";
+                pointer-events:none;
+            }
+            .promo-inner{
+                display:block;
+                position:relative;
+                z-index:2;
+                width:min(100%,520px);
+                max-width:520px;
+                margin:0;
+                align-self:center;
+                animation:none;
+            }
+            .promo-tag{
+                margin:0 0 22px;
+                color:#a8eee4;
+                font-size:12px;
+                font-weight:700;
+                letter-spacing:.2em;
+            }
+            .promo-tag .accent{color:#ffffff}
+            .promo-tag .muted{color:rgba(255,255,255,.72)}
+            .promo-heading{
+                max-width:480px;
+                margin:0 0 18px;
+                color:#ffffff;
+                font-size:clamp(36px,5vw,64px);
+                line-height:1.04;
+                letter-spacing:-.04em;
+            }
+            .promo-heading .sub{color:#8de6d8}
+            .promo-sub{
+                max-width:380px;
+                margin:0;
+                color:rgba(255,255,255,.78);
+                font-size:15px;
+                line-height:1.65;
+            }
+            .promo-art{display:none}
+            .promo-orb{
+                position:absolute;
+                z-index:1;
+                bottom:9%;
+                left:12%;
+                width:clamp(110px,18vw,220px);
+                aspect-ratio:1;
+                border-radius:50%;
+                background:linear-gradient(145deg,rgba(103,221,207,.68),rgba(39,141,160,.88));
+                box-shadow:0 16px 36px rgba(5,53,65,.15),inset 0 1px 2px rgba(255,255,255,.32);
+                pointer-events:none;
+                animation:promo-orb-drift 9s ease-in-out infinite alternate;
+            }
+            .promo-orb--small{
+                right:16%;
+                bottom:4%;
+                left:auto;
+                width:clamp(48px,7vw,84px);
+                background:linear-gradient(145deg,rgba(255,255,255,.72),rgba(103,221,207,.56));
+                animation:promo-orb-drift-small 7s ease-in-out -2.5s infinite alternate;
+            }
+            .promo-bubble{
+                position:absolute;
+                z-index:1;
+                top:var(--bubble-top);
+                left:var(--bubble-left);
+                width:var(--bubble-size);
+                aspect-ratio:1;
+                border:1px solid rgba(255,255,255,.38);
+                border-radius:50%;
+                background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.62),rgba(103,221,207,.26) 58%,rgba(103,221,207,.08));
+                box-shadow:inset 0 1px 4px rgba(255,255,255,.28),0 4px 14px rgba(5,53,65,.1);
+                pointer-events:none;
+                opacity:.72;
+                animation:
+                    promo-bubble-drift var(--bubble-duration) ease-in-out var(--bubble-delay) infinite alternate,
+                    promo-bubble-enter 500ms ease-out var(--bubble-enter-delay) both;
+            }
+            .promo-bubble:nth-child(4){--bubble-left:9%;--bubble-top:39%;--bubble-size:18px;--bubble-duration:3.8s;--bubble-delay:-1.2s;--bubble-enter-delay:350ms}
+            .promo-bubble:nth-child(5){--bubble-left:33%;--bubble-top:43%;--bubble-size:30px;--bubble-duration:4.6s;--bubble-delay:-3s;--bubble-enter-delay:450ms}
+            .promo-bubble:nth-child(6){--bubble-left:57%;--bubble-top:68%;--bubble-size:14px;--bubble-duration:3.4s;--bubble-delay:-2s;--bubble-enter-delay:550ms}
+            .promo-bubble:nth-child(7){--bubble-left:76%;--bubble-top:80%;--bubble-size:24px;--bubble-duration:4.2s;--bubble-delay:-.7s;--bubble-enter-delay:650ms}
+            @keyframes promo-bubble-drift{
+                from{transform:translate3d(-5px,4px,0) scale(.9)}
+                to{transform:translate3d(7px,-8px,0) scale(1.08)}
+            }
+            @keyframes promo-orb-drift{
+                from{transform:translate3d(-8px,6px,0) scale(.98)}
+                to{transform:translate3d(12px,-10px,0) scale(1.02)}
+            }
+            @keyframes promo-orb-drift-small{
+                from{transform:translate3d(5px,4px,0) scale(.96)}
+                to{transform:translate3d(-8px,-9px,0) scale(1.04)}
+            }
+            .card-wrap{
+                order:2;
+                animation:login-form-enter 700ms cubic-bezier(.2,.8,.2,1) 120ms both;
+            }
+            .login-card{
+                width:100%;
+                max-width:420px;
+                min-height:0;
+                padding:34px 28px 24px;
+                overflow:visible;
+                border:0;
+                border-radius:0;
+                background:transparent;
+                box-shadow:none;
+                color:#123d49;
+            }
+            .login-card::before{display:none}
+            .login-logo{
+                display:block;
+                width:190px;
+                max-height:84px;
+                object-fit:contain;
+                object-position:center;
+                margin:0 auto 32px;
+            }
+            .card-sub{
+                display:block;
+                margin:0 0 28px;
+                color:#71858b;
+                font-size:13px;
+                line-height:1.5;
+            }
+            .login-card-inner{height:auto;min-height:0}
+            .card-title{
+                margin:0 0 8px;
+                color:#123d49;
+                font-size:32px;
+                font-weight:750;
+                text-align:left;
+                letter-spacing:-.03em;
+            }
+            .oh-input-group{margin-bottom:18px}
+            .oh-label{
+                position:static;
+                display:block;
+                width:auto;
+                height:auto;
+                margin-bottom:7px;
+                overflow:visible;
+                clip:auto;
+                color:#355761;
+                font-size:12px;
+                font-weight:650;
+                white-space:normal;
+                clip-path:none;
+            }
+            .oh-input.auth-input{
+                height:48px;
+                padding:10px 12px 10px 42px;
+                border:1px solid #dce8e9;
+                border-radius:9px;
+                background:#fff;
+                box-shadow:0 2px 5px rgba(16,47,59,.03);
+                color:#123d49;
+                font-size:14px;
+            }
+            .oh-input.auth-input::placeholder{color:#91a3a7}
+            .oh-input.auth-input:focus{
+                border-color:#67ddcf;
+                box-shadow:0 0 0 3px rgba(103,221,207,.24);
+            }
+            .input-with-icon .input-icon{
+                left:12px;
+                width:20px;
+                height:20px;
+                color:#278da0;
+                font-size:16px;
+            }
+            .login-input-wrap{position:relative}
+            .login-input-wrap .input-icon{
+                z-index:2;
+                pointer-events:none;
+            }
+            .login-input-wrap .oh-input--password{
+                padding-right:52px;
+            }
+            .no-icon input{padding-left:12px}
+            .oh-password-input-container .oh-btn{
+                right:3px;
+                width:36px;
+                height:36px;
+                color:#6c8992;
+                z-index:3;
+            }
+            .oh-password-input-container .oh-password-input--toggle ion-icon{
+                display:block;
+                width:20px;
+                height:20px;
+                flex:0 0 20px;
+                color:#278da0;
+                font-size:20px;
+            }
+            .oh-password-input-container .oh-btn:hover{background:#edf8f7}
+            .card-row{align-items:center;margin:4px 0 22px}
+            .oh-checkbox{
+                display:inline-flex;
+                align-items:center;
+                gap:7px;
+                line-height:1;
+            }
+            .oh-checkbox input[type="checkbox"]{
+                display:block;
+                width:15px;
+                height:15px;
+                flex:0 0 15px;
+                margin:0;
+                accent-color:#278da0;
+            }
+            .oh-checkbox__label{display:block;line-height:15px}
+            .oh-checkbox__label,.oh-link{
+                color:#56727a;
+                font-size:12px;
+                font-weight:550;
+            }
+            .oh-link{color:#167589;text-decoration:none}
+            .oh-link:hover{text-decoration:underline;text-underline-offset:2px}
+            .sign-btn{
+                position:relative;
+                isolation:isolate;
+                overflow:hidden;
+                height:52px;
+                border:1px solid rgba(255,255,255,.2);
+                border-radius:999px;
+                background:linear-gradient(105deg,#0a4d60 0%,#147780 48%,#2a9e89 100%);
+                box-shadow:0 9px 20px rgba(10,77,96,.2),inset 0 1px 0 rgba(255,255,255,.22);
+                color:#ffffff;
+                font-size:15px;
+                font-weight:700;
+                letter-spacing:.02em;
+                transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;
+            }
+            .sign-btn::before{
+                position:absolute;
+                z-index:-1;
+                inset:0;
+                background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,.18) 48%,transparent 76%);
+                content:"";
+                transform:translateX(-115%);
+                transition:transform .55s ease;
+                pointer-events:none;
+            }
+            .sign-btn:hover{
+                color:#ffffff;
+                filter:brightness(1.06) saturate(1.08);
+                transform:translateY(-2px);
+                box-shadow:0 14px 28px rgba(10,77,96,.28),inset 0 1px 0 rgba(255,255,255,.26);
+            }
+            .sign-btn:hover::before{transform:translateX(115%)}
+            .sign-btn:focus{color:#ffffff}
+            .sign-btn:focus-visible{
+                outline:3px solid rgba(39,141,160,.32);
+                outline-offset:3px;
+                color:#ffffff;
+            }
+            .sign-btn:active{transform:translateY(0);filter:brightness(.98)}
+            .oh-btn.sign-btn:focus,
+            .oh-btn.sign-btn:focus-visible,
+            .oh-btn.sign-btn:active,
+            .oh-btn.sign-btn:disabled,
+            .oh-btn.sign-btn.is-loading{
+                border-radius:999px;
+            }
+            .sign-btn__label,.sign-btn__spinner{position:relative;z-index:1}
+            .sign-btn ion-icon{display:none}
+            .sign-btn__arrow{
+                position:absolute;
+                z-index:1;
+                top:50%;
+                right:5px;
+                display:grid;
+                width:34px;
+                height:34px;
+                place-items:center;
+                border:1px solid rgba(255,255,255,.22);
+                border-radius:50%;
+                box-sizing:border-box;
+                background:rgba(255,255,255,.14);
+                transform:translateY(-50%);
+                transition:transform .18s ease,background-color .18s ease;
+            }
+            .sign-btn__arrow ion-icon{
+                display:block;
+                width:19px;
+                height:19px;
+                color:#ffffff;
+                font-size:19px;
+            }
+            .sign-btn:hover .sign-btn__arrow{
+                transform:translate(2px,-50%);
+                background:rgba(255,255,255,.22);
+            }
+            .sign-btn__spinner{
+                display:none;
+                width:17px;
+                height:17px;
+                flex:0 0 17px;
+                border:2px solid rgba(255,255,255,.38);
+                border-top-color:#ffffff;
+                border-radius:50%;
+            }
+            .sign-btn.is-loading{
+                cursor:wait;
+                opacity:.92;
+                transform:none;
+            }
+            .sign-btn.is-loading .sign-btn__spinner{
+                display:inline-block;
+                animation:login-submit-spin .7s linear infinite;
+            }
+            .sign-btn.is-loading .sign-btn__arrow{display:none}
+            .sign-btn:disabled{pointer-events:none}
+            @keyframes login-submit-spin{to{transform:rotate(360deg)}}
+            .login-submit-overlay{
+                position:fixed;
+                z-index:1000;
+                inset:0;
+                display:grid;
+                place-items:center;
+                padding:20px;
+                background:rgba(7,40,51,.2);
+                -webkit-backdrop-filter:blur(5px) saturate(115%);
+                backdrop-filter:blur(5px) saturate(115%);
+                opacity:0;
+                visibility:hidden;
+                transition:opacity .24s ease,visibility .24s ease;
+            }
+            .login-submit-overlay.is-visible{opacity:1;visibility:visible}
+            .login-submit-overlay__card{
+                display:flex;
+                align-items:center;
+                gap:16px;
+                position:relative;
+                width:min(100%,360px);
+                box-sizing:border-box;
+                padding:20px 22px 24px;
+                overflow:hidden;
+                border:1px solid rgba(255,255,255,.86);
+                border-radius:18px;
+                background:rgba(255,255,255,.97);
+                box-shadow:0 20px 56px rgba(4,35,47,.2),inset 0 1px 0 #ffffff;
+                animation:login-submit-enter .24s cubic-bezier(.2,.8,.2,1) both;
+            }
+            .login-submit-progress{
+                position:absolute;
+                right:20px;
+                bottom:0;
+                left:20px;
+                height:3px;
+                overflow:hidden;
+                border-radius:99px 99px 0 0;
+                background:#e5f0ef;
+            }
+            .login-loader-mark{
+                position:relative;
+                display:grid;
+                width:42px;
+                height:42px;
+                flex:0 0 42px;
+                place-items:center;
+                border-radius:50%;
+                background:rgba(39,141,160,.08);
+            }
+            .login-loader-mark::before{
+                position:absolute;
+                inset:0;
+                border:2px solid #dcefed;
+                border-top-color:#0a4d60;
+                border-right-color:#278da0;
+                border-radius:50%;
+                content:"";
+                animation:login-submit-spin .8s linear infinite;
+            }
+            .login-loader-mark__core{
+                width:8px;
+                height:8px;
+                border-radius:50%;
+                background:#278da0;
+            }
+            .login-submit-copy{display:flex;min-width:0;flex-direction:column;gap:4px}
+            .login-submit-title{color:#123d49;font-size:15px;font-weight:700;line-height:1.3}
+            .login-submit-message{color:#71858b;font-size:12px;line-height:1.4}
+            .login-submit-progress::before{
+                position:absolute;
+                top:0;
+                bottom:0;
+                left:-36%;
+                width:36%;
+                border-radius:inherit;
+                background:linear-gradient(90deg,#0a4d60,#278da0,#67ddcf);
+                content:"";
+                animation:login-submit-progress 1.5s ease-in-out infinite;
+            }
+            @keyframes login-submit-enter{
+                from{opacity:0;transform:translateY(8px) scale(.985)}
+                to{opacity:1;transform:translateY(0) scale(1)}
+            }
+            @keyframes login-submit-progress{
+                0%{left:-36%}
+                100%{left:100%}
+            }
+            .card-footer{
+                padding-top:22px;
+                color:#91a3a7;
+                font-size:11px;
+            }
+            .auth-btn--ghost{
+                border:1px solid #c9dcdf;
+                background:#ffffff;
+                color:#176c7b;
+            }
+            @media (max-width:900px){
+                .login-grid{grid-template-columns:minmax(0,1.05fr) minmax(320px,.95fr);gap:24px}
+                .promo{padding:48px 34px}
+                .login-card{padding:30px 20px 22px}
+            }
+            @media (max-width:700px){
+                #main{margin:0;min-height:100vh}
+                .login-hero{
+                    width:calc(100% - 12px);
+                    min-height:calc(100vh - 40px);
+                    margin:12px auto;
+                    padding:16px;
+                    border-radius:24px;
+                }
+                .login-grid{
+                    grid-template-columns:minmax(0,1fr);
+                    gap:18px;
+                    min-height:0;
+                }
+                .card-wrap{grid-row:1}
+                .promo{
+                    grid-row:2;
+                    min-height:290px;
+                    height:40vh;
+                    padding:34px 28px;
+                    border-radius:18px 30% 30% 18px / 18px 40% 40% 18px;
+                }
+                #main{height:auto;min-height:100vh}
+                .login-card{max-width:460px;min-height:0;padding:24px 18px 18px}
+                .login-card-inner{min-height:0}
+                .login-logo{margin-bottom:22px}
+                .card-title{font-size:28px}
+                .promo-heading{font-size:clamp(32px,8vw,48px)}
+                .promo-sub{max-width:300px}
+            }
+            @media (max-width:420px){
+                .login-hero{padding:12px}
+                .login-card{padding:20px 10px 16px}
+                .promo{height:270px;min-height:260px;padding:30px 24px}
+                .card-row{gap:8px}
+                .oh-checkbox__label,.oh-link{font-size:11px}
+            }
+            @media (min-width:701px) and (max-height:720px){
+                .login-hero{
+                    min-height:calc(100vh - 24px);
+                    margin:12px auto;
+                    padding:12px;
+                }
+                .login-grid{
+                    min-height:calc(100vh - 48px);
+                    gap:clamp(20px,4vw,56px);
+                }
+                .promo{
+                    height:min(540px,calc(100vh - 76px));
+                    padding:clamp(22px,4vh,36px) clamp(28px,5vw,64px);
+                }
+                .promo-tag{margin-bottom:12px}
+                .promo-heading{
+                    margin-bottom:10px;
+                    font-size:clamp(32px,4.3vw,48px);
+                }
+                .promo-sub{font-size:13px;line-height:1.45}
+                .login-card{padding:14px 22px 12px}
+                .login-logo{width:160px;max-height:70px;margin-bottom:14px}
+                .card-title{font-size:27px}
+                .card-sub{margin-bottom:16px}
+                .oh-input-group{margin-bottom:10px}
+                .oh-input.auth-input{height:42px}
+                .card-row{margin:2px 0 12px}
+                .sign-btn{height:42px}
+                .card-footer{padding-top:12px}
+            }
+            @media (prefers-reduced-motion:reduce){
+                #main::before,.login-hero::before,.login-hero::after,.login-hero__bubble,.promo,.card-wrap,.login-card,.promo-inner,.promo-orb,.promo-bubble,.sign-btn,.sign-btn::before,.sign-btn__arrow,.sign-btn__spinner,.login-loader-mark::before,.login-submit-progress::before,.login-submit-overlay__card{animation:none!important;transition:none!important}
+                .login-submit-progress::before{left:0;width:72%}
             }
         </style>
     </head>
@@ -852,75 +1269,76 @@
                     </div>
                 {% endfor %}
             </div>
+            <div class="login-submit-overlay" aria-hidden="true">
+                <div class="login-submit-overlay__card" role="status" aria-live="polite">
+                    <span class="login-loader-mark" aria-hidden="true"><span class="login-loader-mark__core"></span></span>
+                    <span class="login-submit-copy">
+                        <span class="login-submit-title">{% trans "Signing you in" %}</span>
+                        <span class="login-submit-message">{% trans "Preparing your workspace" %}</span>
+                    </span>
+                    <span class="login-submit-progress" aria-hidden="true"></span>
+                </div>
+            </div>
             <main class="login-hero">
+                <span class="login-hero__bubble login-hero__bubble--one" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--two" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--three" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--four" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--five" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--six" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--seven" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--eight" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--nine" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--ten" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--eleven" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--twelve" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--thirteen" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--fourteen" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--fifteen" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--sixteen" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--seventeen" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--eighteen" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--nineteen" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--twenty" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--twenty-one" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--twenty-two" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--twenty-three" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--twenty-four" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--twenty-five" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--twenty-six" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--twenty-seven" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--twenty-eight" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--twenty-nine" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--thirty" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--thirty-one" aria-hidden="true"></span>
+                <span class="login-hero__bubble login-hero__bubble--thirty-two" aria-hidden="true"></span>
                 <div class="login-container">
                     <div class="login-grid">
-                        <!-- LEFT PROMO -->
-                        <div class="promo" aria-hidden="false">
-                            <div class="promo-inner">
-                                <img src="{% static 'images/ui/emply-logo-transparent.png' %}" alt="EMPLY" class="promo-logo">
-                                <p class="promo-tag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.9 6.1L20 10l-6.1 1.9L12 18l-1.9-6.1L4 10l6.1-1.9L12 2Zm7 13 .9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15Z"/></svg>Smart HR &amp; Payroll Solution</p>
-
-                                <h1 class="promo-heading">Modern HR &amp; Payroll
-                                    <span class="sub">for a Better Tomorrow</span>
-                                </h1>
-                                <p class="promo-sub">Simplify attendance, leave, payroll and performance — all in one place.</p>
-
-                                <div class="features">
-                                    <div class="feature-item">
-                                        <span class="feature-icon"><svg viewBox="0 0 24 24"><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20M10 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM16 4.3a3.5 3.5 0 0 1 0 6.8M17 15h.5a3.5 3.5 0 0 1 3.5 3.5V20"/></svg></span>
-                                        <span class="feature-copy"><strong>Attendance</strong><span>Track work hours<br>with ease</span></span>
-                                    </div>
-                                    <div class="feature-item">
-                                        <span class="feature-icon"><svg viewBox="0 0 24 24"><path d="M7 3v3M17 3v3M4 9h16M5.5 5h13A1.5 1.5 0 0 1 20 6.5v12a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-12A1.5 1.5 0 0 1 5.5 5Z"/><path d="m9 14 2 2 4-4"/></svg></span>
-                                        <span class="feature-copy"><strong>Leave Management</strong><span>Manage leaves<br>without hassle</span></span>
-                                    </div>
-                                    <div class="feature-item">
-                                        <span class="feature-icon"><svg viewBox="0 0 24 24"><path d="M12 3v18M17 7.5c-.8-1.1-2.2-1.7-4.3-1.7-2.4 0-4 1-4 2.7 0 4.3 8.6 1.4 8.6 5.7 0 1.9-1.8 3.2-4.5 3.2-2 0-3.7-.6-4.8-1.8"/></svg></span>
-                                        <span class="feature-copy"><strong>Payroll</strong><span>Accurate &amp; on-time<br>payments</span></span>
-                                    </div>
-                                    <div class="feature-item">
-                                        <span class="feature-icon"><svg viewBox="0 0 24 24"><path d="M4 19V13h4v6H4ZM10 19V9h4v10h-4ZM16 19V5h4v14h-4Z"/></svg></span>
-                                        <span class="feature-copy"><strong>Performance</strong><span>Drive growth<br>with insights</span></span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <img
-                                class="promo-illustration"
-                                src="{% static 'images/ui/emply-login-illustration.png' %}"
-                                alt="EMPLY HR and payroll dashboard illustration"
-                            >
-                            <div class="promo-signature promo-signature--growth" aria-hidden="true">
-                                <span>Your Growth</span>
-                                <span>Our Priority</span>
-                            </div>
-                        </div>
-
-                        <!-- RIGHT CARD -->
+                        <!-- LOGIN FORM -->
                         <div class="card-wrap">
                             <div class="login-card">
                                 <div class="login-card-inner">
-                                    <div class="card-top">
-                                        <img src="{% static 'images/ui/emply-fingerprint-icon.png' %}" alt="EMPLY" class="card-brand">
-                                        <span class="mode-pill"><ion-icon name="sunny-outline"></ion-icon>Light Mode<ion-icon class="mode-chevron" name="chevron-down-outline"></ion-icon></span>
-                                    </div>
-                                    <h2 class="card-title">Welcome Back!</h2>
-                                    <p class="card-sub">Login to your account and continue your journey with MPLY.</p>
+                                    <img src="{% static 'images/ui/emply-logo.png' %}?v=20261016170051" alt="EMPLY" class="login-logo">
+                                    <h2 class="card-title">{% trans "Sign in" %}</h2>
+                                    <p class="card-sub">{% trans "Sign in to continue to your EMPLY workspace." %}</p>
 
                                     <form method="post" class="oh-form-group" novalidate>
                                         {% csrf_token %}
                                         <input type="hidden" name="login_mode" value="{{ login_mode }}">
 
                                         <div class="oh-input-group">
-                                            <label class="oh-label" for="username"><ion-icon name="person"></ion-icon>{% trans "Username" %}</label>
-                                            <input type="text" id="username" name="username" class="oh-input auth-input" placeholder="{% trans 'e.g. john.doe@emply.com' %}">
+                                            <label class="oh-label" for="username">{% trans "Username" %}</label>
+                                            <div class="input-with-icon login-input-wrap">
+                                                <span class="input-icon"><ion-icon name="person-outline"></ion-icon></span>
+                                                <input type="text" id="username" name="username" class="oh-input auth-input" placeholder="{% trans 'Username' %}">
+                                            </div>
                                         </div>
 
                                         <div class="oh-input-group">
-                                            <label class="oh-label" for="password"><ion-icon name="lock-closed"></ion-icon>{% trans "Password" %}</label>
-                                            <div class="oh-password-input-container">
-                                                <input type="password" id="password" name="password" class="oh-input oh-input--password auth-input" placeholder="{% trans 'Use alphanumeric characters' %}">
+                                            <label class="oh-label" for="password">{% trans "Password" %}</label>
+                                            <div class="oh-password-input-container input-with-icon login-input-wrap">
+                                                <span class="input-icon"><ion-icon name="lock-closed-outline"></ion-icon></span>
+                                                <input type="password" id="password" name="password" class="oh-input oh-input--password auth-input" placeholder="{% trans 'Password' %}">
                                                 <button type="button" class="oh-btn oh-btn--transparent oh-password-input--toggle" aria-label="Toggle password visibility">
                                                     <ion-icon class="oh-passowrd-input__show-icon" title="{% trans 'Show Password' %}" name="eye-outline"></ion-icon>
                                                     <ion-icon class="oh-passowrd-input__hide-icon d-none" title="{% trans 'Hide Password' %}" name="eye-off-outline"></ion-icon>
@@ -944,10 +1362,11 @@
                                             </div>
                                         </div>
 
-                                        <button type="submit" class="oh-btn sign-btn" role="button">
+                                        <button type="submit" class="oh-btn sign-btn" role="button" data-loading-label="{% trans 'Signing in...' %}">
                                             <ion-icon class="me-2" name="lock-closed-outline"></ion-icon>
-                                            {% trans "Secure Sign-in" %}
-                                            <ion-icon name="arrow-forward-outline"></ion-icon>
+                                            <span class="sign-btn__label">{% trans "Login" %}</span>
+                                            <span class="sign-btn__spinner" aria-hidden="true"></span>
+                                            <span class="sign-btn__arrow" aria-hidden="true"><ion-icon name="arrow-forward-outline"></ion-icon></span>
                                         </button>
 
                                         {% if initialize_database %}
@@ -955,29 +1374,78 @@
                                                 <a href="{% url 'initialize-database' %}" class="oh-btn auth-btn--ghost w-100">{% trans "Initialize Database" %}</a>
                                             </div>
                                         {% endif %}
-
                                     </form>
 
-                                    <div class="card-footer">© {% now "Y" %} EMPLY. All rights reserved.</div>
+                                    <div class="card-footer">© {{ current_year|default:'2024' }} EMPLY. All rights reserved.</div>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- WELCOME PANEL -->
+                        <section class="promo" aria-label="{% trans 'Welcome to EMPLY' %}">
+                            <div class="promo-inner">
+                                <p class="promo-tag">{% trans "WELCOME TO" %} <span class="accent">EMPLY</span></p>
+                                <h1 class="promo-heading">{% trans "Your people." %}<br><span class="sub">{% trans "Your workplace." %}</span></h1>
+                                <p class="promo-sub">{% trans "One simple place to manage your workday, stay connected, and keep your team moving forward." %}</p>
+                            </div>
+                            <span class="promo-orb" aria-hidden="true"></span>
+                            <span class="promo-orb promo-orb--small" aria-hidden="true"></span>
+                            <span class="promo-bubble" aria-hidden="true"></span>
+                            <span class="promo-bubble" aria-hidden="true"></span>
+                            <span class="promo-bubble" aria-hidden="true"></span>
+                            <span class="promo-bubble" aria-hidden="true"></span>
+                            <svg class="promo-art" viewBox="0 0 680 520" aria-hidden="true">
+                                <defs>
+                                    <linearGradient id="login-screen" x1="0" y1="0" x2="1" y2="1">
+                                        <stop offset="0" stop-color="#8ee0f2"/>
+                                        <stop offset="1" stop-color="#48aee0"/>
+                                    </linearGradient>
+                                    <linearGradient id="login-shirt" x1="0" y1="0" x2="1" y2="1">
+                                        <stop offset="0" stop-color="#67ddcf"/>
+                                        <stop offset="1" stop-color="#278da0"/>
+                                    </linearGradient>
+                                </defs>
+                                <path d="M0 425C134 380 224 405 335 426c130 24 229-32 345-68v162H0Z" fill="#ececf1"/>
+                                <path d="M290 34c123-41 246-8 390 25v121c-115-22-196 12-309-2C260 160 183 202 80 193 119 115 199 65 290 34Z" fill="#f0f0f3"/>
+                                <ellipse cx="334" cy="454" rx="252" ry="22" fill="#362652" opacity=".1"/>
+                                <g stroke="#292044" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M78 311v165m507-165v165" fill="none" stroke-width="5"/>
+                                    <path d="M60 308h543" fill="none" stroke-width="8"/>
+                                    <path d="m300 311-43 165m181-165 30 165" fill="none" stroke-width="5"/>
+                                </g>
+                                <g transform="translate(90 162)">
+                                    <path d="M29 88C3 61 13 30 17 7c23 18 31 41 21 64C44 37 62 16 81 0c10 35-1 69-24 91" fill="#65c9e5"/>
+                                    <path d="M49 90C46 56 63 32 82 19c2 29-5 52-21 73" fill="#3ea9d0"/>
+                                    <path d="m20 91 75 0-10 58c-2 13-12 21-25 21H55c-13 0-23-8-25-21Z" fill="#ffbd24"/>
+                                </g>
+                                <g transform="translate(250 66)">
+                                    <rect x="0" y="0" width="229" height="150" rx="4" fill="#272044"/>
+                                    <rect x="8" y="8" width="213" height="134" fill="url(#login-screen)"/>
+                                    <circle cx="114" cy="54" r="12" fill="#f8f8fb"/>
+                                    <path d="M91 81h47m-40 13h33" stroke="#f8f8fb" stroke-width="5" stroke-linecap="round"/>
+                                    <path d="m90 151 50 0 12 24H77Z" fill="#292044"/>
+                                </g>
+                                <g>
+                                    <path d="M277 405c-20 19-31 38-47 52-8 7-24 13-37 17l-10-8 29-24 29-52Z" fill="#332550"/>
+                                    <path d="M336 401c-7 27 4 44 23 57 13 9 32 14 41 23l-5 9-58-12c-29-6-52-27-53-52l7-35Z" fill="#332550"/>
+                                    <path d="M253 274c9-39 41-58 79-51 31 6 45 32 42 64l-3 69-92 12-39-42Z" fill="url(#login-shirt)"/>
+                                    <path d="M278 278c-28 6-40 22-48 47l-23 42 68 3 30-40Z" fill="#278da0"/>
+                                    <path d="M350 284c17 6 22 25 32 39l31 26-15 15-49-23c-20-9-31-28-26-47Z" fill="#278da0"/>
+                                    <path d="M383 345c12-8 25-9 34-4l10 8-18 15-22-5Z" fill="#dfa078"/>
+                                    <path d="M281 353c-22 15-39 43-32 66 6 22 36 39 76 41l18 53h-65l-42-57c-20-27-23-62-7-86Z" fill="#0a4d60"/>
+                                    <path d="M339 366c33 10 47 33 45 61l-6 51-45-7-10-49-44-19c-21-9-33-29-28-49Z" fill="#123d49"/>
+                                    <path d="m273 508-8 10h71l2-10m24-4 5 14h69l-8-13" fill="#292044"/>
+                                    <path d="M285 213c-4-22 10-44 34-45 24-1 40 17 37 41-2 21-17 39-35 40-20 1-33-16-36-36Z" fill="#dfa078"/>
+                                    <path d="M280 218c-13-9-18-25-13-40 7-22 28-36 54-31 10 2 20 8 26 16-17 1-25 9-39 10-10 1-18-2-25-7 8 13 7 31-3 52Z" fill="#17354a"/>
+                                    <path d="M337 183c12 8 17 21 13 35 9-6 15-20 12-32-4-18-20-31-39-31" fill="#17354a"/>
+                                    <path d="M289 249l1 24 27 15 27-20-1-22" fill="#dfa078"/>
+                                </g>
+                                <path d="M46 306h565" stroke="#292044" stroke-width="5" stroke-linecap="round"/>
+                            </svg>
+                        </section>
+
                     </div>
                 </div>
-                <div class="promo-waves" aria-hidden="true">
-                    <svg viewBox="0 0 1200 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-                        <path d="M0,120 C200,40 400,40 600,120 C800,200 1000,200 1200,120" fill="none" stroke="rgba(20,184,100,0.14)" stroke-width="2"/>
-                        <path d="M0,140 C240,64 420,64 700,140 C920,200 1060,200 1200,140" fill="none" stroke="rgba(20,184,100,0.09)" stroke-width="1.5"/>
-                        <path d="M0,160 C160,96 360,96 560,160 C760,224 980,224 1200,160" fill="none" stroke="rgba(20,184,100,0.06)" stroke-width="1"/>
-                    </svg>
-                </div>
-                <img
-                    class="promo-edge-leaves"
-                    src="{% static 'images/ui/emply-login-leaves.png' %}?v=20261013"
-                    alt=""
-                    aria-hidden="true"
-                >
             </main>
         </div>
         <script src="{% static '/build/js/web.frontend.min.js' %}"></script>
@@ -987,6 +1455,33 @@
         <script type="module" src="{% static 'images/ionicons/ui_icons/ionicons/ionicons.esm.js' %}"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
         <script>
+            document.querySelector(".login-card form").addEventListener("submit", function (event) {
+                const submitButton = this.querySelector(".sign-btn");
+                if (this.dataset.allowSubmit === "true") {
+                    delete this.dataset.allowSubmit;
+                    return;
+                }
+                if (this.dataset.submitting === "true") {
+                    event.preventDefault();
+                    return;
+                }
+                event.preventDefault();
+                this.dataset.submitting = "true";
+                submitButton.classList.add("is-loading");
+                submitButton.setAttribute("aria-busy", "true");
+                submitButton.querySelector(".sign-btn__label").textContent = submitButton.dataset.loadingLabel;
+                submitButton.disabled = true;
+                const loadingOverlay = document.querySelector(".login-submit-overlay");
+                loadingOverlay.classList.add("is-visible");
+                loadingOverlay.setAttribute("aria-hidden", "false");
+                window.requestAnimationFrame(() => {
+                    window.setTimeout(() => {
+                        this.dataset.allowSubmit = "true";
+                        this.requestSubmit();
+                    }, 180);
+                });
+            });
+
             $(document).ready(function () {
                 if ($(".oh-alert--warning").length > 0) {
                     Swal.fire({

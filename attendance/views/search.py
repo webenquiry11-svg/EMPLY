@@ -27,7 +27,7 @@ from attendance.models import (
     AttendanceOverTime,
     AttendanceValidationCondition,
 )
-from attendance.views.views import paginator_qry, strtime_seconds
+from attendance.views.views import own_attendance_page, paginator_qry, strtime_seconds
 from base.methods import filtersubordinates, get_key_instances, sortby
 from horilla.decorators import hx_request_required, login_required, manager_can_enter
 from horilla.group_by import group_by_queryset
@@ -425,11 +425,26 @@ def filter_own_attendance(request):
         )
         template = "attendance/own_attendance/group_by.html"
         attendances_ids = []
+    else:
+        attendance_page = own_attendance_page(
+            request.user.employee_get, attendances, request
+        )
+        attendances_ids = json.dumps(
+            [
+                instance.id
+                for instance in attendance_page.object_list
+                if instance.id is not None
+            ]
+        )
     return render(
         request,
         template,
         {
-            "attendances": paginator_qry(attendances, request.GET.get("page")),
+            "attendances": (
+                attendance_page
+                if field == "" or field is None
+                else paginator_qry(attendances, request.GET.get("page"))
+            ),
             "filter_dict": data_dict,
             "attendances_ids": attendances_ids,
             "pd": previous_data,
@@ -446,12 +461,23 @@ def own_attendance_sort(request):
     """
     attendances = Attendance.objects.filter(employee_id=request.user.employee_get)
     previous_data = request.GET.urlencode()
-    attendances = sortby(request, attendances, "orderby")
+    attendances = AttendanceFilters(request.GET, queryset=attendances).qs
+    attendance_page = own_attendance_page(
+        request.user.employee_get, attendances, request
+    )
+    attendances_ids = json.dumps(
+        [
+            instance.id
+            for instance in attendance_page.object_list
+            if instance.id is not None
+        ]
+    )
     return render(
         request,
         "attendance/own_attendance/attendances.html",
         {
-            "attendances": paginator_qry(attendances, request.GET.get("page")),
+            "attendances": attendance_page,
+            "attendances_ids": attendances_ids,
             "pd": previous_data,
         },
     )

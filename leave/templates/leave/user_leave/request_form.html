@@ -140,21 +140,24 @@
     }
 
     #objectCreateModal .oh-modal__dialog {
-        width: min(680px, calc(100vw - 2rem));
-        max-width: 680px;
+        width: min(720px, calc(100vw - 2rem));
+        max-width: 720px;
+        max-height: calc(100vh - 2rem);
+        display: flex;
+        flex-direction: column;
         overflow: hidden;
-        border: 1px solid rgba(126, 194, 164, 0.28);
-        border-radius: 20px;
-        background: #f5faf9 !important;
-        box-shadow: 0 24px 70px rgba(8, 31, 24, 0.38);
+        border: 1px solid #c9e0e5;
+        border-radius: 22px;
+        background: #f4fafb !important;
+        box-shadow: 0 24px 64px rgba(10, 77, 96, 0.24);
     }
 
     #objectCreateModal .oh-modal__dialog-header {
         display: flex;
         align-items: center;
-        min-height: 72px;
-        padding: 1.1rem 1.35rem;
-        background: #2f5752 !important;
+        min-height: 68px;
+        padding: 1rem 1.35rem;
+        background: linear-gradient(110deg, #0a4d60, #278da0) !important;
         color: #fff !important;
         border: 0;
     }
@@ -180,21 +183,189 @@
     }
 
     #objectCreateModal .oh-modal__dialog-body {
-        padding: 1.35rem;
-        background: #f5faf9 !important;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 1.25rem !important;
+        background: #f4fafb !important;
     }
 
     #objectCreateModal #userLeaveForm {
         display: block !important;
-        background: #f5faf9 !important;
-        color: #294b47 !important;
+        background: transparent !important;
+        color: #173f50 !important;
+    }
+
+    @keyframes employee-leave-sheet-enter {
+        from {
+            opacity: 0;
+            transform: translateY(36px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    #objectCreateModal.oh-modal--show:has(#userLeaveForm) {
+        position: fixed !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-sizing: border-box;
+        padding: 16px !important;
+        overflow-y: auto !important;
+        background: rgba(7, 20, 23, 0.62) !important;
+        backdrop-filter: blur(6px);
+    }
+
+    #objectCreateModal:has(#userLeaveForm) > #objectCreateModalTarget {
+        position: relative;
+        width: min(680px, calc(100vw - 32px)) !important;
+        max-width: 680px !important;
+        max-height: min(68vh, 620px) !important;
+        margin: 0 auto !important;
+        border: 1px solid rgba(201, 224, 229, 0.9) !important;
+        border-radius: 22px !important;
+        box-shadow: 0 24px 64px rgba(10, 46, 54, 0.3) !important;
+        animation: employee-leave-sheet-enter 240ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+    }
+
+    #objectCreateModal:has(#userLeaveForm) > #objectCreateModalTarget::before {
+        content: "";
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        z-index: 2;
+        width: 38px;
+        height: 4px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.62);
+        transform: translateX(-50%);
+        pointer-events: none;
+    }
+
+    #objectCreateModal:has(#userLeaveForm) .oh-modal__dialog-header {
+        min-height: 58px !important;
+        padding: 0.8rem 1.1rem 0.45rem !important;
+        gap: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.14) !important;
+        background: linear-gradient(115deg, #0a4d60 0%, #176f80 58%, #278da0 100%) !important;
+    }
+
+    #objectCreateModal:has(#userLeaveForm) .leave-request-heading {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        min-width: 0;
+    }
+
+    #objectCreateModal:has(#userLeaveForm) .leave-request-heading__icon {
+        display: inline-flex;
+        flex: 0 0 38px;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.14);
+        color: #fff;
+        font-size: 21px;
+    }
+
+    #objectCreateModal:has(#userLeaveForm) .leave-request-heading__copy {
+        min-width: 0;
+    }
+
+    #objectCreateModal:has(#userLeaveForm) .leave-request-subtitle {
+        display: block;
+        margin: 0.15rem 0 0;
+        color: rgba(255, 255, 255, 0.92) !important;
+        font-size: 0.76rem;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        line-height: 1.4;
+    }
+
+    #objectCreateModal:has(#userLeaveForm) .oh-modal__close {
+        position: relative !important;
+        top: auto !important;
+        right: auto !important;
+        display: inline-flex !important;
+        flex: 0 0 36px;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 34px !important;
+        height: 34px !important;
+        box-sizing: border-box !important;
+        margin: 0 0 0 auto !important;
+        padding: 0 !important;
+        border-radius: 50% !important;
+        line-height: 0 !important;
+    }
+
+    #objectCreateModal:has(#userLeaveForm) .oh-modal__close ion-icon {
+        display: block;
+        width: 18px;
+        height: 18px;
+        margin: 0;
+        padding: 0;
+        font-size: 18px;
+        line-height: 0;
+    }
+
+    #objectCreateModal:has(#userLeaveForm) .oh-modal__dialog-body {
+        padding: 1.1rem !important;
+        background: linear-gradient(145deg, #edf7f8 0%, #f7fbfa 68%, #eef6f3 100%) !important;
+    }
+
+    #objectCreateModal:has(#userLeaveForm) .select2-selection,
+    #objectCreateModal:has(#userLeaveForm) .select2-selection--single,
+    #objectCreateModal:has(#userLeaveForm) .select2-selection--multiple {
+        min-height: 38px !important;
+        height: 38px !important;
+    }
+
+    #objectCreateModal:has(#userLeaveForm) .select2-selection__rendered {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+    }
+
+    #objectCreateModal:has(#userLeaveForm) .select2-selection__arrow {
+        height: 36px !important;
+    }
+
+    @media (max-width: 640px) {
+        #objectCreateModal.oh-modal--show:has(#userLeaveForm) {
+            padding: 8px !important;
+        }
+
+        #objectCreateModal:has(#userLeaveForm) > #objectCreateModalTarget {
+            width: calc(100vw - 16px) !important;
+            max-width: 680px !important;
+            max-height: min(82vh, 620px) !important;
+            border-radius: 22px !important;
+        }
     }
 
     #objectCreateModal #userLeaveForm > .oh-profile-section {
         width: 100% !important;
         max-width: none !important;
         padding: 0 !important;
-        background: #f5faf9 !important;
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+
+    #objectCreateModal #userLeaveForm .oh-profile-section__card {
+        padding: 1rem !important;
+        border: 1px solid #dcebed !important;
+        border-radius: 16px !important;
+        background: rgba(255, 255, 255, 0.94) !important;
+        box-shadow: 0 8px 24px rgba(23, 63, 80, 0.07) !important;
     }
 
     #objectCreateModal #userLeaveForm p {
@@ -207,21 +378,40 @@
     }
 
     #objectCreateModal #userLeaveForm .row {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 0.85rem 1rem !important;
         width: 100% !important;
         margin: 0 !important;
     }
 
     #objectCreateModal #userLeaveForm .col,
     #objectCreateModal #userLeaveForm [class*="col-"] {
-        padding: 0.5rem !important;
+        width: auto !important;
+        max-width: none !important;
+        padding: 0 !important;
+    }
+
+    #objectCreateModal #userLeaveForm .row > .oh-label__info,
+    #objectCreateModal #userLeaveForm .row > div[style*="width: 100%"] {
+        grid-column: 1 / -1 !important;
+    }
+
+    #objectCreateModal #userLeaveForm .row > .col-12:first-child {
+        grid-column: 1 / -1 !important;
+    }
+
+    #objectCreateModal #userLeaveForm .row > div[style*="width: 100%"] {
+        padding: 0 !important;
     }
 
     #objectCreateModal #userLeaveForm label {
         display: block;
-        margin-bottom: 0.4rem;
-        color: #294b47;
+        margin-bottom: 0.35rem;
+        color: #24515e;
         font-size: 0.78rem;
         font-weight: 800;
+        letter-spacing: 0.01em;
     }
 
     #objectCreateModal #userLeaveForm input,
@@ -229,56 +419,124 @@
     #objectCreateModal #userLeaveForm textarea {
         width: 100% !important;
         min-width: 0 !important;
-        min-height: 44px !important;
+        min-height: 38px !important;
+        height: 38px !important;
         box-sizing: border-box;
-        padding: 0.7rem 0.8rem;
-        border: 1px solid #d7e2dc;
-        border-radius: 10px;
+        padding: 0.4rem 0.7rem !important;
+        border: 1px solid #cfe1e5 !important;
+        border-radius: 11px !important;
         background: #fff !important;
-        color: #294b47 !important;
+        color: #285d6b !important;
         font-size: 0.84rem;
+        box-shadow: 0 1px 2px rgba(23, 63, 80, 0.04);
+        transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+    }
+
+    #objectCreateModal #userLeaveForm input:hover,
+    #objectCreateModal #userLeaveForm select:hover,
+    #objectCreateModal #userLeaveForm textarea:hover {
+        border-color: #a8cbd2 !important;
     }
 
     #objectCreateModal #userLeaveForm textarea {
-        min-height: 92px;
+        min-height: 64px !important;
+        height: 64px !important;
         resize: vertical;
+    }
+
+    #objectCreateModal #userLeaveForm input[type="file"] {
+        display: block !important;
+        min-height: 38px !important;
+        height: 38px !important;
+        padding: 3px !important;
+        line-height: 30px !important;
+    }
+
+    #objectCreateModal #userLeaveForm input[type="file"]::file-selector-button {
+        height: 28px;
+        margin: 0 0.55rem 0 0;
+        padding: 0 0.7rem;
+        border: 0;
+        border-radius: 7px;
+        background: #e2f2f3;
+        color: #176d80;
+        font: inherit;
+        font-weight: 700;
+        line-height: 28px;
+        vertical-align: middle;
+        transition: background-color 160ms ease, color 160ms ease;
+        cursor: pointer;
+    }
+
+    #objectCreateModal #userLeaveForm input[type="file"]::file-selector-button:hover {
+        background: #d2e9eb;
+        color: #0a4d60;
     }
 
     #objectCreateModal #userLeaveForm input:focus,
     #objectCreateModal #userLeaveForm select:focus,
     #objectCreateModal #userLeaveForm textarea:focus {
         outline: 0;
-        border-color: #6cae95;
-        box-shadow: 0 0 0 3px rgba(108,174,149,0.16);
+        border-color: #278da0 !important;
+        box-shadow: 0 0 0 3px rgba(39, 141, 160, 0.15) !important;
+    }
+
+    #objectCreateModal #userLeaveForm .oh-modal__dialog-footer {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 0.2rem !important;
+    }
+
+    #objectCreateModal #userLeaveForm .errorlist {
+        margin: 0.3rem 0 0;
+        padding-left: 1rem;
+        color: #b54747;
+        font-size: 0.76rem;
     }
 
     #objectCreateModal #userLeaveForm .oh-btn,
     #objectCreateModal #userLeaveForm button[type="submit"] {
         grid-column: 1 / -1;
         justify-self: end;
-        min-width: 110px;
-        padding: 0.7rem 1.2rem;
-        border: 0;
-        border-radius: 10px;
-        background: #2f5752;
+        min-width: 112px;
+        min-height: 44px;
+        padding: 0.65rem 1.25rem;
+        border: 1px solid #176d83 !important;
+        border-radius: 11px !important;
+        background: linear-gradient(110deg, #0a4d60, #278da0) !important;
         color: #fff;
         font-weight: 800;
+        letter-spacing: 0.01em;
+        box-shadow: 0 7px 16px rgba(10, 77, 96, 0.2);
+        transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    #objectCreateModal #userLeaveForm .oh-btn:hover,
+    #objectCreateModal #userLeaveForm button[type="submit"]:hover {
+        background: #176d83 !important;
+        transform: translateY(-1px);
+        box-shadow: 0 9px 20px rgba(10, 77, 96, 0.24);
     }
 
     @media (max-width: 640px) {
         #objectCreateModal .oh-modal__dialog {
             width: calc(100vw - 1rem);
+            max-height: calc(100vh - 1rem);
             border-radius: 16px;
         }
 
-        #objectCreateModal #userLeaveForm {
-            grid-template-columns: 1fr;
+        #objectCreateModal .oh-modal__dialog-body {
+            padding: 1rem !important;
         }
 
-        #objectCreateModal #userLeaveForm p:last-child,
-        #objectCreateModal #userLeaveForm .oh-btn,
-        #objectCreateModal #userLeaveForm button[type="submit"] {
-            grid-column: auto;
+        #objectCreateModal #userLeaveForm .row {
+            grid-template-columns: minmax(0, 1fr) !important;
+            gap: 0.8rem !important;
+        }
+
+        #objectCreateModal #userLeaveForm .row > .oh-label__info,
+        #objectCreateModal #userLeaveForm .row > div[style*="width: 100%"] {
+            grid-column: 1 !important;
         }
     }
 
@@ -311,6 +569,27 @@
         background: linear-gradient(110deg, #0a4d60, #278da0) !important;
         color: #ffffff !important;
     }
+
+    #objectCreateModal #userLeaveForm > .oh-general__tab-target#personal {
+        display: block !important;
+        width: 100% !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        outline: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    #objectCreateModal #userLeaveForm {
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
 </style>
 {% if messages %}
     <span
@@ -322,9 +601,15 @@
 {% endif %}
 
 <div class="oh-modal__dialog-header">
-    <h2 class="oh-modal__dialog-title" id="editDialogDialog">
-        {% trans "Create Leave Request" %}
-    </h2>
+    <div class="leave-request-heading">
+        <span class="material-symbols-outlined leave-request-heading__icon" aria-hidden="true">event_available</span>
+        <div class="leave-request-heading__copy">
+            <h2 class="oh-modal__dialog-title" id="editDialogDialog">
+                {% trans "Create Leave Request" %}
+            </h2>
+            <p class="leave-request-subtitle">{% trans "Share the details of your leave request below." %}</p>
+        </div>
+    </div>
     <button class="oh-modal__close" aria-label="{% trans 'Close' %}">
         <ion-icon name="close-outline"></ion-icon>
     </button>

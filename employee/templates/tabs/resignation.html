@@ -1,17 +1,100 @@
 {% load i18n %}
-{% if enabled_resignation_request %}
-    <div class="d-flex flex-row-reverse oh-wrapper">
-        <a
-            hx-get="{% url 'create-resignation-request' %}"
-            hx-target="#resignationModalBody"
-            data-toggle="oh-modal-toggle"
-            data-target="#resignationModal"
-            class="oh-btn oh-btn--secondary"
-        >
-            <ion-icon name="add-outline"></ion-icon>
-            {% trans 'Create' %}
-        </a>
+<style>
+.res-wrapper {
+    padding: 24px;
+    background: #F8FAFC;
+    min-height: 100%;
+}
+.res-card {
+    background: #FFFFFF;
+    border: 1px solid #E6E8EC;
+    border-radius: 18px;
+    overflow: hidden;
+}
+.res-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px dashed #E6E8EC;
+}
+.res-content {
+    padding: 24px;
+}
+.res-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #94A3B8;
+}
+.res-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0F172A;
+}
+.res-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    background: #0F766E;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+.res-btn-primary:hover {
+    background: #0D5F58;
+    box-shadow: 0 2px 8px rgba(15, 118, 110, 0.2);
+    color: #FFFFFF;
+}
+.res-btn-primary ion-icon {
+    font-size: 16px;
+}
+.res-empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+    padding: 48px 24px;
+}
+.res-empty-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #64748B;
+    text-align: center;
+}
+</style>
+<div class="res-wrapper">
+    <div class="res-card">
+        {% if enabled_resignation_request %}
+            <div class="res-header">
+                <a
+                    hx-get="{% url 'create-resignation-request' %}"
+                    hx-target="#resignationModalBody"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#resignationModal"
+                    class="res-btn-primary oh-btn oh-btn--secondary"
+                >
+                    <ion-icon name="add-outline"></ion-icon>
+                    {% trans 'Create' %}
+                </a>
+            </div>
+            <div class="res-content">
+            </div>
+        {% else %}
+            <div class="res-empty">
+                <div class="res-empty-text">{% trans "Resignation requests are currently disabled." %}</div>
+            </div>
+        {% endif %}
     </div>
+</div>
+{% if enabled_resignation_request %}
     <div class="oh-modal" id="resignationModal" role="dialog" aria-hidden="true">
         <div class="oh-modal__dialog" style="max-width: 550px">
             <div class="oh-modal__dialog-header">

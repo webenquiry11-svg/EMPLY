@@ -682,919 +682,6 @@
             .nav-list a span:last-child { display: block; max-width: 61px; overflow: hidden; font-size: 9px; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
             .nav-icon { width: 22px; height: 22px; }
         }
-
-        :root {
-            --ink: #102f69;
-            --ink-soft: #58739f;
-            --green: #08b99a;
-            --green-dark: #078a75;
-            --green-pale: #e5fbf5;
-            --canvas: #f4faff;
-            --surface: #fff;
-            --line: #dcecff;
-            --line-dark: #cadcf2;
-            --shadow: 0 5px 18px rgba(34, 106, 177, .055);
-            --radius: 12px;
-        }
-        body { color: var(--ink); background: var(--canvas); }
-        .payroll-header {
-            position: sticky;
-            top: 0;
-            z-index: 20;
-            height: 64px;
-            grid-template-columns: 190px minmax(220px, 1fr) auto;
-            gap: 20px;
-            padding: 0 24px;
-            color: var(--ink);
-            background: linear-gradient(105deg, #fff 0%, #fff 58%, #f5faff 100%);
-            border-bottom: 1px solid #d9e9fa;
-            box-shadow: 0 5px 18px rgba(32, 91, 151, .07);
-        }
-        .payroll-header::after { display: none; }
-        .brand { position: relative; width: 100%; justify-self: stretch; margin-left: 0; align-items: center; flex-direction: column; gap: 0; transition: transform .2s ease; }
-        .brand::after { position: absolute; top: 5px; right: 0; width: 1px; height: 34px; content: ""; background: #d8e8f8; }
-        .brand:hover { transform: translateY(-1px); }
-        .brand-logo { width: 140px; height: 41px; transform: translateX(-14px); object-fit: cover; object-position: top; filter: none; }
-        .brand-tagline { width: 140px; margin: -1px 0 0; transform: translateX(-14px); color: #5e749a; font-size: 5px; font-weight: 700; letter-spacing: .16em; line-height: 1; text-align: center; white-space: nowrap; }
-        .header-divider { width: 1px; height: 24px; flex: 0 0 auto; background: #d9e8f8; }
-        .payroll-search { position: relative; width: min(100%, 510px); justify-self: start; }
-        .payroll-search-field {
-            display: flex;
-            height: 38px;
-            align-items: center;
-            gap: 10px;
-            padding: 0 13px;
-            color: #4883c4;
-            border: 1px solid #d9e9fb;
-            border-radius: 999px;
-            background: linear-gradient(110deg, #f7fbff, #fff);
-            box-shadow: inset 0 1px 2px rgba(57, 117, 175, .025);
-            transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
-        }
-        .payroll-search-field:focus-within {
-            border-color: #8fc5fa;
-            background: #fff;
-            box-shadow: 0 0 0 3px rgba(49, 142, 232, .1);
-        }
-        .payroll-search-field svg { width: 16px; height: 16px; flex: 0 0 auto; }
-        .payroll-search-input {
-            width: 100%;
-            min-width: 0;
-            padding: 0;
-            color: #173767;
-            border: 0;
-            outline: 0;
-            background: transparent;
-            font: inherit;
-            font-size: 11px;
-        }
-        .payroll-search-input::placeholder { color: #8197b4; opacity: 1; }
-        .payroll-search-results {
-            position: absolute;
-            z-index: 30;
-            top: calc(100% + 7px);
-            right: 0;
-            left: 0;
-            display: grid;
-            gap: 3px;
-            max-height: 260px;
-            overflow-y: auto;
-            padding: 6px;
-            border: 1px solid #dfebf8;
-            border-radius: 13px;
-            background: #fff;
-            box-shadow: 0 12px 30px rgba(31, 78, 129, .14);
-        }
-        .payroll-search-results[hidden] { display: none; }
-        .payroll-search-option {
-            display: flex;
-            min-height: 36px;
-            align-items: center;
-            gap: 9px;
-            padding: 7px 9px;
-            color: #25456f;
-            border: 0;
-            border-radius: 8px;
-            background: #fff;
-            font: inherit;
-            font-size: 11px;
-            text-align: left;
-            cursor: pointer;
-        }
-        .payroll-search-option::before {
-            width: 7px;
-            height: 7px;
-            flex: 0 0 auto;
-            border-radius: 50%;
-            background: #62aefa;
-            content: "";
-        }
-        .payroll-search-option:hover, .payroll-search-option:focus-visible { color: #116ed0; outline: 0; background: #f1f7ff; }
-        .payroll-search-empty { padding: 10px; color: #7187a4; font-size: 11px; }
-        .user-area { gap: 12px; }
-        .user-profile {
-            display: flex;
-            min-width: 0;
-            align-items: center;
-            gap: 9px;
-            padding: 4px 9px 4px 5px;
-            border: 1px solid #e0ecf9;
-            border-radius: 999px;
-            background: linear-gradient(110deg, #f8fbff, #fff);
-        }
-        .avatar { width: 34px; height: 34px; flex: 0 0 auto; color: #157cf0; background: #e7f3ff; border: 2px solid #fff; box-shadow: 0 0 0 1px #dcecff, 0 3px 9px rgba(40, 104, 167, .12); }
-        .user-details strong { color: var(--ink); }
-        .user-details { gap: 3px; padding-left: 1px; }
-        .user-details strong { color: #173767; font-size: 12px; font-weight: 750; }
-        .user-details span { color: #7187a4; font-size: 10px; }
-        .notification-button {
-            position: relative;
-            display: grid;
-            width: 34px;
-            height: 34px;
-            margin-right: 2px;
-            padding: 0;
-            place-items: center;
-            color: #1478ed;
-            border: 1px solid #e2eefc;
-            border-radius: 50%;
-            background: #f7fbff;
-            transition: color .18s ease, background .18s ease, transform .18s ease;
-        }
-        .notification-button:hover { color: #fff; background: #2189ee; transform: translateY(-1px); }
-        .notification-button svg { width: 17px; height: 17px; }
-        .notification-count {
-            position: absolute;
-            top: 0;
-            right: 0;
-            display: grid;
-            width: 14px;
-            height: 14px;
-            place-items: center;
-            color: #fff;
-            border: 1px solid #fff;
-            border-radius: 50%;
-            background: #fa4e55;
-            font-size: 8px;
-            font-weight: 700;
-        }
-        .header-action, .logout {
-            color: #1676e8;
-            background: linear-gradient(180deg, #fff, #f5faff);
-            border-color: #d3e6fa;
-            border-radius: 999px;
-            box-shadow: 0 2px 6px rgba(50, 113, 176, .06);
-        }
-        .logout { display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px; }
-        .logout svg { width: 13px; height: 13px; }
-        .logout:hover, .header-action:hover { color: #075fc4; border-color: #9dccff; background: #edf6ff; box-shadow: 0 4px 12px rgba(30, 122, 220, .13); transform: translateY(-1px); }
-        .workspace { grid-template-columns: 180px minmax(0, 1fr); min-height: calc(100vh - 56px); }
-        .sidebar {
-            position: relative;
-            min-height: calc(100vh - 56px);
-            padding: 20px 9px;
-            background: #fff;
-            border-right: 1px solid var(--line);
-        }
-        .sidebar::after {
-            position: absolute;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            height: 84px;
-            clip-path: polygon(0 0, 100% 45%, 100% 100%, 0 100%);
-            content: "";
-            background: linear-gradient(145deg, #edfbff, #d9f5ff);
-        }
-        .sidebar > * { position: relative; z-index: 1; }
-        .side-label { display: none; }
-        .nav-list { gap: 5px; }
-        .nav-list a, .nav-list a.active {
-            min-height: 44px;
-            gap: 12px;
-            padding: 8px 12px;
-            color: #3e5d88;
-            background: #f0f2f4;
-            border: 0;
-            border-radius: 11px;
-            box-shadow: none;
-            font-size: 12px;
-            font-weight: 650;
-            transition: background-color .22s ease, box-shadow .22s ease, color .22s ease, transform .22s ease;
-        }
-        .nav-list a::before { display: none; }
-        .nav-list a:not(.active):hover {
-            color: #0875ed;
-            background: #e7f2ff;
-            box-shadow: inset 3px 0 0 #9bcaff, 0 4px 12px rgba(22, 132, 242, .08);
-            transform: translateX(2px);
-        }
-        .nav-list a:not(.active):hover .nav-icon {
-            color: #fff;
-            background: #55a7f7;
-            transform: scale(1.08);
-        }
-        .nav-list a.active {
-            color: #fff;
-            background: linear-gradient(110deg, #1684f2, #3d9bfa);
-            box-shadow: 0 5px 14px rgba(22, 132, 242, .2);
-            animation: nav-active-in .28s ease-out both;
-        }
-        .nav-list a.active:hover { box-shadow: 0 6px 16px rgba(22, 132, 242, .25); }
-        .nav-icon, .nav-list .active .nav-icon {
-            width: 22px;
-            height: 22px;
-            color: #147af0;
-            background: #f1f7ff;
-            border: 0;
-            border-radius: 50%;
-            font-size: 11px;
-            transition: background-color .22s ease, color .22s ease, transform .22s ease;
-        }
-        .nav-list .active .nav-icon { color: #fff; background: rgba(255, 255, 255, .2); transform: scale(1.06); }
-        .nav-icon svg { width: 16px; height: 16px; }
-        @keyframes nav-active-in {
-            from { opacity: .82; transform: translateX(-3px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        @media (prefers-reduced-motion: reduce) {
-            .nav-list a, .nav-icon, .nav-list .active .nav-icon { transition: none; animation: none; }
-        }
-        .metric-icon svg { width: 19px; height: 19px; }
-        .section-icon svg { width: 13px; height: 13px; vertical-align: middle; }
-        .sidebar-tagline {
-            position: absolute;
-            bottom: 88px;
-            left: 26px;
-            color: #2876c9;
-            font-family: "Segoe Script", "Brush Script MT", cursive;
-            font-size: 16px;
-            font-style: italic;
-            font-weight: 700;
-            line-height: 1.03;
-            transform: rotate(-10deg);
-        }
-        .sidebar-tagline span { display: block; }
-        .sidebar-tagline span + span { margin-left: 6px; }
-        .sidebar-tagline::after {
-            display: block;
-            width: 100px;
-            height: 1px;
-            margin-top: 5px;
-            transform: rotate(-7deg);
-            content: "";
-            background: #3287d8;
-        }
-        @media (min-width: 761px) {
-            .sidebar {
-                position: sticky;
-                top: 56px;
-                align-self: start;
-                height: calc(100vh - 56px);
-                min-height: 0;
-            }
-        }
-        .content { max-width: none; padding: 17px 16px 28px; }
-        .welcome-grid {
-            display: grid;
-            grid-template-columns: minmax(0, 1.8fr) minmax(250px, 1fr);
-            grid-auto-rows: auto;
-            gap: 14px;
-            margin-bottom: 14px;
-        }
-        .hero {
-            position: relative;
-            display: block;
-            height: auto;
-            min-height: 0;
-            aspect-ratio: 1643 / 538;
-            container-type: inline-size;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            border: 0;
-            border-radius: 12px;
-            background:
-                radial-gradient(ellipse at 92% 6%, rgba(211, 239, 255, .96), transparent 37%),
-                linear-gradient(108deg, #f6fbff 0%, #fff 46%, #e3f4ff 100%);
-            box-shadow: 0 8px 22px rgba(50, 126, 190, .08);
-        }
-        .hero::before {
-            position: absolute;
-            right: -5%;
-            bottom: -86%;
-            width: 56%;
-            height: 130%;
-            border: 1px solid rgba(147, 207, 247, .2);
-            border-radius: 50%;
-            background: linear-gradient(145deg, rgba(225, 244, 255, .1), rgba(164, 219, 250, .3));
-            content: "";
-        }
-        .hero::after { content: none; }
-        .hero > .hero-copy, .hero > .hero-art { position: absolute; inset: 0; }
-        .hero-copy { z-index: 2; }
-        .hero-eyebrow {
-            position: absolute;
-            top: 6.5%;
-            left: 4%;
-            padding: .65cqi 1.75cqi;
-            color: #1682e8;
-            border: 1px solid #cce7ff;
-            border-radius: 999px;
-            background: #eaf5ff;
-            box-shadow: 0 2px 8px rgba(61, 145, 216, .08);
-            font-size: clamp(8px, 1.5cqi, 25px);
-            font-weight: 700;
-            letter-spacing: .025em;
-            line-height: 1.5;
-            white-space: nowrap;
-        }
-        .hero-greeting {
-            position: absolute;
-            top: 24%;
-            left: 4%;
-            color: #12336e;
-            font-size: clamp(10px, 2.7cqi, 45px);
-            font-weight: 700;
-            letter-spacing: -.025em;
-            line-height: 1.2;
-            white-space: nowrap;
-        }
-        .hero-greeting span { display: inline-block; margin-left: .15em; }
-        .hero h1 {
-            position: absolute;
-            top: 37%;
-            left: 4%;
-            width: 43%;
-            margin: 0;
-            color: #102f68;
-            font-size: clamp(15px, 4.2cqi, 70px);
-            font-weight: 700;
-            letter-spacing: -.035em;
-            line-height: 1.15;
-        }
-        .hero p {
-            position: absolute;
-            top: 73%;
-            left: 4%;
-            width: 42%;
-            margin: 0;
-            color: #5d78a2;
-            font-size: clamp(8px, 1.65cqi, 28px);
-            line-height: 1.55;
-        }
-        .hero-art { pointer-events: none; }
-        .hero-art-backdrop {
-            position: absolute;
-            top: 1%;
-            right: -3%;
-            width: 33%;
-            height: 81%;
-            border-radius: 50%;
-            background: linear-gradient(145deg, rgba(191, 230, 255, .48), rgba(224, 244, 255, .08));
-        }
-        .hero-folder {
-            position: absolute;
-            top: 29%;
-            left: 68%;
-            width: 20%;
-            height: 49%;
-            border: .65cqi solid #65a8e8;
-            border-radius: 1.25cqi;
-            background: linear-gradient(145deg, rgba(255,255,255,.92), rgba(212,236,255,.76));
-            box-shadow: 0 .7cqi 1.4cqi rgba(31, 101, 173, .2);
-        }
-        .hero-sheet {
-            position: absolute;
-            top: 25%;
-            left: 70.5%;
-            width: 17.5%;
-            height: 61%;
-            padding: 2% 2.3%;
-            transform: rotate(-5deg);
-            border: .15cqi solid #d2e8fc;
-            border-radius: 1.1cqi;
-            background: linear-gradient(160deg, #fff 0%, #fff 74%, #f4faff 100%);
-            box-shadow: 0 1cqi 2.3cqi rgba(51, 114, 174, .22);
-        }
-        .hero-sheet strong {
-            display: block;
-            margin: 4% 0 7%;
-            color: #147de1;
-            font-size: 2cqi;
-            text-align: center;
-        }
-        .hero-sheet-rule {
-            height: 1.45cqi;
-            margin: 5% 0;
-            border-radius: 999px;
-            background: #d8eaff;
-        }
-        .hero-sheet-rule:first-of-type { height: 2cqi; margin-top: 0; background: #80baf3; }
-        .hero-sheet-row { display: flex; gap: 5%; margin: 5% 0; }
-        .hero-sheet-row i { display: block; width: 22%; height: 1.35cqi; border-radius: 999px; background: #c7e1fa; }
-        .hero-sheet-row i:last-child { width: 52%; }
-        .hero-coin {
-            position: absolute;
-            top: 47%;
-            left: 85%;
-            display: grid;
-            width: 9%;
-            aspect-ratio: 1;
-            place-items: center;
-            color: #fff;
-            border: .6cqi solid #d8f0ff;
-            border-radius: 50%;
-            outline: .2cqi solid #62b8f5;
-            background: linear-gradient(145deg, #52b7ff, #137ee8);
-            box-shadow: 0 .8cqi 1.5cqi rgba(22, 130, 237, .22);
-            font-size: 5cqi;
-            font-weight: 700;
-            line-height: 1;
-        }
-        .hero-plant-pot {
-            position: absolute;
-            top: 68%;
-            left: 61.5%;
-            width: 4.5%;
-            height: 15%;
-            border-radius: 0 0 1.5cqi 1.5cqi;
-            background: linear-gradient(90deg, #fff, #e9f5fd);
-            box-shadow: 0 .6cqi 1.2cqi rgba(45, 103, 143, .16);
-        }
-        .hero-plant-stem {
-            position: absolute;
-            top: 47%;
-            left: 63.6%;
-            width: .35%;
-            height: 23%;
-            border-radius: 50%;
-            background: #159b82;
-            transform: rotate(-3deg);
-        }
-        .hero-leaf {
-            position: absolute;
-            z-index: 1;
-            width: 2.8%;
-            height: 8%;
-            border-radius: 100% 0 100% 0;
-            background: linear-gradient(135deg, #49d9ae, #079b82);
-        }
-        .hero-leaf-one { top: 47%; left: 60.5%; transform: rotate(48deg); }
-        .hero-leaf-two { top: 43%; left: 62.5%; transform: rotate(70deg); }
-        .hero-leaf-three { top: 49%; left: 64.5%; transform: rotate(-26deg) scaleX(-1); }
-        .hero-leaf-four { top: 56%; left: 59.5%; width: 3.2%; transform: rotate(28deg); }
-        .hero-leaf-five { top: 55%; left: 64.8%; width: 3%; transform: rotate(-35deg) scaleX(-1); }
-        .profile-card, .panel, .metric {
-            border: 1px solid var(--line);
-            border-radius: 12px;
-            background: #fff;
-            box-shadow: var(--shadow);
-        }
-        .profile-card { height: 100%; min-width: 0; padding: 16px; border-color: #d9eaff; box-shadow: 0 12px 28px rgba(32, 111, 185, .07); }
-        .profile-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-        .profile-avatar { width: 46px; height: 46px; overflow: hidden; border: 3px solid #f1f8ff; border-radius: 50%; background: #e7f3ff; box-shadow: 0 3px 10px rgba(37, 111, 178, .12); }
-        .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .profile-avatar svg { display: block; width: 30px; height: 30px; margin: 6px auto; }
-        .profile-top strong { display: block; color: #12336e; font-size: 15px; }
-        .profile-top span { display: block; margin-top: 3px; color: var(--ink-soft); font-size: 11px; }
-        .profile-details { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .profile-detail { display: flex; min-width: 0; align-items: center; gap: 8px; padding: 5px 7px; border: 1px solid #edf4fc; border-radius: 9px; background: linear-gradient(110deg, #f7fbff, #fff); }
-        .profile-detail:nth-child(3) { grid-column: 1 / -1; }
-        .profile-detail-icon { display: grid; width: 29px; height: 29px; flex: 0 0 auto; place-items: center; color: #1885f7; border: 1px solid #e4f0ff; border-radius: 50%; background: #eef7ff; font-size: 11px; }
-        .profile-detail > div > span { display: block; overflow: hidden; color: var(--ink-soft); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
-        .profile-detail strong { display: block; overflow: hidden; margin-top: 3px; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
-        .overview {
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            grid-template-rows: 108px;
-            grid-auto-rows: 108px;
-            gap: 10px;
-            margin: 0 0 14px;
-            padding: 0;
-            border: 0;
-            background: transparent;
-            box-shadow: none;
-        }
-        .metric {
-            display: grid;
-            min-height: 108px;
-            grid-template-columns: 38px minmax(0, 1fr);
-            align-content: center;
-            align-items: center;
-            gap: 2px 14px;
-            padding: 13px;
-        }
-        .metric::before { display: none; }
-        .metric-icon { display: grid; width: 38px; height: 38px; grid-row: span 2; place-items: center; color: #1684f2; border-radius: 50%; background: #eaf5ff; font-size: 16px; font-weight: 700; }
-        .metric:nth-child(2) .metric-icon { color: #1684f2; background: #e8f4ff; }
-        .metric:nth-child(3) .metric-icon { color: #8060e9; background: #f0edff; }
-        .metric:nth-child(4) .metric-icon { color: #1585f0; background: #e8f4ff; }
-        .metric .card-label { overflow: hidden; color: #506d9b; font-size: 12px; font-weight: 500; letter-spacing: 0; text-overflow: ellipsis; text-transform: none; white-space: nowrap; }
-        .metric-value { overflow: hidden; margin: 2px 0 0; color: var(--ink); font-size: 18px; font-weight: 750; text-overflow: ellipsis; white-space: nowrap; }
-        .metric-note { display: flex; grid-column: 2; align-items: center; gap: 5px; margin-top: 2px; color: #6680a6; font-size: 11px; }
-        .metric-note svg { width: 10px; height: 10px; flex: 0 0 auto; color: #0eb99d; }
-        .metric-trend-arrow { color: #0eb99d; font-size: 11px; font-weight: 800; }
-        .trend-negative .metric-trend-arrow { color: #e36f65; }
-        .overview .metric:first-child .metric-icon { color: #05ac91; background: #dcfaf2; }
-        .dashboard-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: 222px; gap: 10px; }
-        .dashboard-grid .panel { min-width: 0; height: 222px; min-height: 0; padding: 10px 15px; box-shadow: none; }
-        .section-heading { justify-content: space-between; gap: 10px; margin-bottom: 11px; }
-        .section-heading h2 { margin: 0; color: var(--ink); font-size: 15px; letter-spacing: -.01em; }
-        .section-heading p { margin: 4px 0 0; color: var(--ink-soft); font-size: 11px; }
-        .section-icon { display: inline-grid; width: 23px; height: 23px; margin-right: 6px; place-items: center; vertical-align: middle; color: #fff; border-radius: 50%; background: #218df2; font-size: 12px; }
-        .salary-breakdown { display: grid; min-height: 166px; grid-template-columns: minmax(110px, .67fr) minmax(0, 1.33fr); align-items: center; gap: 14px; }
-        .breakdown-chart { position: relative; display: grid; width: 134px; height: 134px; max-width: 100%; place-items: center; justify-self: center; border-radius: 50%; background: conic-gradient(#258df2 0 var(--deduction-share), #20c9bd var(--deduction-share) 100%); }
-        .breakdown-chart::before { position: absolute; width: 78%; height: 78%; content: ""; border-radius: inherit; background: #fff; }
-        .breakdown-chart-inner { position: relative; z-index: 1; text-align: center; }
-        .breakdown-chart-inner strong { display: block; font-size: 14px; }
-        .breakdown-chart-inner span { display: block; margin-top: 3px; color: var(--ink-soft); font-size: 9px; }
-        .breakdown-legend { display: grid; gap: 0; }
-        .legend-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 8px; min-height: 30px; border-bottom: 1px solid #edf4fb; font-size: 11px; }
-        .legend-row:last-child { border-bottom: 0; }
-        .legend-label { display: flex; min-width: 0; align-items: center; gap: 7px; color: #385983; }
-        .legend-label span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .legend-dot { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 50%; background: #258df2; }
-        .legend-dot.deduction { background: #258df2; }
-        .legend-dot.net { background: #20c9bd; }
-        .legend-share { min-width: 18px; color: #6680a6; text-align: right; }
-        .legend-row strong { font-size: 11px; white-space: nowrap; }
-        .panel-link { color: #0878ef; font-size: 11px; text-decoration: none; }
-        .panel-link:hover { text-decoration: underline; }
-        .dashboard-history-table { min-width: 0; }
-        .dashboard-history-table th { padding: 8px 6px; color: #617da8; background: #f4f9ff; font-size: 10px; font-weight: 500; letter-spacing: 0; text-transform: none; }
-        .dashboard-history-table td { padding: 5px 6px; border-top: 1px solid #edf4fb; color: #284978; font-size: 11px; white-space: nowrap; }
-        .dashboard-history-table td strong { color: #19396f; font-weight: 600; }
-        .dashboard-history-table .header-action { display: inline-grid; width: 24px; height: 24px; padding: 0; place-items: center; color: #1380ef; border: 0; border-radius: 50%; background: #eaf5ff; font-size: 11px; text-decoration: none; }
-        .status { padding: 4px 8px; color: #078c7a; border-radius: 14px; background: #e3faf5; font-size: 10px; }
-        .status-draft, .status-review_ongoing { color: #9a6b00; background: #fff6dc; }
-        .status-confirmed { color: #1869ba; background: #eaf4ff; }
-        .salary-slips-panel { margin-top: 0 !important; padding: 22px; border-color: #dcecff; box-shadow: 0 9px 28px rgba(34, 106, 177, .075); }
-        .salary-slips-heading { justify-content: flex-start; margin-bottom: 18px; }
-        .salary-slips-heading .section-icon { width: 38px; height: 38px; flex: 0 0 auto; margin-right: 11px; color: #1684f2; border: 1px solid #e3f0ff; background: #eef7ff; }
-        .salary-slips-heading .section-icon svg { width: 19px; height: 19px; }
-        .salary-slips-heading h2 { font-size: 18px; }
-        .salary-slips-heading p { font-size: 11px; }
-        .salary-slips-summary { display: grid; grid-template-columns: minmax(150px, .85fr) minmax(220px, 1.2fr) minmax(180px, .8fr); gap: 12px; margin-bottom: 16px; }
-        .salary-slips-card { display: flex; min-width: 0; min-height: 82px; align-items: center; gap: 13px; padding: 14px; border: 1px solid #dcecff; border-radius: 12px; background: linear-gradient(120deg, #f3f9ff 0%, #fff 82%); box-shadow: 0 3px 10px rgba(34, 106, 177, .035); transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease; }
-        .salary-slips-card:hover { transform: translateY(-1px); border-color: #c5e0fb; box-shadow: 0 6px 16px rgba(34, 106, 177, .075); }
-        .salary-slips-card-icon { display: grid; width: 40px; height: 40px; flex: 0 0 auto; place-items: center; color: #1684f2; border: 1px solid #e1efff; border-radius: 50%; background: #eaf5ff; }
-        .salary-slips-card-icon svg { width: 20px; height: 20px; }
-        .salary-slips-card-copy { display: grid; min-width: 0; gap: 4px; }
-        .salary-slips-card-copy span { color: #617da8; font-size: 10px; font-weight: 550; }
-        .salary-slips-card-copy strong { overflow: hidden; color: #19396f; font-size: 15px; font-weight: 750; text-overflow: ellipsis; white-space: nowrap; }
-        .salary-slips-card-copy small { overflow: hidden; color: #7187a4; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
-        .salary-slips-quick-action { justify-content: center; }
-        .salary-slips-quick-action .header-action { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 9px 13px; color: #fff; border-color: #1684f2; background: linear-gradient(110deg, #1684f2, #3d9bfa); box-shadow: 0 4px 11px rgba(22, 132, 242, .18); }
-        .salary-slips-quick-action .header-action:hover { color: #fff; border-color: #0875df; background: linear-gradient(110deg, #0875df, #218df2); }
-        .salary-slips-quick-action .header-action svg { width: 15px; height: 15px; }
-        .salary-slips-table-wrap { overflow-x: auto; border: 1px solid #e1edfa; border-radius: 11px; }
-        .salary-slips-table { min-width: 650px; }
-        .salary-slips-table th { padding: 11px 13px; color: #54729c; background: linear-gradient(100deg, #f1f7fe, #f7fbff); font-size: 10px; font-weight: 650; letter-spacing: .01em; text-transform: none; white-space: nowrap; }
-        .salary-slips-table td { padding: 10px 13px; border-top: 1px solid #edf4fb; color: #5e7598; font-size: 11px; white-space: nowrap; }
-        .salary-slips-table td strong { color: #19396f; font-weight: 650; }
-        .salary-slips-table tbody tr { transition: background-color .16s ease; }
-        .salary-slips-table tbody tr:hover { background: #f8fbff; }
-        .salary-slips-period { display: flex; align-items: center; gap: 9px; }
-        .salary-slips-period-icon { display: grid; width: 24px; height: 24px; flex: 0 0 auto; place-items: center; color: #1684f2; }
-        .salary-slips-period-icon svg { width: 17px; height: 17px; }
-        .salary-slips-table .status { display: inline-flex; padding: 5px 10px; font-size: 10px; }
-        .salary-slips-table .header-action { display: inline-flex; min-height: 29px; align-items: center; justify-content: center; gap: 6px; padding: 5px 11px; color: #087e70; border-color: #c7ede4; background: #e8faf5; box-shadow: none; }
-        .salary-slips-table .header-action:hover { color: #056758; border-color: #94ddcb; background: #d8f6ee; box-shadow: 0 3px 9px rgba(8, 137, 117, .1); }
-        .salary-slips-table .header-action svg { width: 13px; height: 13px; }
-        .salary-slips-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 2px 0; color: #7187a4; font-size: 10px; }
-        .salary-slips-empty { padding: 24px 12px; }
-        .salary-slips-empty form { margin-top: 12px; }
-        @media (max-width: 760px) {
-            .salary-slips-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-            .salary-slips-quick-action { grid-column: 1 / -1; min-height: 60px; }
-        }
-        @media (max-width: 540px) {
-            .salary-slips-panel { padding: 13px; }
-            .salary-slips-heading { margin-bottom: 12px; }
-            .salary-slips-summary { grid-template-columns: 1fr; gap: 7px; margin-bottom: 10px; }
-            .salary-slips-card { min-height: 64px; padding: 9px; }
-            .salary-slips-card-icon { width: 36px; height: 36px; }
-            .salary-slips-quick-action { grid-column: auto; min-height: 56px; }
-            .salary-slips-footer { align-items: flex-start; flex-direction: column; }
-        }
-        .salary-section { display: grid; gap: 13px; }
-        .salary-section-header { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 17px; border: 1px solid #dcecff; border-radius: 12px; background: linear-gradient(110deg, #f4f9ff, #fff 68%, #f1f8ff); box-shadow: 0 4px 14px rgba(34, 106, 177, .045); }
-        .salary-section-title { display: flex; min-width: 0; align-items: center; gap: 11px; }
-        .salary-section-icon { display: grid; width: 39px; height: 39px; flex: 0 0 auto; place-items: center; color: #1684f2; border: 1px solid #dcecff; border-radius: 11px; background: #eaf5ff; }
-        .salary-section-icon svg { width: 21px; height: 21px; }
-        .salary-section-header h2 { margin: 0; color: #19396f; font-size: 17px; }
-        .salary-section-header p { margin: 4px 0 0; color: #6680a6; font-size: 11px; }
-        .salary-period-badge { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 7px; padding: 8px 11px; color: #2368ae; border: 1px solid #dcecff; border-radius: 999px; background: #fff; font-size: 10px; font-weight: 650; }
-        .salary-period-badge svg { width: 14px; height: 14px; }
-        .salary-summary-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 11px; }
-        .salary-summary-card { display: flex; min-width: 0; min-height: 91px; align-items: center; gap: 12px; padding: 14px; border: 1px solid #e0edfb; border-radius: 12px; background: linear-gradient(120deg, #f7fbff, #fff 86%); box-shadow: 0 4px 14px rgba(34, 106, 177, .045); transition: transform .18s ease, box-shadow .18s ease; }
-        .salary-summary-card:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(34, 106, 177, .09); }
-        .salary-summary-icon { display: grid; width: 42px; height: 42px; flex: 0 0 auto; place-items: center; color: #1684f2; border-radius: 50%; background: #e8f4ff; }
-        .salary-summary-card:nth-child(2) .salary-summary-icon { color: #08a88f; background: #e0faf3; }
-        .salary-summary-card:nth-child(3) .salary-summary-icon { color: #7961df; background: #f0edff; }
-        .salary-summary-icon svg { width: 20px; height: 20px; }
-        .salary-summary-copy { display: grid; min-width: 0; gap: 5px; }
-        .salary-summary-copy span { color: #607ba4; font-size: 10px; }
-        .salary-summary-copy strong { overflow: hidden; color: #19396f; font-size: 18px; font-weight: 750; text-overflow: ellipsis; white-space: nowrap; }
-        .salary-summary-copy small { color: #168b78; font-size: 10px; }
-        .salary-detail-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(240px, .85fr); gap: 12px; align-items: stretch; }
-        .salary-breakdown-panel, .salary-insights-panel { min-width: 0; padding: 16px; border: 1px solid #e0edfb; border-radius: 12px; background: #fff; box-shadow: 0 5px 16px rgba(34, 106, 177, .045); }
-        .salary-subheading { display: flex; align-items: center; gap: 8px; margin: 0 0 13px; color: #19396f; font-size: 13px; }
-        .salary-subheading-icon { display: grid; width: 24px; height: 24px; flex: 0 0 auto; place-items: center; color: #fff; border-radius: 50%; background: #258df2; }
-        .salary-subheading-icon svg { width: 14px; height: 14px; }
-        .salary-breakdown-content { display: grid; grid-template-columns: minmax(115px, .62fr) minmax(0, 1.38fr); align-items: center; gap: 14px; }
-        .salary-breakdown-chart { position: relative; display: grid; width: 142px; max-width: 100%; aspect-ratio: 1; place-items: center; justify-self: center; border-radius: 50%; background: conic-gradient(#258df2 0 var(--deduction-share), #20c9bd var(--deduction-share) 100%); }
-        .salary-breakdown-chart::before { position: absolute; width: 76%; height: 76%; content: ""; border-radius: inherit; background: #fff; }
-        .salary-breakdown-chart-inner { position: relative; z-index: 1; text-align: center; }
-        .salary-breakdown-chart-inner strong { display: block; color: #19396f; font-size: 14px; }
-        .salary-breakdown-chart-inner span { display: block; margin-top: 3px; color: #7187a4; font-size: 9px; }
-        .salary-legend { display: grid; }
-        .salary-legend-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 9px; min-height: 37px; border-bottom: 1px solid #edf4fb; font-size: 10px; }
-        .salary-legend-row:last-child { border-bottom: 0; }
-        .salary-legend-label { display: flex; min-width: 0; align-items: center; gap: 7px; color: #46638e; }
-        .salary-legend-dot { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 50%; background: #258df2; }
-        .salary-legend-dot.deductions { background: #258df2; }
-        .salary-legend-dot.net { background: #20c9bd; }
-        .salary-legend-row strong { color: #19396f; font-size: 10px; white-space: nowrap; }
-        .salary-legend-share { min-width: 30px; color: #7187a4; text-align: right; }
-        .salary-insights-panel { display: flex; flex-direction: column; }
-        .salary-insight { display: flex; align-items: flex-start; gap: 9px; padding: 10px 0; border-bottom: 1px solid #edf4fb; }
-        .salary-insight-icon { display: grid; width: 27px; height: 27px; flex: 0 0 auto; place-items: center; color: #1684f2; border-radius: 50%; background: #eaf5ff; }
-        .salary-insight-icon svg { width: 15px; height: 15px; }
-        .salary-insight-copy { display: grid; min-width: 0; gap: 4px; }
-        .salary-insight-copy span { color: #7187a4; font-size: 9px; }
-        .salary-insight-copy strong { color: #19396f; font-size: 11px; }
-        .salary-info-note { display: flex; align-items: flex-start; gap: 8px; margin-top: auto; padding: 10px; color: #356899; border: 1px solid #d8eafb; border-radius: 9px; background: #f0f8ff; font-size: 9px; line-height: 1.5; }
-        .salary-info-note svg { width: 16px; height: 16px; flex: 0 0 auto; color: #258df2; }
-        .salary-detail-link { display: flex; min-height: 48px; align-items: center; gap: 12px; padding: 10px 14px; color: #3e6595; border: 1px solid #dcecff; border-radius: 11px; background: linear-gradient(100deg, #eaf6ff, #f8fbff); font-size: 10px; text-decoration: none; transition: border-color .18s ease, background .18s ease; }
-        .salary-detail-link:hover { border-color: #abd4fb; background: #e5f3ff; }
-        .salary-detail-link > svg:first-child { width: 23px; height: 23px; flex: 0 0 auto; color: #1684f2; }
-        .salary-detail-link span { flex: 1; }
-        .salary-detail-link > svg:last-child { width: 17px; height: 17px; flex: 0 0 auto; color: #1684f2; }
-        @media (max-width: 760px) {
-            .salary-detail-grid { grid-template-columns: minmax(0, 1fr); }
-            .salary-insights-panel { min-height: 0; }
-            .salary-info-note { margin-top: 12px; }
-        }
-        @media (max-width: 540px) {
-            .salary-section { gap: 9px; }
-            .salary-section-header { padding: 10px; }
-            .salary-section-header h2 { font-size: 15px; }
-            .salary-section-header p { font-size: 9px; }
-            .salary-section-icon { width: 34px; height: 34px; }
-            .salary-period-badge { gap: 4px; padding: 7px; font-size: 9px; }
-            .salary-summary-cards { grid-template-columns: 1fr; gap: 7px; }
-            .salary-summary-card { min-height: 67px; padding: 9px; }
-            .salary-summary-icon { width: 36px; height: 36px; }
-            .salary-summary-copy strong { font-size: 16px; }
-            .salary-breakdown-panel, .salary-insights-panel { padding: 12px; }
-            .salary-breakdown-content { grid-template-columns: minmax(90px, .58fr) minmax(0, 1.42fr); gap: 8px; }
-            .salary-legend-row { grid-template-columns: minmax(0, 1fr) auto; gap: 5px; }
-            .salary-legend-share { display: none; }
-        }
-        .deductions-section { display: grid; gap: 13px; }
-        .deductions-header { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 17px; border: 1px solid #dcecff; border-radius: 12px; background: linear-gradient(110deg, #f4f9ff, #fff 68%, #f1f8ff); box-shadow: 0 4px 14px rgba(34, 106, 177, .045); }
-        .deductions-title { display: flex; min-width: 0; align-items: center; gap: 11px; }
-        .deductions-title-icon { display: grid; width: 39px; height: 39px; flex: 0 0 auto; place-items: center; color: #1684f2; border: 1px solid #dcecff; border-radius: 11px; background: #eaf5ff; }
-        .deductions-title-icon svg { width: 21px; height: 21px; }
-        .deductions-header h2 { margin: 0; color: #19396f; font-size: 17px; }
-        .deductions-header p { margin: 4px 0 0; color: #6680a6; font-size: 11px; }
-        .deductions-period { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 7px; padding: 8px 11px; color: #2368ae; border: 1px solid #dcecff; border-radius: 999px; background: #fff; font-size: 10px; font-weight: 650; }
-        .deductions-period svg { width: 14px; height: 14px; }
-        .deductions-summary { display: grid; grid-template-columns: minmax(225px, .92fr) minmax(0, 1.55fr); gap: 11px; }
-        .deductions-total-card, .deductions-impact-card { min-width: 0; border: 1px solid #dcecff; border-radius: 12px; background: linear-gradient(120deg, #f7fbff, #fff 86%); box-shadow: 0 4px 14px rgba(34, 106, 177, .045); }
-        .deductions-total-card { display: flex; min-height: 126px; align-items: center; gap: 14px; padding: 17px; }
-        .deductions-total-icon { display: grid; width: 48px; height: 48px; flex: 0 0 auto; place-items: center; color: #1684f2; border-radius: 50%; background: #e8f4ff; }
-        .deductions-total-icon svg { width: 23px; height: 23px; }
-        .deductions-total-copy { display: grid; min-width: 0; gap: 5px; }
-        .deductions-total-copy span { color: #607ba4; font-size: 10px; }
-        .deductions-total-copy strong { color: #19396f; font-size: 23px; font-weight: 780; white-space: nowrap; }
-        .deductions-total-copy small { color: #7187a4; font-size: 10px; }
-        .deductions-total-copy .deduction-trend { color: #118b78; }
-        .deductions-total-copy .deduction-trend.negative { color: #d35f58; }
-        .deductions-impact-card { padding: 13px; }
-        .deductions-impact-title { display: flex; align-items: center; gap: 7px; margin: 0 0 9px; color: #19396f; font-size: 11px; font-weight: 700; }
-        .deductions-impact-title svg { width: 15px; height: 15px; color: #1684f2; }
-        .deductions-impact-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; }
-        .deductions-impact-item { display: grid; min-width: 0; gap: 5px; padding: 9px; border: 1px solid #edf4fb; border-radius: 9px; background: #fff; }
-        .deductions-impact-item span { overflow: hidden; color: #7187a4; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
-        .deductions-impact-item strong { color: #19396f; font-size: 14px; }
-        .deductions-detail-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; align-items: stretch; }
-        .deductions-breakdown-panel, .deductions-insights-panel { min-width: 0; padding: 16px; border: 1px solid #e0edfb; border-radius: 12px; background: #fff; box-shadow: 0 5px 16px rgba(34, 106, 177, .045); }
-        .deductions-subheading { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; color: #19396f; font-size: 13px; }
-        .deductions-subheading-icon { display: grid; width: 24px; height: 24px; flex: 0 0 auto; place-items: center; color: #fff; border-radius: 50%; background: #258df2; }
-        .deductions-subheading-icon svg { width: 14px; height: 14px; }
-        .deductions-table-wrap { overflow-x: auto; border: 1px solid #e5effa; border-radius: 9px; }
-        .deductions-table { width: 100%; min-width: 760px; border-collapse: collapse; }
-        .deductions-table th { padding: 10px 11px; color: #35567f; background: #f3f8fe; font-size: 11px; font-weight: 700; text-align: left; white-space: nowrap; }
-        .deductions-table td { padding: 10px 11px; border-top: 1px solid #edf4fb; color: #405d80; font-size: 11px; vertical-align: top; }
-        .deductions-table tbody tr { transition: background-color .16s ease; }
-        .deductions-table tbody tr:hover { background: #f8fbff; }
-        .deduction-table-kind { display: grid; gap: 4px; }
-        .deduction-table-kind strong { color: #19396f; font-size: 11px; }
-        .deduction-table-kind small { color: #5b7392; font-size: 10px; }
-        .deductions-table .deduction-table-amount { color: #19396f; font-weight: 750; white-space: nowrap; }
-        .deduction-rate-badge { display: inline-flex; padding: 4px 8px; color: #2368ae; border-radius: 999px; background: #eaf5ff; font-size: 9px; white-space: nowrap; }
-        .deduction-rate-badge.double { color: #8b5b00; background: #fff3d4; }
-        .deduction-rule { display: grid; min-width: 210px; gap: 5px; line-height: 1.5; }
-        .deduction-rule strong { color: #35567f; font-size: 11px; font-weight: 650; }
-        .deduction-rule span { color: #536c8a; font-size: 10px; }
-        .deduction-calculation { min-width: 205px; color: #19396f; font-size: 11px; font-weight: 650; line-height: 1.5; font-variant-numeric: tabular-nums; }
-        .deductions-basis { display: grid; gap: 4px; margin: -2px 0 12px; padding: 10px 12px; color: #3e5f88; border: 1px solid #dcecff; border-radius: 9px; background: #f7fbff; font-size: 10px; line-height: 1.5; }
-        .deductions-basis strong { color: #19396f; font-size: 11px; }
-        .deductions-basis span { display: block; }
-        .deductions-insights-panel { display: flex; flex-direction: column; }
-        .deductions-chart-wrap { display: grid; flex: 1; align-content: center; justify-items: center; gap: 13px; padding: 3px 0 8px; }
-        .deductions-chart { position: relative; display: grid; width: 146px; max-width: 80%; aspect-ratio: 1; place-items: center; border-radius: 50%; background: conic-gradient(#258df2 0 var(--deduction-share), #20c9bd var(--deduction-share) 100%); }
-        .deductions-chart::before { position: absolute; width: 75%; height: 75%; content: ""; border-radius: inherit; background: #fff; }
-        .deductions-chart-center { position: relative; z-index: 1; max-width: 78%; text-align: center; }
-        .deductions-chart-center strong { display: block; overflow: hidden; color: #19396f; font-size: 15px; text-overflow: ellipsis; white-space: nowrap; }
-        .deductions-chart-center span { display: block; margin-top: 4px; color: #7187a4; font-size: 9px; }
-        .deductions-chart-caption { color: #58739f; font-size: 9px; text-align: center; }
-        .deductions-net-note { display: flex; align-items: flex-start; gap: 8px; padding: 10px; color: #356899; border: 1px solid #d8eafb; border-radius: 9px; background: #f0f8ff; font-size: 9px; line-height: 1.5; }
-        .deductions-net-note svg { width: 16px; height: 16px; flex: 0 0 auto; color: #258df2; }
-        .deductions-final-pay { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 15px; border: 1px solid #d7eee8; border-radius: 11px; background: linear-gradient(100deg, #edfaf6, #f8fdfb); }
-        .deductions-final-pay span { color: #52766f; font-size: 10px; }
-        .deductions-final-pay strong { color: #087e70; font-size: 15px; white-space: nowrap; }
-        .deductions-footer-link { display: flex; min-height: 46px; align-items: center; gap: 10px; padding: 10px 13px; color: #3e6595; border: 1px solid #dcecff; border-radius: 10px; background: linear-gradient(100deg, #eaf6ff, #f8fbff); font-size: 10px; text-decoration: none; transition: border-color .18s ease, background .18s ease; }
-        .deductions-footer-link:hover { border-color: #abd4fb; background: #e5f3ff; }
-        .deductions-footer-link svg:first-child { width: 20px; height: 20px; flex: 0 0 auto; color: #1684f2; }
-        .deductions-footer-link span { flex: 1; }
-        .deductions-footer-link svg:last-child { width: 16px; height: 16px; flex: 0 0 auto; color: #1684f2; }
-        @media (max-width: 900px) {
-            .deductions-summary { grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); }
-            .deductions-impact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-            .deductions-detail-grid { grid-template-columns: minmax(0, 1fr); }
-            .deductions-insights-panel { min-height: 0; }
-            .deductions-chart-wrap { grid-template-columns: auto 1fr; align-items: center; justify-items: start; }
-        }
-        @media (max-width: 540px) {
-            .deductions-section { gap: 9px; }
-            .deductions-header { padding: 10px; }
-            .deductions-header h2 { font-size: 15px; }
-            .deductions-header p { font-size: 9px; }
-            .deductions-title-icon { width: 34px; height: 34px; }
-            .deductions-period { gap: 4px; padding: 7px; font-size: 9px; }
-            .deductions-summary { grid-template-columns: minmax(0, 1fr); gap: 7px; }
-            .deductions-total-card { min-height: 90px; padding: 12px; }
-            .deductions-total-copy strong { font-size: 21px; }
-            .deductions-impact-card { padding: 10px; }
-            .deductions-detail-grid { gap: 9px; }
-            .deductions-breakdown-panel, .deductions-insights-panel { padding: 12px; }
-            .deductions-chart-wrap { grid-template-columns: minmax(0, 1fr); justify-items: center; }
-            .deductions-final-pay { align-items: flex-start; flex-direction: column; gap: 5px; }
-            .deductions-footer-link { align-items: flex-start; }
-        }
-        .history-section { display: grid; gap: 13px; }
-        .history-header { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 17px; border: 1px solid #dcecff; border-radius: 12px; background: linear-gradient(110deg, #f4f9ff, #fff 68%, #f1f8ff); box-shadow: 0 4px 14px rgba(34, 106, 177, .045); }
-        .history-title { display: flex; min-width: 0; align-items: center; gap: 11px; }
-        .history-title-icon { display: grid; width: 39px; height: 39px; flex: 0 0 auto; place-items: center; color: #1684f2; border: 1px solid #dcecff; border-radius: 11px; background: #eaf5ff; }
-        .history-title-icon svg { width: 21px; height: 21px; }
-        .history-header h2 { margin: 0; color: #19396f; font-size: 17px; }
-        .history-header p { margin: 4px 0 0; color: #6680a6; font-size: 11px; }
-        .history-record-count { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 7px; padding: 8px 11px; color: #2368ae; border: 1px solid #dcecff; border-radius: 999px; background: #fff; font-size: 10px; font-weight: 650; }
-        .history-record-count svg { width: 14px; height: 14px; }
-        .history-summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
-        .history-summary-card { display: flex; min-width: 0; min-height: 91px; align-items: center; gap: 13px; padding: 14px 17px; border: 1px solid #dcecff; border-radius: 12px; background: linear-gradient(120deg, #f3f9ff 0%, #fff 82%); box-shadow: 0 4px 14px rgba(34, 106, 177, .045); }
-        .history-summary-icon { display: grid; width: 44px; height: 44px; flex: 0 0 auto; place-items: center; color: #1684f2; border-radius: 50%; background: #e8f4ff; }
-        .history-summary-card:nth-child(2) .history-summary-icon { color: #7961df; background: #f0edff; }
-        .history-summary-icon svg { width: 21px; height: 21px; }
-        .history-summary-copy { display: grid; min-width: 0; gap: 4px; }
-        .history-summary-copy span { color: #617da8; font-size: 10px; }
-        .history-summary-copy strong { overflow: hidden; color: #19396f; font-size: 17px; font-weight: 750; text-overflow: ellipsis; white-space: nowrap; }
-        .history-summary-copy small { color: #7187a4; font-size: 10px; }
-        .history-summary-copy .history-status { display: inline-flex; width: fit-content; margin-top: 1px; }
-        .history-table-panel { min-width: 0; overflow: hidden; padding: 0; border-color: #dcecff; box-shadow: 0 5px 17px rgba(34, 106, 177, .045); }
-        .history-table-wrap { overflow-x: auto; }
-        .history-table { width: 100%; min-width: 690px; border-collapse: collapse; }
-        .history-table th { padding: 12px 14px; color: #54729c; background: linear-gradient(100deg, #f1f7fe, #f7fbff); font-size: 10px; font-weight: 650; text-align: left; white-space: nowrap; }
-        .history-table td { padding: 11px 14px; border-top: 1px solid #edf4fb; color: #5e7598; font-size: 11px; white-space: nowrap; }
-        .history-table td strong { color: #19396f; font-weight: 650; }
-        .history-table tbody tr { transition: background-color .16s ease; }
-        .history-table tbody tr:hover { background: #f8fbff; }
-        .history-period { display: grid; gap: 3px; }
-        .history-period strong { color: #19396f; }
-        .history-period small { color: #7187a4; font-size: 9px; }
-        .history-table .status { display: inline-flex; padding: 5px 10px; }
-        .history-action { display: inline-flex; min-height: 29px; align-items: center; justify-content: center; gap: 6px; padding: 5px 10px; color: #087e70; border: 1px solid #c7ede4; border-radius: 999px; background: #e8faf5; font-size: 10px; font-weight: 650; text-decoration: none; transition: border-color .18s ease, background .18s ease; }
-        .history-action:hover { border-color: #94ddcb; background: #d8f6ee; }
-        .history-action svg { width: 14px; height: 14px; }
-        .history-empty { min-height: 150px; flex-direction: column; justify-content: center; gap: 5px; padding: 22px; text-align: center; }
-        .history-empty strong { color: #19396f; font-size: 13px; }
-        .history-empty span { color: #7187a4; font-size: 10px; }
-        .history-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 14px; color: #7187a4; border-top: 1px solid #edf4fb; background: #fbfdff; font-size: 10px; }
-        .history-footer-note { display: inline-flex; align-items: center; gap: 6px; }
-        .history-footer-note svg { width: 14px; height: 14px; color: #258df2; }
-        @media (max-width: 760px) {
-            .history-summary { grid-template-columns: minmax(0, 1fr); gap: 8px; }
-        }
-        @media (max-width: 540px) {
-            .history-section { gap: 9px; }
-            .history-header { padding: 10px; }
-            .history-title { gap: 8px; }
-            .history-title-icon { width: 34px; height: 34px; }
-            .history-header h2 { font-size: 15px; }
-            .history-header p { font-size: 9px; }
-            .history-record-count { gap: 4px; padding: 7px; font-size: 9px; }
-            .history-summary-card { min-height: 72px; padding: 10px; }
-            .history-summary-icon { width: 38px; height: 38px; }
-            .history-summary-copy strong { font-size: 15px; }
-            .history-table th, .history-table td { padding-right: 10px; padding-left: 10px; }
-            .history-footer { align-items: flex-start; flex-direction: column; }
-        }
-        .section-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
-        .section-grid .panel { box-shadow: none; }
-        .dashboard-grid .panel + .panel { margin-top: 0; }
-        .payroll-header .user-area { gap: 9px; }
-        .footer-note { display: none; }
-        @media (min-width: 1300px) {
-            body { zoom: 1.25; }
-            .sidebar { height: calc((100vh - 56px) / 1.25); }
-        }
-        @media (max-width: 1050px) {
-            .workspace { grid-template-columns: 160px minmax(0, 1fr); }
-            .content { padding-inline: 14px; }
-            .welcome-grid { grid-template-columns: minmax(0, 1.25fr) minmax(225px, .85fr); }
-            .payroll-header { grid-template-columns: 150px minmax(150px, 1fr) auto; gap: 12px; padding-inline: 16px; }
-            .user-area { gap: 8px; }
-        }
-        @media (max-width: 760px) {
-            .payroll-header { grid-template-columns: minmax(105px, .8fr) minmax(130px, 1.2fr) auto; gap: 8px; padding-inline: 12px; }
-            .payroll-header .brand { grid-column: 1; }
-            .payroll-search { grid-column: 2; width: 100%; }
-            .payroll-header .user-area { grid-column: 3; }
-            .user-area { gap: 6px; }
-            .user-profile { gap: 0; padding: 3px; border: 0; background: transparent; }
-            .workspace { display: block; }
-            .sidebar { position: static; height: auto; min-height: auto; padding: 7px 9px; border-right: 0; border-bottom: 1px solid var(--line); }
-            .sidebar-tagline { display: none; }
-            .nav-list { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2px; }
-            .nav-list a { min-height: 42px; justify-content: center; gap: 4px; padding: 4px 2px; flex-direction: column; }
-            .nav-list a span:last-child { display: block; max-width: 100%; font-size: 8px; text-align: center; }
-            .nav-icon, .nav-list .active .nav-icon { width: 20px; height: 20px; }
-            .content { padding-top: 12px; }
-            .welcome-grid { grid-template-columns: minmax(0, 1.25fr) minmax(205px, .9fr); grid-auto-rows: auto; }
-            .hero p { width: 52%; }
-            .overview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        }
-        @media (max-width: 540px) {
-            .payroll-header { height: 58px; min-height: 58px; padding-inline: 13px; }
-            .brand { max-width: 120px; }
-            .brand-logo, .brand-tagline { width: 116px; max-width: 100%; }
-            .brand-logo { height: 34px; transform: none; }
-            .brand-tagline { transform: none; }
-            .brand-tagline { font-size: 4px; }
-            .user-details, .logout { display: none; }
-            .payroll-header { height: 58px; min-height: 58px; gap: 4px; padding-inline: 10px; }
-            .payroll-header { grid-template-columns: minmax(105px, 1fr) auto auto; gap: 6px; }
-            .payroll-search { display: none; }
-            .notification-button { margin-right: 0; }
-            .content { padding: 10px 10px 24px; }
-            .welcome-grid, .dashboard-grid, .section-grid { grid-template-columns: 1fr; }
-            .welcome-grid { gap: 9px; grid-auto-rows: auto; }
-            .profile-card { height: auto; }
-            .profile-card { padding: 12px; }
-            .profile-top { margin-bottom: 10px; }
-            .overview { gap: 8px; margin-bottom: 9px; }
-            .metric { min-height: 79px; grid-template-columns: 31px minmax(0, 1fr); gap: 2px 7px; padding: 9px; }
-            .metric-icon { width: 31px; height: 31px; }
-            .metric-value { font-size: 14px; }
-            .dashboard-grid .panel { padding: 12px; }
-            .salary-breakdown { grid-template-columns: 105px minmax(0, 1fr); gap: 8px; }
-            .breakdown-chart { width: 100px; height: 100px; }
-            .dashboard-history-table th, .dashboard-history-table td { padding-inline: 4px; font-size: 9px; }
-        }
-        @media (max-width: 400px) {
-            .hero { min-height: 138px; aspect-ratio: auto; }
-        }
-        #salary .salary-section-header,
-        #salary .salary-summary-card,
-        #salary .salary-breakdown-panel,
-        #salary .salary-insights-panel,
-        #deductions .deductions-header,
-        #deductions .deductions-total-card,
-        #deductions .deductions-impact-card,
-        #deductions .deductions-breakdown-panel,
-        #deductions .deductions-insights-panel,
-        #deductions .deductions-impact-item,
-        #deductions .deductions-net-note,
-        #deductions .deductions-final-pay,
-        #salary-slips.salary-slips-panel,
-        #salary-slips .salary-slips-card,
-        #payroll-history .history-header,
-        #payroll-history .history-summary-card,
-        #payroll-history .history-table-panel {
-            background: #fff;
-            border-color: #e1eaf4;
-            box-shadow: 0 5px 16px rgba(25, 57, 111, .065);
-        }
-        #salary .salary-info-note,
-        #salary-slips .salary-slips-table th,
-        #deductions .deductions-table th,
-        #payroll-history .history-table th,
-        #payroll-history .history-footer {
-            background: #fff;
-        }
     </style>
 </head>
 <body>
@@ -1602,36 +689,15 @@
         <header class="payroll-header">
             <a class="brand" href="{% url 'payroll-dashboard' %}" aria-label="EMPLY Payroll home">
                 <img class="brand-logo" src="{% static 'images/ui/emply-logo.png' %}" alt="EMPLY">
-                <span class="brand-tagline" aria-hidden="true">PEOPLE&nbsp;·&nbsp;PAYROLL&nbsp;·&nbsp;PROGRESS</span>
             </a>
-            <div class="payroll-search" role="search">
-                <label class="payroll-search-field" for="payroll-section-search">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
-                    <input class="payroll-search-input" id="payroll-section-search" type="search" placeholder="Search payroll sections..." autocomplete="off" aria-label="Search payroll sections" aria-controls="payroll-search-results" aria-expanded="false">
-                </label>
-                <div class="payroll-search-results" id="payroll-search-results" role="listbox" hidden></div>
-            </div>
+            <div class="module-title">Payroll</div>
             <div class="user-area">
-                <button class="notification-button" type="button" aria-label="Notifications">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg>
-                </button>
-                <div class="user-profile">
-                    <div class="avatar">
-                        {% if employee_avatar %}
-                            <img src="{{ employee_avatar }}" alt="{{ employee_name|default:'Employee' }}">
-                        {% else %}
-                            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0z"></path></svg>
-                        {% endif %}
-                    </div>
-                    <div class="user-details">
-                        <strong>{{ employee_name|default:"Employee" }}</strong>
-                        <span>Employee</span>
-                    </div>
+                <div class="avatar"><img src="{{ employee_avatar }}" alt="{{ employee_name|default:'Employee' }}"></div>
+                <div class="user-details">
+                    <strong>{{ employee_name|default:"Employee" }}</strong>
+                    <span>Employee</span>
                 </div>
-                <a class="logout" href="{% url 'logout' %}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3"></path><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"></path></svg>
-                    Logout
-                </a>
+                <a class="logout" href="{% url 'logout' %}">Logout</a>
             </div>
         </header>
 
@@ -1640,14 +706,13 @@
                 <div class="side-label">Payroll workspace</div>
                 <nav aria-label="Payroll navigation">
                     <ul class="nav-list">
-                        <li><a class="active" href="#overview"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7"></path><path d="M5 9v11h5v-6h4v6h5V9"></path></svg></span><span>Overview</span></a></li>
-                        <li><a href="#salary"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 9h18M7 15h3"></path></svg></span><span>Salary</span></a></li>
-                        <li><a href="#deductions"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m19 5-14 14"></path><circle cx="7" cy="7" r="2"></circle><circle cx="17" cy="17" r="2"></circle></svg></span><span>Deductions</span></a></li>
-                        <li><a href="#salary-slips"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M14 3v5h5M9 12h7M9 16h7"></path></svg></span><span>Salary Slips</span></a></li>
-                        <li><a href="#payroll-history"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"></path><path d="M3 3v5h5M12 7v5l3 2"></path></svg></span><span>Payroll History</span></a></li>
+                        <li><a class="active" href="#overview"><span class="nav-icon">01</span><span>Overview</span></a></li>
+                        <li><a href="#salary"><span class="nav-icon">02</span><span>Salary</span></a></li>
+                        <li><a href="#deductions"><span class="nav-icon">03</span><span>Deductions</span></a></li>
+                        <li><a href="#salary-slips"><span class="nav-icon">04</span><span>Salary Slips</span></a></li>
+                        <li><a href="#payroll-history"><span class="nav-icon">05</span><span>Payroll History</span></a></li>
                     </ul>
                 </nav>
-                <div class="sidebar-tagline" aria-hidden="true"><span>Better People</span><span>Better Business</span></div>
             </aside>
 
             <main class="content">
@@ -1663,473 +728,184 @@
                         <p class="empty-row">Payroll access is not available yet because salary information has not been configured for your employee profile.</p>
                     </section>
                 {% else %}
-                    <div class="welcome-grid" data-payroll-section="overview">
-                        <section class="hero" id="overview" data-payroll-section="overview">
-                            <div class="hero-copy">
-                                <div class="hero-eyebrow">EMPLOYEE PAYROLL PROFILE</div>
-                                <div class="hero-greeting">Hello, {{ employee_name|default:"Employee" }} <span aria-hidden="true">👋</span></div>
-                                <h1>Your Compensation<br>Overview</h1>
-                                <p>Review your configured salary details and payroll<br>documents, all in one place.</p>
-                            </div>
-                            <div class="hero-art" aria-hidden="true">
-                                <div class="hero-art-backdrop"></div>
-                                <div class="hero-folder"></div>
-                                <div class="hero-sheet">
-                                    <strong>PAYROLL</strong>
-                                    <div class="hero-sheet-rule"></div>
-                                    <div class="hero-sheet-row"><i></i><i></i></div>
-                                    <div class="hero-sheet-row"><i></i><i></i></div>
-                                    <div class="hero-sheet-row"><i></i><i></i></div>
-                                    <div class="hero-sheet-row"><i></i><i></i></div>
-                                    <div class="hero-sheet-row"><i></i><i></i></div>
-                                </div>
-                                <div class="hero-coin">₹</div>
-                                <div class="hero-plant-stem"></div>
-                                <div class="hero-leaf hero-leaf-one"></div>
-                                <div class="hero-leaf hero-leaf-two"></div>
-                                <div class="hero-leaf hero-leaf-three"></div>
-                                <div class="hero-leaf hero-leaf-four"></div>
-                                <div class="hero-leaf hero-leaf-five"></div>
-                                <div class="hero-plant-pot"></div>
-                            </div>
-                        </section>
-                        <section class="profile-card" aria-label="Employee profile">
-                            <div class="profile-top">
-                                <div class="profile-avatar">
-                                    {% if employee_avatar %}
-                                        <img src="{{ employee_avatar }}" alt="">
-                                    {% else %}
-                                        <svg viewBox="0 0 24 24" fill="#1684f2" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0z"></path></svg>
-                                    {% endif %}
-                                </div>
+                    <section class="hero" id="overview" data-payroll-section="overview">
+                        <div>
+                            <div class="hero-identity">
+                                <div class="hero-avatar"><img src="{{ employee_avatar }}" alt="{{ employee_name|default:'Employee' }}"></div>
                                 <div>
-                                    <strong>{{ employee_name|default:"Employee" }}</strong>
-                                    <span>Employee</span>
+                                    <div class="eyebrow">Employee payroll profile</div>
+                                    <strong>{{ employee_name|default:"Not available yet" }}</strong>
                                 </div>
                             </div>
-                            <div class="profile-details">
-                                {% if employee_id %}
-                                    <div class="profile-detail">
-                                        <span class="profile-detail-icon" aria-hidden="true">♙</span>
-                                        <div><span>Employee ID</span><strong>{{ employee_id }}</strong></div>
-                                    </div>
-                                {% endif %}
-                                {% if employee_department %}
-                                    <div class="profile-detail">
-                                        <span class="profile-detail-icon" aria-hidden="true">▦</span>
-                                        <div><span>Department</span><strong>{{ employee_department }}</strong></div>
-                                    </div>
-                                {% endif %}
-                                {% if employee_designation %}
-                                    <div class="profile-detail">
-                                        <span class="profile-detail-icon" aria-hidden="true">♙</span>
-                                        <div><span>Designation</span><strong>{{ employee_designation }}</strong></div>
-                                    </div>
-                                {% endif %}
+                            <div class="eyebrow">Payroll overview</div>
+                            <h1>Your compensation overview</h1>
+                            <p>Review your configured salary details and payroll documents.</p>
+                        </div>
+                        <div class="hero-meta">
+                            <div>
+                                <span>Employee</span>
+                                <strong>{{ employee_name|default:"Not available yet" }}</strong>
                             </div>
-                        </section>
-                    </div>
-                    <div class="panel" role="status" aria-live="polite">
-                        {% if payroll_is_finalized %}
-                            <strong>Finalized payroll snapshot:</strong>
-                            This period's salary and deductions come from payslip
-                            <a href="{% url 'view-payslip-pdf' finalized_payslip.id %}">
-                                {{ finalized_payslip.get_status_display }} payslip
-                            </a>
-                            and are not recalculated from current settings.
-                        {% else %}
-                            <strong>Estimate only:</strong>
-                            Current-period amounts are an estimate from available employee, leave, and attendance data.
-                            They are not a finalized payslip.
-                        {% endif %}
-                    </div>
+                            {% if employee_id %}
+                                <div><span>Employee ID</span><strong>{{ employee_id }}</strong></div>
+                            {% endif %}
+                            {% if employee_designation %}
+                                <div><span>Designation</span><strong>{{ employee_designation }}</strong></div>
+                            {% endif %}
+                            {% if employee_department %}
+                                <div><span>Department</span><strong>{{ employee_department }}</strong></div>
+                            {% endif %}
+                        </div>
+                    </section>
 
                     <section class="overview" aria-label="Payroll summary" data-payroll-section="overview">
-                        <div class="metric">
-                            <span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"></rect><path d="M3 10h18M7 15h2"></path><path d="m6 6 2-3h11l-2 3"></path></svg></span>
-                            <div class="card-label">Net Pay</div>
-                            <div class="metric-value">{{ payroll.net_pay_display }}</div>
-                            {% if payroll_trends.net_pay.has_change %}
-                                <div class="metric-note {% if payroll_trends.net_pay.change < 0 %}trend-negative{% endif %}">
-                                    <span class="metric-trend-arrow" aria-hidden="true">{% if payroll_trends.net_pay.change < 0 %}↘{% else %}↗{% endif %}</span>
-                                    {% if payroll_trends.net_pay.change > 0 %}+{% endif %}{{ payroll_trends.net_pay.change|floatformat:1 }}% vs. last month
+                        <div class="salary-card">
+                            <div class="card-label">Current salary</div>
+                            <div class="salary-primary">
+                                <div>
+                                    <div class="salary-value">{{ payroll.basic_salary_display|default:"Not available yet" }}</div>
+                                    <div class="salary-note">Configured basic salary</div>
                                 </div>
-                            {% else %}
-                                <div class="metric-note">After deductions</div>
-                            {% endif %}
+                                <span class="salary-symbol">&#8377;</span>
+                            </div>
                         </div>
                         <div class="metric">
-                            <span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="8" ry="3"></ellipse><path d="M4 6v4c0 1.7 3.6 3 8 3 .8 0 1.6 0 2.3-.2M4 10v4c0 1.7 3.6 3 8 3"></path><path d="M16 12c2.2 0 4 1 4 2.2v5c0 1.2-1.8 2.2-4 2.2s-4-1-4-2.2v-5c0-1.2 1.8-2.2 4-2.2Z"></path><path d="M12 15c0 1.2 1.8 2.2 4 2.2s4-1 4-2.2"></path></svg></span>
-                            <div class="card-label">Total Deductions</div>
-                            <div class="metric-value">{{ payroll.total_deductions_display }}</div>
-                            {% if payroll_trends.deductions.has_change %}
-                                <div class="metric-note {% if payroll_trends.deductions.change < 0 %}trend-negative{% endif %}">
-                                    <span class="metric-trend-arrow" aria-hidden="true">{% if payroll_trends.deductions.change < 0 %}↘{% else %}↗{% endif %}</span>
-                                    {% if payroll_trends.deductions.change > 0 %}+{% endif %}{{ payroll_trends.deductions.change|floatformat:1 }}% vs. last month
-                                </div>
-                            {% else %}
-                                <div class="metric-note">{% if payroll_is_finalized %}Finalized payslip period{% else %}Estimated current pay period{% endif %}</div>
-                            {% endif %}
-                        </div>
-                        <div class="metric">
-                            <span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"></rect><path d="M8 3v4M16 3v4M4 9h16"></path><path d="M8 13h2v2H8zM14 13h2v2h-2zM8 17h2v2H8z"></path></svg></span>
-                            <div class="card-label">Pay Period</div>
+                            <div class="card-label">Payroll period</div>
                             <div class="metric-value">{{ current_month|default:"Not available yet" }}</div>
-                            <div class="metric-note">Current month</div>
                         </div>
                         <div class="metric">
-                            <span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h11M7 8h11l-9 12M7 8l9 12"></path><path d="M5 8h2M5 12h3"></path></svg></span>
-                            <div class="card-label">Total Earnings</div>
-                            <div class="metric-value">{{ payroll.basic_salary_display|default:"Not available yet" }}</div>
-                            {% if payroll_trends.earnings.has_change %}
-                                <div class="metric-note {% if payroll_trends.earnings.change < 0 %}trend-negative{% endif %}">
-                                    <span class="metric-trend-arrow" aria-hidden="true">{% if payroll_trends.earnings.change < 0 %}↘{% else %}↗{% endif %}</span>
-                                    {% if payroll_trends.earnings.change > 0 %}+{% endif %}{{ payroll_trends.earnings.change|floatformat:1 }}% vs. last month
-                                </div>
-                            {% else %}
-                                <div class="metric-note">{% if payroll_is_finalized %}Stored payslip basic pay{% else %}Configured basic salary estimate{% endif %}</div>
-                            {% endif %}
+                            <div class="card-label">Net pay</div>
+                            <div class="metric-value">{{ payroll.net_pay_display }}</div>
+                        </div>
+                        <div class="metric">
+                            <div class="card-label">Total deductions</div>
+                            <div class="metric-value">{{ payroll.total_deductions_display }}</div>
                         </div>
                     </section>
 
-                    <div class="dashboard-grid" data-payroll-section="overview">
-                        <section class="panel" data-payroll-section="overview">
-                            <div class="section-heading">
-                                <h2><span class="section-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"></rect><path d="M8 8h8M8 12h5M8 16h8"></path></svg></span>Salary Breakdown</h2>
-                            </div>
-                            <div class="salary-breakdown">
-                                <div class="breakdown-chart" style="--deduction-share: {{ deduction_ratio }}%; --net-share: {{ net_pay_ratio }}%">
-                                    <div class="breakdown-chart-inner">
-                                        <strong>{{ payroll.basic_salary_display|default:"Not available yet" }}</strong>
-                                        <span>Basic Salary</span>
-                                    </div>
+                    <div class="section-grid">
+                        <div>
+                            <section class="panel" id="salary" data-payroll-section="salary">
+                                <div class="section-heading">
+                                    <div><h2>Salary snapshot</h2><p>Values currently available in your employee profile.</p></div>
+                                    <span class="status">Profile data</span>
                                 </div>
-                                <div class="breakdown-legend">
-                                    <div class="legend-row">
-                                        <span class="legend-label"><span class="legend-dot"></span><span>Basic Salary</span></span>
-                                        <strong>{{ payroll.basic_salary_display|default:"Not available yet" }}</strong>
-                                        <span class="legend-share">100%</span>
-                                    </div>
-                                    <div class="legend-row">
-                                        <span class="legend-label"><span class="legend-dot deduction"></span><span>Total Deductions</span></span>
-                                        <strong>{{ payroll.total_deductions_display }}</strong>
-                                        <span class="legend-share">{{ deduction_ratio }}%</span>
-                                    </div>
-                                    <div class="legend-row">
-                                        <span class="legend-label"><span class="legend-dot net"></span><span>Net Pay</span></span>
-                                        <strong>{{ payroll.net_pay_display }}</strong>
-                                        <span class="legend-share">{{ net_pay_ratio }}%</span>
-                                    </div>
+                                <dl class="data-list">
+                                    <div class="data-row"><dt>Basic salary</dt><dd>{{ payroll.basic_salary_display|default:"Not available yet" }}</dd></div>
+                                    <div class="data-row"><dt>Allowances</dt><dd class="muted">Not available yet</dd></div>
+                                    <div class="data-row"><dt>Net salary</dt><dd>{{ payroll.net_pay_display }}</dd></div>
+                                </dl>
+                            </section>
+                            <section class="panel" data-payroll-section="salary">
+                                <div class="section-heading">
+                                    <div><h2>Salary breakdown</h2><p>Calculation rules will be added in a future payroll phase.</p></div>
                                 </div>
-                            </div>
-                        </section>
-                        <section class="panel" data-payroll-section="overview">
+                                <dl class="data-list">
+                                    <div class="data-row"><dt>Basic salary</dt><dd>{{ payroll.basic_salary_display|default:"Not available yet" }}</dd></div>
+                                    <div class="data-row"><dt>Allowances</dt><dd class="muted">Not available yet</dd></div>
+                                    <div class="data-row"><dt>Gross salary</dt><dd class="muted">Not configured</dd></div>
+                                    <div class="data-row"><dt>Net salary</dt><dd>{{ payroll.net_pay_display }}</dd></div>
+                                </dl>
+                            </section>
+                        </div>
+                        <section class="panel" id="attendance-impact" data-payroll-section="overview">
                             <div class="section-heading">
-                                <h2><span class="section-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span>Recent Payroll History</h2>
-                                <a class="panel-link" href="#payroll-history">View All&nbsp; →</a>
+                                <div><h2>Leave &amp; attendance impact</h2><p>Calculated from approved leave and validated attendance records.</p></div>
+                                <span class="status">Payroll result</span>
                             </div>
-                            <div class="table-wrap">
-                                <table class="data-table dashboard-history-table">
-                                    <thead><tr><th>Month &amp; Year</th><th>Net Pay</th><th>Status</th><th>Actions</th></tr></thead>
-                                    <tbody>
-                                        {% for payslip in payslips|slice:":5" %}
-                                            <tr>
-                                                <td><strong>{{ payslip.start_date|date:"F Y" }}</strong></td>
-                                                <td>{{ payslip.net_pay_display }}</td>
-                                                <td><span class="status status-{{ payslip.status }}">{{ payslip.get_status_display }}</span></td>
-                                                <td><a href="{% url 'view-payslip-pdf' payslip.id %}" class="header-action" aria-label="Download {{ payslip.start_date|date:'F Y' }} payslip">↓</a></td>
-                                            </tr>
-                                        {% empty %}
-                                            <tr><td colspan="4"><div class="empty-row">No payroll history available yet.</div></td></tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
+                            <div class="deduction-list">
+                                <div class="deduction-item"><span>Paid leave</span><strong class="not-ready">{{ payroll.paid_leave_days }} days</strong></div>
+                                <div class="deduction-item"><span>Unpaid leave / LWP</span><strong class="not-ready">{{ payroll.unpaid_leave_days }} days</strong></div>
+                                <div class="deduction-item"><span>Absence</span><strong class="not-ready">{{ payroll.absence_days }} days</strong></div>
+                                <div class="deduction-item"><span>Sandwich deduction</span><strong class="not-ready">{{ payroll.sandwich_days }} days</strong></div>
+                                <div class="deduction-item"><span>Total deductions</span><strong>{{ payroll.total_deductions_display }}</strong></div>
                             </div>
                         </section>
                     </div>
 
-                    <section class="salary-section" id="salary" data-payroll-section="salary">
-                        <header class="salary-section-header">
-                            <div class="salary-section-title">
-                                <span class="salary-section-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M14 3v5h5M9 12h6M9 16h6"></path></svg></span>
-                            <div><h2>Salary</h2><p>{% if payroll_is_finalized %}Stored finalized payslip details{% else %}Estimated current pay details and calculation summary{% endif %}</p></div>
-                            </div>
-                            <span class="salary-period-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="2"></rect><path d="M8 3v4M16 3v4M4 9h16"></path></svg>{{ current_month }}</span>
-                        </header>
-
-                        <div class="salary-summary-cards">
-                            <article class="salary-summary-card">
-                                <span class="salary-summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"></rect><path d="M3 10h18M7 15h2"></path></svg></span>
-                                <div class="salary-summary-copy"><span>Basic salary</span><strong>{{ payroll.basic_salary_display|default:"Not available yet" }}</strong><small>{% if payroll_is_finalized %}Finalized payslip snapshot{% else %}Configured employee salary estimate{% endif %}</small></div>
-                            </article>
-                            <article class="salary-summary-card">
-                                <span class="salary-summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M17 7H9.5a3 3 0 0 0 0 6h5a3 3 0 0 1 0 6H6"></path></svg></span>
-                                <div class="salary-summary-copy"><span>{% if payroll_is_finalized %}Finalized deductions{% else %}Estimated deductions{% endif %}</span><strong>{{ payroll.total_deductions_display }}</strong><small>{{ payroll.total_affected_days }} {% if payroll_is_finalized %}stored deduction component{{ payroll.total_affected_days|pluralize }}{% else %}deduction event{{ payroll.total_affected_days|pluralize }}{% endif %}</small></div>
-                            </article>
-                            <article class="salary-summary-card">
-                                <span class="salary-summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v13H4z"></path><path d="M4 10h16M8 15h3"></path><path d="M7 4h10"></path></svg></span>
-                                <div class="salary-summary-copy"><span>Net salary</span><strong>{{ payroll.net_pay_display }}</strong><small>{% if payroll_is_finalized %}Stored finalized payslip amount{% else %}Estimate after current deductions{% endif %}</small></div>
-                            </article>
+                    <section class="panel" id="deductions" data-payroll-section="deductions">
+                        <div class="section-heading">
+                            <div><h2>Deduction details</h2><p>Each non-zero deduction is explained from the payroll calculation.</p></div>
                         </div>
-
-                        <div class="salary-detail-grid">
-                            <section class="salary-breakdown-panel" aria-labelledby="salary-breakdown-title">
-                                <h3 class="salary-subheading" id="salary-breakdown-title"><span class="salary-subheading-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16"></path><path d="m7 15 4-4 3 2 5-6"></path></svg></span>Salary breakdown</h3>
-                                <div class="salary-breakdown-content">
-                                    <div class="salary-breakdown-chart" style="--deduction-share: {{ deduction_ratio }}%" role="img" aria-label="Salary split: {{ deduction_ratio }}% deductions and {{ net_pay_ratio }}% net salary">
-                                        <div class="salary-breakdown-chart-inner"><strong>{{ payroll.basic_salary_display }}</strong><span>Basic salary</span></div>
+                        <div class="deduction-summary">
+                            <div class="metric"><div class="card-label">Total deductions</div><div class="metric-value">{{ payroll.total_deductions_display }}</div></div>
+                            <div class="metric"><div class="card-label">Deduction categories</div><div class="metric-value">{{ payroll.deduction_details|length }}</div></div>
+                            <div class="metric"><div class="card-label">Affected days</div><div class="metric-value">{{ payroll.total_affected_days }}</div></div>
+                        </div>
+                        <div class="detail-list">
+                            {% for detail in payroll.deduction_details %}
+                                <article class="detail-card">
+                                    <div class="detail-top">
+                                        <div>
+                                            <strong>{{ detail.date|date:"d M Y" }}</strong>
+                                            <span class="detail-day">{{ detail.day }}</span>
+                                        </div>
+                                        <strong>{{ detail.amount_display }}</strong>
                                     </div>
-                                    <div class="salary-legend">
-                                        <div class="salary-legend-row"><span class="salary-legend-label"><i class="salary-legend-dot deductions"></i>Current deductions</span><strong>{{ payroll.total_deductions_display }}</strong><span class="salary-legend-share">{{ deduction_ratio }}%</span></div>
-                                        <div class="salary-legend-row"><span class="salary-legend-label"><i class="salary-legend-dot net"></i>Net salary</span><strong>{{ payroll.net_pay_display }}</strong><span class="salary-legend-share">{{ net_pay_ratio }}%</span></div>
+                                    <div class="detail-meta">
+                                        <span class="detail-kind">{{ detail.leave_type }}</span>
+                                        <span>{{ detail.days }} affected day</span>
+                                        <span class="rate-badge {{ detail.rate_label|lower }}">{{ detail.rate_label }} rate</span>
                                     </div>
-                                </div>
-                            </section>
-                            <aside class="salary-insights-panel" aria-labelledby="salary-insights-title">
-                                <h3 class="salary-subheading" id="salary-insights-title"><span class="salary-subheading-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M8 14c-1.3-1-2-2.6-2-4.5a6 6 0 0 1 12 0c0 1.9-.7 3.5-2 4.5-.7.6-1 1.2-1 2h-6c0-.8-.3-1.4-1-2Z"></path><path d="M12 1v2M3 10H1M23 10h-2"></path></svg></span>Quick insights</h3>
-                                <div class="salary-insight">
-                                    <span class="salary-insight-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"></rect><path d="M8 3v4M16 3v4M4 9h16"></path></svg></span>
-                                    <div class="salary-insight-copy"><span>Pay period</span><strong>{{ current_month }}</strong></div>
-                                </div>
-                                <div class="salary-insight">
-                                    <span class="salary-insight-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M17 7H9.5a3 3 0 0 0 0 6h5a3 3 0 0 1 0 6H6"></path></svg></span>
-                                    <div class="salary-insight-copy"><span>Allowances</span><strong>Not available in this dashboard</strong></div>
-                                </div>
-                                <div class="salary-info-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg><span>Net salary is calculated from basic salary after the current attendance and leave deductions.</span></div>
-                            </aside>
+                                    <p>{{ detail.reason }}</p>
+                                    <div class="detail-policy">Policy: {{ detail.policy }}</div>
+                                    <div class="detail-calculation">Calculation: {{ detail.calculation }}</div>
+                                </article>
+                            {% empty %}
+                                <div class="empty-row"><strong>No deductions recorded</strong><span>No deduction detail applies to this payroll period.</span></div>
+                            {% endfor %}
                         </div>
-
-                        <a class="panel-link salary-detail-link" href="#deductions">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"></path><path d="M14 3v5h5M9 12h6M9 16h6"></path></svg>
-                            <span>View the attendance and leave deductions included in this salary calculation.</span>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
-                        </a>
-                    </section>
-                    <section class="deductions-section" id="deductions" data-payroll-section="deductions">
-                        <header class="deductions-header">
-                            <div class="deductions-title">
-                                <span class="deductions-title-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M17 7H9.5a3 3 0 0 0 0 6h5a3 3 0 0 1 0 6H6"></path></svg></span>
-                                <div><h2>Deductions</h2><p>Leave and attendance deductions applied to your payroll</p></div>
-                            </div>
-                            <span class="deductions-period"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="2"></rect><path d="M8 3v4M16 3v4M4 9h16"></path></svg>{{ current_month }}</span>
-                        </header>
-
-                        <div class="deductions-summary">
-                            <article class="deductions-total-card">
-                                <span class="deductions-total-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M17 7H9.5a3 3 0 0 0 0 6h5a3 3 0 0 1 0 6H6"></path></svg></span>
-                                <div class="deductions-total-copy">
-                                    <span>Total deductions</span>
-                                    <strong>{{ payroll.total_deductions_display }}</strong>
-                                    {% if payroll_trends.deductions.has_change %}
-                                        <small class="deduction-trend {% if payroll_trends.deductions.change < 0 %}negative{% endif %}">{% if payroll_trends.deductions.change > 0 %}+{% endif %}{{ payroll_trends.deductions.change|floatformat:1 }}% vs. last month</small>
-                                    {% else %}
-                                        <small>{{ payroll.total_affected_days }} deduction event{{ payroll.total_affected_days|pluralize }} this period</small>
-                                    {% endif %}
-                                </div>
-                            </article>
-                            <section class="deductions-impact-card" id="attendance-impact" aria-label="Leave and attendance impact">
-                                <h3 class="deductions-impact-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"></rect><path d="M8 2v4M16 2v4M3 9h18M8 13h3M8 17h7"></path></svg>Leave &amp; attendance impact</h3>
-                                <div class="deductions-impact-grid">
-                                    {% if payroll_is_finalized %}
-                                        <div class="deductions-impact-item"><span>Recorded paid days</span><strong>{{ payroll.paid_days|default_if_none:"Not recorded" }}</strong></div>
-                                        <div class="deductions-impact-item"><span>Recorded unpaid days</span><strong>{{ payroll.unpaid_days|default_if_none:"Not recorded" }}</strong></div>
-                                    {% else %}
-                                        <div class="deductions-impact-item"><span>Paid leave</span><strong>{{ payroll.paid_leave_days }} days</strong></div>
-                                        <div class="deductions-impact-item"><span>Unpaid leave / LWP</span><strong>{{ payroll.unpaid_leave_days }} days</strong></div>
-                                        <div class="deductions-impact-item"><span>Absence</span><strong>{{ payroll.absence_days }} days</strong></div>
-                                        <div class="deductions-impact-item"><span>Sandwich deduction</span><strong>{{ payroll.sandwich_days }} days</strong></div>
-                                    {% endif %}
-                                </div>
-                            </section>
-                        </div>
-
-                        <div class="deductions-detail-grid">
-                            <section class="deductions-breakdown-panel" aria-labelledby="deductions-breakdown-heading">
-                                <h3 class="deductions-subheading" id="deductions-breakdown-heading"><span class="deductions-subheading-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"></path><circle cx="8" cy="6" r="1"></circle><circle cx="8" cy="12" r="1"></circle><circle cx="8" cy="18" r="1"></circle></svg></span>Deduction breakdown</h3>
-                                <div class="deductions-basis">
-                                    <strong>How each deduction is calculated</strong>
-                                    {% if payroll_is_finalized %}
-                                        <span>{{ payroll.daily_rate_basis }}</span>
-                                        <span>Deduction components below are taken from the stored official payslip; current salary and attendance settings are not used to recalculate them.</span>
-                                    {% else %}
-                                        <span>{{ payroll.daily_rate_basis }} Per-day deductions are rounded to the nearest paisa.</span>
-                                        <span>Absence deductions count only completed scheduled workdays without validated attendance or approved leave. Weekends, holidays, future days, and the current unfinished workday are not counted as absences.</span>
-                                        <span>Each row below shows one deduction date, its reason and policy, the calculation, and the amount. {{ payroll.total_affected_days }} deduction event{{ payroll.total_affected_days|pluralize }} total {{ payroll.total_deductions_display }}, matching Total deductions. On narrow screens, scroll the table horizontally to view every detail.</span>
-                                    {% endif %}
-                                </div>
-                                <div class="deductions-table-wrap">
-                                    <table class="deductions-table">
-                                        <thead>
-                                            {% if payroll_is_finalized %}
-                                                <tr><th>Stored deduction component</th><th>Snapshot detail</th><th>Amount</th></tr>
-                                            {% else %}
-                                                <tr><th>Date</th><th>Deduction</th><th>Rate</th><th>Reason &amp; policy</th><th>Calculation</th><th>Amount</th></tr>
-                                            {% endif %}
-                                        </thead>
-                                        <tbody>
-                                            {% for detail in payroll.deduction_details %}
-                                                {% if payroll_is_finalized %}
-                                                    <tr><td>{{ detail.leave_type }}</td><td>{{ detail.reason }}</td><td class="deductions-table-amount">{{ detail.amount_display }}</td></tr>
-                                                {% else %}
-                                                    <tr>
-                                                        <td><strong>{{ detail.date|date:"d M Y" }}</strong><br>{{ detail.day }}</td>
-                                                        <td><div class="deduction-table-kind"><strong>{{ detail.leave_type }}</strong><small>{{ detail.days }} affected day{{ detail.days|pluralize }}</small></div></td>
-                                                        <td><span class="deduction-rate-badge {{ detail.rate_label|lower }}">{{ detail.rate_label }} rate</span></td>
-                                                        <td><div class="deduction-rule"><strong>{{ detail.reason }}</strong><span>Policy: {{ detail.policy }}</span></div></td>
-                                                        <td><div class="deduction-calculation">{{ detail.calculation }}</div></td>
-                                                        <td class="deductions-table-amount">{{ detail.amount_display }}</td>
-                                                    </tr>
-                                                {% endif %}
-                                            {% empty %}
-                                                <tr><td colspan="{% if payroll_is_finalized %}3{% else %}6{% endif %}"><div class="empty-row"><strong>No deductions recorded</strong><span>No deduction detail applies to this payroll period.</span></div></td></tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </section>
-                            <aside class="deductions-insights-panel">
-                                <h3 class="deductions-subheading"><span class="deductions-subheading-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9"></path><path d="M3 4v8h8"></path><path d="M12 7v5l4 2"></path></svg></span>Deduction share</h3>
-                                <div class="deductions-chart-wrap">
-                                    <div class="deductions-chart" style="--deduction-share: {{ deduction_ratio }}%" role="img" aria-label="Deductions are {{ deduction_ratio }}% of basic salary">
-                                        <div class="deductions-chart-center"><strong>{{ deduction_ratio }}%</strong><span>of basic salary</span></div>
-                                    </div>
-                                    <div class="deductions-chart-caption">{{ payroll.total_deductions_display }} deducted from {{ payroll.basic_salary_display|default:"basic salary" }}</div>
-                                </div>
-                                <div class="deductions-net-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg><span>Each deduction above includes its recorded reason, applicable policy, and payroll calculation.</span></div>
-                            </aside>
-                        </div>
-
-                        <div class="deductions-final-pay"><span>Basic salary − total deductions</span><strong>Final net pay: {{ payroll.net_pay_display }}</strong></div>
-                        <a class="panel-link deductions-footer-link" href="#salary">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"></rect><path d="M3 10h18M7 15h2"></path></svg>
-                            <span>Review salary details and net pay calculation</span>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
-                        </a>
+                        <div class="final-pay"><span>Basic salary − total deductions</span><strong>Final net pay: {{ payroll.net_pay_display }}</strong></div>
                     </section>
 
-                    <section class="panel salary-slips-panel" id="salary-slips" data-payroll-section="salary-slips">
-                        <div class="section-heading salary-slips-heading">
-                            <span class="section-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M14 3v5h5M9 12h7M9 16h7"></path></svg></span>
-                            <div><h2>Salary Slips</h2><p>Access and download your monthly payslips</p></div>
+                    <section class="panel" id="salary-slips" data-payroll-section="salary-slips">
+                        <div class="section-heading">
+                            <div><h2>Salary slips</h2><p>Issued payroll documents will appear here.</p></div>
+                            <span class="status">No documents</span>
                         </div>
-                        <div class="salary-slips-summary">
-                            <div class="salary-slips-card">
-                                <span class="salary-slips-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"></rect><path d="M8 3v4M16 3v4M4 9h16M9 13h6M9 17h4"></path></svg></span>
-                                <div class="salary-slips-card-copy">
-                                    <span>Payslips shown</span>
-                                    <strong>{{ payslips|length }}</strong>
-                                </div>
-                            </div>
-                            <div class="salary-slips-card">
-                                <span class="salary-slips-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"></rect><path d="M8 3v4M16 3v4M4 9h16M8 13h3M8 17h7"></path></svg></span>
-                                <div class="salary-slips-card-copy">
-                                    <span>Latest payslip</span>
-                                    {% if payslips %}
-                                        <strong>{{ payslips.0.start_date|date:"F Y" }}</strong>
-                                        <small>Net Pay: {{ payslips.0.net_pay_display }}</small>
-                                    {% else %}
-                                        <strong>No payslip yet</strong>
-                                        <small>Generated payslips will appear here</small>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <div class="salary-slips-card salary-slips-quick-action">
-                                {% if payslips %}
-                                    <a href="{% url 'view-payslip-pdf' payslips.0.id %}" class="header-action" aria-label="View latest payslip">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3h7v7M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
-                                        View latest
-                                    </a>
-                                {% else %}
-                                    <span class="salary-slips-card-copy"><span>Available documents</span><strong>None yet</strong></span>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="table-wrap salary-slips-table-wrap">
-                            <table class="data-table salary-slips-table">
-                                <thead><tr><th>Month &amp; Year</th><th>Pay Period</th><th>Net Pay</th><th>Status</th><th>Action</th></tr></thead>
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead><tr><th>Payroll period</th><th>Net pay</th><th>Status</th><th>Action</th></tr></thead>
                                 <tbody>
                                     {% for payslip in payslips %}
                                         <tr>
-                                            <td>
-                                                <div class="salary-slips-period">
-                                                    <span class="salary-slips-period-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M14 3v5h5M9 12h7M9 16h7"></path></svg></span>
-                                                    <strong>{{ payslip.start_date|date:"F Y" }}</strong>
-                                                </div>
-                                            </td>
-                                            <td>{{ payslip.start_date|date:"d M Y" }} – {{ payslip.end_date|date:"d M Y" }}</td>
-                                            <td>{{ payslip.net_pay_display }}</td>
-                                            <td><span class="status status-{{ payslip.status }}">{{ payslip.get_status_display }}</span></td>
-                                            <td><a href="{% url 'view-payslip-pdf' payslip.id %}" class="header-action" aria-label="View and download {{ payslip.start_date|date:'F Y' }} payslip">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4"></path><path d="M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"></path></svg>
-                                                View / Download
-                                            </a></td>
+                                            <td><strong>{{ payslip.start_date|date:"F Y" }}</strong></td>
+                                            <td>₹{{ payslip.net_pay|floatformat:2|default:"Not available yet" }}</td>
+                                            <td>{{ payslip.get_status_display }}</td>
+                                            <td><a href="{% url 'view-payslip-pdf' payslip.id %}" class="header-action">Download</a></td>
                                         </tr>
                                     {% empty %}
-                                        <tr><td colspan="5"><div class="empty-row salary-slips-empty"><strong>No salary slips available</strong><span>Generate a snapshot from the current payroll calculation.</span><form method="post" action="{% url 'generate-employee-payslip' %}">{% csrf_token %}<button type="submit" class="disabled-action" style="cursor:pointer;color:var(--green-dark);">Generate Salary Slip</button></form></div></td></tr>
+                                        <tr><td colspan="4"><div class="empty-row"><strong>No salary slips available</strong><span>Generate a snapshot from the current payroll calculation.</span><br><form method="post" action="{% url 'generate-employee-payslip' %}">{% csrf_token %}<button type="submit" class="disabled-action" style="cursor:pointer;color:var(--green-dark);">Generate Salary Slip</button></form></div></td></tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
                         </div>
-                        {% if payslips %}
-                            <div class="salary-slips-footer"><span>Showing {{ payslips|length }} recent payslip{{ payslips|length|pluralize }}</span></div>
-                        {% endif %}
                     </section>
 
-                    <section class="history-section" id="payroll-history" data-payroll-section="payroll-history">
-                        <header class="history-header">
-                            <div class="history-title">
-                                <span class="history-title-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 2"></path><circle cx="12" cy="12" r="9"></circle><path d="M5.6 5.6 4 4M18.4 5.6 20 4"></path></svg></span>
-                                <div><h2>Payroll History</h2><p>Review past payroll details and payslip status</p></div>
-                            </div>
-                            <span class="history-record-count"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13"></path><path d="M3 6h.01M3 12h.01M3 18h.01"></path></svg>{{ payslips|length }} recent record{{ payslips|length|pluralize }}</span>
-                        </header>
-
-                        <div class="history-summary">
-                            <article class="history-summary-card">
-                                <span class="history-summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"></rect><path d="M3 10h18M7 15h2"></path></svg></span>
-                                <div class="history-summary-copy"><span>Recent payroll records</span><strong>{{ payslips|length }} record{{ payslips|length|pluralize }}</strong><small>Latest available payslips</small></div>
-                            </article>
-                            <article class="history-summary-card">
-                                <span class="history-summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"></rect><path d="M8 3v4M16 3v4M4 9h16M8 13h3M8 17h7"></path></svg></span>
-                                <div class="history-summary-copy">
-                                    {% if payslips %}
-                                        <span>Latest payroll record</span>
-                                        <strong>{{ payslips.0.start_date|date:"F Y" }}</strong>
-                                        <small>{{ payslips.0.net_pay_display }} net pay · {{ payslips.0.get_status_display }}</small>
-                                    {% else %}
-                                        <span>Latest payroll record</span><strong>No records yet</strong><small>A payslip will appear here when available</small>
-                                    {% endif %}
-                                </div>
-                            </article>
+                    <section class="panel" id="payroll-history" data-payroll-section="payroll-history">
+                        <div class="section-heading">
+                            <div><h2>Payroll history</h2><p>Historical payroll records will appear here when available.</p></div>
+                            <span class="status">No records</span>
                         </div>
-
-                        <section class="panel history-table-panel" aria-label="Payroll records">
-                            <div class="history-table-wrap">
-                                <table class="history-table">
-                                    <thead><tr><th>Payroll period</th><th>Basic salary</th><th>Deductions</th><th>Net pay</th><th>Status</th><th>Action</th></tr></thead>
-                                    <tbody>
-                                        {% for payslip in payslips %}
-                                            <tr>
-                                                <td><div class="history-period"><strong>{{ payslip.start_date|date:"F Y" }}</strong><small>{{ payslip.start_date|date:"d M Y" }} – {{ payslip.end_date|date:"d M Y" }}</small></div></td>
-                                                <td>{{ payslip.basic_pay_display }}</td>
-                                                <td>{{ payslip.deduction_display }}</td>
-                                                <td><strong>{{ payslip.net_pay_display }}</strong></td>
-                                                <td><span class="status status-{{ payslip.status }}">{{ payslip.get_status_display }}</span></td>
-                                                <td><a href="{% url 'view-payslip-pdf' payslip.id %}" class="history-action" aria-label="View and download {{ payslip.start_date|date:'F Y' }} payslip">
-                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>View / PDF
-                                                </a></td>
-                                            </tr>
-                                        {% empty %}
-                                            <tr><td colspan="6"><div class="history-empty"><strong>No payroll history available</strong><span>There are no genuine payroll records to display yet.</span></div></td></tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                            <footer class="history-footer">
-                                <span>Showing {{ payslips|length }} recent payroll record{{ payslips|length|pluralize }}</span>
-                                <span class="history-footer-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg>Use View / PDF to open the available payslip</span>
-                            </footer>
-                        </section>
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead><tr><th>Payroll period</th><th>Basic salary</th><th>Deductions</th><th>Net pay</th><th>Status</th><th>Payslip</th></tr></thead>
+                                <tbody>
+                                    {% for payslip in payslips %}
+                                        <tr>
+                                            <td><strong>{{ payslip.start_date|date:"F Y" }}</strong></td>
+                                            <td>₹{{ payslip.basic_pay|floatformat:2|default:"Not available yet" }}</td>
+                                            <td>₹{{ payslip.deduction|floatformat:2|default:"Not available yet" }}</td>
+                                            <td>₹{{ payslip.net_pay|floatformat:2|default:"Not available yet" }}</td>
+                                            <td>{{ payslip.get_status_display }}</td>
+                                            <td><a href="{% url 'view-payslip-pdf' payslip.id %}" class="header-action">View</a></td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr><td colspan="6"><div class="empty-row"><strong>No payroll history available</strong><span>There are no genuine payroll records to display yet.</span></div></td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </section>
                 {% endif %}
                 <div class="footer-note">Payroll workspace · EMPLY</div>
@@ -2142,8 +918,12 @@
             const links = Array.from(document.querySelectorAll(".nav-list a"));
             const sections = Array.from(document.querySelectorAll("[data-payroll-section]"));
 
-            function activateSection(requested = window.location.hash.slice(1)) {
+            function activateSection() {
+                const requested = window.location.hash.slice(1);
                 const section = validSections.includes(requested) ? requested : "overview";
+                if (requested !== section) {
+                    history.replaceState(null, "", `${window.location.pathname}${window.location.search}#${section}`);
+                }
                 sections.forEach((element) => {
                     element.classList.toggle(
                         "payroll-section-hidden",
@@ -2156,92 +936,7 @@
             }
 
             window.addEventListener("hashchange", activateSection);
-            links.forEach((link) => {
-                link.addEventListener("click", (event) => {
-                    event.preventDefault();
-                    const section = link.getAttribute("href").slice(1);
-                    history.replaceState(null, "", `${window.location.pathname}${window.location.search}#${section}`);
-                    activateSection(section);
-                });
-            });
-            const searchInput = document.querySelector("#payroll-section-search");
-            const searchResults = document.querySelector("#payroll-search-results");
-            if (searchInput && searchResults) {
-                const searchEntries = links.map((link) => ({
-                    label: link.querySelector("span:last-child")?.textContent.trim() || link.textContent.trim(),
-                    section: link.getAttribute("href").slice(1)
-                }));
-
-                function closeSearch() {
-                    searchResults.hidden = true;
-                    searchInput.setAttribute("aria-expanded", "false");
-                }
-
-                function chooseSearchResult(section) {
-                    links.find((link) => link.getAttribute("href") === `#${section}`)?.click();
-                    searchInput.value = "";
-                    closeSearch();
-                    searchInput.blur();
-                }
-
-                searchInput.addEventListener("input", () => {
-                    const query = searchInput.value.trim().toLocaleLowerCase();
-                    searchResults.replaceChildren();
-                    if (!query) {
-                        closeSearch();
-                        return;
-                    }
-
-                    const matches = searchEntries.filter((entry) =>
-                        entry.label.toLocaleLowerCase().includes(query) ||
-                        entry.section.replaceAll("-", " ").includes(query)
-                    );
-                    if (matches.length) {
-                        matches.forEach((entry) => {
-                            const option = document.createElement("button");
-                            option.type = "button";
-                            option.className = "payroll-search-option";
-                            option.setAttribute("role", "option");
-                            option.textContent = entry.label;
-                            option.addEventListener("click", () => chooseSearchResult(entry.section));
-                            searchResults.append(option);
-                        });
-                    } else {
-                        const empty = document.createElement("div");
-                        empty.className = "payroll-search-empty";
-                        empty.textContent = "No matching payroll section";
-                        searchResults.append(empty);
-                    }
-                    searchResults.hidden = false;
-                    searchInput.setAttribute("aria-expanded", "true");
-                });
-
-                searchInput.addEventListener("keydown", (event) => {
-                    if (event.key === "Escape") {
-                        closeSearch();
-                    } else if (event.key === "Enter" && !searchResults.hidden) {
-                        event.preventDefault();
-                        searchResults.querySelector(".payroll-search-option")?.click();
-                    }
-                });
-                document.addEventListener("click", (event) => {
-                    if (!event.target.closest(".payroll-search")) closeSearch();
-                });
-            }
-            document.querySelectorAll(".panel-link").forEach((link) => {
-                link.addEventListener("click", (event) => {
-                    event.preventDefault();
-                    const section = link.getAttribute("href").slice(1);
-                    history.replaceState(null, "", `${window.location.pathname}${window.location.search}#${section}`);
-                    activateSection(section);
-                });
-            });
-            const initialSection = window.location.hash.slice(1);
-            if (validSections.includes(initialSection)) {
-                history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
-            }
-            activateSection(initialSection);
-            window.scrollTo(0, 0);
+            activateSection();
         })();
     </script>
 </body>

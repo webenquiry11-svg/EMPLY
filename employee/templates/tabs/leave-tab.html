@@ -1,325 +1,582 @@
 {% load i18n %} {% load basefilters %}
-<br>
 <style>
-  .oh-sticky-table-container {
-    max-width: 2000px;
-    max-height: 170px;
-  }
-  .oh-sticky-table-request {
-    max-height: 500px;
-    overflow-y: auto;
-  }
-  .row-status--orange {
-    border-left: 4px solid #1565A3;
-    border-radius: 5px;
-  }
-  .row-status--gray {
-    border-left: 4px solid gray;
-    border-radius: 5px;
-  }
-  .row-status--yellow {
-    border-left: 4px solid yellowgreen;
-    border-radius: 5px;
-  }
+    :root {
+        --lt-bg: #F7F8FA;
+        --lt-surface: #FFFFFF;
+        --lt-border: #E6E8EC;
+        --lt-border-strong: #DDE1E7;
+        --lt-border-dash: #EEF0F4;
+        --lt-text: #0F172A;
+        --lt-text-2: #475569;
+        --lt-text-3: #94A3B8;
+        --lt-text-4: #CBD5E1;
+        --lt-accent: #0F766E;
+        --lt-accent-2: #14B8A6;
+        --lt-accent-soft: #F0FDFA;
+        --lt-accent-border: #CCFBF1;
+        --lt-pill: #F1F5F9;
+        --lt-radius-sm: 10px;
+        --lt-radius-md: 14px;
+        --lt-radius-lg: 16px;
+        --lt-radius-xl: 18px;
+        --lt-radius-pill: 999px;
+        --lt-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+        --lt-shadow-md: 0 4px 14px rgba(15, 23, 42, 0.05);
+        --lt-status-requested: #1565A3;
+        --lt-status-approved: #84CC16;
+        --lt-status-cancelled: #9CA3AF;
+        --lt-status-rejected: #EF4444;
+    }
+    .lt-wrap { display: flex; flex-direction: column; gap: 18px; padding: 4px 2px 8px; }
 
-  .kanban-card-container {
-    display: flex;
-    gap: 10px;
-    width: 100%;
-    overflow-x: scroll;
-  }
-  .oh-kanban-card {
-    min-width: 350px;
-    border-radius:10px;
-    flex-basis: calc(17% - 15px);
-  }
-  .oh-sticky-table-container + .oh-sticky-table-request {
-    margin-top: 20px;
-  }
+    .lt-card {
+        background: var(--lt-surface);
+        border: 1px solid var(--lt-border);
+        border-radius: var(--lt-radius-xl);
+        overflow: hidden;
+        transition: border-color .2s ease, box-shadow .2s ease;
+    }
+    .lt-card:hover { border-color: var(--lt-border-strong); box-shadow: var(--lt-shadow-md); }
+
+    .lt-card-head {
+        padding: 16px 20px 14px;
+        border-bottom: 1px solid var(--lt-border);
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        background: #FDFDFE;
+    }
+    .lt-card-title {
+        color: var(--lt-text);
+        font-size: 14px; font-weight: 700; letter-spacing: -0.1px;
+        display: inline-flex; align-items: center; gap: 9px;
+    }
+    .lt-card-title .ic {
+        width: 26px; height: 26px; border-radius: 8px;
+        display: grid; place-items: center;
+        background: var(--lt-accent-soft);
+        color: var(--lt-accent);
+    }
+    .lt-card-body { padding: 18px 20px; }
+
+    .lt-inner-tabs-wrap {
+        border-bottom: 1px solid var(--lt-border);
+        background: #FDFDFE;
+    }
+    .lt-inner-tabs {
+        display: inline-flex; align-items: center;
+        gap: 2px; padding: 0 12px;
+    }
+    .lt-inner-tab {
+        position: relative;
+        border: 0; background: transparent; cursor: pointer;
+        padding: 14px 14px 13px;
+        display: inline-flex; align-items: center; gap: 8px;
+        color: var(--lt-text-3);
+        font-size: 13.5px; font-weight: 600;
+        transition: color .2s ease;
+    }
+    .lt-inner-tab:hover { color: var(--lt-text); }
+    .lt-inner-tab::after {
+        content: "";
+        position: absolute; left: 14px; right: 14px; bottom: 0;
+        height: 2px;
+        background: var(--lt-accent);
+        border-radius: 2px 2px 0 0;
+        transform: scaleX(0); transform-origin: left center;
+        transition: transform .24s ease;
+    }
+    .lt-inner-tab.is-active { color: var(--lt-text); }
+    .lt-inner-tab.is-active::after { transform: scaleX(1); }
+    .lt-inner-tab .ic {
+        width: 24px; height: 24px; border-radius: 7px;
+        display: grid; place-items: center;
+        background: var(--lt-pill);
+        color: var(--lt-text-2);
+        font-size: 13px;
+    }
+    .lt-inner-tab.is-active .ic { background: var(--lt-accent-soft); color: var(--lt-accent); }
+
+    .lt-types-scroll {
+        display: flex;
+        gap: 14px;
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        scrollbar-width: thin;
+    }
+    .lt-types-scroll::-webkit-scrollbar { height: 6px; }
+    .lt-types-scroll::-webkit-scrollbar-thumb { background: var(--lt-border-strong); border-radius: 3px; }
+
+    .lt-type-card {
+        min-width: 300px;
+        flex: 0 0 auto;
+        background: var(--lt-surface);
+        border: 1px solid var(--lt-border);
+        border-radius: var(--lt-radius-xl);
+        padding: 16px;
+        cursor: pointer;
+        transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+    }
+    .lt-type-card:hover {
+        border-color: var(--lt-accent-border);
+        box-shadow: var(--lt-shadow-md);
+        transform: translateY(-1px);
+    }
+    .lt-type-avatar {
+        width: 48px; height: 48px;
+        border-radius: 12px;
+        overflow: hidden;
+        flex-shrink: 0;
+        border: 1px solid var(--lt-border);
+        background: var(--lt-pill);
+    }
+    .lt-type-avatar img {
+        width: 100%; height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    .lt-type-info { flex: 1; min-width: 0; }
+    .lt-type-name {
+        color: var(--lt-text);
+        font-size: 14px; font-weight: 700;
+        letter-spacing: -0.1px;
+        margin-bottom: 10px;
+    }
+    .lt-type-list { list-style: none; margin: 0; padding: 0; }
+    .lt-type-row {
+        padding: 8px 0;
+        border-bottom: 1px dashed var(--lt-border-dash);
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+    .lt-type-row:last-child { border-bottom: 0; padding-bottom: 0; }
+    .lt-label {
+        color: var(--lt-accent);
+        font-size: 10.5px; font-weight: 800;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+    }
+    .lt-value {
+        color: var(--lt-text);
+        font-size: 14px; font-weight: 700;
+    }
+    .lt-value.muted { color: var(--lt-text-2); font-weight: 600; }
+
+    .lt-table-wrap {
+        max-height: 520px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+    }
+    .lt-table-wrap::-webkit-scrollbar { width: 6px; }
+    .lt-table-wrap::-webkit-scrollbar-thumb { background: var(--lt-border-strong); border-radius: 3px; }
+
+    .lt-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    .lt-thead { position: sticky; top: 0; z-index: 2; }
+    .lt-th {
+        background: #F8FAFC;
+        color: var(--lt-accent);
+        font-size: 10.5px; font-weight: 800;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        padding: 12px 18px;
+        text-align: left;
+        border-bottom: 1px solid var(--lt-border);
+    }
+    .lt-th:first-child { border-top-left-radius: 0; }
+    .lt-th:last-child { border-top-right-radius: 0; }
+    .lt-tr {
+        transition: background-color .15s ease;
+    }
+    .lt-tr:hover { background: #FAFBFC; }
+    .lt-td {
+        padding: 14px 18px;
+        border-bottom: 1px dashed var(--lt-border-dash);
+        vertical-align: middle;
+        color: var(--lt-text);
+        font-size: 13.5px; font-weight: 600;
+    }
+    .lt-tr:last-child .lt-td { border-bottom: 0; }
+
+    .lt-leave-cell {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding-left: 14px;
+        position: relative;
+    }
+    .lt-leave-cell::before {
+        content: "";
+        position: absolute;
+        left: 0; top: 4px; bottom: 4px;
+        width: 4px;
+        border-radius: 3px;
+    }
+    .lt-leave-cell.status-requested::before { background: var(--lt-status-requested); }
+    .lt-leave-cell.status-approved::before { background: var(--lt-status-approved); }
+    .lt-leave-cell.status-cancelled::before { background: var(--lt-status-cancelled); }
+    .lt-leave-cell.status-rejected::before { background: var(--lt-status-rejected); }
+
+    .lt-leave-avatar {
+        width: 36px; height: 36px;
+        border-radius: 10px;
+        overflow: hidden;
+        flex-shrink: 0;
+        border: 1px solid var(--lt-border);
+        background: var(--lt-pill);
+    }
+    .lt-leave-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .lt-leave-name {
+        color: var(--lt-text);
+        font-size: 13.5px; font-weight: 700;
+    }
+
+    .lt-status-pill {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 5px 12px;
+        font-size: 12px; font-weight: 700;
+        border-radius: var(--lt-radius-pill);
+    }
+    .lt-status-pill.requested { background: #EFF6FF; color: #1D4ED8; }
+    .lt-status-pill.approved { background: #F0FDF4; color: #15803D; }
+    .lt-status-pill.cancelled { background: #F3F4F6; color: #4B5563; }
+    .lt-status-pill.rejected { background: #FEF2F2; color: #B91C1C; }
+    .lt-status-pill::before {
+        content: "";
+        width: 6px; height: 6px; border-radius: 50%;
+    }
+    .lt-status-pill.requested::before { background: #1D4ED8; }
+    .lt-status-pill.approved::before { background: #15803D; }
+    .lt-status-pill.cancelled::before { background: #4B5563; }
+    .lt-status-pill.rejected::before { background: #B91C1C; }
+
+    .lt-btn-group { display: inline-flex; border-radius: 10px; overflow: hidden; border: 1px solid var(--lt-border); }
+    .lt-btn {
+        border: 0; cursor: pointer;
+        padding: 7px 11px;
+        display: inline-grid; place-items: center;
+        font-size: 15px;
+        transition: background-color .15s ease, color .15s ease;
+        background: #fff;
+        color: var(--lt-text-2);
+    }
+    .lt-btn:hover { background: var(--lt-pill); color: var(--lt-text); }
+    .lt-btn + .lt-btn { border-left: 1px solid var(--lt-border); }
+    .lt-btn.success { color: #15803D; }
+    .lt-btn.success:hover { background: #F0FDF4; }
+    .lt-btn.success:disabled { color: var(--lt-text-4); cursor: not-allowed; background: #FAFAFA; }
+    .lt-btn.danger { color: #B91C1C; }
+    .lt-btn.danger:hover { background: #FEF2F2; }
+    .lt-btn.danger:disabled { color: var(--lt-text-4); cursor: not-allowed; background: #FAFAFA; }
+    .lt-btn.warning { color: #B45309; }
+    .lt-btn.warning:hover { background: #FFFBEB; }
+    .lt-btn.warning:disabled { color: var(--lt-text-4); cursor: not-allowed; background: #FAFAFA; }
+
+    .lt-empty {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 280px;
+        padding: 40px 20px;
+    }
+    .lt-empty-inner {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+    .lt-empty-ic {
+        width: 56px; height: 56px;
+        border-radius: 16px;
+        display: grid; place-items: center;
+        background: var(--lt-pill);
+        color: var(--lt-text-3);
+        font-size: 26px;
+    }
+    .lt-empty-text {
+        color: var(--lt-text-2);
+        font-size: 14px; font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+        .lt-th, .lt-td { padding: 12px 14px; }
+        .lt-type-card { min-width: 260px; }
+    }
 </style>
-<!-- {% if employee.leaverequest_set.all %}
-<div class="d-flex flex-row-reverse">
-  <span class="m-3">
-    <span
-      class="oh-dot oh-dot--small me-1"
-      style="background-color: red"
-    ></span>
-    {% trans "Rejected" %}
-  </span>
-  <span class="m-3">
-    <span
-      class="oh-dot oh-dot--small me-1"
-      style="background-color: gray"
-    ></span>
-    {% trans "Cancelled" %}
-  </span>
-  <span class="m-3">
-    <span
-      class="oh-dot oh-dot--small me-1"
-      style="background-color: #1565A3"
-    ></span>
-    {% trans "Requested" %}
-  </span>
-  <span class="m-3">
-    <span
-      class="oh-dot oh-dot--small me-1"
-      style="background-color: yellowgreen"
-    ></span>
-    {% trans "Approved" %}
-  </span>
-</div>
-{% endif %}  -->
+
+<div class="lt-wrap">
 {% if user_leaves %}
-<!-- Profile leave type card -->
-<div class="oh-sticky-table-container">
-  <div class="oh-sticky-table">
-    <div class="kanban-card-container">
-      <!-- Container for Kanban cards -->
-      {% for user_leave in user_leaves %}
-        {% if perms.leave.view_leavetype or perms.leave.view_leaverequest or request.user|check_manager:employee_leave or request.user == user_leave.employee_id.employee_user_id %}
-          <div
-            class="oh-kanban-card"
-            data-toggle="oh-modal-toggle"
-            data-target="#objectCreateModal"
-            hx-get="{% url 'user-request' user_leave.leave_type_id.id %}?instances_ids={{user_request_ids}}"
-            hx-target="#objectCreateModalTarget"
-           >
-            <div class="oh-kanban-card__avatar">
-              <div class="oh-kanban-card__profile-container">
-                {% if user_leave.leave_type_id.icon %}
-                <img
-                  src="{{user_leave.leave_type_id.icon.url }}"
-                  class="oh-kanban-card__profile-image"
-                  alt="{% trans 'Leave Icon' %}"
-                />
-                {% else %}
-                <img
-                  src="https://ui-avatars.com/api/?name={{user_leave.leave_type_id}}&background=random"
-                  class="oh-kanban-card__profile-image"
-                  alt="{% trans 'Leave Icon' %}"
-                />
-                {% endif %}
-              </div>
-            </div>
-            <div class="oh-kanban-card__details">
-              <span class="oh-kanban-card__title"
-                >{{user_leave.leave_type_id}}</span
-              >
-              <span class="oh-kanban-card__subtitle"
-                >{% trans "Available Leave Days" %} :
-                {% if user_leave.leave_type_id.limit_leave %}{{user_leave.available_days}}{% else %}{% trans "No Limit" %}{% endif %}</span
-              ><br />
-              <span class="oh-kanban-card__subtitle"
-                >{% trans "Carryforward Leave Days" %} :
-                {{user_leave.carryforward_days}}</span
-              ><br />
-              <span class="oh-kanban-card__subtitle"
-                >{% trans "Total Leave Days" %} :
-                {% if user_leave.leave_type_id.limit_leave %}{{user_leave.total_leave_days}}{% else %}{% trans "No Limit" %}{% endif %}</span
-              ><br />
-              <span class="oh-kanban-card__subtitle">{% trans "Total Leave taken" %} :{{user_leave.leave_taken}}</span>
-            </div>
-          </div>
-        {% endif %}
-      {% endfor %}
+<section class="lt-card">
+    <div class="lt-card-head">
+        <div class="lt-card-title">
+            <span class="ic"><ion-icon name="leaf-outline"></ion-icon></span>
+            <span>{% trans "Leave Balance" %}</span>
+        </div>
     </div>
-  </div>
-</div>
+    <div class="lt-card-body">
+        <div class="lt-types-scroll">
+            {% for user_leave in user_leaves %}
+                {% if perms.leave.view_leavetype or perms.leave.view_leaverequest or request.user|check_manager:employee_leave or request.user == user_leave.employee_id.employee_user_id %}
+                    <div
+                        class="lt-type-card"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#objectCreateModal"
+                        hx-get="{% url 'user-request' user_leave.leave_type_id.id %}?instances_ids={{user_request_ids}}"
+                        hx-target="#objectCreateModalTarget"
+                    >
+                        <div class="lt-type-avatar">
+                            {% if user_leave.leave_type_id.icon %}
+                            <img
+                                src="{{user_leave.leave_type_id.icon.url }}"
+                                alt="{% trans 'Leave Icon' %}"
+                            />
+                            {% else %}
+                            <img
+                                src="https://ui-avatars.com/api/?name={{user_leave.leave_type_id}}&background=random"
+                                alt="{% trans 'Leave Icon' %}"
+                            />
+                            {% endif %}
+                        </div>
+                        <div class="lt-type-info">
+                            <div class="lt-type-name">{{user_leave.leave_type_id}}</div>
+                            <ul class="lt-type-list">
+                                <li class="lt-type-row">
+                                    <span class="lt-label">{% trans "Available Leave Days" %}</span>
+                                    <span class="lt-value">{% if user_leave.leave_type_id.limit_leave %}{{user_leave.available_days}}{% else %}{% trans "No Limit" %}{% endif %}</span>
+                                </li>
+                                <li class="lt-type-row">
+                                    <span class="lt-label">{% trans "Carryforward Leave Days" %}</span>
+                                    <span class="lt-value">{{user_leave.carryforward_days}}</span>
+                                </li>
+                                <li class="lt-type-row">
+                                    <span class="lt-label">{% trans "Total Leave Days" %}</span>
+                                    <span class="lt-value">{% if user_leave.leave_type_id.limit_leave %}{{user_leave.total_leave_days}}{% else %}{% trans "No Limit" %}{% endif %}</span>
+                                </li>
+                                <li class="lt-type-row">
+                                    <span class="lt-label">{% trans "Total Leave taken" %}</span>
+                                    <span class="lt-value">{{user_leave.leave_taken}}</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
 {% elif employee_leaves %}
-<!-- Employe leave type card -->
-<div class="oh-sticky-table-container">
-  <div class="oh-sticky-table">
-    <div class="kanban-card-container">
-      <!-- Container for Kanban cards -->
-      {% for employee_leave in employee_leaves %}
-        {% if perms.leave.view_leavetype or perms.leave.view_leaverequest or request.user|check_manager:employee_leave or request.user == employee_leave.employee_id.employee_user_id %}
-          <div
-            class="oh-kanban-card"
-            data-toggle="oh-modal-toggle"
-            data-target="#objectCreateModal"
-            hx-get="{% url 'leave-request-creation' employee_leave.leave_type_id.id employee_leave.employee_id.id%}"
-            hx-target="#objectCreateModalTarget"
-           >
-            <div class="oh-kanban-card__avatar">
-              <div class="oh-kanban-card__profile-container">
-                {% if employee_leave.leave_type_id.icon %}
-                <img
-                  src="{{employee_leave.leave_type_id.icon.url }}"
-                  class="oh-kanban-card__profile-image"
-                  alt="{% trans 'Leave Icon' %}"
-                />
-                {% else %}
-                <img
-                  src="https://ui-avatars.com/api/?name={{employee_leave.leave_type_id}}&background=random"
-                  class="oh-kanban-card__profile-image"
-                  alt="{% trans 'Leave Icon' %}"
-                />
+<section class="lt-card">
+    <div class="lt-card-head">
+        <div class="lt-card-title">
+            <span class="ic"><ion-icon name="leaf-outline"></ion-icon></span>
+            <span>{% trans "Leave Balance" %}</span>
+        </div>
+    </div>
+    <div class="lt-card-body">
+        <div class="lt-types-scroll">
+            {% for employee_leave in employee_leaves %}
+                {% if perms.leave.view_leavetype or perms.leave.view_leaverequest or request.user|check_manager:employee_leave or request.user == employee_leave.employee_id.employee_user_id %}
+                    <div
+                        class="lt-type-card"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#objectCreateModal"
+                        hx-get="{% url 'leave-request-creation' employee_leave.leave_type_id.id employee_leave.employee_id.id%}"
+                        hx-target="#objectCreateModalTarget"
+                    >
+                        <div class="lt-type-avatar">
+                            {% if employee_leave.leave_type_id.icon %}
+                            <img
+                                src="{{employee_leave.leave_type_id.icon.url }}"
+                                alt="{% trans 'Leave Icon' %}"
+                            />
+                            {% else %}
+                            <img
+                                src="https://ui-avatars.com/api/?name={{employee_leave.leave_type_id}}&background=random"
+                                alt="{% trans 'Leave Icon' %}"
+                            />
+                            {% endif %}
+                        </div>
+                        <div class="lt-type-info">
+                            <div class="lt-type-name">{{employee_leave.leave_type_id}}</div>
+                            <ul class="lt-type-list">
+                                <li class="lt-type-row">
+                                    <span class="lt-label">{% trans "Available Leave Days" %}</span>
+                                    <span class="lt-value">{% if employee_leave.leave_type_id.limit_leave %}{{employee_leave.available_days}}{% else %}{% trans "No Limit" %}{% endif %}</span>
+                                </li>
+                                <li class="lt-type-row">
+                                    <span class="lt-label">{% trans "Carryforward Leave Days" %}</span>
+                                    <span class="lt-value">{{employee_leave.carryforward_days}}</span>
+                                </li>
+                                <li class="lt-type-row">
+                                    <span class="lt-label">{% trans "Total Leave Days" %}</span>
+                                    <span class="lt-value">{% if employee_leave.leave_type_id.limit_leave %}{{employee_leave.total_leave_days}}{% else %}{% trans "No Limit" %}{% endif %}</span>
+                                </li>
+                                <li class="lt-type-row">
+                                    <span class="lt-label">{% trans "Total Leave taken" %}</span>
+                                    <span class="lt-value">{{employee_leave.leave_taken}}</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 {% endif %}
-              </div>
-            </div>
-            <div class="oh-kanban-card__details">
-              <span class="oh-kanban-card__title"
-                >{{employee_leave.leave_type_id}}</span
-              >
-              <span class="oh-kanban-card__subtitle"
-                >{% trans "Available Leave Days" %} :
-                {% if employee_leave.leave_type_id.limit_leave %}{{employee_leave.available_days}}{% else %}{% trans "No Limit" %}{% endif %}</span
-              ><br />
-              <span class="oh-kanban-card__subtitle"
-                >{% trans "Carryforward Leave Days" %} :
-                {{employee_leave.carryforward_days}}</span
-              ><br />
-              <span class="oh-kanban-card__subtitle"
-                >{% trans "Total Leave Days" %} :
-                {% if employee_leave.leave_type_id.limit_leave %}{{employee_leave.total_leave_days}}{% else %}{% trans "No Limit" %}{% endif %}</span
-              ><br />
-              <span class="oh-kanban-card__subtitle">{% trans "Total Leave taken" %} :{{employee_leave.leave_taken}}</span>
-            </div>
-          </div>
-        {% endif %}
-      {% endfor %}
+            {% endfor %}
+        </div>
     </div>
-  </div>
-</div>
+</section>
 {% else %}
-  <div
-    class="d-flex justify-content-center align-items-center"
-    style="height: 40vh"
-   >
-    <h5 class="oh-404__subtitle">
-      {% trans "No Leave Types have been assigned." %}
-    </h5>
-  </div>
-{% endif %}
-{% if employee_leaves or user_leaves %}
-<div class="oh-sticky-table-request">
-  {% if employee.leaverequest_set.all %}
-  <div class="oh-sticky-table">
-    <div class="oh-sticky-table__table oh-table--sortable">
-      <div class="oh-sticky-table__thead">
-        <div class="oh-sticky-table__tr">
-          <div class="oh-sticky-table__th">{% trans "Leave Type" %}</div>
-          <div class="oh-sticky-table__th">{% trans "Start Date" %}</div>
-          <div class="oh-sticky-table__th">{% trans "End Date" %}</div>
-          <div class="oh-sticky-table__th">{% trans "Requested days" %}</div>
-          <div class="oh-sticky-table__th">{% trans "Status" %}</div>
-          {% if perms.leave.change_leaverequest %}
-          <div class="oh-sticky-table__th"></div>
-          {% endif %}
-        </div>
-      </div>
-      <div class="oh-sticky-table__tbody">
-        {% for leave_request in employee.leaverequest_set.all %}
-        <div
-          class="oh-sticky-table__tr"
-          data-toggle="oh-modal-toggle"
-          data-target="#objectDetailsModalW25"
-          hx-get="{% url 'user-request-one' leave_request.id %}?instances_ids={{leave_request_ids}}"
-          hx-target="#objectDetailsModalW25Target"
-        >
-          <div class="oh-sticky-table__sd
-            {% if leave_request.status == "requested" %}row-status--orange
-            {% elif leave_request.status == "cancelled" %} row-status--gray
-            {% elif leave_request.status == "rejected" %} row-status--red
-            {% elif leave_request.status == "approved" %} row-status--yellow{% endif %}"
-           >
-          <div class="oh-profile oh-profile--md">
-            <div class="oh-profile__avatar mr-1">
-              {% if leave_request.leave_type_id.icon %}
-              <img
-                src="{{leave_request.leave_type_id.icon.url}}"
-                class="oh-profile__image"
-                alt="{% trans 'Leave Type Icon' %}"
-              />
-              {% else%}
-              <img
-                src="https://ui-avatars.com/api/?name={{leave_request.leave_type_id}}&background=random"
-                class="oh-profile__image"
-                alt="{% trans 'Leave type icon' %}"
-              />
-              {% endif %}
+<section class="lt-card">
+    <div class="lt-card-body">
+        <div class="lt-empty">
+            <div class="lt-empty-inner">
+                <div class="lt-empty-ic"><ion-icon name="leaf-outline"></ion-icon></div>
+                <h5 class="lt-empty-text">
+                    {% trans "No Leave Types have been assigned." %}
+                </h5>
             </div>
-            <span class="oh-profile__name oh-text--dark"
-              >{{leave_request.leave_type_id}}</span
-            >
-          </div>
         </div>
-        <div class="oh-sticky-table__td dateformat_changer">
-          {{leave_request.start_date}}
-        </div>
-        <div class="oh-sticky-table__td dateformat_changer">
-          {{leave_request.end_date}}
-        </div>
-        <div class="oh-sticky-table__td">{{leave_request.requested_days}}</div>
-        <div class="oh-sticky-table__td">
-          {{leave_request.get_status_display}}
-        </div>
-        {% if perms.leave.change_leaverequest %}
-        <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
-          <div class="oh-btn-group" >
-            {% if leave_request.status == 'cancelled' %}
-              {% if leave_request.end_date >= current_date %}
-              <a type="submit" data-toggle="oh-modal-toggle"
-                  data-target="#rejectModal" hx-get="{% url 'request-cancel' leave_request.id %}" hx-target="#rejectForm"  title="{% trans 'Approve cancellation request' %}"
-                  class="oh-btn oh-btn--warning w-100";>
-                  <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-              </a>
-              {% else %}
-              <a type="submit" href="#" title="{% trans 'Approve cancellation request' %}"
-                  class="oh-btn oh-btn--secondary oh-btn--disabled
-                  w-100">
-                  <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-              </a>
-              {% endif %}
-            {% else %}
-              {% if leave_request.is_approved and leave_request.status == 'requested' and leave_request.end_date >= current_date %}
-              <a href="{% url 'request-approve' leave_request.id %}" title="{% trans 'Approve' %}"
-                  class="oh-btn oh-btn--success w-100" {% if leave_request.end_date.month > current_date.month %} onclick = "leaveRequestConfirm('This leave request is for the month of {{leave_request.start_date|date:'F'}}. Approval depends on the {{leave_request.employee_id.get_full_name}} having available leave days for this month.',event);" {% else %}  onclick = "return confirm('Do You really want to Approve this request?')"; {% endif %}>
-                  <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-              </a>
-              {% else %}
-              <a type="submit" href="#" title="{% trans 'Approve' %}"
-                  class="oh-btn oh-btn--success oh-btn--disabled
-                  w-100">
-                  <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-              </a>
-              {% endif %}
-              {% if leave_request.status != 'rejected' and leave_request.end_date >= current_date %}
-              <a type="submit" data-toggle="oh-modal-toggle"
-                  data-target="#rejectModal" hx-get="{% url 'request-cancel' leave_request.id %}" hx-target="#rejectForm" title="{% trans 'Reject' %}"
-                  class="oh-btn oh-btn--danger w-100">
-                  <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-
-              </a>
-              {% else %}
-              <a type="submit" href="#" title="{% trans 'Reject' %}"
-                  class="oh-btn oh-btn--danger oh-btn--disabled
-                  w-100" >
-                  <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-
-              </a>
-              {% endif %}
-
-            {% endif %}
-          </div>
-        </div>
-        {% endif %}
-      </div>
-      {% endfor %}
     </div>
-  </div>
-  {% else %}
-  <div
-    class="d-flex justify-content-center align-items-center"
-    style="height: 40vh"
-  >
-    <h5 class="oh-404__subtitle">
-      {% trans "No Leave requests have been generated." %}
-    </h5>
-  </div>
-  {% endif %}
-</div>
+</section>
 {% endif %}
+
+{% if employee_leaves or user_leaves %}
+<section class="lt-card">
+    <div class="lt-card-head">
+        <div class="lt-card-title">
+            <span class="ic"><ion-icon name="file-tray-full-outline"></ion-icon></span>
+            <span>{% trans "Leave Requests" %}</span>
+        </div>
+    </div>
+    {% if employee.leaverequest_set.all %}
+    <div class="lt-table-wrap">
+        <table class="lt-table">
+            <thead class="lt-thead">
+                <tr>
+                    <th class="lt-th">{% trans "Leave Type" %}</th>
+                    <th class="lt-th">{% trans "Start Date" %}</th>
+                    <th class="lt-th">{% trans "End Date" %}</th>
+                    <th class="lt-th">{% trans "Requested days" %}</th>
+                    <th class="lt-th">{% trans "Status" %}</th>
+                    {% if perms.leave.change_leaverequest %}
+                    <th class="lt-th"></th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for leave_request in employee.leaverequest_set.all %}
+                <tr
+                    class="lt-tr"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#objectDetailsModalW25"
+                    hx-get="{% url 'user-request-one' leave_request.id %}?instances_ids={{leave_request_ids}}"
+                    hx-target="#objectDetailsModalW25Target"
+                    style="cursor:pointer;"
+                >
+                    <td class="lt-td">
+                        <div class="lt-leave-cell
+                            {% if leave_request.status == "requested" %}status-requested
+                            {% elif leave_request.status == "cancelled" %}status-cancelled
+                            {% elif leave_request.status == "rejected" %}status-rejected
+                            {% elif leave_request.status == "approved" %}status-approved{% endif %}">
+                            <div class="lt-leave-avatar">
+                                {% if leave_request.leave_type_id.icon %}
+                                <img
+                                    src="{{leave_request.leave_type_id.icon.url}}"
+                                    alt="{% trans 'Leave Type Icon' %}"
+                                />
+                                {% else%}
+                                <img
+                                    src="https://ui-avatars.com/api/?name={{leave_request.leave_type_id}}&background=random"
+                                    alt="{% trans 'Leave type icon' %}"
+                                />
+                                {% endif %}
+                            </div>
+                            <span class="lt-leave-name">{{leave_request.leave_type_id}}</span>
+                        </div>
+                    </td>
+                    <td class="lt-td dateformat_changer">
+                        {{leave_request.start_date}}
+                    </td>
+                    <td class="lt-td dateformat_changer">
+                        {{leave_request.end_date}}
+                    </td>
+                    <td class="lt-td">{{leave_request.requested_days}}</td>
+                    <td class="lt-td">
+                        <span class="lt-status-pill
+                            {% if leave_request.status == "requested" %}requested
+                            {% elif leave_request.status == "approved" %}approved
+                            {% elif leave_request.status == "cancelled" %}cancelled
+                            {% elif leave_request.status == "rejected" %}rejected{% endif %}">
+                            {{leave_request.get_status_display}}
+                        </span>
+                    </td>
+                    {% if perms.leave.change_leaverequest %}
+                    <td class="lt-td" onclick="event.stopPropagation()">
+                        <div class="lt-btn-group">
+                            {% if leave_request.status == 'cancelled' %}
+                                {% if leave_request.end_date >= current_date %}
+                                <a type="submit" data-toggle="oh-modal-toggle"
+                                    data-target="#rejectModal" hx-get="{% url 'request-cancel' leave_request.id %}" hx-target="#rejectForm"  title="{% trans 'Approve cancellation request' %}"
+                                    class="lt-btn warning">
+                                    <ion-icon name="checkmark-outline"></ion-icon>
+                                </a>
+                                {% else %}
+                                <a type="submit" href="#" title="{% trans 'Approve cancellation request' %}"
+                                    class="lt-btn warning" disabled style="pointer-events:none;opacity:0.5;">
+                                    <ion-icon name="checkmark-outline"></ion-icon>
+                                </a>
+                                {% endif %}
+                            {% else %}
+                                {% if leave_request.is_approved and leave_request.status == 'requested' and leave_request.end_date >= current_date %}
+                                <a href="{% url 'request-approve' leave_request.id %}" title="{% trans 'Approve' %}"
+                                    class="lt-btn success" {% if leave_request.end_date.month > current_date.month %} onclick = "leaveRequestConfirm('This leave request is for the month of {{leave_request.start_date|date:'F'}}. Approval depends on the {{leave_request.employee_id.get_full_name}} having available leave days for this month.',event);" {% else %}  onclick = "return confirm('Do You really want to Approve this request?')"; {% endif %}>
+                                    <ion-icon name="checkmark-outline"></ion-icon>
+                                </a>
+                                {% else %}
+                                <a type="submit" href="#" title="{% trans 'Approve' %}"
+                                    class="lt-btn success" disabled style="pointer-events:none;opacity:0.5;">
+                                    <ion-icon name="checkmark-outline"></ion-icon>
+                                </a>
+                                {% endif %}
+                                {% if leave_request.status != 'rejected' and leave_request.end_date >= current_date %}
+                                <a type="submit" data-toggle="oh-modal-toggle"
+                                    data-target="#rejectModal" hx-get="{% url 'request-cancel' leave_request.id %}" hx-target="#rejectForm" title="{% trans 'Reject' %}"
+                                    class="lt-btn danger">
+                                    <ion-icon name="close-circle-outline"></ion-icon>
+                                </a>
+                                {% else %}
+                                <a type="submit" href="#" title="{% trans 'Reject' %}"
+                                    class="lt-btn danger" disabled style="pointer-events:none;opacity:0.5;">
+                                    <ion-icon name="close-circle-outline"></ion-icon>
+                                </a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="lt-card-body">
+        <div class="lt-empty">
+            <div class="lt-empty-inner">
+                <div class="lt-empty-ic"><ion-icon name="file-tray-outline"></ion-icon></div>
+                <h5 class="lt-empty-text">
+                    {% trans "No Leave requests have been generated." %}
+                </h5>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</section>
+{% endif %}
+</div>
+
 {% if perms.leave.add_leaverequest or request.user == employee.employee_user_id or request.user|check_manager:employee %}
 <div
   class="oh-modal"

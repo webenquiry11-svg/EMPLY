@@ -363,7 +363,6 @@
         body:has(#userRequest) #userRequest {
             margin-top: 18px !important;
             padding: 16px !important;
-            border-top: 5px solid #278da0 !important;
         }
 
         body:has(#userRequest) #userRequest::before {
@@ -577,6 +576,146 @@
             color: #173f50 !important;
             font-weight: 800 !important;
         }
+
+        body:has(#userRequest) .oh-main__topbar {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            max-width: 1480px;
+            margin: 22px auto 16px !important;
+            padding: 18px 24px !important;
+            box-sizing: border-box;
+            position: relative;
+            isolation: isolate;
+        }
+
+        body:has(#userRequest) .oh-main__topbar::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #0a4d60 0%, #278da0 55%, #b8dfe6 100%) top / 100% 3px no-repeat;
+            pointer-events: none;
+        }
+
+        body:has(#userRequest) .oh-main__titlebar--left {
+            min-width: 0;
+        }
+
+        body:has(#userRequest) .oh-main__titlebar-title {
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        body:has(#userRequest) .oh-main__titlebar--right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        body:has(#userRequest) #requestCreateButton {
+            min-height: 40px;
+            padding: 0 18px !important;
+            border-radius: 999px !important;
+            font-weight: 700 !important;
+        }
+
+        body:has(#userRequest) #userRequest {
+            width: min(1480px, calc(100% - 40px));
+            min-height: 0;
+            margin: 16px auto 40px !important;
+            padding: 16px !important;
+            box-sizing: border-box;
+        }
+
+        body:has(#userRequest) #userRequest > .oh-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            min-height: min(80vh, 520px);
+            margin: 0;
+            padding: 36px 24px;
+            border: 1px solid #d7e9ed;
+            border-radius: 16px;
+            background: #ffffff;
+            box-shadow: 0 10px 26px rgba(10, 77, 96, 0.06);
+            text-align: center;
+        }
+
+        body:has(#userRequest) #userRequest > .oh-empty::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #0a4d60 0%, #278da0 55%, #b8dfe6 100%) top / 100% 3px no-repeat;
+            pointer-events: none;
+        }
+
+        body:has(#userRequest) #userRequest > .oh-empty .oh-404__image {
+            box-sizing: content-box;
+            width: 52px;
+            height: 52px;
+            margin-bottom: 16px;
+            padding: 12px;
+            border: 1px solid #d7e9ed;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #eef8f8, #e1f1f4);
+            opacity: .7;
+        }
+
+        body:has(#userRequest) #userRequest > .oh-empty .oh-empty__title {
+            margin: 0 0 5px;
+            color: #173f50 !important;
+            font-size: 1.05rem;
+            font-weight: 750;
+        }
+
+        body:has(#userRequest) #userRequest > .oh-empty .oh-empty__subtitle {
+            margin: 0;
+            color: #6c8790 !important;
+            font-size: .88rem;
+        }
+
+        /* The request wrapper is structural; let its content provide the surface. */
+        body:has(#userRequest) #userRequest {
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+        }
+
+        body:has(#userRequest) #userRequest > .oh-empty {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 768px) {
+            body:has(#userRequest) .oh-main__topbar {
+                flex-wrap: wrap;
+                margin: 12px auto !important;
+                padding: 16px !important;
+            }
+
+            body:has(#userRequest) .oh-main__titlebar--right {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            body:has(#userRequest) #userRequest {
+                width: calc(100% - 24px);
+                margin: 12px auto 32px !important;
+                padding: 0 !important;
+            }
+
+            body:has(#userRequest) #userRequest > .oh-empty {
+                min-height: 280px;
+                padding: 28px 16px;
+            }
+        }
     </style>
 
     <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
@@ -784,26 +923,22 @@
                     </div>
                 </div>
             {% endif %}
-            <div class="oh-btn-group ml-2">
-                <div class="oh-dropdown" x-data="{open: false}">
-                    <button
-                        id="requestCreateButton"
-                        class="oh-btn oh-btn--secondary oh-btn--shadow"
-                        data-toggle="oh-modal-toggle"
-                        data-target="#objectCreateModal"
-                        hx-get="{% url 'leave-request-create' %}?confirm={{confirm}}"
-                        hx-target="#objectCreateModalTarget"
-                    >
-                        <ion-icon
-                            name="add-outline"
-                            class="me-1 md hydrated"
-                            role="img"
-                            aria-label="{% trans 'add outline' %}"
-                        ></ion-icon>
-                        {% trans "Create" %}
-                    </button>
-                </div>
-            </div>
+            <button
+                id="requestCreateButton"
+                class="oh-btn oh-btn--secondary oh-btn--shadow"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectCreateModal"
+                hx-get="{% url 'leave-request-create' %}?confirm={{confirm}}"
+                hx-target="#objectCreateModalTarget"
+            >
+                <ion-icon
+                    name="add-outline"
+                    class="me-1 md hydrated"
+                    role="img"
+                    aria-label="{% trans 'add outline' %}"
+                ></ion-icon>
+                {% trans "Create" %}
+            </button>
         </div>
     </section>
 
@@ -817,22 +952,22 @@
         {% trans "Selected Requests" %}
     </div>
 
-    {% include 'leave/user_leave/user_leave.html' %}
+    {% if user_leaves %}
+        {% include 'leave/user_leave/user_leave.html' %}
+    {% endif %}
 
     <div class="oh-wrapper" id="userRequest">
         {% if leave_requests %}
             {% include 'leave/user_leave/user_requests.html' %}
         {% else %}
-            <div class="oh-wrapper">
-                <div class="oh-empty">
-                    <img
-                        src="{% static 'images/ui/search.svg' %}"
-                        class="oh-404__image"
-                        alt="{% trans 'Page not found. 404.' %}"
-                    >
-                    <h2 class="oh-empty__title">{% trans "No Records found." %}</h1>
-                    <p class="oh-empty__subtitle">{% trans "There are no leave requests at the moment." %}</p>
-                </div>
+            <div class="oh-empty">
+                <img
+                    src="{% static 'images/ui/search.svg' %}"
+                    class="oh-404__image"
+                    alt="{% trans 'No leave requests' %}"
+                >
+                <h2 class="oh-empty__title">{% trans "No Records found." %}</h2>
+                <p class="oh-empty__subtitle">{% trans "There are no leave requests at the moment." %}</p>
             </div>
         {% endif %}
     </div>

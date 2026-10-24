@@ -5,82 +5,351 @@
         height:420px;
         overflow-y:auto
     }
-</style>
-{% if contracts %}
-    <div class="oh-sticky-table height-adj">
-        <div class="oh-sticky-table__table">
-            <div class="oh-sticky-table__thead">
-                <div class="oh-sticky-table__tr">
-                <div class="oh-sticky-table__th">{% trans "Contract" %}</div>
-                <div class="oh-sticky-table__th">{% trans "Start Date" %}</div>
-                <div class="oh-sticky-table__th">{% trans "End Date" %}</div>
-                <div class="oh-sticky-table__th">{% trans "Wage Type" %}</div>
-                <div class="oh-sticky-table__th">{% trans "Basic Salary" %}</div>
-                <div class="oh-sticky-table__th">{% trans "Filing Status" %}</div>
-                <div class="oh-sticky-table__th">{% trans "Status" %}</div>
-				{% if perms.payroll.change_contract %}
-                    <div class="oh-sticky-table__th  oh-sticky-table__right"></div>
-                {% endif %}
-                </div>
-            </div>
-            <div class="oh-sticky-table__tbody">
-                {% for contract in contracts %}
 
-                <div class="oh-sticky-table__tr" draggable="true" data-toggle="oh-modal-toggle" data-target = "#objectDetailsModal" hx-get="{% url 'single-contract-view' contract.id %}" hx-target = "#objectDetailsModalTarget">
-                    <div class="oh-sticky-table__sd  {% if contract.contract_status == "active" %} row-status--yellow {% elif contract.contract_status == 'draft' %} row-status--purple {% elif contract.contract_status == 'expired' %} row-status--red {% elif contract.contract_status == 'terminated' %} row-status--black {% endif %}">{{ contract.contract_name }}</div>
-                    <div class="oh-sticky-table__td dateformat_changer">{{ contract.contract_start_date}}</div>
-                    <div class="oh-sticky-table__td dateformat_changer">
-                        {% if contract.contract_end_date %}{{ contract.contract_end_date}}{% endif %}
-                    </div>
-                    <div class="oh-sticky-table__td">
-                        {{ contract.get_wage_type_display}}
-                    </div>
-                    <div class="oh-sticky-table__td">{{ contract.wage}}</div>
-                    <div class="oh-sticky-table__td">{{ contract.filing_status}}</div>
-                    <div class="oh-sticky-table__td">
-                        {{ contract.get_contract_status_display}}
-                    </div>
-					{% if perms.payroll.change_contract %}
-                        <div class="oh-sticky-table__td  oh-sticky-table__right">
-                            <div class="oh-btn-group">
-                            <a
-                            onclick="event.stopPropagation()"
-                                class="oh-btn oh-btn--light-bkg w-100"
-                                href="{% url 'update-contract' contract.id %}"
-                                title="{% trans 'Update' %}"
-                            >
-                                <ion-icon
-                                name="create-outline"
-                                role="img"
-                                class="md hydrated"
-                                style="color: blue"
-                                aria-label="{% trans 'create outline' %}"
-                                ></ion-icon>
-                            </a>
-                            <a
-                                onclick = "event.preventDefault();event.stopPropagation();"
-                                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                                hx-confirm="{% trans 'Do you want to delete this Contract?' %}"
-                                hx-post="{% url 'delete-contract-modal' contract.id %}?{{pd}}"
-                                hx-target="#personal_target"
-                                title="{% trans 'Delete' %}"
-                            >
-                                <ion-icon
-                                name="trash-outline"
-                                role="img"
-                                class="md hydrated"
-                                aria-label="{% trans 'trash outline' %}"
-                                ></ion-icon>
-                            </a>
-                            </div>
+    .cot-wrapper {
+        padding: 20px;
+    }
+
+    .cot-card {
+        background: #FFFFFF;
+        border: 1px solid #E6E8EC;
+        border-radius: 18px;
+        padding: 24px;
+    }
+
+    .cot-table-wrap {
+        border: 1px solid #E6E8EC;
+        border-radius: 14px;
+        overflow: hidden;
+        height: 420px;
+        overflow-y: auto;
+    }
+
+    .cot-table-wrap::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .cot-table-wrap::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .cot-table-wrap::-webkit-scrollbar-thumb {
+        background: #CBD5E1;
+        border-radius: 3px;
+    }
+
+    .cot-table-wrap::-webkit-scrollbar-thumb:hover {
+        background: #94A3B8;
+    }
+
+    .cot-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .cot-thead .cot-th {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #94A3B8;
+        padding: 14px 18px;
+        text-align: left;
+        background: #F8FAFC;
+        border-bottom: 1px solid #E6E8EC;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
+
+    .cot-thead .cot-th--right {
+        text-align: right;
+    }
+
+    .cot-tbody .cot-tr {
+        transition: background-color 0.15s ease;
+        cursor: pointer;
+    }
+
+    .cot-tbody .cot-tr:hover {
+        background-color: #F0FDFA;
+    }
+
+    .cot-tbody .cot-td {
+        padding: 16px 18px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #1E293B;
+        border-bottom: 1px dashed #E6E8EC;
+        vertical-align: middle;
+    }
+
+    .cot-tbody .cot-tr:last-child .cot-td {
+        border-bottom: none;
+    }
+
+    .cot-tbody .cot-td--right {
+        text-align: right;
+    }
+
+    .cot-contract-cell {
+        position: relative;
+        padding-left: 28px !important;
+        font-weight: 700;
+        color: #0F172A;
+    }
+
+    .cot-contract-cell::before {
+        content: '';
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px;
+        height: 60%;
+        border-radius: 2px;
+    }
+
+    .cot-status--yellow::before { background: #F59E0B; }
+    .cot-status--purple::before { background: #8B5CF6; }
+    .cot-status--red::before { background: #EF4444; }
+    .cot-status--black::before { background: #1F2937; }
+
+    .cot-contract-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: #0F172A;
+    }
+
+    .cot-wage {
+        font-size: 14px;
+        font-weight: 700;
+        color: #0F766E;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .cot-status-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.4;
+    }
+
+    .cot-status-badge--active {
+        background: #FEF3C7;
+        color: #92400E;
+    }
+
+    .cot-status-badge--draft {
+        background: #EDE9FE;
+        color: #5B21B6;
+    }
+
+    .cot-status-badge--expired {
+        background: #FEE2E2;
+        color: #991B1B;
+    }
+
+    .cot-status-badge--terminated {
+        background: #F3F4F6;
+        color: #111827;
+    }
+
+    .cot-wage-type {
+        font-size: 13px;
+        font-weight: 500;
+        color: #475569;
+    }
+
+    .cot-filing {
+        font-size: 13px;
+        font-weight: 500;
+        color: #475569;
+    }
+
+    .cot-actions {
+        display: flex;
+        gap: 6px;
+        justify-content: flex-end;
+    }
+
+    .cot-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: #F1F5F9;
+        color: #475569;
+        border: 1px solid #E2E8F0;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        text-decoration: none;
+    }
+
+    .cot-btn:hover {
+        transform: translateY(-1px);
+        text-decoration: none;
+    }
+
+    .cot-btn--edit {
+        color: #2563EB;
+    }
+
+    .cot-btn--edit:hover {
+        background: #2563EB;
+        color: #FFFFFF;
+        border-color: #2563EB;
+    }
+
+    .cot-btn--delete {
+        color: #DC2626;
+    }
+
+    .cot-btn--delete:hover {
+        background: #DC2626;
+        color: #FFFFFF;
+        border-color: #DC2626;
+    }
+
+    .cot-empty {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 40vh;
+    }
+
+    .cot-empty-text {
+        font-size: 15px;
+        font-weight: 500;
+        color: #94A3B8;
+        text-align: center;
+    }
+
+    .cot-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #94A3B8;
+    }
+
+    .cot-value {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1E293B;
+    }
+
+    .oh-sticky-table,
+    .oh-sticky-table__table,
+    .oh-sticky-table__thead,
+    .oh-sticky-table__tr,
+    .oh-sticky-table__th,
+    .oh-sticky-table__tbody,
+    .oh-sticky-table__sd,
+    .oh-sticky-table__td,
+    .oh-sticky-table__right,
+    .oh-btn-group,
+    .oh-btn,
+    .oh-btn--light-bkg,
+    .oh-btn--danger-outline,
+    .oh-404__subtitle,
+    .row-status--yellow,
+    .row-status--purple,
+    .row-status--red,
+    .row-status--black,
+    .d-flex,
+    .justify-content-center,
+    .align-items-center,
+    .w-100,
+    .dateformat_changer {
+        all: revert;
+    }
+</style>
+<div class="cot-wrapper">
+    <div class="cot-card">
+        {% if contracts %}
+            <div class="oh-sticky-table height-adj cot-table-wrap">
+                <div class="oh-sticky-table__table cot-table">
+                    <div class="oh-sticky-table__thead cot-thead">
+                        <div class="oh-sticky-table__tr">
+                        <div class="oh-sticky-table__th cot-th">{% trans "Contract" %}</div>
+                        <div class="oh-sticky-table__th cot-th">{% trans "Start Date" %}</div>
+                        <div class="oh-sticky-table__th cot-th">{% trans "End Date" %}</div>
+                        <div class="oh-sticky-table__th cot-th">{% trans "Wage Type" %}</div>
+                        <div class="oh-sticky-table__th cot-th">{% trans "Basic Salary" %}</div>
+                        <div class="oh-sticky-table__th cot-th">{% trans "Filing Status" %}</div>
+                        <div class="oh-sticky-table__th cot-th">{% trans "Status" %}</div>
+                        {% if perms.payroll.change_contract %}
+                            <div class="oh-sticky-table__th  oh-sticky-table__right cot-th cot-th--right"></div>
+                        {% endif %}
                         </div>
-                    {% endif %}
+                    </div>
+                    <div class="oh-sticky-table__tbody cot-tbody">
+                        {% for contract in contracts %}
+
+                        <div class="oh-sticky-table__tr cot-tr" draggable="true" data-toggle="oh-modal-toggle" data-target = "#objectDetailsModal" hx-get="{% url 'single-contract-view' contract.id %}" hx-target = "#objectDetailsModalTarget">
+                            <div class="oh-sticky-table__sd cot-contract-cell cot-td  {% if contract.contract_status == "active" %} cot-status--yellow row-status--yellow {% elif contract.contract_status == 'draft' %} cot-status--purple row-status--purple {% elif contract.contract_status == 'expired' %} cot-status--red row-status--red {% elif contract.contract_status == 'terminated' %} cot-status--black row-status--black {% endif %}"><span class="cot-contract-name">{{ contract.contract_name }}</span></div>
+                            <div class="oh-sticky-table__td cot-td dateformat_changer">{{ contract.contract_start_date}}</div>
+                            <div class="oh-sticky-table__td cot-td dateformat_changer">
+                                {% if contract.contract_end_date %}{{ contract.contract_end_date}}{% endif %}
+                            </div>
+                            <div class="oh-sticky-table__td cot-td">
+                                <span class="cot-wage-type">{{ contract.get_wage_type_display}}</span>
+                            </div>
+                            <div class="oh-sticky-table__td cot-td"><span class="cot-wage">{{ contract.wage}}</span></div>
+                            <div class="oh-sticky-table__td cot-td"><span class="cot-filing">{{ contract.filing_status}}</span></div>
+                            <div class="oh-sticky-table__td cot-td">
+                                {{ contract.get_contract_status_display}}
+                            </div>
+                            {% if perms.payroll.change_contract %}
+                                <div class="oh-sticky-table__td  oh-sticky-table__right cot-td cot-td--right">
+                                    <div class="oh-btn-group cot-actions">
+                                    <a
+                                    onclick="event.stopPropagation()"
+                                        class="cot-btn cot-btn--edit oh-btn oh-btn--light-bkg w-100"
+                                        href="{% url 'update-contract' contract.id %}"
+                                        title="{% trans 'Update' %}"
+                                    >
+                                        <ion-icon
+                                        name="create-outline"
+                                        role="img"
+                                        class="md hydrated"
+                                        style="color: blue"
+                                        aria-label="{% trans 'create outline' %}"
+                                        ></ion-icon>
+                                    </a>
+                                    <a
+                                        onclick = "event.preventDefault();event.stopPropagation();"
+                                        class="cot-btn cot-btn--delete oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                        hx-confirm="{% trans 'Do you want to delete this Contract?' %}"
+                                        hx-post="{% url 'delete-contract-modal' contract.id %}?{{pd}}"
+                                        hx-target="#personal_target"
+                                        title="{% trans 'Delete' %}"
+                                    >
+                                        <ion-icon
+                                        name="trash-outline"
+                                        role="img"
+                                        class="md hydrated"
+                                        aria-label="{% trans 'trash outline' %}"
+                                        ></ion-icon>
+                                    </a>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
-                {% endfor %}
             </div>
-        </div>
-{% else %}
-    <div class="d-flex justify-content-center align-items-center" style="height:40vh">
-        <h5 class="oh-404__subtitle">{% trans "There are no contracts at the moment." %}</h5>
+        {% else %}
+            <div class="cot-empty">
+                <h5 class="cot-empty-text">{% trans "There are no contracts at the moment." %}</h5>
+            </div>
+        {% endif %}
     </div>
-{% endif %}
+</div>

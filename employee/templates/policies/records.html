@@ -2,120 +2,106 @@
 {% if policies %}
     <div class="oh-faq-cards">
         {% for policy in policies %}
-            <div class="oh-faq-card">
-                <div>
-                    <h3 class="oh-faq-card__title d-flex justify-content-between mb-4">
-                        <span>
-                            {% if policy.is_visible_to_all %}
-                                <span class="oh-dot oh-dot--small me-1" style="background-color: yellowgreen"></span>
-                            {% else %}
-                                <span class="oh-dot oh-dot--small me-1" style="background-color: gray"></span>
-                            {% endif %}
-                            {{ policy.title }}</span>
-                        <div>
-                            {% if perms.employee.change_policy %}
-                                <a
-                                    hx-get="{% url 'create-policy' %}?instance_id={{ policy.id }}"
-                                    hx-target="#objectCreateModalTarget"
-                                    data-toggle="oh-modal-toggle"
-                                    data-target="#objectCreateModal"
-                                    title="{% trans 'Edit' %}"
-                                    style="cursor: pointer"
-                                ><ion-icon
-                                        name="create-outline"
-                                        role="img"
-                                        class="md hydrated"
-                                        aria-label="{% trans 'copy outline' %}"
-                                    ></ion-icon></a>
-                            {% endif %}
-                            {% if perms.employee.delete_policy %}
-                                <a
-                                    href='{% url "delete-policies" %}?ids={{policy.id}}'
-                                    class="text-danger"
-                                    style="cursor: pointer"
-                                    onclick="return confirm('Do you want to delete this policy?')"
-                                    title="{% trans 'Delete' %}"
-                                ><ion-icon
-                                        name="trash-outline"
-                                        role="img"
-                                        class="md hydrated"
-                                        aria-label="{% trans 'trash outline' %}"
-                                    ></ion-icon></a>
-                            {% endif %}
+            <article class="oh-faq-card">
+                <header class="oh-faq-card__header">
+                    <div class="oh-faq-card__heading">
+                        <div class="oh-faq-card__title-row">
+                            <span class="oh-faq-card__icon" aria-hidden="true">
+                                <ion-icon name="document-text-outline"></ion-icon>
+                            </span>
+                            <div class="oh-faq-card__title-content">
+                                <h2 class="oh-faq-card__title">{{ policy.title }}</h2>
+                                {% if not policy.is_visible_to_all %}
+                                    <span class="oh-faq-card__scope">
+                                        <ion-icon name="lock-closed-outline" aria-hidden="true"></ion-icon>
+                                        {% trans "Restricted access" %}
+                                    </span>
+                                {% endif %}
+                            </div>
                         </div>
-                    </h3>
-                    <div
-                        style="max-height: 350px; overflow: hidden; min-height: 100px; overflow-y: auto"
-                        class="truncated-text"
-                    >
-                        {{ policy.body|safe }}
                     </div>
+                    <div class="oh-faq-card__actions">
+                        {% if perms.employee.change_policy %}
+                            <a
+                                hx-get="{% url 'create-policy' %}?instance_id={{ policy.id }}"
+                                hx-target="#objectCreateModalTarget"
+                                data-toggle="oh-modal-toggle"
+                                data-target="#objectCreateModal"
+                                title="{% trans 'Edit' %}"
+                                aria-label="{% trans 'Edit policy' %}"
+                            >
+                                <ion-icon name="create-outline" aria-hidden="true"></ion-icon>
+                            </a>
+                        {% endif %}
+                        {% if perms.employee.delete_policy %}
+                            <a
+                                href='{% url "delete-policies" %}?ids={{policy.id}}'
+                                class="oh-faq-card__delete"
+                                onclick="return confirm('Do you want to delete this policy?')"
+                                title="{% trans 'Delete' %}"
+                                aria-label="{% trans 'Delete policy' %}"
+                            >
+                                <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
+                            </a>
+                        {% endif %}
+                    </div>
+                </header>
+                <div class="oh-faq-card__body">
+                    {{ policy.body|safe }}
                 </div>
-
-                <a
-                    hx-get="{% url 'view-policy' %}?instance_id={{ policy.id }}"
-                    hx-target="#objectDetailsModalTarget"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#objectDetailsModal"
-                    class="oh-btn oh-btn--secondary oh-btn--block"
-                >{% trans 'View policy' %}</a>
-            </div>
+                <footer class="oh-faq-card__footer">
+                    <a
+                        hx-get="{% url 'view-policy' %}?instance_id={{ policy.id }}"
+                        hx-target="#objectDetailsModalTarget"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#objectDetailsModal"
+                        class="oh-faq-card__view"
+                    >
+                        {% trans 'View policy' %}
+                        <ion-icon name="arrow-forward-outline" aria-hidden="true"></ion-icon>
+                    </a>
+                </footer>
+            </article>
         {% endfor %}
     </div>
-    <div class="oh-wrapper w-100">
+    <div class="oh-faq-pagination">
         <div class="oh-pagination">
-            <span class="oh-pagination__page" data-toggle="modal" data-target="#policyContainer">{% trans 'Page' %}
-                {{ policies.number }} {% trans 'of' %} {{ policies.paginator.num_pages }}.</span>
-
             <nav class="oh-pagination__nav">
-                <div class="oh-pagination__input-container me-3">
-                    <span class="oh-pagination__label me-1">{% trans 'Page' %}</span>
-
-                    <input
-                        type="number"
-                        name="page"
-                        class="oh-pagination__input"
-                        value="{{ policies.number }}"
-                        hx-get="{% url 'search-policies' %}?{{ pd }}"
-                        hx-target="#policyContainer"
-                        min="1"
-                    >
-                    <span class="oh-pagination__label">{% trans 'of' %} {{ policies.paginator.num_pages }}</span>
-                </div>
-
-                <ul class="oh-pagination__items">
-                    {% if policies.has_previous %}
-                        <li class="oh-pagination__item oh-pagination__item--wide">
-                            <a
-                                hx-target="#policyContainer"
-                                hx-get="{% url 'search-policies' %}?{{ pd }}&page=1"
-                                class="oh-pagination__link"
-                            >{% trans 'First' %}</a>
-                        </li>
-                        <li class="oh-pagination__item oh-pagination__item--wide">
+                <ul class="oh-pagination__items" aria-label="{% trans 'Pagination' %}">
+                    <li class="oh-pagination__item oh-pagination__item--wide{% if not policies.has_previous %} oh-pagination__item--disabled{% endif %}">
+                        {% if policies.has_previous %}
                             <a
                                 hx-target="#policyContainer"
                                 hx-get="{% url 'search-policies' %}?{{ pd }}&page={{ policies.previous_page_number }}"
                                 class="oh-pagination__link"
-                            >{% trans 'Previous' %}</a>
+                                aria-label="{% trans 'Previous page' %}"
+                            ><ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon></a>
+                        {% else %}
+                            <span class="oh-pagination__link" aria-label="{% trans 'Previous page' %}" aria-disabled="true"><ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon></span>
+                        {% endif %}
+                    </li>
+                    {% for page_number in policies.paginator.page_range %}
+                        <li class="oh-pagination__item{% if page_number == policies.number %} oh-pagination__item--current{% endif %}">
+                            <a
+                                hx-target="#policyContainer"
+                                hx-get="{% url 'search-policies' %}?{{ pd }}&page={{ page_number }}"
+                                class="oh-pagination__link"
+                                {% if page_number == policies.number %}aria-current="page"{% endif %}
+                            >{{ page_number }}</a>
                         </li>
-                    {% endif %}
-                    {% if policies.has_next %}
-                        <li class="oh-pagination__item oh-pagination__item--wide">
+                    {% endfor %}
+                    <li class="oh-pagination__item oh-pagination__item--wide{% if not policies.has_next %} oh-pagination__item--disabled{% endif %}">
+                        {% if policies.has_next %}
                             <a
                                 hx-target="#policyContainer"
                                 hx-get="{% url 'search-policies' %}?{{ pd }}&page={{ policies.next_page_number }}"
                                 class="oh-pagination__link"
-                            >{% trans 'Next' %}</a>
-                        </li>
-                        <li class="oh-pagination__item oh-pagination__item--wide">
-                            <a
-                                hx-target="#policyContainer"
-                                hx-get="{% url 'search-policies' %}?{{ pd }}&page={{ policies.paginator.num_pages }}"
-                                class="oh-pagination__link"
-                            >{% trans 'Last' %}</a>
-                        </li>
-                    {% endif %}
+                                aria-label="{% trans 'Next page' %}"
+                            ><ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon></a>
+                        {% else %}
+                            <span class="oh-pagination__link" aria-label="{% trans 'Next page' %}" aria-disabled="true"><ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon></span>
+                        {% endif %}
+                    </li>
                 </ul>
             </nav>
         </div>

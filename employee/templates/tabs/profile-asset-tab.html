@@ -1,110 +1,296 @@
 {% load i18n %}
-
-<div class="oh-btn-group p-3 justify-content-end">
-    <div>
-        <button
-            class="oh-btn oh-btn--secondary"
-            title="{% trans 'Create asset request' %}"
-            data-toggle="oh-modal-toggle"
-            data-target="#objectCreateModal"
-            hx-get="{% url 'asset-request-creation' %}"
-            hx-target="#objectCreateModalTarget"
-        >
-            <ion-icon
-                name="add-sharp"
-                class="mr-2 md hydrated"
-                role="img"
-                aria-label="{% trans 'add sharp' %}"
-            ></ion-icon>
-            {% trans "Create" %}
-        </button>
-    </div>
-</div>
-
-{% if assets %}
-    <!-- Sticky Table  for own objective-->
-    <div class="oh-sticky-table">
-        <div class="oh-sticky-table__table">
-            <div class="oh-sticky-table__thead">
-                <div class="oh-sticky-table__tr">
-                    <div class="oh-sticky-table__th">{% trans "Asset" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Status" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Assigned Date" %}</div>
-                    <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
-                </div>
-            </div>
-            <div class="oh-sticky-table__tbody">
-                {% for asset in assets %}
-                    {% if asset.asset_id.asset_status == "In use" %}
-                        <!-- asset request looping -->
-                        <div
-                            class="oh-sticky-table__tr"
-                            draggable="true"
-                            data-toggle="oh-modal-toggle"
-                            data-target="#objectDetailsModal"
-                            hx-get="{% url 'own-asset-individual-view' asset.id %}?assets_ids={{ assets_ids }}"
-                            hx-target="#objectDetailsModalTarget"
-                        >
-                            <div class="oh-sticky-table__sd">
-                                <div class="oh-profile oh-profile--md">
-                                    <div class="oh-profile__avatar mr-1">
-                                        <img
-                                            src="https://ui-avatars.com/api/?name={{ asset.asset_id.asset_name }}&background=random"
-                                            class="oh-profile__image"
-                                            alt=""
-                                        >
-                                    </div>
-                                    <span class="oh-profile__name oh-text--dark">{{ asset.asset_id }}
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="oh-sticky-table__td">
-                                <span class="oh-dot oh-dot--small me-1 oh-dot--color oh-dot--warning"></span>
-                                <span class="link-warning">
-                                    {{ asset.asset_id.asset_status }}
-                                </span>
-                            </div>
-                            <div class="oh-sticky-table__td">
-                                <span class="oh-dot oh-dot--small me-1 oh-dot--color oh-dot--success"></span>
-                                <span class="link-success dateformat_changer">
-                                    {{ asset.assigned_date }}
-                                </span>
-                            </div>
-                            <div class="oh-sticky-table__td">
-                                {% if asset.return_request %}
-                                    <div class="d-flex align-items-center">
-                                        <span class="oh-dot oh-dot--small me-1 oh-dot--color oh-dot--info"></span>
-                                        <span class="link-primary"> {% trans "Requested to return" %} </span>
-                                    </div>
-                                {% else %}
-                                    <form
-                                        action="{% url 'asset-allocate-return-request' asset_id=asset.id %}"
-                                        onsubmit="return confirm('{% trans "Are you sure you want to return this asset?" %}')"
-                                    >
-                                        {% csrf_token %}
-                                        <button
-                                            type="submit"
-                                            class="oh-btn oh-btn--secondary"
-                                            onclick="event.stopPropagation()"
-                                        >
-                                            <ion-icon name="return-down-back-sharp"></ion-icon>
-                                            {% trans "Return Request" %}
-                                        </button>
-                                    </form>
-                                {% endif %}
-                            </div>
-                        </div>
-                    {% endif %}
-                {% endfor %}
+<style>
+#profile-view #asset_target .pat-wrapper {
+    padding: 0;
+    background: transparent;
+    min-height: 0;
+}
+#profile-view #asset_target .pat-card {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+}
+#profile-view #asset_target .pat-header {
+    padding: 0 0 12px;
+    border: 0;
+}
+#profile-view #asset_target .pat-btn-primary {
+    background: #176f80 !important;
+    border: 1px solid #176f80 !important;
+    color: #ffffff !important;
+}
+#profile-view #asset_target .pat-btn-primary:hover {
+    background: #0a4d60 !important;
+    border-color: #0a4d60 !important;
+}
+#profile-view #asset_target .pat-empty {
+    min-height: 220px;
+    padding: 28px 16px;
+    border: 1px solid #e3edf0;
+    border-radius: 14px;
+    background: #ffffff;
+}
+#profile-view #asset_target .pat-table {
+    overflow: hidden;
+    border: 1px solid #e3edf0;
+    border-radius: 14px;
+}
+.pat-wrapper {
+    padding: 24px;
+    background: #F8FAFC;
+    min-height: 100%;
+}
+.pat-card {
+    background: #FFFFFF;
+    border: 1px solid #E6E8EC;
+    border-radius: 18px;
+    overflow: hidden;
+}
+.pat-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px dashed #E6E8EC;
+}
+.pat-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #94A3B8;
+}
+.pat-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0F172A;
+}
+.pat-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+.pat-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+.pat-thead {
+    background: #F8FAFC;
+}
+.pat-th {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #94A3B8;
+    padding: 14px 24px;
+    text-align: left;
+    border-bottom: 1px dashed #E6E8EC;
+    white-space: nowrap;
+}
+.pat-tbody {
+    background: #FFFFFF;
+}
+.pat-tr {
+    transition: background-color 0.15s ease;
+}
+.pat-tr:hover {
+    background-color: #F8FAFC;
+}
+.pat-td {
+    padding: 16px 24px;
+    border-bottom: 1px dashed #E6E8EC;
+    font-size: 14px;
+    font-weight: 500;
+    color: #0F172A;
+    vertical-align: middle;
+}
+.pat-tr:last-child .pat-td {
+    border-bottom: none;
+}
+.pat-asset-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.pat-avatar {
+    flex-shrink: 0;
+}
+.pat-asset-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0F172A;
+}
+.pat-status-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.pat-empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 320px;
+    padding: 48px 24px;
+}
+.pat-empty-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #64748B;
+}
+.pat-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    background: #0F766E;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+.pat-btn-primary:hover {
+    background: #0D5F58;
+    box-shadow: 0 2px 8px rgba(15, 118, 110, 0.2);
+}
+.pat-btn-primary ion-icon {
+    font-size: 16px;
+}
+.pat-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    background: #F1F5F9;
+    color: #0F172A;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.pat-btn-secondary:hover {
+    background: #E2E8F0;
+    border-color: #CBD5E1;
+}
+</style>
+<div class="pat-wrapper">
+    <div class="pat-card">
+        <div class="pat-header">
+            <div>
+                <button
+                    class="pat-btn-primary oh-btn oh-btn--secondary"
+                    title="{% trans 'Create asset request' %}"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#objectCreateModal"
+                    hx-get="{% url 'asset-request-creation' %}"
+                    hx-target="#objectCreateModalTarget"
+                >
+                    <ion-icon
+                        name="add-sharp"
+                        class="md hydrated"
+                        role="img"
+                        aria-label="{% trans 'add sharp' %}"
+                    ></ion-icon>
+                    {% trans "Create" %}
+                </button>
             </div>
         </div>
+
+        {% if assets %}
+            <div class="pat-table-wrap">
+                <table class="pat-table">
+                    <thead class="pat-thead">
+                        <tr>
+                            <th class="pat-th">{% trans "Asset" %}</th>
+                            <th class="pat-th">{% trans "Status" %}</th>
+                            <th class="pat-th">{% trans "Assigned Date" %}</th>
+                            <th class="pat-th">{% trans "Actions" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody class="pat-tbody">
+                        {% for asset in assets %}
+                            {% if asset.asset_id.asset_status == "In use" %}
+                                <tr
+                                    class="pat-tr oh-sticky-table__tr"
+                                    draggable="true"
+                                    data-toggle="oh-modal-toggle"
+                                    data-target="#objectDetailsModal"
+                                    hx-get="{% url 'own-asset-individual-view' asset.id %}?assets_ids={{ assets_ids }}"
+                                    hx-target="#objectDetailsModalTarget"
+                                >
+                                    <td class="pat-td">
+                                        <div class="pat-asset-cell">
+                                            <div class="pat-avatar oh-profile oh-profile--md">
+                                                <div class="oh-profile__avatar mr-1">
+                                                    <img
+                                                        src="https://ui-avatars.com/api/?name={{ asset.asset_id.asset_name }}&background=random"
+                                                        class="oh-profile__image"
+                                                        alt=""
+                                                    >
+                                                </div>
+                                            </div>
+                                            <span class="pat-asset-name oh-profile__name oh-text--dark">{{ asset.asset_id }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="pat-td">
+                                        <div class="pat-status-wrap">
+                                            <span class="oh-dot oh-dot--small me-1 oh-dot--color oh-dot--warning"></span>
+                                            <span class="link-warning pat-value">
+                                                {{ asset.asset_id.asset_status }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="pat-td">
+                                        <div class="pat-status-wrap">
+                                            <span class="oh-dot oh-dot--small me-1 oh-dot--color oh-dot--success"></span>
+                                            <span class="link-success dateformat_changer pat-value">
+                                                {{ asset.assigned_date }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="pat-td">
+                                        {% if asset.return_request %}
+                                            <div class="d-flex align-items-center pat-status-wrap">
+                                                <span class="oh-dot oh-dot--small me-1 oh-dot--color oh-dot--info"></span>
+                                                <span class="link-primary pat-value"> {% trans "Requested to return" %} </span>
+                                            </div>
+                                        {% else %}
+                                            <form
+                                                action="{% url 'asset-allocate-return-request' asset_id=asset.id %}"
+                                                onsubmit="return confirm('{% trans "Are you sure you want to return this asset?" %}')"
+                                            >
+                                                {% csrf_token %}
+                                                <button
+                                                    type="submit"
+                                                    class="pat-btn-secondary oh-btn oh-btn--secondary"
+                                                    onclick="event.stopPropagation()"
+                                                >
+                                                    <ion-icon name="return-down-back-sharp"></ion-icon>
+                                                    {% trans "Return Request" %}
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="pat-empty">
+                <div class="pat-empty-text">{% trans "No assets have been allocated." %}</div>
+            </div>
+        {% endif %}
     </div>
-    <!-- End of Sticky Table -->
-{% else %}
-    <div class="d-flex justify-content-center align-items-center" style="height: 40vh">
-        <h5 class="oh-404__subtitle">{% trans "No assets have been allocated." %}</h5>
-    </div>
-{% endif %}
+</div>
 
 <div
     class="oh-modal"
@@ -125,7 +311,6 @@
             </button>
         </div>
 
-        <!-- htmx form -->
         <div class="oh-modal__dialog-body" id="asset-return-allocation-modal-target"></div>
     </div>
 </div>

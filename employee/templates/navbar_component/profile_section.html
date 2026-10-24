@@ -1,5 +1,8 @@
 {% load static %}
 {% load i18n %}
+{% if request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser %}
+{% include "navbar_component/profile_section_employee.html" %}
+{% else %}
 <div class="oh-dropdown" x-data="{open: false}" id="mainNavProfile">
     <div class="oh-navbar__user-info" @click="open = !open" @click.outside="open = false">
         <div class="oh-navbar__user-photo">
@@ -31,3 +34,4 @@
         </ul>
     </div>
 </div>
+{% endif %}

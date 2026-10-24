@@ -1,252 +1,472 @@
 {% load i18n %}
-<section class="oh-wrapper oh-main__topbar employee-reimbursement-head">
-    <style>
-        .employee-reimbursement-head {
-            background: #ffffff;
-            border: 1px solid #d1e7dd;
-            border-radius: 18px;
-            margin: 0 38px 12px;
-            padding: 18px 22px;
-            box-shadow: 0 10px 26px rgba(18, 61, 44, 0.08);
-            align-items: center;
-            display: flex;
-            gap: 24px;
+<style>
+    /* ─── Nav shell ─────────────────────────────────────────────── */
+    .reimb-nav {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin: 24px auto 16px;
+        width: 100%;
+        max-width: 95%;
+        box-sizing: border-box;
+        padding: 0 26px 0 28px;
+        min-height: 68px;
+        background: #ffffff;
+        border: 1px solid #dce9e1;
+        border-radius: 20px;
+        box-shadow: 0 2px 8px rgba(18, 60, 40, 0.04), 0 10px 28px rgba(18, 60, 40, 0.07);
+        position: relative;
+        overflow: visible;
+        z-index: 30;
+        flex-wrap: wrap;
+    }
+    .reimb-nav::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, #1f7a5c 0%, #38a97b 55%, #8dcfb0 100%) top / 100% 3px no-repeat;
+        border-radius: inherit;
+        pointer-events: none;
+    }
+
+    /* ─── Title block ───────────────────────────────────────────── */
+    .reimb-nav__title-block {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-shrink: 0;
+    }
+    .reimb-nav__icon-wrap {
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #e8f5ef 0%, #d0eddf 100%);
+        border: 1px solid rgba(31, 122, 92, 0.14);
+        flex-shrink: 0;
+    }
+    .reimb-nav__icon-wrap ion-icon {
+        font-size: 20px;
+        color: #1f7a5c !important;
+    }
+    .reimb-nav__title {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: #132d22 !important;
+        letter-spacing: -0.01em;
+        white-space: nowrap;
+    }
+    .reimb-nav__subtitle {
+        font-size: 0.72rem;
+        color: #6a9078 !important;
+        margin-top: 1px;
+        font-weight: 500;
+    }
+
+    /* ─── Spacer between title and controls ─────────────────────── */
+    .reimb-nav__spacer { flex: 1; }
+
+    /* ─── Controls form ─────────────────────────────────────────── */
+    .reimb-nav__controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    /* ─── Search ────────────────────────────────────────────────── */
+    .reimb-nav__search-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    .reimb-nav__search-wrap ion-icon {
+        position: absolute;
+        left: 12px;
+        font-size: 16px;
+        color: #7a9e8b !important;
+        pointer-events: none;
+    }
+    .reimb-nav__search {
+        height: 38px;
+        width: 220px;
+        border: 1.5px solid #d3e5db;
+        border-radius: 10px;
+        background: #f6fbf8;
+        padding: 0 12px 0 34px;
+        font-size: 0.83rem;
+        color: #1b3a28;
+        outline: none;
+        transition: border-color 0.18s, box-shadow 0.18s;
+    }
+    .reimb-nav__search:focus {
+        border-color: #38a97b;
+        box-shadow: 0 0 0 3px rgba(56, 169, 123, 0.12);
+        background: #fff;
+    }
+    .reimb-nav__search::placeholder { color: #9db8a9; }
+
+    /* ─── View-type toggle ──────────────────────────────────────── */
+    .reimb-nav__view-toggle {
+        display: flex;
+        border: 1.5px solid #d3e5db;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #f6fbf8;
+    }
+    .reimb-nav__view-btn {
+        display: grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        transition: background 0.16s;
+        text-decoration: none;
+    }
+    .reimb-nav__view-btn ion-icon {
+        font-size: 17px;
+        color: #3d7560 !important;
+    }
+    .reimb-nav__view-btn:hover { background: #e4f3eb; }
+    .reimb-nav__view-btn.reimb-nav__view-btn--active {
+        background: #1f7a5c;
+    }
+    .reimb-nav__view-btn.reimb-nav__view-btn--active ion-icon {
+        color: #ffffff !important;
+    }
+    .reimb-nav__view-divider {
+        width: 1px;
+        background: #d3e5db;
+        align-self: stretch;
+    }
+
+    /* ─── Filter button ─────────────────────────────────────────── */
+    .reimb-nav__filter-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        height: 38px;
+        padding: 0 14px;
+        border: 1.5px solid #d3e5db;
+        border-radius: 10px;
+        background: #f6fbf8;
+        color: #2e6649 !important;
+        font-size: 0.84rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.16s, border-color 0.16s;
+    }
+    .reimb-nav__filter-btn ion-icon { font-size: 16px; color: #2e6649 !important; }
+    .reimb-nav__filter-btn:hover { background: #e4f3eb; border-color: #b0d4c1; }
+
+    /* ─── Create button ─────────────────────────────────────────── */
+    .reimb-nav__create-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        height: 38px;
+        padding: 0 14px;
+        background: linear-gradient(135deg, #1f7a5c 0%, #28936e 100%);
+        border: 0;
+        border-radius: 10px;
+        color: #fff !important;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+        box-shadow: 0 4px 14px rgba(31, 122, 92, 0.26);
+        transition: box-shadow 0.18s, opacity 0.18s;
+    }
+    .reimb-nav__create-btn,
+    .reimb-nav__create-btn:hover,
+    .reimb-nav__create-btn:focus,
+    .reimb-nav__create-btn:focus-visible,
+    .reimb-nav__create-btn:active {
+        text-decoration: none !important;
+    }
+    .reimb-nav__create-btn ion-icon { font-size: 18px; color: #fff !important; }
+    .reimb-nav__create-btn:hover { opacity: 0.9; box-shadow: 0 6px 18px rgba(31, 122, 92, 0.34); }
+
+    /* ─── Dropdown filter panel reuse ───────────────────────────── */
+    .reimb-nav .oh-dropdown {
+        position: relative;
+        z-index: 31;
+    }
+    .reimb-nav .reimb-filter-menu {
+        z-index: 40;
+        width: min(560px, calc(100vw - 32px));
+        min-width: min(500px, calc(100vw - 32px));
+        max-height: min(75vh, 680px);
+        overflow-y: auto;
+        border: 1px solid #dce9e1;
+        border-radius: 16px;
+        box-shadow: 0 18px 44px rgba(20,56,40,.16);
+    }
+
+    @media (max-width: 768px) {
+        .reimb-nav {
+            flex-wrap: wrap;
+            margin: 14px 14px 12px;
+            max-width: 100%;
+            padding: 14px 16px;
+            min-height: unset;
+            gap: 10px;
         }
-        .employee-reimbursement-head::before {
-            content: "";
-            display: block;
-            height: 4px;
-            margin: -18px -22px 16px;
-            background: linear-gradient(90deg, #6cae95, #2f5752, #8ac4ad);
-        }
-        .employee-reimbursement-head .oh-main__titlebar-title {
-            color: #244943 !important;
-            font-size: 1.45rem;
-            font-weight: 700;
-            white-space: nowrap;
-        }
-        .employee-reimbursement-head > form {
-            flex: 1;
-            min-width: 0;
-        }
-        .employee-reimbursement-head > form > .oh-main__titlebar {
-            justify-content: flex-end;
-            gap: 12px;
-            margin-bottom: 0 !important;
-        }
-        .employee-reimbursement-head .oh-input-group {
-            margin-right: 0 !important;
-        }
-        .employee-reimbursement-head .oh-input__search-group {
-            width: 265px;
-            min-width: 0;
-        }
-        .employee-reimbursement-head * {
-            color: #315244;
-        }
-        .employee-reimbursement-head .oh-main__titlebar-title {
-            color: #17241d !important;
-        }
-        .employee-reimbursement-head .oh-input::placeholder {
-            color: #849088;
-        }
-        .employee-reimbursement-head .oh-input {
-            border-color: rgba(47, 87, 82, 0.2) !important;
-            border-radius: 10px;
-            background: #ffffff;
-            color: #123d2c !important;
-            min-height: 40px;
-            box-shadow: none;
-        }
-        .employee-reimbursement-head .oh-btn--secondary {
-            background: #2f5752;
-            border-color: #2f5752;
-            color: #fff;
-            border-radius: 11px;
-            min-height: 42px;
-            font-weight: 700;
-            box-shadow: 0 6px 14px rgba(47, 87, 82, 0.16);
-        }
-        .employee-reimbursement-head .oh-btn--secondary:hover {
-            background: #244942;
-            border-color: #244942;
-        }
-        .employee-reimbursement-head .oh-btn--secondary ion-icon,
-        .employee-reimbursement-head .oh-dropdown > .oh-btn ion-icon,
-        .employee-reimbursement-head .oh-main__titlebar-button-container > .oh-btn ion-icon {
-            display: inline-block;
-            width: 18px;
-            height: 18px;
-            font-size: 18px;
-            line-height: 18px;
-            color: #ffffff !important;
-            opacity: 1 !important;
-            vertical-align: middle;
-        }
-        .employee-reimbursement-head .oh-view-types {
-            display: flex;
-            overflow: hidden;
-            border: 0;
-            border-radius: 12px;
-            background: #ffffff;
-        }
-        .employee-reimbursement-head .oh-dropdown .oh-btn,
-        .employee-reimbursement-head .oh-main__titlebar-button-container .oh-btn {
-            border-radius: 11px;
-            min-height: 42px;
-            border-color: #d4e1da;
-            color: #315244;
-            background: #ffffff;
-        }
-        .employee-reimbursement-head .oh-dropdown .oh-btn:hover {
-            background: #eaf7ee;
-            color: #0b754b;
-        }
-        .employee-reimbursement-head .oh-main__titlebar-button-container > .oh-btn,
-        .employee-reimbursement-head .oh-dropdown > .oh-btn {
-            background: #2f5752 !important;
-            border-color: #2f5752 !important;
-            color: #ffffff !important;
-            border-radius: 12px;
-        }
-        .employee-reimbursement-head .oh-main__titlebar-button-container > .oh-btn:hover,
-        .employee-reimbursement-head .oh-dropdown > .oh-btn:hover {
-            background: #244942 !important;
-            border-color: #244942 !important;
-        }
-        .employee-reimbursement-head .oh-main__titlebar-button-container > .oh-main__titlebar-button-container .oh-btn {
-            color: #ffffff !important;
-            background: #2f5752 !important;
-            border-color: #2f5752 !important;
-            border-radius: 12px;
-        }
-        .employee-reimbursement-head .oh-view-type {
-            margin: 0;
-        }
-        .employee-reimbursement-head .oh-btn--view {
-            min-width: 48px;
-            min-height: 42px;
-            border: 0;
-            border-radius: 0;
-            color: #2f5752 !important;
-            background: #eef7f1 !important;
-            box-shadow: none !important;
-        }
-        .employee-reimbursement-head .oh-btn--view:hover {
-            color: #ffffff !important;
-            background: #39685f !important;
-        }
-        .employee-reimbursement-head .oh-btn--view ion-icon {
-            display: inline-block;
-            width: 17px;
-            height: 17px;
-            font-size: 17px;
-            line-height: 17px;
-            color: #2f5752 !important;
-            opacity: 1 !important;
-            vertical-align: middle;
-        }
-        .employee-reimbursement-head .oh-btn--view.oh-btn--view-active {
-            color: #ffffff !important;
-            background: #2f5752 !important;
-            box-shadow: none !important;
-        }
-        .employee-reimbursement-head .oh-btn--view.oh-btn--view-active ion-icon {
-            color: #ffffff !important;
-        }
-        @media (max-width: 768px) {
-            .employee-reimbursement-head {
-                margin: 0 14px 12px;
-                padding: 14px;
-                display: block;
-            }
-            .employee-reimbursement-head::before {
-                margin: -14px -14px 14px;
-            }
-            .employee-reimbursement-head > form {
-                margin-top: 12px;
-            }
-        }
-        .employee-reimbursement-head .oh-btn--view-active {
-            color: #ffffff !important;
-            background: #2f5752 !important;
-            box-shadow: none;
-        }
-    </style>
-    <div class="oh-main__titlebar oh-main__titlebar--left oh-d-flex-column--resp oh-mb-3--small">
-        <h1 class="oh-main__titlebar-title fw-bold">{% trans 'Reimbursements' %}</h1>
+        .reimb-nav__controls { width: 100%; justify-content: flex-end; }
+        .reimb-nav__search { width: 100%; }
+    }
+
+    body:has(.oh-wrapper-main.employee-panel-theme) .reimb-nav {
+        border-color: rgba(42, 132, 155, 0.2) !important;
+        box-shadow: 0 2px 8px rgba(10, 77, 96, 0.04), 0 10px 28px rgba(10, 77, 96, 0.08) !important;
+    }
+    body:has(.oh-wrapper-main.employee-panel-theme) .reimb-nav::before {
+        background-image: linear-gradient(90deg, #0a4d60 0%, #278da0 55%, #b8dfe6 100%) !important;
+    }
+    body:has(.oh-wrapper-main.employee-panel-theme) .reimb-nav__icon-wrap {
+        background: linear-gradient(135deg, #e8f5f7 0%, #d8edf1 100%) !important;
+        border-color: rgba(39, 141, 160, 0.2) !important;
+    }
+    body:has(.oh-wrapper-main.employee-panel-theme) .reimb-nav__icon-wrap ion-icon {
+        color: #176d83 !important;
+    }
+    body:has(.oh-wrapper-main.employee-panel-theme) .reimb-nav__title {
+        color: #173f50 !important;
+    }
+    body:has(.oh-wrapper-main.employee-panel-theme) .reimb-nav__subtitle {
+        color: #557b84 !important;
+    }
+    body:has(.oh-wrapper-main.employee-panel-theme) .reimb-nav__search {
+        border-color: rgba(42, 132, 155, 0.24) !important;
+        background: #f4fafb !important;
+        color: #173f50 !important;
+    }
+    body:has(.oh-wrapper-main.employee-panel-theme) .reimb-nav__search-wrap ion-icon {
+        color: #557b84 !important;
+    }
+    body:has(.oh-wrapper-main.employee-panel-theme) .reimb-nav__search:focus {
+        border-color: #278da0 !important;
+        box-shadow: 0 0 0 3px rgba(39, 141, 160, 0.14) !important;
+        background: #ffffff !important;
+    }
+    body:has(.oh-wrapper-main.employee-panel-theme) .reimb-nav__search::placeholder {
+        color: #78959c !important;
+    }
+    body:has(.oh-wrapper-main.employee-panel-theme) .reimb-nav__view-toggle {
+        border-color: rgba(42, 132, 155, 0.24) !important;
+        background: #f4fafb !important;
+    }
+    body:has(.oh-wrapper-main.employee-panel-theme) .reimb-nav__view-btn ion-icon {
+        color: #176d83 !important;
+        display: block !important;
+        width: 17px !important;
+        height: 17px !important;
+        font-size: 17px !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    body:has(.oh-wrapper-main.employee-panel-theme) .reimb-nav__view-btn:hover {
+        background: #e8f5f7 !important;
+    }
+    body:has(.oh-wrapper-main.employee-panel-theme) .reimb-nav__view-btn.reimb-nav__view-btn--active {
+        background: linear-gradient(135deg, #0a4d60, #278da0) !important;
+    }
+    body:has(.oh-wrapper-main.employee-panel-theme) .reimb-nav__view-btn.reimb-nav__view-btn--active ion-icon {
+        color: #ffffff !important;
+    }
+    body:has(.oh-wrapper-main.employee-panel-theme) .reimb-nav__view-divider {
+        background: rgba(42, 132, 155, 0.22) !important;
+    }
+    body:has(.oh-wrapper-main.employee-panel-theme) .reimb-nav__filter-btn {
+        border-color: rgba(39, 141, 160, 0.24) !important;
+        background: #e8f5f7 !important;
+        color: #0a4d60 !important;
+    }
+    body:has(.oh-wrapper-main.employee-panel-theme) .reimb-nav__filter-btn ion-icon {
+        color: #0a4d60 !important;
+    }
+    body:has(.oh-wrapper-main.employee-panel-theme) .reimb-nav__filter-btn:hover {
+        border-color: #278da0 !important;
+        background: #d8edf1 !important;
+    }
+    body:has(.oh-wrapper-main.employee-panel-theme) .reimb-nav__create-btn {
+        background: linear-gradient(135deg, #0a4d60 0%, #278da0 100%) !important;
+        box-shadow: 0 4px 14px rgba(10, 77, 96, 0.2) !important;
+    }
+    body:has(.oh-wrapper-main.employee-panel-theme) .reimb-nav__create-btn:hover {
+        background: linear-gradient(135deg, #083f50 0%, #176d83 100%) !important;
+        box-shadow: 0 6px 18px rgba(10, 77, 96, 0.26) !important;
+    }
+
+</style>
+
+<section class="reimb-nav">
+    <!-- Title -->
+    <div class="reimb-nav__title-block">
+        <div class="reimb-nav__icon-wrap">
+            <ion-icon name="receipt-outline"></ion-icon>
+        </div>
+        <div>
+            <div class="reimb-nav__title">{% trans "Reimbursements" %}</div>
+            <div class="reimb-nav__subtitle">{% trans "Expense claims &amp; encashments" %}</div>
+        </div>
     </div>
 
+    <div class="reimb-nav__spacer"></div>
+
+    <!-- Controls (search + view toggle + filter + create) -->
     <form
+        class="reimb-nav__controls"
         hx-get="{% url 'search-reimbursement' %}"
-        hx-target="#reimbursementContainer"
-        onsubmit="event.stopPropagation(); event.preventDefault()"
+        hx-target="#reimbursementBody"
     >
-        <div class="oh-main__titlebar oh-main__titlebar--right oh-d-flex-column--resp oh-mb-3--small">
-            <div class="oh-input-group oh-input__search-group mr-4">
-                <ion-icon
-                    name="search-outline"
-                    class="oh-input-group__icon oh-input-group__icon--left md hydrated"
-                    role="img"
-                    aria-label="{% trans 'search outline' %}"
-                ></ion-icon>
-                <input
-                    type="text"
-                    id="pipelineSearch"
-                    placeholder="{% trans 'Search' %}"
-                    style="margin-right: 10px"
-                    onkeyup="$('.filterButton').click()"
-                    name="search"
-                    class="oh-input oh-input__icon mr-3"
-                    aria-label="{% trans 'Search Input' %}"
-                >
-            </div>
-            <input type="hidden" name="view" value="{{request.GET.view}}" id="reimbursementViewType">
-            <ul class="oh-view-types ml-2" style="margin-bottom: 0">
-                <li class="oh-view-type employee-view-type" data-view="list">
-                    <a
-                        id="list"
-                        onclick="$('#reimbursementViewType').val('list');setTimeout(() => {
-              $('.filterButton')[0].click();
-              }, 10);$('.oh-btn--view-active').removeClass('oh-btn--view-active'); $(this).addClass('oh-btn--view-active')"
-                        class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}"
-                        title='{% trans "List" %}'
-                    ><ion-icon name="list-outline"></ion-icon></a>
-                </li>
-                <li class="oh-view-type employee-view-type" data-view="card">
-                    <a
-                        id="card"
-                        onclick="$('#reimbursementViewType').val('card');setTimeout(() => {
-              $('.filterButton')[0].click();
-              }, 10);$('.oh-btn--view-active').removeClass('oh-btn--view-active'); $(this).addClass('oh-btn--view-active')"
-                        class="oh-btn oh-btn--view {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}"
-                        title='{% trans "Card" %}'
-                    ><ion-icon name="grid-outline"></ion-icon></a>
-                </li>
-            </ul>
-            {% comment %} <ul class="oh-view-types ml-2" style="margin-bottom: 0;">
-        <li class="oh-view-type" data-view="list" onclick="event.stopPropagation()">
-          <a class="oh-btn oh-btn--view" title="{% trans 'List' %}"><ion-icon name="list-outline" role="img" class="md hydrated" aria-label="{% trans 'list outline' %}"></ion-icon></a>
-        </li>
-        <li class="oh-view-type" data-view="card">
-          <a class="oh-btn oh-btn--view oh-btn--view-active" title="{% trans 'Card' %}"><ion-icon name="grid-outline" role="img" class="md hydrated" aria-label="{% trans 'grid outline' %}"></ion-icon></a>
-        </li>
-      </ul> {% endcomment %}
-            {% include 'payroll/reimbursement/filter.html' %}
-            <div class="oh-main__titlebar-button-container">
-                <div class="oh-main__titlebar-button-container">
-                    <a
-                        hx-get="{% url 'create-reimbursement' %}"
-                        hx-target="#objectCreateModalTarget"
-                        data-toggle="oh-modal-toggle"
-                        data-target="#objectCreateModal"
-                        class="oh-btn oh-btn--secondary"
-                    >
-                        <ion-icon name="add-outline"></ion-icon>
-                        {% trans 'Create' %}
-                    </a>
+        <!-- Search -->
+        <div class="reimb-nav__search-wrap">
+            <ion-icon name="search-outline"></ion-icon>
+            <input
+                type="text"
+                name="search"
+                placeholder="{% trans 'Search requests…' %}"
+                class="reimb-nav__search"
+                onkeyup="this.form.requestSubmit()"
+                aria-label="{% trans 'Search reimbursements' %}"
+            >
+        </div>
+
+        <!-- Hidden view state -->
+        <input type="hidden" name="view" value="{{ request.GET.view }}" id="reimbursementViewType">
+
+        <!-- View toggle -->
+        <div class="reimb-nav__view-toggle">
+            <a
+                id="reimbListBtn"
+                class="reimb-nav__view-btn {% if request.GET.view == 'list' %}reimb-nav__view-btn--active{% endif %}"
+                onclick="reimbSetView('list')"
+                title="{% trans 'List view' %}"
+                aria-label="{% trans 'List view' %}"
+            ><ion-icon name="list-outline"></ion-icon></a>
+            <div class="reimb-nav__view-divider"></div>
+            <a
+                id="reimbCardBtn"
+                class="reimb-nav__view-btn {% if request.GET.view != 'list' %}reimb-nav__view-btn--active{% endif %}"
+                onclick="reimbSetView('card')"
+                title="{% trans 'Card view' %}"
+                aria-label="{% trans 'Card view' %}"
+            ><ion-icon name="grid-outline"></ion-icon></a>
+        </div>
+        <script>
+        /* ── View toggle: persists in localStorage, re-applies after HTMX swaps ── */
+        (function () {
+            function applyActive(v) {
+                var l = document.getElementById('reimbListBtn');
+                var c = document.getElementById('reimbCardBtn');
+                if (l) l.classList.toggle('reimb-nav__view-btn--active', v === 'list');
+                if (c) c.classList.toggle('reimb-nav__view-btn--active', v !== 'list');
+                var inp = document.getElementById('reimbursementViewType');
+                if (inp) inp.value = v;
+            }
+
+            /* On first load: URL param wins; fall back to saved; default = card */
+            var urlView = "{{ request.GET.view|default:'' }}";
+            if (!urlView) urlView = localStorage.getItem('reimbViewMode') || 'card';
+            applyActive(urlView);
+            /* Make sure hidden input also reflects the resolved view before any click */
+            var inp = document.getElementById('reimbursementViewType');
+            if (inp && !inp.value) inp.value = urlView;
+
+            window.reimbSetView = function (v) {
+                localStorage.setItem('reimbViewMode', v);
+                applyActive(v);
+                var inp = document.getElementById('reimbursementViewType');
+                if (inp) inp.value = v;
+                setTimeout(function () {
+                    var form = document.querySelector('.reimb-nav__controls');
+                    if (form) form.requestSubmit();
+                }, 10);
+            };
+
+            /* Re-apply after HTMX re-renders the nav (swap replaces the DOM) */
+            document.addEventListener('htmx:afterSwap', function () {
+                var v = localStorage.getItem('reimbViewMode') || 'card';
+                applyActive(v);
+            });
+        })();
+        </script>
+
+        <!-- Filter dropdown -->
+        <div class="oh-dropdown" x-data="{open: false}">
+            <button
+                class="reimb-nav__filter-btn"
+                type="button"
+                @click="open = !open"
+                onclick="event.preventDefault()"
+                aria-label="{% trans 'Filter' %}"
+            >
+                <ion-icon name="options-outline"></ion-icon>
+                {% trans "Filter" %}
+            </button>
+            <div
+                class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter reimb-filter-menu p-4"
+                x-show="open"
+                @click.outside="open = false"
+            >
+                <div class="oh-dropdown__filter-body">
+                    <div class="oh-accordion">
+                        <div class="oh-accordion-header">{% trans "Reimbursement Filters" %}</div>
+                        <div class="oh-accordion-body">
+                            <div class="row">
+                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                    <div class="oh-input-group">
+                                        <label class="oh-label">{% trans "Employee" %}</label>
+                                        {{ f.form.employee_id }}
+                                    </div>
+                                    <div class="oh-input-group">
+                                        <label class="oh-label">{% trans "Status" %}</label>
+                                        {{ f.form.status }}
+                                    </div>
+                                    <div class="oh-input-group">
+                                        <label class="oh-label">{% trans "Reporting Manager" %}</label>
+                                        {{ f.form.employee_id__employee_work_info__reporting_manager_id }}
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                    <div class="oh-input-group">
+                                        <label class="oh-label">{% trans "Department" %}</label>
+                                        {{ f.form.employee_id__employee_work_info__department_id }}
+                                    </div>
+                                    <div class="oh-input-group">
+                                        <label class="oh-label">{% trans "Type" %}</label>
+                                        {{ f.form.type }}
+                                    </div>
+                                    <div class="oh-input-group">
+                                        <label class="oh-label">{% trans "Job Position" %}</label>
+                                        {{ f.form.employee_id__employee_work_info__job_position_id }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="oh-dropdown__filter-footer">
+                    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton">{% trans "Apply Filter" %}</button>
                 </div>
             </div>
         </div>
+
+        <!-- Create button -->
+        <a
+            hx-get="{% url 'create-reimbursement' %}"
+            hx-target="#objectCreateModalTarget"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            class="reimb-nav__create-btn"
+            aria-label="{% trans 'Create reimbursement' %}"
+        >
+            <ion-icon name="add-outline"></ion-icon>
+            {% trans "Create" %}
+        </a>
     </form>
 </section>

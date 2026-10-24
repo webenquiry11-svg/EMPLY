@@ -5,21 +5,49 @@
     .employee-attendance-status-legend {
         display: flex;
         flex-wrap: wrap;
-        gap: 10px 18px;
+        gap: 10px;
         justify-content: flex-start;
         margin: 0 0 18px;
-        padding: 12px 16px;
-        border-radius: 14px;
-        background: #ffffff;
-        box-shadow: 0 6px 18px rgba(47, 87, 82, 0.1);
+        padding: 0;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
     }
     .employee-attendance-status-legend > span {
         display: inline-flex;
         align-items: center;
-        color: #244942;
-        font-size: 0.8rem;
+        justify-content: center;
+        min-height: 28px;
+        padding: 0 14px;
+        border: 0;
+        border-radius: 999px;
+        color: #ffffff !important;
+        font-size: 0.72rem;
         font-weight: 700;
         white-space: nowrap;
+        cursor: pointer;
+        transition: filter .15s ease, transform .15s ease;
+    }
+    .employee-attendance-status-legend > span:hover,
+    .employee-attendance-status-legend > span:focus-visible {
+        filter: brightness(.94);
+        outline: none;
+        transform: translateY(-1px);
+    }
+    .employee-attendance-status-legend > span .oh-dot {
+        display: none;
+    }
+    .employee-attendance-status-legend > span:nth-child(1) {
+        background: #16a34a;
+    }
+    .employee-attendance-status-legend > span:nth-child(2) {
+        background: #f97316;
+    }
+    .employee-attendance-status-legend > span:nth-child(3) {
+        background: #dc2626;
+    }
+    .employee-attendance-status-legend > span:nth-child(4) {
+        background: #278da0;
     }
     .employee-attendance-status {
         display: inline-flex;
@@ -38,6 +66,21 @@
     .employee-attendance-status--validated { background: #0b9b37; }
     .employee-attendance-status--requested { background: #1565a3; }
     .employee-attendance-status--not-validated { background: #e52b35; }
+    .employee-attendance-status--holiday { background: #278da0; }
+    .employee-attendance-status--leave { background: #7c3aed; }
+    .employee-attendance-status--absent { background: #dc2626; }
+    .employee-attendance-holiday-row > * {
+        background: #e8f5f7 !important;
+        color: #245b6b !important;
+    }
+    .employee-attendance-leave-row > * {
+        background: #f3edff !important;
+        color: #5b3b86 !important;
+    }
+    .employee-attendance-absent-row > * {
+        background: #fff0f0 !important;
+        color: #8d3434 !important;
+    }
     .row-status--orange {
         border-left: 4px solid #1565A3;
         border-radius: 5px;
@@ -57,13 +100,14 @@
 
     /* Employee dashboard theme overrides for attendance surfaces. */
     .oh-wrapper-main.employee-panel-theme .employee-attendance-status-legend {
-        background: #ffffff !important;
-        border: 1px solid rgba(42, 132, 155, 0.18) !important;
-        box-shadow: 0 6px 18px rgba(10, 77, 96, 0.1) !important;
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
     }
 
     .oh-wrapper-main.employee-panel-theme .employee-attendance-status-legend > span {
-        color: #285d6b !important;
+        color: #ffffff !important;
+        border: 0 !important;
     }
 
     .oh-wrapper-main.employee-panel-theme .employee-attendance-status--approved {
@@ -111,20 +155,20 @@
         border-left-color: #c45167 !important;
     }
 
-    .oh-wrapper-main.employee-panel-theme .employee-attendance-status-legend > span:nth-child(1) .oh-dot {
-        background-color: #4f67d8 !important;
+    .oh-wrapper-main.employee-panel-theme .employee-attendance-status-legend > span:nth-child(1) {
+        background: #16a34a !important;
     }
 
-    .oh-wrapper-main.employee-panel-theme .employee-attendance-status-legend > span:nth-child(2) .oh-dot {
-        background-color: #d8892f !important;
+    .oh-wrapper-main.employee-panel-theme .employee-attendance-status-legend > span:nth-child(2) {
+        background: #f97316 !important;
     }
 
-    .oh-wrapper-main.employee-panel-theme .employee-attendance-status-legend > span:nth-child(3) .oh-dot {
-        background-color: #c45167 !important;
+    .oh-wrapper-main.employee-panel-theme .employee-attendance-status-legend > span:nth-child(3) {
+        background: #dc2626 !important;
     }
 
-    .oh-wrapper-main.employee-panel-theme .employee-attendance-status-legend > span:nth-child(4) .oh-dot {
-        background-color: #278da0 !important;
+    .oh-wrapper-main.employee-panel-theme .employee-attendance-status-legend > span:nth-child(4) {
+        background: #278da0 !important;
     }
 
     .oh-wrapper-main.employee-panel-theme #objectDetailsModalW25Target,
@@ -145,64 +189,17 @@
 </style>
 
 {% if attendances %}
-    <div class="employee-attendance-status-legend">
-        <span
-            class="me-3"
-            style="cursor: pointer"
-            hx-get='{% url "filter-own-attendance" %}?is_validate_request_approved=true'
-            hx-swap="innerHTML"
-            hx-target="#attendance-container"
-        >
-            <span
-                class="oh-dot oh-dot--small me-1"
-                style="background-color: blue"
-            ></span>
-            {% trans "Approved request" %}
-        </span>
-        <span
-            class="me-3"
-            style="cursor: pointer"
-            hx-get='{% url "filter-own-attendance" %}?is_validate_request=true'
-            hx-swap="innerHTML"
-            hx-target="#attendance-container"
-        >
-            <span
-                class="oh-dot oh-dot--smallui-avatars.com me-1"
-                style="background-color: #1565A3"
-            ></span>
-            {% trans "Requested" %}
-        </span>
-        <span
-            class="me-3"
-            style="cursor: pointer"
-            hx-get='{% url "filter-own-attendance" %}?attendance_validated=false'
-            hx-swap="innerHTML"
-            hx-target="#attendance-container"
-        >
-            <span
-                class="oh-dot oh-dot--small me-1"
-                style="background-color: red"
-            ></span>
-            {% trans "Not validated" %}
-        </span>
-        <span
-            class="me-3"
-            style="cursor: pointer"
-            hx-get='{% url "filter-own-attendance" %}?attendance_validated=true'
-            hx-swap="innerHTML"
-            hx-target="#attendance-container"
-        >
-            <span
-                class="oh-dot oh-dot--small me-1"
-                style="background-color: green"
-            ></span>
-            {% trans "Validated" %}
-        </span>
-    </div>
     <div class="oh-table_sticky--wrapper">
         <div class="oh-sticky-dropdown--header">
-            <div class="oh-dropdown" x-data="{open: false}">
-                <button class="oh-sticky-dropdown_btn" @click="open = !open">
+            <div class="oh-dropdown">
+                <button
+                    type="button"
+                    class="oh-sticky-dropdown_btn"
+                    data-attendance-columns-toggle
+                    aria-expanded="false"
+                    aria-controls="MyAttendanceColumnMenu"
+                    aria-label="{% trans 'Choose visible columns' %}"
+                >
                     <ion-icon
                         name="ellipsis-vertical-sharp"
                         role="img"
@@ -210,18 +207,20 @@
                         aria-label="{% trans 'ellipsis vertical sharp' %}"
                     ></ion-icon>
                 </button>
-                <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
-                    <ul class="oh-dropdown__items" id="MyAttendanceCells"></ul>
+                <div class="oh-dropdown__menu oh-sticky-table_dropdown" id="MyAttendanceColumnMenu" hidden>
+                    <ul class="oh-dropdown__items" id="MyAttendanceCells" aria-label="{% trans 'Visible attendance columns' %}"></ul>
                 </div>
             </div>
         </div>
     </div>
-    <div id="my-attendance-table" data-table-name="my_attendance_tab">
+    <div id="my-attendance-table" data-table-name="my_attendance_tab_v4" data-default-visible-cells="1,2,3,4,6,9,11">
         <div class="oh-sticky-table">
             <div class="oh-sticky-table__table oh-table--sortable">
                 <div class="oh-sticky-table__thead">
                     <div class="oh-sticky-table__tr">
                         <div
+                            data-cell-index="1"
+                            data-cell-title='{% trans "Employee" %}'
                             class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id__employee_first_name' %}arrow-up {% elif request.sort_option.order == 'employee_id__employee_first_name' %}arrow-down {% else %} arrow-up-down {% endif %}"
                             hx-target="#attendance-container"
                             hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=employee_id__employee_first_name"
@@ -229,6 +228,8 @@
                             {% trans "Employee" %}
                         </div>
                         <div
+                            data-cell-index="2"
+                            data-cell-title='{% trans "Date" %}'
                             class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_date' %}arrow-up {% elif request.sort_option.order == 'attendance_date' %}arrow-down {% else %} arrow-up-down {% endif %}"
                             hx-target="#attendance-container"
                             hx-get="{% url 'own-attendance-filter' %}?{{pd}}&orderby=attendance_date"
@@ -236,21 +237,21 @@
                             {% trans "Date" %}
                         </div>
                         <div
-                            data-cell-index="2"
+                            data-cell-index="3"
                             data-cell-title='{% trans "Day" %}'
                             class="oh-sticky-table__th"
                         >
                             {% trans "Day" %}
                         </div>
                         <div
-                            data-cell-index="3"
+                            data-cell-index="4"
                             data-cell-title='{% trans "Check-In" %}'
                             class="oh-sticky-table__th"
                         >
                             {% trans "Check-In" %}
                         </div>
                         <div
-                            data-cell-index="4"
+                            data-cell-index="5"
                             data-cell-title='{% trans "In Date" %}'
                             class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_clock_in_date' %}arrow-up {% elif request.sort_option.order == 'attendance_clock_in_date' %}arrow-down {% else %} arrow-up-down {% endif %}"
                             hx-target="#attendance-container"
@@ -259,7 +260,7 @@
                             {% trans "In Date" %}
                         </div>
                         <div
-                            data-cell-index="5"
+                            data-cell-index="6"
                             data-cell-title='{% trans "Check-Out" %}'
                             class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_clock_out' %}arrow-up {% elif request.sort_option.order == 'attendance_clock_out' %}arrow-down {% else %} arrow-up-down {% endif %}"
                             hx-target="#attendance-container"
@@ -268,7 +269,7 @@
                             {% trans "Check-Out" %}
                         </div>
                         <div
-                            data-cell-index="6"
+                            data-cell-index="7"
                             data-cell-title='{% trans "Out Date" %}'
                             class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_clock_out_date' %}arrow-up {% elif request.sort_option.order == 'attendance_clock_out_date' %}arrow-down {% else %} arrow-up-down {% endif %}"
                             hx-target="#attendance-container"
@@ -277,28 +278,28 @@
                             {% trans "Out Date" %}
                         </div>
                         <div
-                            data-cell-index="7"
+                            data-cell-index="8"
                             data-cell-title='{% trans "Shift" %}'
                             class="oh-sticky-table__th"
                         >
                             {% trans "Shift" %}
                         </div>
                         <div
-                            data-cell-index="8"
+                            data-cell-index="9"
                             data-cell-title='{% trans "Work Type" %}'
                             class="oh-sticky-table__th"
                         >
                             {% trans "Work Type" %}
                         </div>
                         <div
-                            data-cell-index="9"
+                            data-cell-index="10"
                             data-cell-title='{% trans "Min Hour" %}'
                             class="oh-sticky-table__th"
                         >
                             {% trans "Min Hour" %}
                         </div>
                         <div
-                            data-cell-index="10"
+                            data-cell-index="11"
                             data-cell-title='{% trans "At Work" %}'
                             class="oh-sticky-table__th {% if request.sort_option.order == '-at_work_second' %}arrow-up {% elif request.sort_option.order == 'at_work_second' %}arrow-down {% else %} arrow-up-down {% endif %}"
                             hx-target="#attendance-container"
@@ -307,14 +308,14 @@
                             {% trans "At Work" %}
                         </div>
                         <div
-                            data-cell-index="11"
+                            data-cell-index="12"
                             data-cell-title='{% trans "Pending Hour" %}'
                             class="oh-sticky-table__th"
                         >
                             {% trans "Pending Hour" %}
                         </div>
                         <div
-                            data-cell-index="12"
+                            data-cell-index="13"
                             data-cell-title='{% trans "Overtime" %}'
                             class="oh-sticky-table__th {% if request.sort_option.order == '-overtime_second' %}arrow-up {% elif request.sort_option.order == 'overtime_second' %}arrow-down {% else %} arrow-up-down {% endif %}"
                             hx-target="#attendance-container"
@@ -327,14 +328,16 @@
                 <div class="oh-sticky-table__tbody">
                     {% for attendance in attendances %}
                         <div
-                            class="oh-sticky-table__tr"
+                            class="oh-sticky-table__tr{% if attendance.is_auto_holiday or attendance.is_calendar_holiday %} employee-attendance-holiday-row{% elif attendance.is_auto_leave or attendance.is_calendar_leave %} employee-attendance-leave-row{% elif attendance.is_auto_absent %} employee-attendance-absent-row{% endif %}{% if attendance.attendance_date|date:'w' == '0' %} employee-attendance-sunday-row{% endif %}"
+                            {% if attendance.id %}
                             draggable="false"
                             data-toggle="oh-modal-toggle"
                             data-target="#objectDetailsModalW25"
                             hx-target="#objectDetailsModalW25Target"
                             hx-get="{% url 'user-request-one-view' attendance.id %}?my_attendance=true&instances_ids={{attendances_ids}}"
+                            {% endif %}
                         >
-                            <div class="oh-sticky-table__sd{% if attendance.is_validate_request_approved %} row-status--blue {% elif attendance.attendance_validated %} row-status--green {% elif attendance.is_validate_request %} row-status--orange {% else %} row-status--red{% endif %}">
+                            <div data-cell-index="1" class="oh-sticky-table__sd{% if attendance.is_auto_holiday or attendance.is_calendar_holiday %} row-status--holiday{% elif attendance.is_auto_leave or attendance.is_calendar_leave %} row-status--leave{% elif attendance.is_auto_absent %} row-status--absent{% elif attendance.is_validate_request_approved %} row-status--blue {% elif attendance.attendance_validated %} row-status--green {% elif attendance.is_validate_request %} row-status--orange {% else %} row-status--red{% endif %}">
                                 <div class="oh-profile oh-profile--md">
                                     <div class="oh-profile__avatar mr-1">
                                         <img
@@ -345,7 +348,17 @@
                                     </div>
                                     <div>
                                         <span class="oh-profile__name oh-text--dark">{{ attendance.employee_id }}</span>
-                                        {% if attendance.is_validate_request_approved %}
+                                        {% if attendance.is_auto_holiday or attendance.is_calendar_holiday %}
+                                            <span class="employee-attendance-status employee-attendance-status--holiday">
+                                                {% trans "Holiday" %}{% if attendance.calendar_holiday_name %}: {{ attendance.calendar_holiday_name }}{% endif %}
+                                            </span>
+                                        {% elif attendance.is_auto_leave or attendance.is_calendar_leave %}
+                                            <span class="employee-attendance-status employee-attendance-status--leave">
+                                                {% trans "Leave" %}{% if attendance.calendar_leave_name %}: {{ attendance.calendar_leave_name }}{% endif %}
+                                            </span>
+                                        {% elif attendance.is_auto_absent %}
+                                            <span class="employee-attendance-status employee-attendance-status--absent">{% trans "Absent" %}</span>
+                                        {% elif attendance.is_validate_request_approved %}
                                             <span class="employee-attendance-status employee-attendance-status--approved">{% trans "Approved request" %}</span>
                                         {% elif attendance.attendance_validated %}
                                             <span class="employee-attendance-status employee-attendance-status--validated">{% trans "Validated" %}</span>
@@ -357,30 +370,30 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="oh-sticky-table__td dateformat_changer">{{ attendance.attendance_date }}</div>
-                            <div data-cell-index="2" class="oh-sticky-table__td">
+                            <div data-cell-index="2" class="oh-sticky-table__td dateformat_changer">{{ attendance.attendance_date }}</div>
+                            <div data-cell-index="3" class="oh-sticky-table__td">
                                 {{ attendance.attendance_day|capfirst }}
                             </div>
-                            <div data-cell-index="3" class="oh-sticky-table__td timeformat_changer">
+                            <div data-cell-index="4" class="oh-sticky-table__td timeformat_changer">
                                 {{ attendance.attendance_clock_in }}
                             </div>
-                            <div data-cell-index="4" class="oh-sticky-table__td dateformat_changer">
+                            <div data-cell-index="5" class="oh-sticky-table__td dateformat_changer">
                                 {{ attendance.attendance_clock_in_date }}
                             </div>
-                            <div data-cell-index="5" class="oh-sticky-table__td timeformat_changer">
+                            <div data-cell-index="6" class="oh-sticky-table__td timeformat_changer">
                                 {{ attendance.attendance_clock_out }}
                             </div>
-                            <div data-cell-index="6" class="oh-sticky-table__td dateformat_changer">
+                            <div data-cell-index="7" class="oh-sticky-table__td dateformat_changer">
                                 {{ attendance.attendance_clock_out_date }}
                             </div>
-                            <div data-cell-index="7" class="oh-sticky-table__td">{{ attendance.shift_id }}</div>
-                            <div data-cell-index="8" class="oh-sticky-table__td">{{ attendance.work_type_id }}</div>
-                            <div data-cell-index="9" class="oh-sticky-table__td">{{ attendance.minimum_hour }}</div>
-                            <div data-cell-index="10" class="oh-sticky-table__td">
+                            <div data-cell-index="8" class="oh-sticky-table__td">{{ attendance.shift_id }}</div>
+                            <div data-cell-index="9" class="oh-sticky-table__td">{{ attendance.work_type_id }}</div>
+                            <div data-cell-index="10" class="oh-sticky-table__td">{{ attendance.minimum_hour }}</div>
+                            <div data-cell-index="11" class="oh-sticky-table__td">
                                 {{ attendance.attendance_worked_hour }}
                             </div>
-                            <div data-cell-index="11" class="oh-sticky-table__td">{{ attendance.hours_pending }}</div>
-                            <div data-cell-index="12" class="oh-sticky-table__td">
+                            <div data-cell-index="12" class="oh-sticky-table__td">{{ attendance.hours_pending }}</div>
+                            <div data-cell-index="13" class="oh-sticky-table__td">
                                 {{ attendance.attendance_overtime }}
                             </div>
                         </div>
@@ -389,7 +402,7 @@
             </div>
         </div>
 
-        <div class="oh-pagination">
+        <div class="oh-pagination employee-attendance-pagination">
             <span class="oh-pagination__page">
                 {% trans "Page" %} {{ attendances.number }} {% trans "of" %} {{ attendances.paginator.num_pages }}.
             </span>
@@ -409,35 +422,26 @@
                 </div>
                 <ul class="oh-pagination__items">
                     {% if attendances.has_previous %}
-                        <li class="oh-pagination__item oh-pagination__item--wide">
-                            <a
-                                hx-target="#attendance-container"
-                                hx-get="{% url 'own-attendance-filter' %}?{{pd}}&page=1"
-                                class="oh-pagination__link"
-                            >{% trans "First" %}</a>
-                        </li>
-                        <li class="oh-pagination__item oh-pagination__item--wide">
+                        <li class="oh-pagination__item">
                             <a
                                 hx-target="#attendance-container"
                                 hx-get="{% url 'own-attendance-filter' %}?{{pd}}&page={{ attendances.previous_page_number }}"
                                 class="oh-pagination__link"
-                            >{% trans "Previous" %}</a>
+                                aria-label="{% trans 'Previous page' %}"
+                            >‹</a>
                         </li>
                     {% endif %}
+                    <li class="oh-pagination__item oh-pagination__item--current" aria-current="page">
+                        {{ attendances.number }}
+                    </li>
                     {% if attendances.has_next %}
-                        <li class="oh-pagination__item oh-pagination__item--wide">
+                        <li class="oh-pagination__item">
                             <a
                                 hx-target="#attendance-container"
                                 hx-get="{% url 'own-attendance-filter' %}?{{pd}}&page={{ attendances.next_page_number }}"
                                 class="oh-pagination__link"
-                            >{% trans "Next" %}</a>
-                        </li>
-                        <li class="oh-pagination__item oh-pagination__item--wide">
-                            <a
-                                hx-target="#attendance-container"
-                                hx-get="{% url 'own-attendance-filter' %}?{{pd}}&page={{ attendances.paginator.num_pages }}"
-                                class="oh-pagination__link"
-                            >{% trans "Last" %}</a>
+                                aria-label="{% trans 'Next page' %}"
+                            >›</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -462,11 +466,5 @@
 {% endif %}
 
 <script>
-    // toggle columns //
-    toggleColumns("my-attendance-table","MyAttendanceCells")
-    localStorageMyAttendanceCells = localStorage.getItem("my_attendance_tab")
-    if (!localStorageMyAttendanceCells) {
-      $("#MyAttendanceCells").find("[type=checkbox]").prop("checked",true)
-    }
-    $("[type=checkbox]").change()
+    toggleColumns("my-attendance-table", "MyAttendanceCells");
 </script>

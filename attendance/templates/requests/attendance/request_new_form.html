@@ -1,5 +1,170 @@
 <div id="attendanceRequestDiv">
     {% load i18n widget_tweaks attendancefilters %}
+    <style>
+        #attendanceRequestDiv .oh-modal__dialog-body {
+            background: #f4f9fa;
+        }
+        #attendanceRequestDiv .oh-modal__dialog-header {
+            position: relative;
+            padding-right: 68px;
+        }
+        #attendanceRequestDiv .oh-modal__dialog-header .oh-modal__close {
+            top: 50% !important;
+            right: 16px !important;
+            display: grid;
+            width: 40px !important;
+            min-width: 40px;
+            height: 40px !important;
+            place-items: center;
+            padding: 0 !important;
+            border: 1px solid rgba(255, 255, 255, .65) !important;
+            border-radius: 50% !important;
+            background: rgba(255, 255, 255, .14) !important;
+            color: #ffffff !important;
+            opacity: 1 !important;
+            transform: translateY(-50%) !important;
+            transition: background-color .15s ease, transform .15s ease;
+        }
+        #attendanceRequestDiv .oh-modal__dialog-header .oh-modal__close:hover,
+        #attendanceRequestDiv .oh-modal__dialog-header .oh-modal__close:focus-visible {
+            background: rgba(255, 255, 255, .28) !important;
+            border-radius: 50% !important;
+            outline: 2px solid rgba(255, 255, 255, .75);
+            outline-offset: 2px;
+        }
+        #attendanceRequestDiv .oh-modal__dialog-header .oh-modal__close ion-icon {
+            font-size: 1.25rem !important;
+            color: #ffffff !important;
+        }
+        #attendanceRequestDiv .oh-profile-section__card {
+            padding: 20px;
+            border: 1px solid #d6e7eb;
+            border-radius: 16px;
+            background: #ffffff;
+            box-shadow: 0 8px 22px rgba(10, 77, 96, .07);
+        }
+        #attendanceRequestDiv #attendanceRequestForm .row {
+            row-gap: 16px;
+        }
+        #attendanceRequestDiv #attendanceRequestForm [class*="col-"] {
+            min-width: 0;
+        }
+        #attendanceRequestDiv .oh-label__info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-height: 22px;
+            margin-bottom: 7px;
+        }
+        #attendanceRequestDiv .attendance-request-field--wide {
+            padding: 0 12px;
+        }
+        #attendanceRequestDiv .oh-label {
+            margin: 0;
+            color: #244f5d !important;
+            font-size: .78rem;
+            font-weight: 700;
+            line-height: 1.35;
+        }
+        #attendanceRequestDiv #attendanceRequestForm .form-control {
+            width: 100%;
+            min-height: 44px;
+            padding: 10px 12px;
+            border: 1px solid #c9dce2;
+            border-radius: 10px;
+            background: #ffffff;
+            color: #173f50;
+            font-size: .82rem;
+            box-shadow: none;
+            transition: border-color .15s ease, box-shadow .15s ease;
+        }
+        #attendanceRequestDiv #attendanceRequestForm textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        #attendanceRequestDiv #attendanceRequestForm .form-control:focus {
+            border-color: #278da0;
+            outline: 0;
+            box-shadow: 0 0 0 3px rgba(39, 141, 160, .15);
+        }
+        #attendanceRequestDiv #attendanceRequestForm .oh-switch {
+            width: auto !important;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+        }
+        #attendanceRequestDiv #id_create_bulk {
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            position: relative !important;
+            display: inline-block !important;
+            width: 44px !important;
+            min-width: 44px !important;
+            height: 26px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: 1px solid #278da0 !important;
+            border-radius: 999px !important;
+            background: #c9e8ed !important;
+            box-sizing: border-box !important;
+            vertical-align: middle;
+            cursor: pointer !important;
+            transition: background .16s ease, border-color .16s ease, box-shadow .16s ease;
+        }
+        #attendanceRequestDiv #id_create_bulk::after {
+            content: "" !important;
+            position: absolute !important;
+            top: 3px !important;
+            left: 3px !important;
+            width: 18px !important;
+            height: 18px !important;
+            margin: 0 !important;
+            background: #ffffff !important;
+            border-radius: 50% !important;
+            box-shadow: 0 1px 4px rgba(10, 77, 96, .3) !important;
+            transition: transform .16s ease !important;
+        }
+        #attendanceRequestDiv #id_create_bulk:checked {
+            border-color: #0a4d60 !important;
+            background: #0a4d60 !important;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12) !important;
+        }
+        #attendanceRequestDiv #id_create_bulk:checked::after {
+            transform: translateX(18px) !important;
+        }
+        #attendanceRequestDiv #id_create_bulk:hover {
+            box-shadow: 0 0 0 3px rgba(39, 141, 160, .14) !important;
+        }
+        #attendanceRequestDiv #id_create_bulk:focus-visible {
+            outline: 3px solid rgba(39, 141, 160, .35) !important;
+            outline-offset: 2px;
+        }
+        #attendanceRequestDiv #attendanceRequestForm .oh-btn--secondary {
+            min-height: 42px;
+            padding: 0 22px;
+            border: 1px solid #0a4d60;
+            border-radius: 999px;
+            background: #0a4d60;
+            color: #ffffff;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(10, 77, 96, .16);
+        }
+        #attendanceRequestDiv #attendanceRequestForm .oh-btn--secondary:hover {
+            background: #176f80;
+        }
+        #attendanceRequestDiv #attendanceRequestForm .errorlist {
+            margin: 5px 0 0;
+            padding: 0;
+            color: #b42332;
+            font-size: .72rem;
+            list-style: none;
+        }
+        @media (max-width: 600px) {
+            #attendanceRequestDiv .oh-profile-section__card {
+                padding: 14px;
+            }
+        }
+    </style>
     <div class="oh-modal__dialog-header">
         <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
             {% trans "New Attendances Request" %}
@@ -9,63 +174,60 @@
         </button>
     </div>
     <div class="oh-modal__dialog-body">
-        <div class="oh-general__tab-target oh-profile-section" id="personal">
-            <form
-                hx-post="{% url 'request-new-attendance' %}?bulk={{bulk}}"
-                hx-target="#objectCreateModalTarget"
-                id="attendanceRequestForm"
-            >
-                {% csrf_token %}
-                <div class="oh-profile-section__card attendance-request-form__card">
-                    <div class="row attendance-request-form__grid">
-                        <div class="col-12">{{ form.non_field_errors }}</div>
-                        {% for field in form.visible_fields %}
-                            {% if field.field.widget|is_select_multiple or field.field.widget|is_text_area %}
-                                        <div class="col-12 attendance-request-form__field attendance-request-form__field--wide" id="id_{{ field.name }}_parent_div">
-                                            <div class="oh-label__info">
-                                                <label
-                                                    class="oh-label {% if field.field.required %}required-star{% endif %}"
-                                                    for="id_{{ field.name }}"
-                                                >{{ field.label }}</label>
-                                                {% if field.help_text %}
-                                                    <span class="oh-info mr-2" title="{{ field.help_text }}"></span>
-                                                {% endif %}
-                                            </div>
+        <form
+            hx-post="{% url 'request-new-attendance' %}?bulk={{bulk}}"
+            hx-target="#objectCreateModalTarget"
+            id="attendanceRequestForm"
+        >
+            {% csrf_token %}
+            <div class="oh-profile-section__card">
+                <div class="row">
+                    <div class="col-12">{{ form.non_field_errors }}</div>
+                    {% for field in form.visible_fields %}
+                        {% if field.field.widget|is_select_multiple or field.field.widget|is_text_area %}
+                            <div class="col-12 attendance-request-field--wide">
+                                <div class="oh-label__info">
+                                    <label
+                                        class="oh-label {% if field.field.required %} required-star{% endif %}"
+                                        for="id_{{ field.name }}"
+                                    >{{ field.label }}</label>
+                                    {% if field.help_text != '' %}
+                                        <span class="oh-info mr-2" title="{{ field.help_text }}"></span>
+                                    {% endif %}
+                                </div>
+                                {{ field|add_class:"form-control" }}
+                                {{ field.errors }}
+                            </div>
+                        {% else %}
+                            <div class="col-12 col-md-6" id="id_{{field.name}}_parent_div">
+                                <div class="oh-label__info">
+                                    <label
+                                        class="oh-label {% if field.field.required %} required-star{% endif %}"
+                                        for="id_{{ field.name }}"
+                                    >{{ field.label }}</label>
+                                    {% if field.help_text != '' %}
+                                        <span class="oh-info mr-2" title="{{ field.help_text }}"></span>
+                                    {% endif %}
+                                </div>
+                                {% if field.field.widget.input_type == "checkbox" %}
+                                    <div class="oh-switch" style="width: 30px">
+                                        {{ field|add_class:"oh-switch__checkbox" }}
+                                    </div>
+                                {% else %}
                                     {{ field|add_class:"form-control" }}
-                                            {{ field.errors }}
-                                        </div>
-                            {% else %}
-                                        <div class="col-12 col-md-6 attendance-request-form__field{% if field.field.widget.input_type == 'checkbox' %} attendance-request-form__field--checkbox{% endif %}" id="id_{{ field.name }}_parent_div">
-                                            {% if field.field.widget.input_type == "checkbox" %}
-                                                <label class="attendance-request-form__checkbox-control" for="{{ field.id_for_label }}">
-                                                    {{ field|add_class:"attendance-request-form__checkbox" }}
-                                                    <span class="attendance-request-form__checkbox-label">{{ field.label }}</span>
-                                                </label>
-                                            {% else %}
-                                                <div class="oh-label__info">
-                                                    <label
-                                                        class="oh-label {% if field.field.required %}required-star{% endif %}"
-                                                        for="{{ field.id_for_label }}"
-                                                    >{{ field.label }}</label>
-                                                    {% if field.help_text %}
-                                                        <span class="oh-info mr-2" title="{{ field.help_text }}"></span>
-                                                    {% endif %}
-                                                </div>
-                                                {{ field|add_class:"form-control" }}
-                                            {% endif %}
-                                            {{ field.errors }}
-                                        </div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-
-                    <div class="attendance-request-form__actions">
-                        <button type="submit" class="oh-btn oh-btn--secondary attendance-request-form__submit">
-                            {% trans "Request" %}
-                        </button>
-                    </div>
+                                {% endif %}
+                                {{ field.errors }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
                 </div>
-            </form>
-        </div>
+
+                <div class="d-flex flex-row-reverse">
+                    <button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp">
+                        {% trans "Request" %}
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
 </div>

@@ -1,5 +1,8 @@
 {% load static i18n %}
 {% comment %}Shared employee and admin navigation using permission-filtered sidebar data for flyouts{% endcomment %}
+{% if request.user.is_authenticated and request.user.employee_get and not request.user.is_staff and not request.user.is_superuser %}
+{% include "employee_bottom_nav_employee.html" %}
+{% else %}
 
 <button id="employeeMobileNavToggle" class="employee-mobile-nav-toggle" type="button" aria-label="Open {% if request.user.is_superuser %}Super Admin{% elif request.user.is_staff %}Admin{% else %}employee{% endif %} menu" aria-expanded="false">
     <span class="material-symbols-outlined">menu</span>
@@ -2734,3 +2737,4 @@
         .on('mouseleave', scheduleFlyoutHide);
 })();
 </script>
+{% endif %}

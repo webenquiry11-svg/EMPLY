@@ -3880,7 +3880,7 @@ def employee_dashboard_summary(request):
     # Attendance data (per-employee)
     if employee and apps.is_installed("attendance"):
         try:
-            from attendance.models import Attendance, GraceTime
+            from attendance.models import Attendance, AttendanceActivity, GraceTime
             from attendance.methods.utils import (
                 format_time,
                 get_week_start_end_dates,
@@ -3888,7 +3888,7 @@ def employee_dashboard_summary(request):
                 strtime_seconds,
             )
 
-            today = date.today()
+            today = timezone.localdate()
             attendance = (
                 Attendance.objects.filter(employee_id=employee, attendance_date=today)
                 .order_by("-id")
@@ -3896,11 +3896,24 @@ def employee_dashboard_summary(request):
             )
             if attendance:
                 context["attendance"] = attendance
-                if getattr(attendance, "attendance_clock_in", None):
-                    try:
-                        context["attendance_display_time"] = attendance.attendance_clock_in.strftime("%I:%M %p")
-                    except Exception:
-                        context["attendance_display_time"] = str(attendance.attendance_clock_in)
+                attendance_clock_in = getattr(attendance, "attendance_clock_in", None)
+                attendance_activity = (
+                    AttendanceActivity.objects.filter(
+                        employee_id=employee,
+                        attendance_date=attendance.attendance_date,
+                        in_datetime__isnull=False,
+                    )
+                    .order_by("id")
+                    .first()
+                )
+                if attendance_activity:
+                    activity_in_datetime = attendance_activity.in_datetime
+                    if timezone.is_naive(activity_in_datetime):
+                        activity_in_datetime = timezone.make_aware(activity_in_datetime)
+                    attendance_clock_in = timezone.localtime(activity_in_datetime).time()
+
+                if attendance_clock_in:
+                    context["attendance_display_time"] = attendance_clock_in.strftime("%I:%M %p")
                 else:
                     context["attendance_display_time"] = None
 
@@ -3914,7 +3927,7 @@ def employee_dashboard_summary(request):
                 if worked:
                     context["worked_today"] = worked
 
-                if getattr(attendance, "attendance_clock_in", None) and not getattr(attendance, "attendance_clock_out", None):
+                if attendance_clock_in and not getattr(attendance, "attendance_clock_out", None):
                     is_late = False
                     if getattr(attendance, "shift_id", None) and getattr(attendance, "attendance_day", None):
                         _minimum_hour, shift_start_seconds, _shift_end_seconds = shift_schedule_today(
@@ -3936,7 +3949,7 @@ def employee_dashboard_summary(request):
                         if grace_time:
                             allowed_seconds = grace_time.allowed_time_in_secs
                         check_in_seconds = strtime_seconds(
-                            attendance.attendance_clock_in.strftime("%H:%M")
+                            attendance_clock_in.strftime("%H:%M")
                         )
                         is_late = (
                             shift_start_seconds > 0
@@ -3945,13 +3958,13 @@ def employee_dashboard_summary(request):
                     context["attendance_status"] = _(
                         "Checked in late" if is_late else "Checked in on time"
                     )
-                elif getattr(attendance, "attendance_clock_in", None) and getattr(attendance, "attendance_clock_out", None):
+                elif attendance_clock_in and getattr(attendance, "attendance_clock_out", None):
                     context["attendance_status"] = _("Checked out")
                 else:
                     context["attendance_status"] = _("Not checked in")
 
             try:
-                start, end = get_week_start_end_dates(date.today())
+                start, end = get_week_start_end_dates(today)
             except Exception:
                 start = today - timedelta(days=today.weekday())
                 end = today

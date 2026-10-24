@@ -569,6 +569,102 @@
             color: #173f50 !important;
             font-weight: 800 !important;
         }
+
+        /* Keep the employee dashboard balanced when one of its panels is empty. */
+        .leave-employee-dashboard .oh-dashboard {
+            align-items: flex-start;
+            column-gap: 0;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__left {
+            min-width: 0;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__right {
+            align-self: flex-start;
+            height: auto;
+            min-width: 0;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__cards {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__cards > [class*="col-"] {
+            display: flex;
+            margin-bottom: 16px;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__cards .oh-card-dashboard {
+            width: 100%;
+            min-height: 150px;
+            height: auto;
+            flex: 1 1 auto;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__movable-cards {
+            margin-top: 0 !important;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__movable-cards > [class*="col-"] {
+            display: flex;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__movable-cards .oh-card-dashboard--transparent {
+            width: 100%;
+            min-height: 330px !important;
+            height: auto;
+        }
+
+        .leave-employee-dashboard #availableLeaveContainer,
+        .leave-employee-dashboard #leaveRequest {
+            min-height: 250px;
+        }
+
+        .leave-employee-dashboard #availableLeaveContainer > div[style*="height: 310px"],
+        .leave-employee-dashboard #leaveRequest > div[style*="height: 310px"] {
+            height: 220px !important;
+            min-height: 220px;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__right > .oh-card-dashboard {
+            flex: 0 0 auto;
+            height: auto;
+            min-height: 320px;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__right > .oh-card-dashboard .oh-card-dashboard__body {
+            min-height: 240px;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__right .oh-dashboard__event {
+            margin-bottom: 16px !important;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__cards .oh-card-dashboard__header {
+            padding: 18px 20px 10px !important;
+        }
+
+        .leave-employee-dashboard .oh-dashboard__cards .oh-card-dashboard__body {
+            padding: 8px 20px 20px !important;
+        }
+
+        @media (max-width: 991.98px) {
+            .leave-employee-dashboard .oh-dashboard__right > .oh-card-dashboard {
+                min-height: 280px;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .leave-employee-dashboard .oh-dashboard__movable-cards .oh-card-dashboard--transparent {
+                min-height: 280px !important;
+            }
+
+            .leave-employee-dashboard .oh-dashboard__right > .oh-card-dashboard {
+                min-height: 240px;
+            }
+        }
     </style>
     <div class="oh-wrapper leave-employee-dashboard">
         <div class="oh-dashboard row" id="dashboard">

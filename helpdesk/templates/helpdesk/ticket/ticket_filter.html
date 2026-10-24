@@ -4,7 +4,7 @@
     hx-get="{% url 'ticket-filter' %}?view={{view}}"
     hx-target="#ticket_list"
     id="filterForm"
-    class="d-flex ticket-toolbar-controls"
+    class="d-flex"
     onsubmit="event.preventDefault()"
 >
     {% csrf_token %}

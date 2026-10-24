@@ -26,6 +26,7 @@ import io
 import json
 from collections import defaultdict
 from datetime import date, datetime, timedelta
+from types import SimpleNamespace
 from urllib.parse import parse_qs
 
 import pandas as pd
@@ -33,7 +34,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.core.validators import validate_ipv46_address
 from django.db import close_old_connections, transaction
-from django.db.models import ProtectedError
+from django.db.models import ProtectedError, Q
 from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import redirect, render
@@ -112,7 +113,9 @@ from base.methods import (
 )
 from base.models import (
     AttendanceAllowedIP,
+    CompanyLeaves,
     EmployeeShiftSchedule,
+    Holidays,
     TrackLateComeEarlyOut,
     WorkType,
 )
@@ -826,29 +829,404 @@ def view_my_attendance(request):
         return redirect("/employee/employee-profile")
     employee = user.employee_get
     employee_attendances = employee.employee_attendances.all()
+    activity_month_value = request.GET.get("activity_month")
+    activity_month = None
+    if activity_month_value:
+        try:
+            activity_month = datetime.strptime(
+                activity_month_value, "%Y-%m"
+            ).date().replace(day=1)
+        except ValueError:
+            return HttpResponseBadRequest("Invalid attendance activity month.")
+        if activity_month.strftime("%Y-%m") != activity_month_value:
+            return HttpResponseBadRequest("Invalid attendance activity month.")
     filter = AttendanceFilters()
-    if employee_attendances.exists():
-        template = "attendance/own_attendance/view_own_attendances.html"
-    else:
-        template = "attendance/own_attendance/own_empty.html"
+    template = "attendance/own_attendance/view_own_attendances.html"
+    attendance_page = own_attendance_page(employee, employee_attendances, request)
+    monthly_activity = get_monthly_attendance_activity(employee, month=activity_month)
     attendances_ids = json.dumps(
         [
             instance.id
-            for instance in paginator_qry(
-                employee_attendances, request.GET.get("page")
-            ).object_list
+            for instance in attendance_page.object_list
+            if instance.id is not None
         ]
     )
     return render(
         request,
         template,
         {
-            "attendances": paginator_qry(employee_attendances, request.GET.get("page")),
+            "attendances": attendance_page,
             "attendances_ids": attendances_ids,
             "f": filter,
             "gp_fields": AttendanceReGroup.fields,
+            "monthly_activity": monthly_activity,
         },
     )
+
+
+def get_monthly_attendance_activity(employee, today=None, month=None):
+    """Summarize the employee's attendance and approved leave for a selected month."""
+    from leave.models import LeaveRequest
+
+    today = today or django_timezone.localdate()
+    month_start = month or today.replace(day=1)
+    month_end = month_start.replace(
+        day=calendar.monthrange(month_start.year, month_start.month)[1]
+    )
+    work_records = list(
+        WorkRecords.objects.filter(
+            employee_id=employee,
+            date__gte=month_start,
+            date__lte=month_end,
+        ).select_related("leave_request_id__leave_type_id")
+    )
+
+    present_days = 0
+    absent_days = 0
+    leave_days_by_type = defaultdict(float)
+    holiday_dates = set()
+    sunday_count = 0
+    company_leaves = list(CompanyLeaves.objects.all())
+    holidays = list(
+        Holidays.objects.filter(
+            Q(start_date__lte=month_end)
+            & (Q(end_date__gte=month_start) | Q(end_date__isnull=True))
+            | Q(recurring=True)
+        )
+    )
+
+    for offset in range((month_end - month_start).days + 1):
+        current_day = month_start + timedelta(days=offset)
+        if current_day.weekday() == 6:
+            sunday_count += 1
+        first_weekday = month_start.weekday()
+        week_number = (current_day.day + first_weekday - 1) // 7
+        if any(
+            str(company_leave.based_on_week_day or "").isdigit()
+            and int(company_leave.based_on_week_day) == current_day.weekday()
+            and (
+                company_leave.based_on_week in (None, "")
+                or (
+                    str(company_leave.based_on_week).isdigit()
+                    and int(company_leave.based_on_week) == week_number
+                )
+            )
+            for company_leave in company_leaves
+        ):
+            holiday_dates.add(current_day)
+        for holiday in holidays:
+            holiday_end = holiday.end_date or holiday.start_date
+            if holiday.recurring and (
+                holiday.start_date.month == current_day.month
+                and holiday.start_date.day == current_day.day
+            ):
+                holiday_dates.add(current_day)
+            elif holiday.start_date <= current_day <= holiday_end:
+                holiday_dates.add(current_day)
+
+    for record in work_records:
+        if record.work_record_type in {"FDP", "HDP"} and not record.is_leave_record:
+            present_days += record.day_percentage or (
+                0.5 if record.work_record_type == "HDP" else 1
+            )
+        elif record.work_record_type == "ABS" and not record.is_leave_record:
+            absent_days += 1
+        elif (
+            record.is_leave_record
+            and record.leave_request_id
+            and record.leave_request_id.status == "approved"
+            and record.leave_request_id.leave_type_id.leave_unit != "minute"
+        ):
+            leave_request = record.leave_request_id
+            is_half_day = (
+                record.date == leave_request.start_date
+                and leave_request.start_date_breakdown != "full_day"
+            ) or (
+                record.date == leave_request.end_date
+                and leave_request.end_date_breakdown != "full_day"
+            )
+            leave_days_by_type[leave_request.leave_type_id.name] += (
+                0.5 if is_half_day else 1
+            )
+
+    approved_day_leaves = LeaveRequest.objects.filter(
+        employee_id=employee,
+        status="approved",
+        leave_type_id__leave_unit="day",
+        start_date__lte=month_end,
+    ).filter(Q(end_date__gte=month_start) | Q(end_date__isnull=True))
+    for leave_request in approved_day_leaves:
+        overlap_start = max(leave_request.start_date, month_start)
+        overlap_end = min(leave_request.end_date or leave_request.start_date, today)
+        if overlap_start > overlap_end:
+            continue
+        if not WorkRecords.objects.filter(
+            employee_id=employee,
+            leave_request_id=leave_request,
+            date__gte=overlap_start,
+            date__lte=overlap_end,
+        ).exists():
+            overlap_days = (overlap_end - overlap_start).days + 1
+            leave_days_by_type[leave_request.leave_type_id.name] += min(
+                overlap_days, leave_request.requested_days or overlap_days
+            )
+
+    leave_types = [
+        {"name": name, "total": days, "unit": _("days")}
+        for name, days in sorted(leave_days_by_type.items())
+    ]
+    minute_leave_totals = defaultdict(int)
+    for leave_request in LeaveRequest.objects.filter(
+        employee_id=employee,
+        status="approved",
+        leave_type_id__leave_unit="minute",
+        start_date__gte=month_start,
+        start_date__lte=month_end,
+    ).select_related("leave_type_id"):
+        minute_leave_totals[leave_request.leave_type_id.name] += (
+            leave_request.approved_minutes or leave_request.requested_minutes or 0
+        )
+    leave_types.extend(
+        {"name": name, "total": minutes, "unit": _("min")}
+        for name, minutes in sorted(minute_leave_totals.items())
+    )
+
+    for record in work_records:
+        if record.work_record_type == "HD":
+            holiday_dates.add(record.date)
+
+    return {
+        "month": month_start.strftime("%B %Y"),
+        "value": month_start.strftime("%Y-%m"),
+        "present_days": present_days,
+        "absent_days": absent_days,
+        "leave_days": sum(leave_days_by_type.values()),
+        "leave_types": leave_types,
+        "sundays": sunday_count,
+        "holidays": len(holiday_dates),
+    }
+
+
+def own_attendance_page(employee, attendances, request):
+    """Paginate saved attendance with display-only holidays, leave, and absences."""
+    from leave.models import LeaveRequest
+
+    all_attendances = employee.employee_attendances.all()
+    work_info = EmployeeWorkInformation.objects.filter(employee_id=employee).first()
+    rows = list(attendances)
+    end_date = django_timezone.localdate()
+    start_date = end_date.replace(day=1)
+    if work_info and work_info.date_joining:
+        start_date = max(start_date, work_info.date_joining)
+    date_from = request.GET.get("attendance_date__gte")
+    date_to = request.GET.get("attendance_date__lte")
+    if date_from:
+        start_date = max(start_date, date.fromisoformat(date_from))
+    if date_to:
+        end_date = min(end_date, date.fromisoformat(date_to))
+    exact_date = request.GET.get("attendance_date") or request.GET.get(
+        "date_attendance"
+    )
+    if exact_date:
+        selected_date = date.fromisoformat(exact_date)
+        start_date = max(start_date, selected_date)
+        end_date = min(end_date, selected_date)
+
+    recorded_dates = set(
+        all_attendances.filter(
+            attendance_date__gte=start_date, attendance_date__lte=end_date
+        ).values_list("attendance_date", flat=True)
+    )
+    holidays = list(
+        Holidays.objects.filter(
+            Q(recurring=True)
+            | (
+                Q(start_date__lte=end_date)
+                & (
+                    Q(end_date__gte=start_date)
+                    | Q(end_date__isnull=True, start_date__gte=start_date)
+                )
+            )
+        )
+    )
+    holiday_names_by_date = {}
+    for holiday in holidays:
+        holiday_end = holiday.end_date or holiday.start_date
+        if holiday.recurring:
+            duration = (holiday_end - holiday.start_date).days
+            first_year = max(start_date.year, holiday.start_date.year)
+            for year in range(first_year, end_date.year + 1):
+                try:
+                    occurrence_start = date(
+                        year, holiday.start_date.month, holiday.start_date.day
+                    )
+                except ValueError:
+                    continue
+                for offset in range(duration + 1):
+                    holiday_date = occurrence_start + timedelta(days=offset)
+                    if start_date <= holiday_date <= end_date:
+                        holiday_names_by_date.setdefault(holiday_date, holiday.name)
+        else:
+            current = max(start_date, holiday.start_date)
+            current_end = min(end_date, holiday_end)
+            while current <= current_end:
+                holiday_names_by_date.setdefault(current, holiday.name)
+                current += timedelta(days=1)
+
+    company_leave_dates = set()
+    company_leaves = list(CompanyLeaves.objects.all())
+    calendar_helper = calendar.Calendar(firstweekday=6)
+    for year in range(start_date.year, end_date.year + 1):
+        for month in range(1, 13):
+            month_weeks = calendar_helper.monthdayscalendar(year, month)
+            for company_leave in company_leaves:
+                if not str(company_leave.based_on_week_day or "").isdigit():
+                    continue
+                weekday = int(company_leave.based_on_week_day)
+                calendar_weekday = (weekday + 1) % 7
+                if company_leave.based_on_week in (None, ""):
+                    selected_weeks = range(len(month_weeks))
+                else:
+                    if not str(company_leave.based_on_week).isdigit():
+                        continue
+                    selected_week = int(company_leave.based_on_week)
+                    selected_weeks = (
+                        [selected_week]
+                        if selected_week < len(month_weeks)
+                        else []
+                    )
+                for week_index in selected_weeks:
+                    day_number = month_weeks[week_index][calendar_weekday]
+                    if day_number:
+                        leave_date = date(year, month, day_number)
+                        if start_date <= leave_date <= end_date:
+                            company_leave_dates.add(leave_date)
+
+    approved_leaves = LeaveRequest.objects.filter(
+        employee_id=employee,
+        status="approved",
+        start_date__lte=end_date,
+    ).filter(Q(end_date__gte=start_date) | Q(end_date__isnull=True)).select_related(
+        "leave_type_id"
+    )
+    leave_names_by_date = {}
+    for leave_request in approved_leaves:
+        leave_date = max(start_date, leave_request.start_date)
+        leave_end = min(end_date, leave_request.end_date or leave_request.start_date)
+        leave_name = (
+            leave_request.leave_type_id.name
+            if leave_request.leave_type_id
+            else _("Leave")
+        )
+        while leave_date <= leave_end:
+            leave_names_by_date.setdefault(leave_date, leave_name)
+            leave_date += timedelta(days=1)
+
+    shift_days = set()
+    if work_info and work_info.shift_id:
+        shift_days = {
+            day.lower()
+            for day in work_info.shift_id.days.values_list("day", flat=True)
+        }
+    if not shift_days:
+        shift_days = {
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+            "saturday",
+        }
+
+    for attendance in rows:
+        attendance.is_calendar_holiday = (
+            attendance.attendance_date in holiday_names_by_date
+            or attendance.attendance_date in company_leave_dates
+        )
+        attendance.is_calendar_leave = (
+            attendance.attendance_date in leave_names_by_date
+            and not attendance.is_calendar_holiday
+        )
+        attendance.calendar_holiday_name = holiday_names_by_date.get(
+            attendance.attendance_date,
+            _("Company leave")
+            if attendance.attendance_date in company_leave_dates
+            else None,
+        )
+        attendance.calendar_leave_name = leave_names_by_date.get(
+            attendance.attendance_date
+        )
+
+    current_date = start_date
+    while current_date <= end_date:
+        if current_date not in recorded_dates:
+            weekday_name = current_date.strftime("%A").lower()
+            holiday_name = holiday_names_by_date.get(current_date)
+            is_holiday = bool(
+                holiday_name
+                or current_date in company_leave_dates
+                or current_date.weekday() == 6
+            )
+            leave_name = leave_names_by_date.get(current_date)
+            is_leave = bool(leave_name and not is_holiday)
+            is_absent = bool(
+                not is_holiday and not is_leave and weekday_name in shift_days
+            )
+            if is_holiday or is_leave or is_absent:
+                attendance_day = (
+                    _("Sunday")
+                    if current_date.weekday() == 6 and not holiday_name
+                    else _(current_date.strftime("%A"))
+                )
+                rows.append(
+                    SimpleNamespace(
+                        id=None,
+                        employee_id=employee,
+                        attendance_date=current_date,
+                        attendance_day=attendance_day,
+                        is_auto_holiday=is_holiday,
+                        is_auto_leave=is_leave,
+                        is_auto_absent=is_absent,
+                        calendar_holiday_name=holiday_name,
+                        calendar_leave_name=leave_name,
+                        is_calendar_holiday=is_holiday,
+                        is_calendar_leave=is_leave,
+                        is_validate_request_approved=False,
+                        attendance_validated=False,
+                        is_validate_request=False,
+                        attendance_clock_in=None,
+                        attendance_clock_in_date=None,
+                        attendance_clock_out=None,
+                        attendance_clock_out_date=None,
+                        shift_id=work_info.shift_id if work_info else None,
+                        work_type_id=work_info.work_type_id if work_info else None,
+                        minimum_hour="00:00",
+                        attendance_worked_hour="00:00",
+                        hours_pending="00:00",
+                        attendance_overtime="00:00",
+                    )
+                )
+        current_date += timedelta(days=1)
+
+    order_by = request.GET.get("orderby", "-attendance_date")
+    descending = order_by.startswith("-")
+    field_name = order_by.lstrip("-").split("__")[-1]
+
+    def row_sort_key(row):
+        value = getattr(row, field_name, None)
+        if field_name == "employee_first_name":
+            value = getattr(row.employee_id, "employee_first_name", "")
+        if value is None:
+            return (0, "")
+        if hasattr(value, "isoformat"):
+            return (1, value.isoformat())
+        if isinstance(value, (int, float)):
+            return (2, value)
+        return (3, str(value).casefold())
+
+    rows.sort(key=lambda row: row.attendance_date, reverse=True)
+    rows.sort(key=row_sort_key, reverse=descending)
+    return paginator_qry(rows, request.GET.get("page"))
 
 
 @login_required

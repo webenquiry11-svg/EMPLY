@@ -1,2832 +1,1890 @@
-{% load i18n tz horillafilters accessibility_filters %}
-<style>
-    :root {
-        --bg-main: #f5f7f3;
-        --card-bg-dark: #2f5752;
-        --card-bg-light: #ffffff;
-        --accent-green: #2f5752;
-        --accent-light-green: #d9f1e4;
-        --text-main: #ffffff;
-        --text-muted-dark: #b7c9c5;
-        --text-main-light: #111812;
-        --text-muted-light: #667569;
-        --border-soft: rgba(255,255,255,0.14);
-        --warning-bg: #34281a;
-        --warning-text: #dfab66;
-    }
-
-    .employee-dashboard-shell {
-        width: 100%;
-        max-width: none;
-        margin: 0;
-        padding: 1.25rem clamp(1rem, 3vw, 3.5rem) 7rem;
-        background: var(--bg-main);
-        color: var(--text-main);
-        min-height: calc(100vh - 94px);
-    }
-
-    .employee-dashboard-shell .employee-dashboard-card {
-        position: relative;
-        height: 100%;
-        background: #c7e5eb;
-        border: 1px solid var(--border-soft);
-        border-radius: 22px;
-        box-shadow: 0 12px 28px rgba(2, 8, 5, 0.2);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-        color: var(--text-main);
-        overflow: hidden;
-        padding: 1rem 1rem 1.1rem;
-        box-sizing: border-box;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-card::before {
-        content: "";
-        position: absolute;
-        inset: 0 auto auto 0;
-        width: 100%;
-        height: 1px;
-        background: linear-gradient(90deg, rgba(45,90,63,0.7), transparent 40%, transparent 100%);
-        opacity: 0.9;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 16px 30px rgba(1, 9, 5, 0.28);
-        border-color: rgba(255,255,255,0.12);
-    }
-
-    .employee-dashboard-shell .employee-dashboard-card .oh-card-dashboard__header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 0.95rem;
-        padding: 0 0.25rem 0.8rem;
-        border-bottom: 1px solid var(--border-soft);
-    }
-
-    .employee-dashboard-shell .employee-dashboard-card .oh-card-dashboard__title {
-        font-size: 0.77rem;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--text-muted-dark);
-        font-weight: 700;
-        display: inline-block;
-        padding: 0 0.25rem;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-card .oh-card-dashboard__body {
-        padding: 0 0.25rem;
-        display: flex;
-        flex-direction: column;
-        min-width: 0;
-    }
-
-    .employee-dashboard-hero {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1.2rem;
-        padding: 1.5rem 1.6rem;
-        margin-bottom: 1.4rem;
-        border-radius: 28px;
-        border: 1px solid rgba(255,255,255,0.08);
-        background: var(--card-bg-dark);
-        box-shadow: 0 18px 46px rgba(1, 9, 5, 0.22);
-        color: var(--text-main);
-        overflow: hidden;
-    }
-
-    .employee-dashboard-hero::after {
-        content: "";
-        position: absolute;
-        right: -40px;
-        top: -35px;
-        width: 180px;
-        height: 180px;
-        border-radius: 50%;
-        background: rgba(45, 90, 63, 0.16);
-        filter: blur(10px);
-    }
-
-    .employee-dashboard-hero__identity {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        min-width: 0;
-    }
-
-    .employee-dashboard-hero__avatar {
-        width: 72px;
-        height: 72px;
-        flex-shrink: 0;
-        border-radius: 50%;
-        overflow: hidden;
-        background: linear-gradient(135deg, var(--accent-green), #1a2b22);
-        border: 2px solid rgba(255,255,255,0.08);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text-main);
-        font-size: 1.5rem;
-        font-weight: 700;
-    }
-
-    .employee-dashboard-hero__avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-    }
-
-    .employee-dashboard-hero__content {
-        min-width: 0;
-    }
-
-    .employee-dashboard-hero__greeting {
-        display:flex;
-        align-items:center;
-        gap:0.75rem;
-        font-weight:800;
-        font-size:1rem;
-        color: var(--text-main);
-    }
-
-    .employee-dashboard-hero__greeting .icon {
-        font-size:1.25rem;
-        display:inline-flex;
-        width:40px;
-        height:40px;
-        align-items:center;
-        justify-content:center;
-        border-radius:9px;
-        background: rgba(255,255,255,0.06);
-        border: 1px solid rgba(255,255,255,0.04);
-    }
-
-    .employee-dashboard-hero__greeting-sub {
-        font-size:0.84rem;
-        color: var(--text-muted-dark);
-        font-weight:700;
-        margin-top:0.08rem;
-    }
-
-    .employee-dashboard-hero__title {
-        margin: 0.7rem 0 0.2rem;
-        font-size: clamp(1.5rem, 2vw, 2.2rem);
-        line-height: 1.2;
-        color: var(--text-main);
-        font-weight: 800;
-    }
-
-    .employee-dashboard-hero__meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem 0.9rem;
-        color: var(--text-muted-dark);
-        font-size: 0.92rem;
-        font-weight: 500;
-    }
-
-    .employee-dashboard-hero__meta span {
-        display: inline-flex;
-        align-items: center;
-    }
-
-    .employee-dashboard-hero__meta span + span::before {
-        content: "•";
-        margin-right: 0.65rem;
-        color: rgba(255,255,255,0.32);
-    }
-
-    .employee-dashboard-hero__aside {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        gap: 0.9rem;
-        margin-left: auto;
-        flex-wrap: wrap;
-    }
-
-    .employee-dashboard-hero__status {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 148px;
-        padding: 0.8rem 1rem;
-        border-radius: 16px;
-        background: rgba(45, 90, 63, 0.16);
-        border: 1px solid rgba(255,255,255,0.06);
-        color: var(--accent-light-green);
-        font-size: 0.78rem;
-        font-weight: 700;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-    }
-
-    .employee-dashboard-hero__time-widget {
-        min-width: 176px;
-        padding: 0.7rem 0.9rem 0.8rem;
-        border-radius: 16px;
-        background: rgba(16, 24, 18, 0.72);
-        border: 1px solid rgba(255,255,255,0.08);
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
-        text-align: right;
-    }
-
-    .employee-dashboard-hero__time-widget-label {
-        font-size: 0.62rem;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        font-weight: 700;
-        color: var(--text-muted-dark);
-        margin-bottom: 0.32rem;
-    }
-
-    .employee-dashboard-hero__time-widget-time {
-        font-size: clamp(1.15rem, 1.9vw, 1.9rem);
-        line-height: 1.1;
-        font-weight: 800;
-        color: var(--text-main);
-        letter-spacing: -0.03em;
-    }
-
-    .employee-dashboard-hero__time-widget-date {
-        margin-top: 0.2rem;
-        font-size: 0.72rem;
-        line-height: 1.4;
-        color: var(--text-muted-dark);
-        font-weight: 600;
-    }
-
-    .employee-dashboard-summary-row {
-        display: grid;
-        grid-template-columns: repeat(12, minmax(0, 1fr));
-        gap: 1rem;
-    }
-
-    .employee-dashboard-summary-row > .employee-dashboard-card {
-        grid-column: span 3;
-    }
-
-    .employee-dashboard-summary-row > .employee-dashboard-card--wide {
-        grid-column: span 6;
-    }
-
-    .employee-dashboard-summary-row > .employee-dashboard-card--full {
-        grid-column: span 12;
-    }
-
-    .leave-balance-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0.85rem;
-        margin-top: 1rem;
-        padding-top: 0.7rem;
-        border-top: 1px solid rgba(255,255,255,0.05);
-    }
-
-    .leave-balance-item {
-        display: grid;
-        grid-template-columns: minmax(90px, 1fr) minmax(120px, 1.2fr) auto;
-        gap: 0.7rem;
-        align-items: center;
-    }
-
-    .leave-balance-item__name {
-        font-size: 0.8rem;
-        color: var(--text-main);
-        font-weight: 600;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .leave-balance-item__meta {
-        font-size: 0.72rem;
-        color: var(--text-muted-dark);
-        text-align: right;
-        white-space: nowrap;
-    }
-
-    .leave-balance-item__bar {
-        width: 100%;
-        height: 8px;
-        border-radius: 999px;
-        background: rgba(255,255,255,0.06);
-        border: 1px solid rgba(255,255,255,0.04);
-        overflow: hidden;
-    }
-
-    .leave-balance-item__fill {
-        height: 100%;
-        border-radius: inherit;
-        background: linear-gradient(90deg, var(--accent-green), #6fa98d);
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.14);
-    }
-
-    .work-hours-chart {
-        display: grid;
-        grid-template-columns: repeat(7, minmax(0, 1fr));
-        gap: 0.7rem;
-        align-items: end;
-        min-height: 150px;
-        margin-top: 1rem;
-        padding-top: 0.7rem;
-        border-top: 1px solid rgba(255,255,255,0.05);
-    }
-
-    .work-hours-day {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: end;
-        height: 150px;
-        gap: 0.35rem;
-    }
-
-    .work-hours-day__bar-wrap {
-        width: 100%;
-        height: 92px;
-        display: flex;
-        align-items: flex-end;
-        justify-content: center;
-        padding: 0.32rem 0.15rem 0;
-        border-radius: 12px;
-        background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.015));
-        border: 1px solid rgba(255,255,255,0.04);
-    }
-
-    .work-hours-day__bar {
-        width: 100%;
-        max-width: 30px;
-        min-height: 6px;
-        border-radius: 9px 9px 4px 4px;
-        background: linear-gradient(180deg, #79af96, var(--accent-green));
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
-    }
-
-    .work-hours-day__label {
-        font-size: 0.68rem;
-        color: var(--text-muted-dark);
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-    }
-
-    .work-hours-day__value {
-        font-size: 0.72rem;
-        color: var(--text-main);
-        font-weight: 600;
-        line-height: 1.2;
-    }
-
-    .employee-dashboard-attendance {
-        margin-top: 1rem;
-    }
-
-    .employee-dashboard-attendance__header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 1px solid rgba(255,255,255,0.05);
-    }
-
-    .employee-dashboard-attendance__legend {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.7rem;
-        align-items: center;
-        justify-content: flex-end;
-    }
-
-    .attendance-legend-item {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.45rem;
-        font-size: 0.72rem;
-        color: var(--text-muted-dark);
-    }
-
-    .attendance-legend-swatch {
-        width: 9px;
-        height: 9px;
-        border-radius: 50%;
-        display: inline-block;
-    }
-
-    .attendance-legend-swatch.present { background: #3a8e63; }
-    .attendance-legend-swatch.late { background: #ce9e5c; }
-    .attendance-legend-swatch.absent { background: rgba(255,255,255,0.18); }
-    .attendance-legend-swatch.leave { background: #7ea7ed; }
-    .attendance-legend-swatch.holiday { background: #d1e7dd; }
-
-    .employee-dashboard-attendance__grid {
-        display: grid;
-        grid-template-columns: repeat(7, minmax(0, 1fr));
-        gap: 0.55rem;
-    }
-
-    .employee-dashboard-attendance__weekday {
-        font-size: 0.7rem;
-        color: var(--text-muted-dark);
-        font-weight: 700;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        text-align: center;
-        padding-bottom: 0.2rem;
-    }
-
-    .attendance-day {
-        min-height: 70px;
-        border-radius: 12px;
-        border: 1px solid rgba(255,255,255,0.06);
-        background: rgba(255,255,255,0.02);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        font-size: 0.8rem;
-        font-weight: 700;
-        color: var(--text-main);
-        transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
-        cursor: default;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
-    }
-
-    .attendance-day:hover {
-        transform: translateY(-1px);
-        border-color: rgba(255,255,255,0.12);
-        box-shadow: 0 8px 18px rgba(0,0,0,0.15);
-    }
-
-    .attendance-day.day--present { background: rgba(58, 142, 99, 0.12); border-color: rgba(58, 142, 99, 0.25); }
-    .attendance-day.day--late { background: rgba(206, 158, 92, 0.12); border-color: rgba(206, 158, 92, 0.26); }
-    .attendance-day.day--leave { background: rgba(126, 167, 237, 0.12); border-color: rgba(126, 167, 237, 0.24); }
-    .attendance-day.day--holiday { background: rgba(209, 231, 221, 0.12); border-color: rgba(209, 231, 221, 0.22); }
-    .attendance-day.day--absent { background: rgba(184, 71, 71, 0.08); border-color: rgba(184, 71, 71, 0.18); }
-    .attendance-day.day--weekend { background: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.04); color: var(--text-muted-dark); }
-    .attendance-day.day--pending { background: rgba(255,255,255,0.015); border-color: rgba(255,255,255,0.04); color: var(--text-muted-dark); }
-    .attendance-day.day--empty { background: transparent; border: 1px solid transparent; }
-
-    .employee-dashboard-lower-grid {
-        display: grid;
-        grid-template-columns: repeat(12, minmax(0, 1fr));
-        gap: 1rem;
-        margin-top: 1rem;
-    }
-
-    .employee-dashboard-lower-grid > .employee-dashboard-card {
-        grid-column: span 6;
-    }
-
-    .employee-dashboard-card .metric-value {
-        font-size: clamp(1.6rem, 2vw, 2.25rem);
-        font-weight: 800;
-        line-height: 1.1;
-        color: var(--text-main);
-        letter-spacing: -0.03em;
-    }
-
-    .employee-dashboard-card .oh-card-dashboard__header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 1rem;
-        padding: 0 0.25rem 0.8rem;
-    }
-
-    .employee-dashboard-card .metric-label {
-        margin-top: 0.5rem;
-        color: var(--text-muted-dark);
-        font-size: 0.8rem;
-        font-weight: 600;
-        line-height: 1.4;
-    }
-
-    .employee-dashboard-card .metric-subtitle {
-        margin-top: 0.7rem;
-        color: var(--text-muted-dark);
-        font-size: 0.82rem;
-        line-height: 1.6;
-    }
-
-    .employee-dashboard-card .leave-percent {
-        font-size: 0.82rem;
-        font-weight: 700;
-        color: var(--accent-light-green);
-        margin-left: auto;
-    }
-
-    .employee-dashboard-card .metric-subtitle strong {
-        color: var(--accent-light-green);
-    }
-
-    .employee-dashboard-card .progress {
-        height: 8px;
-        margin-top: 0.9rem;
-        border-radius: 999px;
-        overflow: hidden;
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.04);
-    }
-
-    .employee-dashboard-card .progress-bar {
-        background: linear-gradient(90deg, var(--accent-green), #6dad8d);
-        border-radius: 999px;
-    }
-
-    .employee-dashboard-card .action-stack {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 0.7rem;
-        margin-top: 0.9rem;
-        width: 100%;
-    }
-
-    .employee-dashboard-card .action-stack .oh-btn {
-        width: 100%;
-        min-width: 0;
-        justify-content: center;
-        border-radius: 12px;
-        font-weight: 700;
-        letter-spacing: 0.01em;
-        box-shadow: none;
-        padding: 0.8rem 1rem;
-        background: var(--accent-green);
-        border: 1px solid rgba(255,255,255,0.08);
-        color: var(--text-main);
-    }
-
-    .employee-dashboard-card .action-stack .oh-btn:hover {
-        background: #375d49;
-        color: var(--text-main);
-    }
-
-    .employee-dashboard-card .empty-state {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        min-height: 130px;
-        color: var(--text-muted-dark);
-        font-size: 0.92rem;
-        line-height: 1.6;
-    }
-
-    .employee-dashboard-htmx {
-        min-height: 160px;
-    }
-
-    .employee-dashboard-htmx .oh-empty {
-        min-height: 120px;
-        padding: 1rem 0.5rem;
-        border-radius: 18px;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.06);
-        color: var(--accent-light-green);
-    }
-
-    .employee-dashboard-htmx .oh-empty__title {
-        font-size: 1rem;
-        color: var(--text-main);
-    }
-
-    .employee-dashboard-htmx .oh-empty__subtitle {
-        font-size: 0.8rem;
-        color: var(--text-muted-dark);
-    }
-
-    .employee-dashboard-htmx .oh-dashboard__events {
-        width: 100%;
-    }
-
-    .employee-dashboard-htmx .oh-dashboard__event {
-        border-radius: 16px;
-        background: rgba(255,255,255,0.02) !important;
-        border: 1px solid rgba(255,255,255,0.08);
-        box-shadow: none;
-        color: var(--text-main);
-    }
-
-    .employee-dashboard-htmx .oh-sticky-table__tbody {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    .employee-dashboard-htmx .oh-sticky-table__tr {
-        background: rgba(255,255,255,0.02);
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 14px;
-        padding: 0.55rem 0.7rem;
-    }
-
-    .leave-balance-wrap {
-        display:flex;
-        align-items:center;
-        gap:1rem;
-        width: 100%;
-    }
-
-    .leave-balance-left {
-        flex:0 0 84px;
-    }
-
-    .leave-balance-right {
-        flex:1 1 auto;
-        min-width: 0;
-    }
-
-    .leave-circle {
-        width:72px;
-        height:72px;
-        border-radius:50%;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        background: linear-gradient(135deg, rgba(45,90,63,0.28), rgba(209,231,221,0.08));
-        border:3px solid rgba(255,255,255,0.08);
-        font-weight:800;
-        color: var(--accent-light-green);
-    }
-
-    .leave-progress {
-        height:10px;
-        border-radius:999px;
-        background: rgba(255,255,255,0.06);
-        overflow:hidden;
-        margin-top:0.6rem;
-        border: 1px solid rgba(255,255,255,0.04);
-    }
-
-    .leave-progress .bar {
-        height:100%;
-        background: linear-gradient(90deg, var(--accent-green), #73b28f);
-        width:0%;
-        transition:width 0.6s ease;
-    }
-
-    .leave-stats {
-        display:flex;
-        align-items:center;
-        flex-wrap: wrap;
-        gap:0.75rem 1rem;
-        margin-top:0.6rem;
-        color: var(--text-muted-dark);
-        line-height: 1.4;
-    }
-
-    .birthday-slider,
-    .birthday-card {
-        background: linear-gradient(180deg, rgba(22,31,24,0.95), rgba(14,18,15,0.96));
-        border:1px solid rgba(255,255,255,0.08);
-        color: var(--text-main);
-    }
-
-    .birthday-card__badge {
-        background: rgba(45,90,63,0.18);
-        color: var(--accent-light-green);
-    }
-
-    .birthday-card__name {
-        color: var(--text-main);
-    }
-
-    .birthday-card__meta {
-        color: var(--text-muted-dark);
-    }
-
-    .employee-dashboard-hero.greeting--morning {
-        background: linear-gradient(90deg, rgba(45,90,63,0.25), rgba(22,31,24,0.96));
-        color: var(--text-main);
-    }
-
-    .employee-dashboard-hero.greeting--afternoon {
-        background: linear-gradient(90deg, rgba(45,90,63,0.18), rgba(22,31,24,0.96));
-        color: var(--text-main);
-    }
-
-    .employee-dashboard-hero.greeting--evening {
-        background: linear-gradient(90deg, rgba(45,90,63,0.22), rgba(22,31,24,0.96));
-        color: var(--text-main);
-    }
-
-    .employee-dashboard-hero.greeting--night {
-        background: linear-gradient(90deg, rgba(45,90,63,0.22), rgba(9,12,10,0.96));
-        color: var(--text-main);
-    }
-
-    .employee-dashboard-card .action-stack .oh-btn--secondary {
-        background: rgba(255,255,255,0.03);
-        color: var(--accent-light-green);
-    }
-
-    .employee-dashboard-card .action-stack .oh-btn--secondary:hover {
-        background: rgba(255,255,255,0.06);
-    }
-
-    @media (max-width: 1100px) {
-        .employee-dashboard-summary-row > .employee-dashboard-card {
-            grid-column: span 4;
-        }
-    }
-
-    @media (max-width: 992px) {
-        .employee-dashboard-summary-row > .employee-dashboard-card,
-        .employee-dashboard-summary-row > .employee-dashboard-card--wide {
-            grid-column: span 6;
-        }
-    }
-
-    @media (max-width: 800px) {
-        .employee-dashboard-summary-row > .employee-dashboard-card {
-            grid-column: span 6;
-        }
-        .employee-dashboard-attendance__grid {
-            gap: 0.45rem;
-        }
-    }
-
-    @media (max-width: 640px) {
-        .employee-dashboard-shell {
-            padding: 0.85rem 0.75rem 7rem;
-            overflow-x: hidden;
-        }
-
-        .employee-dashboard-hero {
-            flex-direction: column;
-            align-items: flex-start;
-            width: 100%;
-            padding: 1rem;
-            gap: 0.8rem;
-        }
-
-        .employee-dashboard-hero__status {
-            width: 100%;
-        }
-
-        .employee-dashboard-hero__identity {
-            width: 100%;
-            gap: 0.7rem;
-        }
-
-        .employee-dashboard-hero__avatar {
-            width: 56px;
-            height: 56px;
-        }
-
-        .employee-dashboard-hero__title {
-            font-size: 1.35rem;
-        }
-
-        .employee-dashboard-hero__meta {
-            font-size: 0.78rem;
-        }
-
-        .employee-dashboard-card {
-            border-radius: 16px !important;
-            padding: 0.8rem !important;
-        }
-
-        .employee-dashboard-attendance__grid {
-            grid-template-columns: repeat(7, minmax(34px, 1fr));
-            overflow-x: auto;
-            padding-bottom: 4px;
-        }
-
-        .employee-dashboard-summary-row,
-        .employee-dashboard-lower-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .employee-dashboard-summary-row > .employee-dashboard-card,
-        .employee-dashboard-summary-row > .employee-dashboard-card--wide,
-        .employee-dashboard-lower-grid > .employee-dashboard-card {
-            grid-column: span 1;
-        }
-    }
-
-    @media (max-width: 540px) {
-        .employee-dashboard-shell {
-            padding-left: 0.6rem;
-            padding-right: 0.6rem;
-        }
-
-        .employee-dashboard-summary-row,
-        .employee-dashboard-lower-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .employee-dashboard-summary-row > .employee-dashboard-card {
-            grid-column: span 1;
-        }
-    }
-</style>
+{% load i18n tz horillafilters accessibility_filters static %}
 
 <style>
+/* ==========================================================================
+   EMPLY MODERN SAAS EMPLOYEE DASHBOARD
+   Design System: Refined Neutral Slate, Clean Elevation, Deep Executive Hero
+   ========================================================================== */
+
+:root {
+    --ep-canvas: #f8fafc;
+    --ep-surface: #ffffff;
+    --ep-surface-subtle: #f8fafc;
+    --ep-border: #e2e8f0;
+    --ep-border-subtle: #f1f5f9;
+    --ep-border-hover: #cbd5e1;
+
+    --ep-text-heading: #0f172a;
+    --ep-text-body: #334155;
+    --ep-text-muted: #64748b;
+    --ep-text-subtle: #94a3b8;
+
+    --ep-primary: #0f766e;
+    --ep-primary-hover: #115e59;
+    --ep-primary-light: #f0fdfa;
+    --ep-primary-border: #ccfbf1;
+
+    --ep-emerald: #059669;
+    --ep-emerald-light: #ecfdf5;
+    --ep-emerald-border: #a7f3d0;
+
+    --ep-blue: #2563eb;
+    --ep-blue-light: #eff6ff;
+    --ep-blue-border: #bfdbfe;
+
+    --ep-amber: #d97706;
+    --ep-amber-light: #fffbeb;
+    --ep-amber-border: #fde68a;
+
+    --ep-purple: #7c3aed;
+    --ep-purple-light: #f5f3ff;
+    --ep-purple-border: #ddd6fe;
+
+    --ep-shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+    --ep-shadow-card: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 6px 16px -4px rgba(15, 23, 42, 0.04);
+    --ep-shadow-hover: 0 12px 28px -6px rgba(15, 23, 42, 0.08), 0 4px 10px -2px rgba(15, 23, 42, 0.03);
+    --ep-shadow-hero: 0 16px 36px -8px rgba(15, 23, 42, 0.35);
+
+    --ep-radius-lg: 18px;
+    --ep-radius-md: 12px;
+    --ep-radius-sm: 8px;
+    --ep-radius-pill: 999px;
+}
+
+/* Base Dashboard Container */
+.employee-dashboard-shell {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    width: 100% !important;
+    max-width: 1440px !important;
+    margin: 0 auto !important;
+    padding: 1.25rem clamp(1rem, 2vw, 2.5rem) 8.5rem !important;
+    box-sizing: border-box !important;
+    background: transparent !important;
+    color: var(--ep-text-body) !important;
+    display: block !important;
+}
+
+/* High-specificity typography guarantee against any outer CSS overrides */
+html body .employee-dashboard-shell,
+html body .oh-wrapper-main .employee-dashboard-shell {
+    color: var(--ep-text-body) !important;
+}
+
+html body .employee-dashboard-shell h1,
+html body .employee-dashboard-shell h2,
+html body .employee-dashboard-shell h3,
+html body .employee-dashboard-shell h4,
+html body .employee-dashboard-shell h5,
+html body .employee-dashboard-shell h6,
+html body .employee-dashboard-shell .ep-card__title,
+html body .employee-dashboard-shell .ep-birthday-name,
+html body .employee-dashboard-shell .ep-team-name,
+html body .employee-dashboard-shell .ep-empty-title,
+html body .oh-wrapper-main .employee-dashboard-shell h3,
+html body .oh-wrapper-main .employee-dashboard-shell .ep-card__title {
+    color: #0f172a !important;
+}
+
+/* Top Greeting Bar inside fragment (hidden because navbar already shows it) */
+.employee-dashboard-greeting-bar {
+    display: none !important;
+}
+
+/* Two-Column Modern Responsive Grid */
+.ep-dashboard-grid {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.65fr) minmax(320px, 1fr) !important;
+    gap: 1.5rem !important;
+    align-items: start !important;
+    width: 100% !important;
+}
+
+.ep-col-main,
+.ep-col-side {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.5rem !important;
+    min-width: 0 !important;
+}
+
+.ep-col-side .ep-birthday-card { order: 1; }
+.ep-col-side .ep-leave-card { order: 2; }
+.ep-col-side .ep-team-card { order: 3; }
+
+.ep-birthday-card {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 304px !important;
+    min-height: 304px !important;
+    background: #e8f5f7 !important;
+}
+
+.ep-birthday-card__body {
+    flex: 1 1 auto !important;
+}
+
+/* ==========================================================================
+   CARD SYSTEM
+   ========================================================================== */
+
+.ep-card {
+    background: var(--ep-surface) !important;
+    border: 1px solid var(--ep-border) !important;
+    border-radius: var(--ep-radius-lg) !important;
+    box-shadow: var(--ep-shadow-card) !important;
+    padding: 1.4rem !important;
+    box-sizing: border-box !important;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.2s ease !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.ep-card.ep-birthday-card {
+    background: #e8f5f7 !important;
+}
+
+.ep-card.ep-birthday-card:hover {
+    border-color: #c7e5eb !important;
+}
+
+.ep-birthday-card .ep-card__header {
+    margin-bottom: 0.55rem !important;
+    padding: 0.65rem 0.8rem !important;
+    background: linear-gradient(135deg, #fffefa, #f8edcf) !important;
+    border: 1px solid #ead8ad !important;
+    border-radius: 16px !important;
+    border-bottom-color: #ead8ad !important;
+}
+
+.ep-card.ep-birthday-card .ep-card__title {
+    color: #704b12 !important;
+}
+
+.ep-birthday-card .ep-card-icon--teal {
+    background: rgba(217, 155, 35, 0.14) !important;
+    border-color: rgba(183, 121, 31, 0.28) !important;
+    color: #9a6718 !important;
+}
+
+.ep-card:hover {
+    box-shadow: var(--ep-shadow-hover) !important;
+    border-color: var(--ep-border-hover) !important;
+}
+
+.ep-card__header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 1.15rem !important;
+    padding-bottom: 0.85rem !important;
+    border-bottom: 1px solid var(--ep-border-subtle) !important;
+}
+
+.ep-card__header-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+}
+
+.ep-card__title,
+h3.ep-card__title {
+    font-size: 0.98rem !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    margin: 0 !important;
+    letter-spacing: -0.015em !important;
+    line-height: 1.2 !important;
+}
+
+.ep-card__header-action {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+    color: var(--ep-primary) !important;
+    text-decoration: none !important;
+    transition: color 0.15s ease !important;
+}
+
+.ep-card__header-action:hover {
+    color: var(--ep-primary-hover) !important;
+}
+
+.ep-card__header-action .material-symbols-outlined {
+    font-size: 16px !important;
+}
+
+.ep-card__header-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    padding: 0.4rem 0.85rem !important;
+    border-radius: var(--ep-radius-pill) !important;
+    background: var(--ep-primary-light) !important;
+    color: var(--ep-primary) !important;
+    border: 1px solid var(--ep-primary-border) !important;
+    font-size: 0.8rem !important;
+    font-weight: 700 !important;
+    text-decoration: none !important;
+    transition: all 0.18s ease !important;
+}
+
+.ep-card__header-btn:hover {
+    background: var(--ep-primary) !important;
+    color: #ffffff !important;
+    border-color: var(--ep-primary) !important;
+}
+
+.ep-card__badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 0.25rem 0.65rem !important;
+    border-radius: var(--ep-radius-pill) !important;
+    background: #f1f5f9 !important;
+    color: var(--ep-text-muted) !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+}
+
+/* Category Micro-Icons */
+.ep-card-icon {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 10px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+}
+
+.ep-card-icon .material-symbols-outlined {
+    font-size: 19px !important;
+}
+
+.ep-card-icon--teal {
+    background: rgba(13, 148, 136, 0.12) !important;
+    color: #0d9488 !important;
+    border: 1px solid rgba(13, 148, 136, 0.2) !important;
+}
+
+.ep-card-icon--emerald {
+    background: var(--ep-emerald-light) !important;
+    color: var(--ep-emerald) !important;
+    border: 1px solid var(--ep-emerald-border) !important;
+}
+
+.ep-card-icon--blue {
+    background: var(--ep-blue-light) !important;
+    color: var(--ep-blue) !important;
+    border: 1px solid var(--ep-blue-border) !important;
+}
+
+.ep-card-icon--amber {
+    background: var(--ep-amber-light) !important;
+    color: var(--ep-amber) !important;
+    border: 1px solid var(--ep-amber-border) !important;
+}
+
+.ep-card-icon--violet {
+    background: var(--ep-purple-light) !important;
+    color: var(--ep-purple) !important;
+    border: 1px solid var(--ep-purple-border) !important;
+}
+
+.ep-card-icon--indigo {
+    background: #eef2ff !important;
+    color: #4f46e5 !important;
+    border: 1px solid #c7d2fe !important;
+}
+
+/* ==========================================================================
+   WIDGET 1: TODAY'S ATTENDANCE & SHIFT (HERO)
+   ========================================================================== */
+
+.ep-attendance-hero {
+    background: linear-gradient(135deg, #091e2b 0%, #0d3244 50%, #134459 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    color: #ffffff !important;
+    box-shadow: 0 16px 36px -10px rgba(9, 30, 43, 0.35) !important;
+    padding: 1.75rem 1.85rem !important;
+    position: relative !important;
+}
+
+.ep-attendance-hero::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    width: 320px !important;
+    height: 320px !important;
+    background: radial-gradient(circle at 100% 0%, rgba(20, 184, 166, 0.18), transparent 70%) !important;
+    pointer-events: none !important;
+}
+
+.ep-attendance-hero__header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 1.4rem !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+.ep-attendance-hero__title-wrap {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.85rem !important;
+}
+
+.ep-attendance-hero__label {
+    display: block !important;
+    font-size: 0.8rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+    color: rgba(255, 255, 255, 0.72) !important;
+}
+
+.ep-attendance-hero__date {
+    display: block !important;
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    margin-top: 2px !important;
+}
+
+/* Live Status Badge */
+.ep-attendance-status-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 7px !important;
+    padding: 0.4rem 0.9rem !important;
+    border-radius: var(--ep-radius-pill) !important;
+    font-size: 0.82rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.01em !important;
+    backdrop-filter: blur(8px) !important;
+}
+
+.ep-status-dot {
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50% !important;
+    display: inline-block !important;
+    position: relative !important;
+}
+
+.ep-status--in {
+    background: rgba(16, 185, 129, 0.18) !important;
+    color: #6ee7b7 !important;
+    border: 1px solid rgba(16, 185, 129, 0.35) !important;
+}
+.ep-status--in .ep-status-dot {
+    background: #10b981 !important;
+    box-shadow: 0 0 10px #10b981 !important;
+}
+.ep-status--in .ep-status-dot::after {
+    content: "" !important;
+    position: absolute !important;
+    inset: -3px !important;
+    border-radius: 50% !important;
+    background: rgba(16, 185, 129, 0.4) !important;
+    animation: ep-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite !important;
+}
+
+.ep-status--out {
+    background: rgba(245, 158, 11, 0.18) !important;
+    color: #fde68a !important;
+    border: 1px solid rgba(245, 158, 11, 0.32) !important;
+}
+.ep-status--out .ep-status-dot {
+    background: #f59e0b !important;
+}
+
+.ep-status--none {
+    background: rgba(148, 163, 184, 0.18) !important;
+    color: #cbd5e1 !important;
+    border: 1px solid rgba(148, 163, 184, 0.28) !important;
+}
+.ep-status--none .ep-status-dot {
+    background: #94a3b8 !important;
+}
+
+@keyframes ep-ping {
+    0% { transform: scale(1); opacity: 0.8; }
+    75%, 100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* Clock & Time */
+.ep-attendance-hero__body {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+.ep-attendance-hero__clock-section {
+    margin-bottom: 1.5rem !important;
+}
+
+.ep-attendance-hero__clock {
+    font-size: clamp(2.6rem, 4.2vw, 3.8rem) !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.04em !important;
+    line-height: 1 !important;
+    color: #ffffff !important;
+    font-variant-numeric: tabular-nums !important;
+}
+
+.ep-attendance-hero__clock-sub {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    margin-top: 0.55rem !important;
+    font-size: 0.84rem !important;
+    font-weight: 600 !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.ep-attendance-hero__clock-sub .material-symbols-outlined {
+    font-size: 16px !important;
+    color: #2dd4bf !important;
+}
+
+/* Hero Stat Tiles Row */
+.ep-attendance-hero__stats {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.85rem !important;
+}
+
+.ep-hero-stat {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    padding: 0.85rem 1rem !important;
+    background: rgba(255, 255, 255, 0.07) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: var(--ep-radius-md) !important;
+    backdrop-filter: blur(10px) !important;
+    transition: background 0.18s ease !important;
+}
+
+.ep-hero-stat:hover {
+    background: rgba(255, 255, 255, 0.11) !important;
+}
+
+.ep-hero-stat__icon {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 8px !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+    color: #5eead4 !important;
+}
+
+.ep-hero-stat__icon .material-symbols-outlined {
+    font-size: 18px !important;
+}
+
+.ep-hero-stat__content {
+    min-width: 0 !important;
+}
+
+.ep-hero-stat__label {
+    display: block !important;
+    font-size: 0.68rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.07em !important;
+    text-transform: uppercase !important;
+    color: rgba(255, 255, 255, 0.65) !important;
+    line-height: 1.1 !important;
+}
+
+.ep-hero-stat__value {
+    display: block !important;
+    font-size: 1.05rem !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
+    margin-top: 3px !important;
+    letter-spacing: -0.02em !important;
+    white-space: nowrap !important;
+}
+
+.ep-hero-stat__value small {
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    color: rgba(255, 255, 255, 0.65) !important;
+}
+
+/* ==========================================================================
+   WIDGET 2: KPI METRIC CARDS (Hours This Week & Leave Requests)
+   ========================================================================== */
+
+.ep-kpi-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1.25rem !important;
+}
+
+.ep-kpi-card {
+    text-decoration: none !important;
+    color: var(--ep-text-body) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    min-height: 155px !important;
+    cursor: default !important;
+}
+
+a.ep-kpi-card {
+    cursor: pointer !important;
+}
+
+.ep-kpi-card__top {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 0.85rem !important;
+}
+
+.ep-kpi-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 0.25rem 0.65rem !important;
+    border-radius: var(--ep-radius-pill) !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+}
+
+.ep-kpi-badge--blue {
+    background: var(--ep-blue-light) !important;
+    color: var(--ep-blue) !important;
+    border: 1px solid var(--ep-blue-border) !important;
+}
+
+.ep-kpi-badge--amber {
+    background: var(--ep-amber-light) !important;
+    color: var(--ep-amber) !important;
+    border: 1px solid var(--ep-amber-border) !important;
+}
+
+.ep-kpi-card__main {
+    margin-bottom: 0.85rem !important;
+}
+
+.ep-kpi-card__value {
+    font-size: 1.85rem !important;
+    font-weight: 800 !important;
+    color: var(--ep-text-heading) !important;
+    letter-spacing: -0.03em !important;
+    line-height: 1.1 !important;
+    font-variant-numeric: tabular-nums !important;
+}
+
+.ep-kpi-unit {
+    font-size: 0.88rem !important;
+    font-weight: 600 !important;
+    color: var(--ep-text-muted) !important;
+    margin-left: 2px !important;
+}
+
+.ep-kpi-card__label {
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    color: var(--ep-text-muted) !important;
+    margin-top: 4px !important;
+}
+
+.ep-kpi-card__footer {
+    padding-top: 0.65rem !important;
+    border-top: 1px solid var(--ep-border-subtle) !important;
+}
+
+.ep-progress-bar {
+    width: 100% !important;
+    height: 6px !important;
+    background: #e2e8f0 !important;
+    border-radius: var(--ep-radius-pill) !important;
+    overflow: hidden !important;
+    margin-bottom: 6px !important;
+}
+
+.ep-progress-fill {
+    height: 100% !important;
+    border-radius: var(--ep-radius-pill) !important;
+    transition: width 0.4s ease !important;
+}
+
+.ep-progress-fill--blue {
+    background: linear-gradient(90deg, #3b82f6, #0284c7) !important;
+}
+
+.ep-kpi-subtext {
+    font-size: 0.74rem !important;
+    font-weight: 600 !important;
+    color: var(--ep-text-subtle) !important;
+}
+
+.ep-kpi-link {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    font-size: 0.82rem !important;
+    font-weight: 700 !important;
+    color: var(--ep-amber) !important;
+    transition: gap 0.18s ease !important;
+}
+
+.ep-kpi-card:hover .ep-kpi-link {
+    gap: 8px !important;
+}
+
+.ep-kpi-link .material-symbols-outlined {
+    font-size: 16px !important;
+}
+
+/* ==========================================================================
+   WIDGET 3: ANNOUNCEMENTS FEED
+   ========================================================================== */
+
+.ep-announcements-card,
+.ep-team-card {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 300px !important;
+}
+
+.ep-announcements-body {
+    display: flex !important;
+    flex: 1 1 auto !important;
+    flex-direction: column !important;
+    min-height: 160px !important;
+    color: var(--ep-text-body) !important;
+}
+
+.ep-team-card__body {
+    display: flex !important;
+    flex: 1 1 auto !important;
+    flex-direction: column !important;
+}
+
+.ep-announcements-body .employee-announcement-list {
+    height: auto !important;
+    min-height: 0 !important;
+    background: transparent !important;
+}
+
+.ep-announcements-body .employee-announcement-list .oh-sticky-table__table,
+.ep-announcements-body .employee-announcement-list .oh-sticky-table__tbody {
+    height: auto !important;
+    background: transparent !important;
+}
+
+.ep-announcements-body .employee-announcement-list .oh-sticky-table__tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.65rem !important;
+}
+
+.ep-announcements-body .employee-announcement-list .oh-sticky-table__tr {
+    flex: 0 0 auto !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+}
+
+.ep-announcements-body .employee-announcement-item {
+    padding: 0.2rem !important;
+    border: 1px solid var(--ep-border) !important;
+    border-radius: var(--ep-radius-md) !important;
+    background: #ffffff !important;
+    transition: border-color 180ms ease, background 180ms ease, transform 180ms ease, box-shadow 180ms ease !important;
+}
+
+.ep-announcements-body .employee-announcement-item:hover {
+    transform: translateY(-1px) !important;
+    border-color: var(--ep-primary-border) !important;
+    background: var(--ep-primary-light) !important;
+    box-shadow: var(--ep-shadow-sm) !important;
+}
+
+.ep-announcements-body .employee-announcement-item > a {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.8rem !important;
+    min-width: 0 !important;
+    padding: 0.65rem 0.75rem !important;
+}
+
+.ep-announcements-body .employee-announcement-item__avatar {
+    width: 42px !important;
+    height: 42px !important;
+    flex: 0 0 42px !important;
+    overflow: hidden !important;
+    border: 1px solid var(--ep-border) !important;
+    border-radius: var(--ep-radius-sm) !important;
+    background: var(--ep-purple-light) !important;
+}
+
+.ep-announcements-body .employee-announcement-item__avatar img {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+
+.ep-announcements-body .employee-announcement-item__content {
+    display: flex !important;
+    flex: 1 1 auto !important;
+    flex-direction: column !important;
+    gap: 0.25rem !important;
+    min-width: 0 !important;
+}
+
+.ep-announcements-body .employee-announcement-item__title {
+    overflow: hidden !important;
+    color: var(--ep-text-heading) !important;
+    font-size: 0.86rem !important;
+    font-weight: 700 !important;
+    line-height: 1.4 !important;
+    text-overflow: ellipsis !important;
+}
+
+.ep-announcements-body .employee-announcement-item__date {
+    color: var(--ep-text-muted) !important;
+    font-size: 0.74rem !important;
+    line-height: 1.3 !important;
+}
+
+.ep-announcements-body .ep-announcement-empty {
+    display: flex !important;
+    flex: 1 1 auto !important;
+    min-height: 170px !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 1.35rem !important;
+    border: 1px dashed #d7e3eb !important;
+    border-radius: var(--ep-radius-md) !important;
+    background: linear-gradient(135deg, #f8fafc, #f3f8fa) !important;
+    color: var(--ep-text-muted) !important;
+    text-align: center !important;
+}
+
+html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .ep-announcements-body > .oh-empty {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 170px !important;
+    padding: 1.35rem !important;
+    background: #ffffff !important;
+    background-image: none !important;
+    border: 1px solid var(--ep-border) !important;
+    border-radius: var(--ep-radius-md) !important;
+    color: var(--ep-text-muted) !important;
+}
+
+html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .ep-announcements-body > .oh-empty .oh-empty__title {
+    color: var(--ep-text-heading) !important;
+}
+
+html body .oh-wrapper-main.employee-panel-theme .employee-dashboard-shell .ep-announcements-body > .oh-empty .oh-empty__subtitle {
+    color: var(--ep-text-muted) !important;
+}
+
+html body .oh-wrapper-main.employee-bottom-nav-active .employee-dashboard-shell .ep-announcements-body .ep-announcement-empty {
+    background: linear-gradient(135deg, #f8fafc, #f3f8fa) !important;
+    color: var(--ep-text-muted) !important;
+}
+
+.ep-announcements-body .ep-announcement-empty__icon {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 46px !important;
+    height: 46px !important;
+    margin-bottom: 0.8rem !important;
+    border: 1px solid var(--ep-purple-border) !important;
+    border-radius: 14px !important;
+    background: var(--ep-purple-light) !important;
+    color: var(--ep-purple) !important;
+    font-size: 23px !important;
+}
+
+.ep-announcements-body .ep-announcement-empty .oh-empty__title {
+    margin: 0 0 0.3rem !important;
+    color: var(--ep-text-heading) !important;
+    font-size: 0.92rem !important;
+    font-weight: 700 !important;
+}
+
+.ep-announcements-body .ep-announcement-empty .oh-empty__subtitle {
+    margin: 0 !important;
+    color: var(--ep-text-muted) !important;
+    font-size: 0.8rem !important;
+    line-height: 1.5 !important;
+}
+
+/* Shimmer loader */
+.ep-loading-shimmer {
+    padding: 1.5rem 0.5rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+}
+.ep-shimmer-line {
+    height: 14px !important;
+    background: #f1f5f9 !important;
+    border-radius: 6px !important;
+    width: 100% !important;
+    animation: ep-shimmer 1.5s infinite ease-in-out !important;
+}
+.ep-shimmer-line.short { width: 60% !important; }
+
+@keyframes ep-shimmer {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+}
+
+/* ==========================================================================
+   WIDGET 4: LEAVE & TIME OFF BALANCE (SIDEBAR TOP)
+   ========================================================================== */
+
+.ep-leave-card__body {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.25rem !important;
+}
+
+.ep-leave-summary {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.85rem !important;
+    padding: 1.1rem !important;
+    background: var(--ep-surface-subtle) !important;
+    border: 1px solid var(--ep-border) !important;
+    border-radius: var(--ep-radius-md) !important;
+}
+
+.ep-leave-hero-stat {
+    display: flex !important;
+    align-items: baseline !important;
+    gap: 8px !important;
+}
+
+.ep-leave-hero-number {
+    font-size: 2.3rem !important;
+    font-weight: 850 !important;
+    color: var(--ep-text-heading) !important;
+    letter-spacing: -0.035em !important;
+    line-height: 1 !important;
+}
+
+.ep-leave-hero-label {
+    font-size: 0.88rem !important;
+    font-weight: 700 !important;
+    color: var(--ep-text-muted) !important;
+}
+
+.ep-leave-progress-wrap {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.45rem !important;
+}
+
+.ep-leave-progress-bar {
+    width: 100% !important;
+    height: 8px !important;
+    background: #e2e8f0 !important;
+    border-radius: var(--ep-radius-pill) !important;
+    overflow: hidden !important;
+}
+
+.ep-leave-progress-fill {
+    height: 100% !important;
+    background: linear-gradient(90deg, #0d9488, #10b981) !important;
+    border-radius: var(--ep-radius-pill) !important;
+    transition: width 0.4s ease !important;
+}
+
+.ep-leave-progress-meta {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    font-size: 0.76rem !important;
+    font-weight: 600 !important;
+    color: var(--ep-text-muted) !important;
+}
+
+/* Metric Items List */
+.ep-leave-metrics-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.65rem !important;
+}
+
+.ep-leave-metric-item {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0.55rem 0.2rem !important;
+    border-bottom: 1px dashed var(--ep-border) !important;
+}
+
+.ep-leave-metric-item:last-child {
+    border-bottom: none !important;
+}
+
+.ep-leave-metric-label {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    font-size: 0.84rem !important;
+    font-weight: 600 !important;
+    color: var(--ep-text-body) !important;
+}
+
+.ep-dot {
+    width: 7px !important;
+    height: 7px !important;
+    border-radius: 50% !important;
+}
+
+.ep-dot--allocated { background: #3b82f6 !important; }
+.ep-dot--used { background: #10b981 !important; }
+.ep-dot--pending { background: #f59e0b !important; }
+
+.ep-leave-metric-value {
+    font-size: 0.84rem !important;
+    font-weight: 700 !important;
+    color: var(--ep-text-heading) !important;
+}
+
+.ep-leave-empty-note {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+    padding: 0.75rem 0.85rem !important;
+    background: #f1f5f9 !important;
+    border-radius: 10px !important;
+    font-size: 0.78rem !important;
+    color: var(--ep-text-muted) !important;
+    line-height: 1.4 !important;
+}
+
+.ep-leave-empty-note .material-symbols-outlined {
+    font-size: 16px !important;
+    color: #64748b !important;
+    flex-shrink: 0 !important;
+    margin-top: 1px !important;
+}
+
+/* ==========================================================================
+   WIDGET 5: UPCOMING BIRTHDAYS
+   ========================================================================== */
+
+.ep-birthday-card__body {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    display: grid !important;
+    grid-template-rows: minmax(0, 1fr) !important;
+}
+
+.ep-birthday-card__body > * {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+}
+
+.ep-birthday-feature {
+    position: relative !important;
+    overflow: hidden !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 1.25rem !important;
+    min-height: 0 !important;
+    box-sizing: border-box !important;
+    padding: 1.5rem !important;
+    background:
+        radial-gradient(circle at 92% 18%, rgba(217, 155, 35, 0.2), transparent 36%),
+        linear-gradient(135deg, #fffefa 0%, #f8edcf 100%) !important;
+    border: 1px solid #ead8ad !important;
+    border-radius: 16px !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 8px 20px rgba(138, 91, 19, 0.1) !important;
+}
+
+.ep-birthday-confetti {
+    position: absolute !important;
+    z-index: 1 !important;
+    inset: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+}
+
+.ep-birthday-confetti span {
+    position: absolute !important;
+    top: -12px !important;
+    left: var(--confetti-left) !important;
+    width: 5px !important;
+    height: 8px !important;
+    border-radius: 2px !important;
+    background: var(--confetti-color) !important;
+    opacity: 0;
+    pointer-events: none !important;
+    animation: ep-birthday-confetti-fall 4.8s linear var(--confetti-delay) infinite !important;
+}
+
+.ep-birthday-confetti span:nth-child(1) { --confetti-left: 8%; --confetti-color: #d8aa4e; --confetti-delay: -3.7s; }
+.ep-birthday-confetti span:nth-child(2) { --confetti-left: 19%; --confetti-color: #55aa9c; --confetti-delay: -1.1s; }
+.ep-birthday-confetti span:nth-child(3) { --confetti-left: 31%; --confetti-color: #e98978; --confetti-delay: -2.8s; }
+.ep-birthday-confetti span:nth-child(4) { --confetti-left: 43%; --confetti-color: #8b9fd1; --confetti-delay: -0.4s; }
+.ep-birthday-confetti span:nth-child(5) { --confetti-left: 57%; --confetti-color: #d8aa4e; --confetti-delay: -2.1s; }
+.ep-birthday-confetti span:nth-child(6) { --confetti-left: 68%; --confetti-color: #55aa9c; --confetti-delay: -3.2s; }
+.ep-birthday-confetti span:nth-child(7) { --confetti-left: 81%; --confetti-color: #e98978; --confetti-delay: -0.9s; }
+.ep-birthday-confetti span:nth-child(8) { --confetti-left: 93%; --confetti-color: #8b9fd1; --confetti-delay: -1.7s; }
+
+.ep-birthday-confetti span:nth-child(even) {
+    width: 4px !important;
+    height: 6px !important;
+    border-radius: 50% !important;
+}
+
+.ep-birthday-sparkles {
+    position: absolute !important;
+    z-index: 1 !important;
+    inset: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+}
+
+.ep-birthday-sparkles span {
+    position: absolute !important;
+    top: var(--sparkle-top) !important;
+    left: var(--sparkle-left) !important;
+    width: var(--sparkle-size) !important;
+    aspect-ratio: 1 !important;
+    background: var(--sparkle-color) !important;
+    clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%) !important;
+    opacity: 0;
+    animation: ep-birthday-sparkle 2.8s ease-in-out var(--sparkle-delay) infinite !important;
+}
+
+.ep-birthday-sparkles span:nth-child(1) { --sparkle-top: 18%; --sparkle-left: 16%; --sparkle-size: 12px; --sparkle-color: #d8aa4e; --sparkle-delay: -0.4s; }
+.ep-birthday-sparkles span:nth-child(2) { --sparkle-top: 72%; --sparkle-left: 29%; --sparkle-size: 9px; --sparkle-color: #55aa9c; --sparkle-delay: -1.8s; }
+.ep-birthday-sparkles span:nth-child(3) { --sparkle-top: 24%; --sparkle-left: 76%; --sparkle-size: 10px; --sparkle-color: #e98978; --sparkle-delay: -1.1s; }
+.ep-birthday-sparkles span:nth-child(4) { --sparkle-top: 68%; --sparkle-left: 88%; --sparkle-size: 13px; --sparkle-color: #d8aa4e; --sparkle-delay: -2.3s; }
+.ep-birthday-sparkles span:nth-child(5) { --sparkle-top: 48%; --sparkle-left: 58%; --sparkle-size: 7px; --sparkle-color: #8b9fd1; --sparkle-delay: -1.5s; }
+
+.ep-birthday-fireworks {
+    position: absolute !important;
+    top: 14% !important;
+    right: 12% !important;
+    z-index: 1 !important;
+    width: 64px !important;
+    height: 64px !important;
+    pointer-events: none !important;
+}
+
+.ep-birthday-fireworks span {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50% !important;
+    background: var(--burst-color) !important;
+    opacity: 0 !important;
+    transform: translate(-50%, -50%) !important;
+    animation: ep-birthday-firework-burst 2.8s ease-out var(--burst-delay) infinite !important;
+}
+
+.ep-birthday-fireworks span:nth-child(1) { --burst-x: 0px; --burst-y: -25px; --burst-color: #d6a23a; --burst-delay: -0.2s; }
+.ep-birthday-fireworks span:nth-child(2) { --burst-x: 18px; --burst-y: -18px; --burst-color: #319889; --burst-delay: -0.2s; }
+.ep-birthday-fireworks span:nth-child(3) { --burst-x: 25px; --burst-y: 0px; --burst-color: #e77968; --burst-delay: -0.2s; }
+.ep-birthday-fireworks span:nth-child(4) { --burst-x: 18px; --burst-y: 18px; --burst-color: #718bc4; --burst-delay: -0.2s; }
+.ep-birthday-fireworks span:nth-child(5) { --burst-x: 0px; --burst-y: 25px; --burst-color: #d6a23a; --burst-delay: -0.2s; }
+.ep-birthday-fireworks span:nth-child(6) { --burst-x: -18px; --burst-y: 18px; --burst-color: #319889; --burst-delay: -0.2s; }
+.ep-birthday-fireworks span:nth-child(7) { --burst-x: -25px; --burst-y: 0px; --burst-color: #e77968; --burst-delay: -0.2s; }
+.ep-birthday-fireworks span:nth-child(8) { --burst-x: -18px; --burst-y: -18px; --burst-color: #718bc4; --burst-delay: -0.2s; }
+
+@keyframes ep-birthday-firework-burst {
+    0%, 8% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.25);
+    }
+    18% {
+        opacity: 0.95;
+    }
+    72%, 100% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--burst-x)), calc(-50% + var(--burst-y))) scale(0.65);
+    }
+}
+
+@keyframes ep-birthday-sparkle {
+    0%, 100% {
+        opacity: 0;
+        transform: scale(0.35) rotate(0);
+    }
+    45%, 65% {
+        opacity: 0.68;
+        transform: scale(1) rotate(45deg);
+    }
+}
+
+@keyframes ep-birthday-confetti-fall {
+    0% {
+        opacity: 0;
+        transform: translateY(-8px) rotate(0);
+    }
+    14% {
+        opacity: 0.72;
+    }
+    78% {
+        opacity: 0.56;
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(190px) rotate(180deg);
+    }
+}
+
+.ep-birthday-feature::after {
+    content: "cake";
+    position: absolute;
+    right: 22px;
+    bottom: -36px;
+    z-index: 0;
+    color: rgba(183, 121, 31, 0.2);
+    font-family: "Material Symbols Outlined";
+    font-size: 184px;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.ep-birthday-avatar-wrap {
+    position: relative !important;
+    flex-shrink: 0 !important;
+    z-index: 2 !important;
+    isolation: isolate !important;
+    padding: 5px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.75) !important;
+    box-shadow: 0 6px 16px rgba(138, 91, 19, 0.14) !important;
+    animation: ep-birthday-avatar-float 3.2s ease-in-out infinite !important;
+}
+
+.ep-birthday-avatar-wrap::before {
+    content: "" !important;
+    position: absolute !important;
+    z-index: 0 !important;
+    inset: -7px !important;
+    border: 2px solid rgba(216, 170, 78, 0.52) !important;
+    border-radius: 50% !important;
+    pointer-events: none !important;
+    animation: ep-birthday-avatar-ripple 2.8s ease-out infinite !important;
+}
+
+.ep-birthday-avatar {
+    position: relative !important;
+    z-index: 1 !important;
+    width: 112px !important;
+    height: 112px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 2px solid #ffffff !important;
+    box-shadow: 0 4px 10px rgba(138, 91, 19, 0.18) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.ep-avatar-placeholder {
+    background: linear-gradient(135deg, #d9a441, #9a6718) !important;
+    color: #ffffff !important;
+    font-size: 1.25rem !important;
+    font-weight: 800 !important;
+}
+
+.ep-birthday-badge {
+    position: absolute !important;
+    z-index: 2 !important;
+    bottom: -2px !important;
+    right: -2px !important;
+    color: #9a6718 !important;
+    background: #ffffff !important;
+    border-radius: 50% !important;
+    width: 24px !important;
+    height: 24px !important;
+    display: grid !important;
+    place-items: center !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    transform-origin: 75% 75% !important;
+    animation: ep-birthday-badge-pop 2.4s ease-in-out infinite !important;
+}
+
+.ep-birthday-badge .material-symbols-outlined {
+    font-size: 16px !important;
+    line-height: 1 !important;
+}
+
+@keyframes ep-birthday-avatar-float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-6px);
+    }
+}
+
+@keyframes ep-birthday-avatar-ripple {
+    0% {
+        opacity: 0.75;
+        transform: scale(0.94);
+    }
+    80%, 100% {
+        opacity: 0;
+        transform: scale(1.2);
+    }
+}
+
+@keyframes ep-birthday-badge-pop {
+    0%, 70%, 100% {
+        transform: scale(1) rotate(0);
+    }
+    80% {
+        transform: scale(1.16) rotate(-12deg);
+    }
+    90% {
+        transform: scale(1.04) rotate(8deg);
+    }
+}
+
+.ep-birthday-info {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    position: relative !important;
+    z-index: 2 !important;
+}
+
+.ep-birthday-name {
+    font-size: 1.1rem !important;
+    font-weight: 800 !important;
+    color: #704b12 !important;
+    margin: 0 0 8px 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.ep-birthday-meta {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    flex-wrap: wrap !important;
+}
+
+.ep-birthday-date {
+    font-size: 0.88rem !important;
+    font-weight: 700 !important;
+    color: #9a6718 !important;
+}
+
+.ep-pill {
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 0.3rem 0.7rem !important;
+    border-radius: var(--ep-radius-pill) !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    background: #ffffff !important;
+    color: #8a5b13 !important;
+    border: 1px solid rgba(183, 121, 31, 0.28) !important;
+}
+
+.ep-birthday-countdown {
+    display: inline-flex !important;
+    position: relative !important;
+    z-index: 2 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ep-birthday-confetti span,
+    .ep-birthday-sparkles span {
+        animation: none !important;
+        opacity: 0 !important;
+    }
+    .ep-birthday-avatar-wrap,
+    .ep-birthday-badge {
+        animation: none !important;
+    }
+    .ep-birthday-avatar-wrap::before {
+        animation: none !important;
+        opacity: 0 !important;
+    }
+    .ep-birthday-fireworks {
+        display: none !important;
+    }
+}
+
+.ep-birthday-card__body > .ep-empty-widget {
+    height: 100% !important;
+    min-height: 0 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    padding: 1.25rem !important;
+    border: 1px dashed #dfc58f !important;
+    border-radius: 16px !important;
+    background: radial-gradient(circle at 50% 10%, #fffefa, #f8edcf 82%) !important;
+}
+
+.ep-birthday-card__body > .ep-empty-widget .ep-empty-icon {
+    color: #b7791f !important;
+    font-size: 42px !important;
+}
+
+@media (max-width: 640px) {
+    .ep-birthday-card {
+        height: auto !important;
+        min-height: 0 !important;
+    }
+
+    .ep-birthday-card__body {
+        min-height: 150px !important;
+        grid-template-rows: minmax(150px, auto) !important;
+    }
+
+    .ep-birthday-feature {
+        gap: 0.85rem !important;
+        padding: 1rem !important;
+    }
+
+    .ep-birthday-feature::after {
+        right: 4px;
+        bottom: -24px;
+        font-size: 128px;
+    }
+
+    .ep-birthday-avatar {
+        width: 78px !important;
+        height: 78px !important;
+    }
+}
+
+.ep-pill--today {
+    background: #a66b12 !important;
+    color: #ffffff !important;
+    border-color: #a66b12 !important;
+}
+
+/* ==========================================================================
+   WIDGET 6: YOUR TEAM
+   ========================================================================== */
+
+.ep-team-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.65rem !important;
+}
+
+.ep-team-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.85rem !important;
+    padding: 0.55rem 0.45rem !important;
+    border-radius: var(--ep-radius-sm) !important;
+    transition: background 0.15s ease !important;
+}
+
+.ep-team-item:hover {
+    background: var(--ep-surface-subtle) !important;
+}
+
+.ep-team-avatar-wrap {
+    position: relative !important;
+    flex-shrink: 0 !important;
+}
+
+.ep-team-avatar {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: linear-gradient(135deg, #4f46e5, #6366f1) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 0.9rem !important;
+}
+
+.ep-team-status-dot {
+    position: absolute !important;
+    bottom: 0 !important;
+    right: 0 !important;
+    width: 9px !important;
+    height: 9px !important;
+    border-radius: 50% !important;
+    background: #10b981 !important;
+    border: 2px solid #ffffff !important;
+}
+
+.ep-team-info {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+}
+
+.ep-team-name {
+    font-size: 0.88rem !important;
+    font-weight: 700 !important;
+    color: var(--ep-text-heading) !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.ep-team-role {
+    display: block !important;
+    font-size: 0.76rem !important;
+    color: var(--ep-text-muted) !important;
+    margin-top: 1px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+/* Empty generic widgets */
+.ep-empty-widget {
+    padding: 1.5rem 1rem !important;
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.ep-empty-icon {
+    font-size: 36px !important;
+    color: #cbd5e1 !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.ep-empty-title {
+    font-size: 0.88rem !important;
+    font-weight: 700 !important;
+    color: var(--ep-text-heading) !important;
+    margin: 0 0 2px 0 !important;
+}
+
+.ep-empty-desc {
+    font-size: 0.78rem !important;
+    color: var(--ep-text-muted) !important;
+    margin: 0 !important;
+}
+
+/* ==========================================================================
+   RESPONSIVE MEDIA QUERIES
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+    .ep-dashboard-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 640px) {
     .employee-dashboard-shell {
-        font-family: inherit;
-        display: grid;
-        grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
-        grid-template-rows: 266px auto auto auto;
-        gap: 1rem;
-        align-items: start;
-        margin-top: -4rem;
+        padding: 0.75rem 0.5rem 6.5rem !important;
     }
 
-    /* The greeting belongs to the Employee navbar; the first dashboard row
-       must begin with the attendance and leave widgets. */
-    .employee-dashboard-shell .employee-dashboard-greeting-bar {
-        display: none !important;
+    .ep-attendance-hero {
+        padding: 1.25rem 1rem !important;
+        border-radius: 16px !important;
     }
 
-    .employee-dashboard-shell .employee-dashboard-greeting-bar {
-        grid-column: 1 / -1;
-        grid-row: 1;
-        display: flex;
-        align-items: center;
-        min-height: 4.25rem;
+    .ep-attendance-hero__clock {
+        font-size: 2.2rem !important;
     }
 
-    .employee-dashboard-shell .employee-dashboard-greeting-bar h1 {
-        margin: 0;
-        color: #163f35;
-        font-size: clamp(1.35rem, 2.3vw, 2rem);
-        font-weight: 800;
-        letter-spacing: -0.035em;
+    .ep-attendance-hero__stats {
+        grid-template-columns: 1fr !important;
+        gap: 0.6rem !important;
     }
 
-    .employee-dashboard-shell .employee-dashboard-greeting-bar p {
-        margin: 0.25rem 0 0;
-        color: #6b887d;
-        font-size: 0.82rem;
+    .ep-kpi-grid {
+        grid-template-columns: 1fr !important;
     }
 
-    .employee-dashboard-shell .employee-dashboard-hero {
-        grid-column: 1;
-        grid-row: 2;
-        display: grid;
-        grid-template-columns: minmax(0, 1fr);
-        align-items: stretch;
-        gap: 1.5rem;
-        min-height: 266px;
-        background: linear-gradient(115deg, #315b55 0%, #9baba8 72%, #f7f8f6 100%);
-        border: 1px solid rgba(18,61,44,0.12);
-        border-radius: 24px;
-        box-shadow: 0 18px 38px rgba(18, 61, 44, 0.14);
+    .ep-birthday-card {
+        min-height: 0 !important;
     }
-
-    .employee-dashboard-shell .employee-dashboard-hero__identity {
-        align-items: flex-start;
-        padding-right: 220px;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-hero__avatar,
-    .employee-dashboard-shell .employee-dashboard-hero__meta {
-        display: none;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-hero__content {
-        padding-top: 0.1rem;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-hero__greeting-text {
-        display: none;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-hero__greeting-sub {
-        display: none;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-hero__title {
-        display: none;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-hero__meta {
-        color: rgba(255,255,255,0.7) !important;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-hero__aside {
-        min-width: 0;
-        align-items: stretch;
-        position: absolute;
-        top: 5.4rem;
-        left: 1.25rem;
-        right: auto;
-        bottom: auto;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-birthday {
-        position: absolute;
-        top: 1.25rem;
-        right: 1.25rem;
-        bottom: 1.25rem;
-        width: 195px;
-        padding-left: 1.1rem;
-        border-left: 1px solid rgba(18,61,44,0.16);
-    }
-
-    .employee-dashboard-shell .employee-dashboard-birthday__label {
-        margin-bottom: 0.55rem;
-        color: rgba(18,61,44,0.7);
-        font-size: 0.68rem;
-        font-weight: 800;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-birthday img {
-        display: block;
-        width: 100%;
-        height: 140px;
-        object-fit: cover;
-        border-radius: 14px 14px 0 0;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-birthday__details {
-        display: flex;
-        flex-direction: column;
-        gap: 0.15rem;
-        padding: 0.6rem 0.7rem;
-        border-radius: 0 0 14px 14px;
-        background: rgba(255,255,255,0.75);
-        color: #163f35;
-        font-size: 0.72rem;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-birthday__details span {
-        color: #6b887d;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-hero__status,
-    .employee-dashboard-shell .employee-dashboard-hero__time-widget {
-        background: rgba(255,255,255,0.08);
-        border-color: rgba(255,255,255,0.12);
-    }
-
-    .employee-dashboard-shell .employee-dashboard-hero__status {
-        min-width: 0;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-hero__time-widget {
-        display: none;
-    }
-
-    .employee-dashboard-shell .attendance-hero-stats {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 0.65rem;
-        margin-top: 1.25rem;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-hero__identity {
-        position: relative;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-hero__identity::before {
-        content: "Today's attendance";
-        display: block;
-        position: absolute;
-        top: 0;
-        left: 0;
-        color: rgba(255,255,255,0.74);
-        font-size: 0.72rem;
-        font-weight: 800;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-hero__identity::after {
-        content: "{{ attendance_display_time|default:'—' }}";
-        display: block;
-        position: absolute;
-        top: 1.4rem;
-        left: 0;
-        color: #fff;
-        font-size: clamp(2.3rem, 5vw, 3.5rem);
-        font-weight: 850;
-        letter-spacing: -0.05em;
-    }
-
-    .employee-dashboard-shell .attendance-hero-stat {
-        padding: 0.7rem 0.8rem;
-        border-radius: 12px;
-        background: rgba(255,255,255,0.08);
-    }
-
-    .employee-dashboard-shell .attendance-hero-stat__label {
-        display: block;
-        color: rgba(255,255,255,0.6);
-        font-size: 0.68rem;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-    }
-
-    .employee-dashboard-shell .attendance-hero-stat__value {
-        display: block;
-        margin-top: 0.25rem;
-        color: #fff;
-        font-size: 1rem;
-        font-weight: 800;
-    }
-
-    /* Attendance hero matches the reference card: deep teal at the left,
-       fading into a pale misty surface around the birthday panel. */
-    .employee-dashboard-shell .employee-dashboard-hero {
-        grid-column: 1;
-        grid-row: 1;
-        z-index: 2;
-        font-family: "Inter", "Segoe UI", Arial, sans-serif;
-        min-height: 266px;
-        padding: 1.45rem 1.7rem;
-        background: linear-gradient(110deg, #31594f 0%, #91a4a1 71%, #f5f7f5 100%) !important;
-        border: 1px solid rgba(47,87,82,0.18) !important;
-        border-radius: 28px !important;
-        box-shadow: 0 16px 30px rgba(47,87,82,0.16) !important;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-hero.attendance-state--empty {
-        background: linear-gradient(110deg, #31594f 0%, #91a4a1 71%, #f5f7f5 100%) !important;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-hero__identity {
-        width: 100%;
-        min-height: 100%;
-        padding-right: 285px;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-hero__content {
-        display: block;
-        width: 100%;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-hero__content > .employee-dashboard-hero__greeting,
-    .employee-dashboard-shell .employee-dashboard-hero__content > .employee-dashboard-hero__title,
-    .employee-dashboard-shell .employee-dashboard-hero__content > .employee-dashboard-hero__meta {
-        display: none;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-hero__meta span + span::before {
-        content: none;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-hero__identity::before,
-    .employee-dashboard-shell .employee-dashboard-hero__identity::after {
-        content: none;
-    }
-
-    .employee-dashboard-shell .attendance-hero-heading {
-        position: absolute;
-        top: 1.45rem;
-        left: 1.7rem;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .employee-dashboard-shell .attendance-hero-heading__label {
-        color: rgba(255,255,255,0.84);
-        font-size: 0.75rem;
-        font-weight: 800;
-        letter-spacing: 0.075em;
-        line-height: 1.2;
-        text-transform: uppercase;
-    }
-
-    .employee-dashboard-shell .attendance-hero-heading__value {
-        margin-top: 0.55rem;
-        color: #fff;
-        font-size: clamp(2.75rem, 4vw, 3.5rem);
-        font-weight: 800;
-        letter-spacing: -0.055em;
-        line-height: 1;
-    }
-
-    .employee-dashboard-shell .attendance-hero-heading__empty {
-        margin-top: 0.55rem;
-        color: #fff;
-        font-size: 1.75rem;
-        line-height: 1;
-    }
-
-    .employee-dashboard-shell .attendance-state--empty .attendance-hero-heading__empty::after {
-        content: "";
-        display: block;
-        width: 4.45rem;
-        height: 0.55rem;
-        margin-top: 1.2rem;
-        background: #fff;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-hero__aside {
-        top: 7.35rem;
-        left: 1.7rem;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-hero__status {
-        display: inline-flex;
-        align-items: center;
-        min-height: 30px;
-        padding: 0.28rem 0.72rem;
-        border: 0 !important;
-        border-radius: 999px;
-        background: rgba(74,177,143,0.18) !important;
-        color: #8dd1b7;
-        font-size: 0.86rem;
-        font-weight: 700;
-        letter-spacing: 0.01em;
-        line-height: 1;
-        margin-top: 0.65rem;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-hero__status::before {
-        content: "✓";
-        margin-right: 0.42rem;
-        color: #8dd1b7;
-        font-weight: 800;
-    }
-
-    .employee-dashboard-shell .attendance-hero-stats {
-        position: absolute;
-        left: 1.7rem;
-        right: 285px;
-        bottom: 1.7rem;
-        grid-template-columns: repeat(3, max-content);
-        justify-content: start;
-        gap: clamp(1.5rem, 3vw, 3.5rem);
-        margin-top: 0;
-    }
-
-    .employee-dashboard-shell .attendance-hero-stat {
-        padding: 0;
-        background: transparent;
-        border-radius: 0;
-    }
-
-    .employee-dashboard-shell .attendance-hero-stat__label {
-        color: rgba(255,255,255,0.82);
-        font-size: 0.72rem;
-        font-weight: 800;
-        letter-spacing: 0.035em;
-        line-height: 1.2;
-    }
-
-    .employee-dashboard-shell .attendance-hero-stat__value {
-        margin-top: 0.35rem;
-        color: #ffffff;
-        font-size: clamp(1.35rem, 2vw, 1.7rem);
-        font-family: "Inter", "Segoe UI", Arial, sans-serif;
-        font-weight: 800;
-        letter-spacing: -0.035em;
-        line-height: 1;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-birthday {
-        top: 1.25rem;
-        right: 1.25rem;
-        bottom: 1.25rem;
-        width: 245px;
-        padding-left: 1.45rem;
-        border-left: 1px solid rgba(47,87,82,0.22);
-    }
-
-    .employee-dashboard-shell .employee-dashboard-birthday__label {
-        margin-bottom: 0.75rem;
-        color: rgba(47,87,82,0.72);
-        font-size: 0.72rem;
-        font-weight: 800;
-        letter-spacing: 0.08em;
-        line-height: 1.2;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-birthday img {
-        height: 205px;
-        border-radius: 16px 16px 0 0;
-        color: #687872;
-        font-size: 0.75rem;
-        line-height: 1.25;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-birthday__details {
-        min-height: 70px;
-        padding: 0.78rem 0.8rem;
-        border-radius: 0 0 16px 16px;
-        background: rgba(248,246,240,0.88);
-        color: #294b47;
-        font-size: 0.78rem;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-birthday__details strong {
-        color: #294b47;
-        font-size: 0.86rem;
-        line-height: 1.15;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-birthday__empty {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 244px;
-        padding: 1rem;
-        border-radius: 16px;
-        background: linear-gradient(145deg, rgba(248,249,248,0.78), rgba(188,201,198,0.82));
-        color: rgba(47,87,82,0.78);
-        font-size: 0.8rem;
-        text-align: center;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child {
-        min-width: 0;
-        overflow: hidden;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .oh-card-dashboard__body,
-    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .leave-balance-wrap,
-    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .leave-balance-right {
-        min-width: 0;
-        max-width: 100%;
-    }
-
-    /* Keep the attendance panel proportions aligned with the reference card. */
-    .employee-dashboard-shell .employee-dashboard-hero {
-        min-height: 333px !important;
-        height: 333px !important;
-        padding: 1.45rem 1.2rem !important;
-        background: linear-gradient(112deg, #315b55 0%, #78938f 100%) !important;
-        border-radius: 0 0 28px 28px !important;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-hero__identity {
-        padding-right: 285px;
-    }
-
-    .employee-dashboard-shell .attendance-hero-heading {
-        left: 0;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-hero__aside {
-        left: 0;
-    }
-
-    .employee-dashboard-shell .attendance-hero-stats {
-        left: 0;
-        right: 285px;
-        bottom: 1.7rem;
-    }
-
-    .employee-dashboard-shell .attendance-hero-heading__label,
-    .employee-dashboard-shell .attendance-hero-stat__label {
-        font-size: 0.82rem;
-        letter-spacing: 0.04em;
-    }
-
-    .employee-dashboard-shell .attendance-hero-heading__value {
-        font-size: clamp(3rem, 4vw, 3.5rem);
-        line-height: 0.98;
-    }
-
-    .employee-dashboard-shell .attendance-hero-stat__value {
-        font-size: clamp(1.55rem, 2vw, 1.7rem);
-    }
-
-    @media (max-width: 850px) {
-        .employee-dashboard-shell .employee-dashboard-hero {
-            min-height: 0 !important;
-            height: auto !important;
-            padding: 1.25rem !important;
-            border-radius: 22px !important;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-hero__identity {
-            padding-right: 0;
-        }
-
-        .employee-dashboard-shell .attendance-hero-heading,
-        .employee-dashboard-shell .employee-dashboard-hero__aside,
-        .employee-dashboard-shell .attendance-hero-stats {
-            left: auto;
-            right: auto;
-        }
-    }
-
-    .employee-dashboard-shell .leave-balance-wrap {
-        align-items: flex-start;
-        gap: 1.1rem;
-    }
-
-    .employee-dashboard-shell .leave-balance-left {
-        flex: 0 0 84px;
-        max-width: 84px;
-        padding-top: 0.2rem;
-    }
-
-    .employee-dashboard-shell .leave-balance-right {
-        overflow: hidden;
-    }
-
-    .employee-dashboard-shell .leave-balance-right > div:first-child {
-        display: flex !important;
-        flex-wrap: wrap;
-        gap: 0.35rem 0.75rem;
-        align-items: baseline !important;
-    }
-
-    .employee-dashboard-shell .leave-balance-right > div:first-child .metric-label,
-    .employee-dashboard-shell .leave-balance-right > div:first-child .leave-percent {
-        min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .employee-dashboard-shell .leave-balance-right > div:first-child .metric-label {
-        flex: 1 1 150px;
-    }
-
-    .employee-dashboard-shell .leave-balance-right > div:first-child .leave-percent {
-        flex: 0 1 auto;
-    }
-
-    .employee-dashboard-shell .leave-stats {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.25rem 1rem;
-        min-width: 0;
-        font-size: 0.82rem;
-    }
-
-    .employee-dashboard-shell .leave-stats > div {
-        min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .employee-dashboard-shell .leave-balance-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0.78rem;
-        min-width: 0;
-        margin-top: 0.8rem;
-    }
-
-    .employee-dashboard-shell .leave-balance-item {
-        display: grid;
-        grid-template-columns: minmax(92px, 0.8fr) minmax(78px, 1fr) minmax(0, 1.35fr);
-        align-items: center;
-        gap: 0.6rem;
-        min-width: 0;
-    }
-
-    .employee-dashboard-shell .leave-balance-item__name,
-    .employee-dashboard-shell .leave-balance-item__meta {
-        min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .employee-dashboard-shell .leave-balance-item__bar {
-        min-width: 0;
-        width: 100%;
-    }
-
-    @media (max-width: 1100px) {
-        .employee-dashboard-shell .leave-balance-item {
-            grid-template-columns: minmax(80px, 0.8fr) minmax(70px, 1fr);
-        }
-
-        .employee-dashboard-shell .leave-balance-item__meta {
-            grid-column: 1 / -1;
-            text-align: left;
-        }
-    }
-
-    @media (max-width: 640px) {
-        .employee-dashboard-shell .leave-balance-wrap {
-            flex-direction: column;
-        }
-
-        .employee-dashboard-shell .leave-balance-left {
-            flex-basis: auto;
-            max-width: none;
-        }
-    }
-
-    .employee-dashboard-shell .employee-dashboard-summary-row {
-        display: contents;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-card {
-        border-radius: 20px;
-        box-shadow: 0 10px 25px rgba(18, 61, 44, 0.08);
-    }
-
-    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child {
-        grid-column: 2;
-        grid-row: 1;
-        background: #0d5064;
-        color: #fff;
-        min-height: 338px;
-        height: 338px;
-        overflow: hidden;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .oh-card-dashboard__title,
-    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .metric-label,
-    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .leave-balance-item__meta {
-        color: rgba(255,255,255,0.68);
-    }
-
-    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .leave-percent,
-    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .leave-balance-item__name,
-    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .leave-stats {
-        color: #fff;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .oh-card-dashboard__header {
-        min-height: 48px;
-        padding: 0;
-        border: 0;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child {
-        height: 266px;
-    }
-
-    .employee-dashboard-shell .leave-card-icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 48px;
-        height: 48px;
-        border-radius: 14px;
-        background: rgba(126, 157, 218, 0.22);
-        color: #b8c7ed;
-        font-size: 1.35rem;
-    }
-
-    .employee-dashboard-shell .leave-card-badge {
-        padding: 0.45rem 0.75rem;
-        border-radius: 999px;
-        background: rgba(126, 194, 164, 0.18);
-        color: #8ac4ad;
-        font-size: 0.8rem;
-        font-weight: 800;
-    }
-
-    .employee-dashboard-shell .leave-overview {
-        padding-top: 1.25rem;
-    }
-
-    .employee-dashboard-shell .leave-overview__headline {
-        display: flex;
-        align-items: baseline;
-        gap: 0.3rem;
-        color: #fff;
-    }
-
-    .employee-dashboard-shell .leave-overview__headline strong {
-        font-size: clamp(2.25rem, 4vw, 3rem);
-        line-height: 1;
-    }
-
-    .employee-dashboard-shell .leave-overview__headline span {
-        font-size: 1rem;
-        font-weight: 700;
-        opacity: 0.8;
-    }
-
-    .employee-dashboard-shell .leave-overview__label {
-        margin-top: 0.45rem;
-        color: rgba(255,255,255,0.68);
-        font-size: 0.9rem;
-    }
-
-    .employee-dashboard-shell .leave-overview__details {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-top: 1.5rem;
-    }
-
-    .employee-dashboard-shell .leave-overview__ring {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 80px;
-        height: 80px;
-        flex: 0 0 80px;
-        border-radius: 50%;
-        background: conic-gradient(#8f8ee8 var(--leave-used), rgba(255,255,255,0.06) 0);
-        position: relative;
-        color: #fff;
-        font-size: 0.85rem;
-        font-weight: 800;
-    }
-
-    .employee-dashboard-shell .leave-overview__ring::after {
-        content: "";
-        position: absolute;
-        inset: 9px;
-        border-radius: 50%;
-        background: #2a849b;
-    }
-
-    .employee-dashboard-shell .leave-overview__ring span {
-        position: relative;
-        z-index: 1;
-    }
-
-    .employee-dashboard-shell .leave-overview__details > div:last-child {
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-    }
-
-    .employee-dashboard-shell .leave-overview__details strong {
-        color: #fff;
-        font-size: 1rem;
-    }
-
-    .employee-dashboard-shell .leave-overview__details span,
-    .employee-dashboard-shell .leave-overview__pending {
-        color: rgba(255,255,255,0.68);
-        font-size: 0.78rem;
-    }
-
-    .employee-dashboard-shell .leave-overview__progress {
-        display: none;
-    }
-
-    .employee-dashboard-shell .leave-overview__progress .bar {
-        height: 100%;
-        border-radius: inherit;
-        background: #8f8ee8;
-    }
-
-    .employee-dashboard-shell .leave-overview__pending {
-        display: none;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:nth-child(2) {
-        grid-column: 1;
-        grid-row: 2;
-        background: var(--card-bg-dark);
-        color: #fff;
-        min-height: 126px;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:nth-child(2) .oh-card-dashboard__title,
-    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:nth-child(2) .metric-label {
-        color: rgba(255,255,255,0.7);
-    }
-
-    .employee-dashboard-shell .employee-dashboard-leave-requests {
-        grid-column: 2;
-        grid-row: 3;
-        min-height: 126px;
-        background: var(--card-bg-dark);
-        color: #fff;
-        text-decoration: none;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:nth-child(2) .metric-value,
-    .employee-dashboard-shell .employee-dashboard-leave-requests .metric-value {
-        color: #fff;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-leave-requests .oh-card-dashboard__header {
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-badge {
-        padding: 0.28rem 0.55rem;
-        border-radius: 999px;
-        background: rgba(221, 177, 102, 0.18);
-        color: #dfab66;
-        font-size: 0.68rem;
-        font-weight: 700;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-leave-requests .oh-card-dashboard__title,
-    .employee-dashboard-shell .employee-dashboard-leave-requests .metric-label {
-        color: rgba(255,255,255,0.7);
-    }
-
-    .employee-dashboard-shell .employee-dashboard-lower-grid {
-        grid-column: 1 / -1;
-        grid-row: 4;
-        grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.75fr);
-        gap: 1rem;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-lower-grid .employee-dashboard-card {
-        background: var(--card-bg-dark);
-    }
-
-    .employee-dashboard-shell .employee-dashboard-card-link {
-        color: rgba(255,255,255,0.8);
-        font-size: 0.72rem;
-        font-weight: 700;
-        text-decoration: none;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-card-link:hover {
-        color: #fff;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-announcements {
-        grid-column: 2;
-        grid-row: 2;
-        min-height: 220px;
-        background: #b9dce3;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-announcements .oh-card-dashboard__header {
-        margin-bottom: 0.3rem;
-        padding-bottom: 0;
-        border-bottom: 0;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-announcements .oh-card-dashboard__title {
-        color: #ffffff;
-        font-size: 0.95rem;
-        letter-spacing: 0.02em;
-        text-transform: none;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-announcements .employee-dashboard-card-link {
-        display: none !important;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-announcements .employee-dashboard-card-link:hover {
-        background: rgba(255,255,255,0.18);
-        color: #ffffff;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-announcements .oh-card-dashboard__body {
-        flex: 1 1 auto;
-        height: auto;
-        min-height: 0;
-        padding: 0.45rem 0.35rem 0.35rem;
-        overflow: hidden;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-announcements .oh-card-dashboard__body > * {
-        border-color: rgba(255,255,255,0.12) !important;
-        color: rgba(255,255,255,0.88);
-    }
-
-    .employee-dashboard-shell .employee-announcement-list {
-        height: 100% !important;
-        max-height: none;
-        min-height: 0;
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: thin;
-        scrollbar-color: rgba(169,229,201,.45) transparent;
-    }
-
-    .employee-dashboard-shell .employee-announcement-list .oh-sticky-table__table,
-    .employee-dashboard-shell .employee-announcement-list .oh-sticky-table__tbody {
-        width: 100%;
-        height: 100%;
-    }
-
-    .employee-dashboard-shell .employee-announcement-list .oh-sticky-table__tbody {
-        display: flex;
-        flex-direction: column;
-        gap: 0.55rem;
-    }
-
-    .employee-dashboard-shell .employee-announcement-list .oh-sticky-table__tbody > .oh-sticky-table__tr:only-child,
-    .employee-dashboard-shell .employee-announcement-list .oh-sticky-table__tbody > .oh-sticky-table__tr:only-child .employee-announcement-item {
-        height: 100%;
-        min-height: 0;
-    }
-
-    .employee-dashboard-shell .employee-announcement-list .oh-sticky-table__tr {
-        padding: 0 !important;
-        border: 0 !important;
-        background: transparent !important;
-    }
-
-    .employee-dashboard-shell .employee-announcement-item {
-        display: flex;
-        align-items: center;
-        flex: 1 1 auto;
-        width: 100%;
-        min-width: 0;
-        margin: 0;
-        padding: 0.7rem 0.8rem;
-        border: 1px solid rgba(169,229,201,.16);
-        border-radius: 14px;
-        background: linear-gradient(100deg, rgba(11,35,27,.92), rgba(22,49,39,.78));
-        box-sizing: border-box;
-        transition: transform .18s ease, border-color .18s ease, background .18s ease;
-    }
-
-    .employee-dashboard-shell .employee-announcement-item:hover {
-        transform: translateX(3px);
-        border-color: rgba(169,229,201,.42);
-        background: linear-gradient(100deg, rgba(18,55,42,.98), rgba(28,67,52,.85));
-    }
-
-    .employee-dashboard-shell .employee-announcement-item__avatar {
-        display: grid;
-        place-items: center;
-        flex: 0 0 34px;
-        width: 34px;
-        height: 34px;
-        margin-right: 0.7rem !important;
-        border: 1px solid rgba(169,229,201,.3);
-        border-radius: 11px;
-        background: rgba(169,229,201,.12);
-        overflow: hidden;
-    }
-
-    .employee-dashboard-shell .employee-announcement-item__avatar .oh-profile__image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .employee-dashboard-shell .employee-announcement-item__content {
-        display: flex;
-        flex-direction: column;
-        min-width: 0;
-        gap: 0.18rem;
-    }
-
-    .employee-dashboard-shell .employee-announcement-item__title {
-        display: block;
-        overflow: hidden;
-        color: #f5fff9 !important;
-        font-size: 0.78rem;
-        line-height: 1.3;
-        font-weight: 750;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .employee-dashboard-shell .employee-announcement-item__date {
-        color: rgba(209,231,221,.62);
-        font-size: 0.65rem;
-        font-weight: 600;
-    }
-
-    .employee-dashboard-shell .employee-announcement-item .oh-profile__info-value {
-        flex: 0 0 auto;
-        margin-left: auto !important;
-        background: #8dd1b7 !important;
-        color: #123127 !important;
-        font-size: 0.58rem !important;
-        letter-spacing: .04em;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .empty-state {
-        align-items: flex-start;
-        justify-content: center;
-        text-align: left;
-        padding: 0.35rem 0.15rem;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .empty-state .metric-value {
-        margin-bottom: 0.3rem;
-        line-height: 1;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .empty-state .metric-label,
-    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child .empty-state .metric-subtitle {
-        width: 100%;
-        text-align: left;
-    }
-
-    .employee-dashboard-shell .employee-team-member {
-        display: flex;
-        align-items: center;
-        gap: 0.65rem;
-        padding: 0.55rem 0;
-        color: #fff;
-        text-decoration: none;
-    }
-
-    .employee-dashboard-shell .employee-team-member__avatar {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 34px;
-        height: 34px;
-        flex: 0 0 34px;
-        overflow: hidden;
-        border-radius: 50%;
-        background: #716ac4;
-        color: #fff;
-        font-size: 0.72rem;
-        font-weight: 800;
-    }
-
-    .employee-dashboard-shell .employee-team-member__avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .employee-dashboard-shell .employee-team-member__info {
-        display: flex;
-        min-width: 0;
-        flex: 1;
-        flex-direction: column;
-    }
-
-    .employee-dashboard-shell .employee-team-member__info strong {
-        font-size: 0.78rem;
-    }
-
-    .employee-dashboard-shell .employee-team-member__info small {
-        overflow: hidden;
-        color: rgba(255,255,255,0.68);
-        font-size: 0.68rem;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .employee-dashboard-shell .employee-team-member__status {
-        width: 9px;
-        height: 9px;
-        flex: 0 0 9px;
-        border: 2px solid #d9f1e4;
-        border-radius: 50%;
-        background: #8ac4ad;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-empty {
-        padding: 1rem 0;
-        color: rgba(255,255,255,0.68);
-        font-size: 0.78rem;
-    }
-
-    @media (max-width: 850px) {
-        .employee-dashboard-shell {
-            display: block;
-            grid-template-rows: none;
-            margin-top: 0;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-greeting-bar {
-            margin-bottom: 0.75rem;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-hero {
-            grid-column: 1;
-            min-height: 0;
-            padding: 1.25rem;
-            margin-bottom: 1rem;
-            border-radius: 22px !important;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-hero__identity {
-            display: block;
-            min-height: 0;
-            padding-right: 0;
-        }
-
-        .employee-dashboard-shell .attendance-hero-heading {
-            position: static;
-        }
-
-        .employee-dashboard-shell .attendance-hero-heading__value {
-            font-size: clamp(2.5rem, 11vw, 3.5rem);
-        }
-
-        .employee-dashboard-shell .employee-dashboard-hero__aside {
-            position: static;
-            width: auto;
-            margin-top: 0.65rem;
-        }
-
-        .employee-dashboard-shell .attendance-hero-stats {
-            position: static;
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 1rem;
-            margin-top: 4.5rem;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-summary-row {
-            display: block;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card,
-        .employee-dashboard-shell .employee-dashboard-leave-requests {
-            margin-bottom: 1rem;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child {
-            height: auto;
-            min-height: 0;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-announcements {
-            margin-bottom: 1rem;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-lower-grid {
-            display: block;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-lower-grid > .employee-dashboard-card {
-            margin-bottom: 1rem;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-hero__aside {
-            min-width: 0;
-            width: 100%;
-            position: static;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-hero__identity {
-            padding-right: 0;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-birthday {
-            position: static;
-            width: 100%;
-            margin-top: 1rem;
-            padding: 0;
-            border-left: 0;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-birthday img {
-            height: min(52vw, 220px);
-        }
-    }
-
-    @media (max-width: 640px) {
-        .employee-dashboard-shell {
-            padding: 0.75rem 0.75rem 5.5rem;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-hero {
-            padding: 1.1rem;
-            border-radius: 18px;
-        }
-
-        .employee-dashboard-shell .attendance-hero-stats {
-            grid-template-columns: 1fr;
-            gap: 0.8rem;
-            margin-top: 2rem;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-hero__aside {
-            flex-direction: column;
-        }
-    }
-
-    /* Keep the first row at the compact reference height after legacy card rules. */
-    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child {
-        min-height: 266px;
-        height: 266px;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-birthday img {
-        height: 205px;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-birthday__details {
-        min-height: 70px;
-        padding: 0.78rem 0.7rem;
-        background: #f8f6f0;
-        color: #294b47 !important;
-        overflow: visible;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-birthday__details strong {
-        display: block;
-        color: #294b47 !important;
-        font-size: 0.86rem;
-        font-weight: 800;
-        line-height: 1.15;
-        white-space: nowrap;
-    }
-
-    .employee-dashboard-shell .employee-dashboard-birthday__details span {
-        display: block;
-        color: #6b887d !important;
-        font-size: 0.78rem;
-        line-height: 1.25;
-        white-space: nowrap;
-    }
-
-    .employee-dashboard-shell .leave-overview__details {
-        margin-top: 1rem;
-    }
-
-    .employee-dashboard-shell .leave-overview__ring {
-        width: 64px;
-        height: 64px;
-        flex-basis: 64px;
-    }
-
-    .employee-dashboard-shell .leave-overview__ring::after {
-        inset: 7px;
-    }
-
-    @media (max-width: 850px) {
-        .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child {
-            min-height: 0;
-            height: auto;
-        }
-    }
-
-    @media (min-width: 851px) {
-        .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:nth-child(2) {
-            grid-column: 1;
-            grid-row: 2;
-            min-height: 266px;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-announcements {
-            grid-column: 2;
-            grid-row: 2;
-            min-height: 266px;
-        }
-    }
+}
 </style>
 
 <div class="employee-dashboard-shell">
-    <div class="employee-dashboard-greeting-bar">
-        <div>
-            <h1>
-                {% if now.hour < 13 %}{% trans "Good morning" %}
-                {% elif now.hour < 17 %}{% trans "Good afternoon" %}
-                {% elif now.hour < 21 %}{% trans "Good evening" %}
-                {% else %}{% trans "Good night" %}{% endif %},
-                {{ request.user.employee_get.get_full_name|default:request.user.username }}
-            </h1>
-            <p>{% blocktrans with date=now|date:"M j" %}Here's what's happening across EMPLY today, {{ date }}.{% endblocktrans %}</p>
-        </div>
-    </div>
+    {# ── Modern SaaS Dashboard Grid ── #}
+    <div class="ep-dashboard-grid">
 
-    <div class="employee-dashboard-hero attendance-state--{% if attendance_display_time %}active{% else %}empty{% endif %} greeting--{% if now.hour < 13 %}morning{% elif now.hour < 17 %}afternoon{% elif now.hour < 21 %}evening{% else %}night{% endif %}">
-        <style>
-            /* Time-aware greeting variants */
-            .employee-dashboard-hero.greeting--morning,
-            .employee-dashboard-hero.greeting--afternoon,
-            .employee-dashboard-hero.greeting--evening,
-            .employee-dashboard-hero.greeting--night {
-                background: linear-gradient(115deg, #31594f 0%, #8fa3a0 72%, #f8faf7 100%) !important;
-                border: 1px solid rgba(47,87,82,0.18) !important;
-                color: var(--text-main);
-                border-radius: 28px;
-                box-shadow: 0 16px 30px rgba(47,87,82,0.16);
-            }
+        {# ── LEFT MAIN COLUMN (Hero, KPIs, Announcements) ── #}
+        <div class="ep-col-main">
 
-            /* When the hero uses a light card surface, ensure all hero text uses the light-surface tokens */
-            .employee-dashboard-hero.greeting--morning .employee-dashboard-hero__greeting,
-            .employee-dashboard-hero.greeting--afternoon .employee-dashboard-hero__greeting,
-            .employee-dashboard-hero.greeting--evening .employee-dashboard-hero__greeting,
-            .employee-dashboard-hero.greeting--night .employee-dashboard-hero__greeting {
-                color: var(--text-main) !important;
-            }
+            {# ── 1. Hero: Today's Attendance & Shift ── #}
+            <div class="ep-card ep-attendance-hero">
+                <div class="ep-attendance-hero__header">
+                    <div class="ep-attendance-hero__title-wrap">
+                        <div class="ep-card-icon ep-card-icon--teal">
+                            <span class="material-symbols-outlined">schedule</span>
+                        </div>
+                        <div>
+                            <span class="ep-attendance-hero__label">{% trans "Today's Attendance" %}</span>
+                            <span class="ep-attendance-hero__date">{{ now|date:"l, F j" }}</span>
+                        </div>
+                    </div>
+                    <div class="ep-attendance-status-badge ep-status--{% if attendance_status == 'Checked out' %}out{% elif attendance_status == 'Checked in on time' or attendance_status == 'Checked in late' %}in{% elif attendance_display_time %}in{% else %}none{% endif %}">
+                        <span class="ep-status-dot"></span>
+                        <span class="ep-status-text">
+                            {% if attendance_status %}
+                                {{ attendance_status }}
+                            {% elif attendance_display_time %}
+                                {% trans "Checked in" %}
+                            {% else %}
+                                {% trans "Not checked in" %}
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
 
-            .employee-dashboard-hero__greeting {
-                display:flex;
-                align-items:center;
-                gap:0.4rem;
-                font-weight:800;
-                font-size:1rem;
-                color: var(--text-main);
-            }
-            .employee-dashboard-hero__greeting-text { color: var(--text-main); font-size: 1.05rem; font-weight:700; }
-            .employee-dashboard-hero__greeting .icon {
-                display:none;
-            }
-
-            /* Ensure title and meta switch to dark-surface text when hero is light */
-            .employee-dashboard-hero.greeting--morning .employee-dashboard-hero__title,
-            .employee-dashboard-hero.greeting--afternoon .employee-dashboard-hero__title,
-            .employee-dashboard-hero.greeting--evening .employee-dashboard-hero__title,
-            .employee-dashboard-hero.greeting--night .employee-dashboard-hero__title {
-                color: var(--text-main) !important;
-            }
-
-            .employee-dashboard-hero.greeting--morning .employee-dashboard-hero__meta,
-            .employee-dashboard-hero.greeting--afternoon .employee-dashboard-hero__meta,
-            .employee-dashboard-hero.greeting--evening .employee-dashboard-hero__meta,
-            .employee-dashboard-hero.greeting--night .employee-dashboard-hero__meta,
-            .employee-dashboard-hero.greeting--morning .employee-dashboard-hero__greeting-sub,
-            .employee-dashboard-hero.greeting--afternoon .employee-dashboard-hero__greeting-sub,
-            .employee-dashboard-hero.greeting--evening .employee-dashboard-hero__greeting-sub,
-            .employee-dashboard-hero.greeting--night .employee-dashboard-hero__greeting-sub {
-                color: var(--text-muted-dark) !important;
-                opacity: 1 !important;
-            }
-            .employee-dashboard-hero__greeting-sub {
-                font-size:0.84rem;
-                color: var(--text-muted-dark);
-                font-weight:700;
-                margin-top:0.08rem;
-            }
-            .employee-dashboard-hero__meta {
-                color: var(--text-main-light);
-                opacity: 0.85;
-            }
-            .employee-dashboard-hero__title {
-                color: var(--text-main-light);
-                margin: 0.7rem 0 0.2rem;
-                font-size: clamp(1.65rem, 2vw, 2.2rem);
-                font-weight: 800;
-            }
-
-            /* Apply button - make it match provided dark green style */
-            .oh-btn--apply { background: #07261b; color: #fff; border: none; box-shadow: 0 8px 14px rgba(5,21,18,0.25); padding: 0.68rem 1.05rem; border-radius: 6px; font-weight:800; display:inline-block; min-width:160px; font-size:1rem }
-            .oh-btn--apply:hover { filter: brightness(1.05); }
-
-            /* Responsive behavior for small screens */
-            @media (max-width:760px) {
-                .oh-btn--apply { display:block; width:100%; padding: 0.7rem 0.9rem; min-width:0; font-size:0.98rem; border-radius:10px; }
-                .employee-dashboard-card .action-stack { flex-direction: column; }
-                .employee-dashboard-hero { padding:0.75rem; gap:0.6rem }
-                .employee-dashboard-hero__avatar { width:56px; height:56px }
-                .employee-dashboard-hero__title { font-size:1rem }
-            }
-
-            /* Phone-specific adjustments (very small screens like 360-420px) */
-            @media (max-width:420px) {
-                .oh-btn--apply { display:block; width:100%; padding: 0.9rem 1rem; min-width:0; font-size:1.02rem; border-radius:12px; }
-                .employee-dashboard-card .action-stack { flex-direction: column; gap:0.5rem }
-
-                /* Hero stacks vertically and uses tighter spacing */
-                .employee-dashboard-hero { flex-direction:column; align-items:flex-start; padding:0.6rem; gap:0.5rem; border-radius:12px }
-                .employee-dashboard-hero__identity { width:100%; display:flex; gap:0.75rem; align-items:center }
-                .employee-dashboard-hero__avatar { width:48px; height:48px; flex-shrink:0 }
-                .employee-dashboard-hero__greeting { font-size:0.95rem }
-                .employee-dashboard-hero__greeting .icon { width:34px; height:34px; font-size:1.05rem }
-                .employee-dashboard-hero__title { font-size:1rem; margin-top:0.15rem }
-                .employee-dashboard-hero__meta { font-size:0.9rem }
-
-                /* Make summary cards more compact */
-                .employee-dashboard-summary-row { gap:0.6rem }
-                .employee-dashboard-card { padding:0.8rem }
-                .employee-dashboard-card .metric-value { font-size:1.2rem }
-
-                /* Leave balance stacks vertically for narrow screens */
-                .leave-balance-wrap { flex-direction:column; align-items:flex-start }
-                .leave-balance-left { flex:0 0 auto }
-                .leave-circle { width:56px; height:56px; font-size:1rem }
-                .leave-progress { width:100%; margin-top:0.5rem }
-                .leave-stats { flex-direction:row; gap:0.6rem; font-size:0.86rem }
-
-                /* Birthday carousel smaller */
-                .birthday-slider { padding:0.6rem }
-                .birthday-card { padding:0.7rem; grid-template-columns: 66px 1fr; border-radius:12px }
-                .birthday-card__avatar { width:66px; height:66px }
-                .birthday-dots { margin-top:0.6rem }
-
-                /* Ensure bottom FAB doesn't overlap content too much (if present) */
-                .employee-dashboard-shell { padding-bottom:1.6rem }
-            }
-
-            @media (min-width:1200px) {
-                .oh-btn--apply { padding:0.84rem 1.2rem; font-size:1.05rem }
-            }
-
-            @media (max-width:640px){ .employee-dashboard-hero__greeting .icon{ width:34px; height:34px } .employee-dashboard-hero__title{ font-size:1.05rem } }
-        </style>
-
-        <div class="employee-dashboard-hero__identity">
-            <div class="attendance-hero-heading">
-                <span class="attendance-hero-heading__label">{% trans "Today's attendance" %}</span>
-                {% if attendance_display_time %}
-                    <span class="attendance-hero-heading__value">{{ attendance_display_time }}</span>
-                {% else %}
-                    <span class="attendance-hero-heading__empty">--</span>
-                {% endif %}
-                {% if attendance_status %}
-                    <span class="employee-dashboard-hero__status">{{ attendance_status }}</span>
-                {% endif %}
-                <style>
-                    .employee-dashboard-shell {
-                        grid-template-rows: 333px auto auto auto !important;
-                    }
-
-                    .employee-dashboard-shell .employee-dashboard-hero {
-                        grid-column: 1 !important;
-                        grid-row: 1 !important;
-                        height: 333px !important;
-                        min-height: 333px !important;
-                        margin-bottom: 0 !important;
-                        padding: 1.45rem 1.7rem !important;
-                        background: linear-gradient(110deg, #31594f 0%, #8fa3a0 72%, #f5f7f5 100%) !important;
-                        border: 1px solid rgba(47,87,82,0.18) !important;
-                        border-radius: 28px !important;
-                        box-shadow: 0 16px 30px rgba(47,87,82,0.16) !important;
-                    }
-
-                    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child {
-                        grid-column: 2 !important;
-                        grid-row: 1 !important;
-                        height: 333px !important;
-                        min-height: 333px !important;
-                    }
-
-                    .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:nth-child(2),
-                    .employee-dashboard-shell .employee-dashboard-announcements {
-                        grid-row: 2 !important;
-                        min-height: 266px !important;
-                    }
-
-                    .employee-dashboard-shell .employee-dashboard-hero__identity {
-                        padding-right: 285px !important;
-                    }
-
-                    .employee-dashboard-shell .attendance-hero-heading {
-                        top: 1.45rem !important;
-                        left: 1.7rem !important;
-                    }
-
-                    .employee-dashboard-shell .employee-dashboard-hero__aside {
-                        top: 7.35rem !important;
-                        left: 1.7rem !important;
-                    }
-
-                    .employee-dashboard-shell .attendance-hero-stats {
-                        left: 1.7rem !important;
-                        right: 285px !important;
-                        bottom: 1.7rem !important;
-                    }
-
-                    .employee-dashboard-shell .employee-dashboard-birthday {
-                        top: 1.25rem !important;
-                        right: 1.25rem !important;
-                        bottom: 1.25rem !important;
-                        width: 245px !important;
-                        padding-left: 1.45rem !important;
-                    }
-
-                    @media (max-width: 850px) {
-                        .employee-dashboard-shell {
-                            grid-template-rows: none !important;
-                        }
-
-                        .employee-dashboard-shell .employee-dashboard-hero {
-                            height: auto !important;
-                            min-height: 0 !important;
-                            padding: 1.25rem !important;
-                            border-radius: 22px !important;
-                        }
-
-                        .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child {
-                            height: auto !important;
-                            min-height: 0 !important;
-                        }
-                    }
-                </style>
-            </div>
-            <div class="employee-dashboard-hero__avatar">
-                {% if request.user.employee_get.get_avatar %}
-                    <img src="{{ request.user.employee_get.get_avatar }}" alt="{{ request.user.employee_get.get_full_name }}" />
-                {% else %}
-                    {{ request.user.employee_get.get_full_name|default:request.user.username|slice:":1" }}
-                {% endif %}
-            </div>
-            <div class="employee-dashboard-hero__content">
-                <div class="employee-dashboard-hero__greeting">
-                    <div>
-                        <div class="employee-dashboard-hero__greeting-text">
-                            {% if now.hour < 13 %}{% trans "Good morning" %}
-                            {% elif now.hour < 17 %}{% trans "Good afternoon" %}
-                            {% elif now.hour < 21 %}{% trans "Good evening" %}
-                            {% else %}{% trans "Good night" %}
+                <div class="ep-attendance-hero__body">
+                    <div class="ep-attendance-hero__clock-section">
+                        <div class="ep-attendance-hero__clock">
+                            {% if attendance_display_time %}
+                                <span>{{ attendance_display_time }}</span>
+                            {% else %}
+                                <span>--:-- --</span>
                             {% endif %}
                         </div>
-                        <div class="employee-dashboard-hero__greeting-sub">
-                            {% blocktrans with date=now|date:"l, F j, Y" %}Here's what's happening across EMPLY today, {{ date }}.{% endblocktrans %}
+                        <div class="ep-attendance-hero__clock-sub">
+                            {% if attendance_display_time %}
+                                <span class="material-symbols-outlined">check_circle</span>
+                                <span>{% trans "Punch recorded today" %}{% if expected_checkout %} · {% trans "Target checkout" %} {{ expected_checkout }}{% endif %}</span>
+                            {% else %}
+                                <span class="material-symbols-outlined">info</span>
+                                <span>{% trans "Ready to start work? Check-in from the top navigation bar." %}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="ep-attendance-hero__stats">
+                        <div class="ep-hero-stat">
+                            <div class="ep-hero-stat__icon">
+                                <span class="material-symbols-outlined">hourglass_top</span>
+                            </div>
+                            <div class="ep-hero-stat__content">
+                                <span class="ep-hero-stat__label">{% trans "Hours Logged" %}</span>
+                                <span class="ep-hero-stat__value">{{ worked_today|default:"00:00" }}</span>
+                            </div>
+                        </div>
+
+                        <div class="ep-hero-stat">
+                            <div class="ep-hero-stat__icon">
+                                <span class="material-symbols-outlined">logout</span>
+                            </div>
+                            <div class="ep-hero-stat__content">
+                                <span class="ep-hero-stat__label">{% trans "Expected Checkout" %}</span>
+                                <span class="ep-hero-stat__value">{{ expected_checkout|default:"6:00 PM" }}</span>
+                            </div>
+                        </div>
+
+                        <div class="ep-hero-stat">
+                            <div class="ep-hero-stat__icon">
+                                <span class="material-symbols-outlined">calendar_today</span>
+                            </div>
+                            <div class="ep-hero-stat__content">
+                                <span class="ep-hero-stat__label">{% trans "This Month" %}</span>
+                                <span class="ep-hero-stat__value">{{ month_attended_days }} / {{ month_expected_days }} <small>{% trans "days" %}</small></span>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <h2 class="employee-dashboard-hero__title">{{ request.user.employee_get.get_full_name|default:request.user.username }}</h2>
-                <div class="employee-dashboard-hero__meta">
-                    {% with employee=request.user.employee_get %}
-                        {% if employee.get_job_position %}<span>{{ employee.get_job_position }}</span>{% endif %}
-                        {% if employee.get_department %}<span>{{ employee.get_department }}</span>{% endif %}
-                        {% if employee.email %}<span>{{ employee.email }}</span>{% endif %}
-                    {% endwith %}
+            {# ── 2. KPI Cards: Weekly Hours & Pending Leave Requests ── #}
+            <div class="ep-kpi-grid">
+                {% if "attendance"|app_installed %}
+                <div class="ep-card ep-kpi-card">
+                    <div class="ep-kpi-card__top">
+                        <div class="ep-card-icon ep-card-icon--blue">
+                            <span class="material-symbols-outlined">trending_up</span>
+                        </div>
+                        <span class="ep-kpi-badge ep-kpi-badge--blue">{% trans "Weekly" %}</span>
+                    </div>
+                    <div class="ep-kpi-card__main">
+                        <div class="ep-kpi-card__value">{{ week_hours|default:"00:00" }} <span class="ep-kpi-unit">hrs</span></div>
+                        <div class="ep-kpi-card__label">{% trans "Hours logged this week" %}</div>
+                    </div>
+                    <div class="ep-kpi-card__footer">
+                        <div class="ep-progress-bar">
+                            <div class="ep-progress-fill ep-progress-fill--blue" style="width: 20%;"></div>
+                        </div>
+                        <div class="ep-kpi-subtext">
+                            <span>{% trans "Tracked against work schedule" %}</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="attendance-hero-stats">
-                    <div class="attendance-hero-stat">
-                        <span class="attendance-hero-stat__label">{% trans "Hours logged" %}</span>
-                        <span class="attendance-hero-stat__value">{{ worked_today|default:"—" }}</span>
+                {% endif %}
+
+                {% if "leave"|app_installed %}
+                <a href="{% url 'user-request-view' %}" class="ep-card ep-kpi-card">
+                    <div class="ep-kpi-card__top">
+                        <div class="ep-card-icon ep-card-icon--teal">
+                            <span class="material-symbols-outlined">date_range</span>
+                        </div>
+                        <span class="ep-kpi-badge ep-kpi-badge--amber">
+                            {% if pending_leaves > 0 %}{{ pending_leaves }} {% trans "Pending" %}{% else %}{% trans "All Clear" %}{% endif %}
+                        </span>
                     </div>
-                    <div class="attendance-hero-stat">
-                        <span class="attendance-hero-stat__label">{% trans "Expected checkout" %}</span>
-                        <span class="attendance-hero-stat__value">{{ expected_checkout|default:"—" }}</span>
+                    <div class="ep-kpi-card__main">
+                        <div class="ep-kpi-card__value">{{ pending_leaves }} <span class="ep-kpi-unit">{% trans "requests" %}</span></div>
+                        <div class="ep-kpi-card__label">{% trans "Leave requests" %}</div>
                     </div>
-                    <div class="attendance-hero-stat">
-                        <span class="attendance-hero-stat__label">{% trans "This month" %}</span>
-                        <span class="attendance-hero-stat__value">{{ month_attended_days }} / {{ month_expected_days }} {% trans "days" %}</span>
+                    <div class="ep-kpi-card__footer">
+                        <span class="ep-kpi-link">
+                            <span>{% trans "View leave status" %}</span>
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        </span>
+                    </div>
+                </a>
+                {% endif %}
+            </div>
+
+            {# ── 3. Announcements Feed ── #}
+            <div class="ep-card ep-announcements-card">
+                <div class="ep-card__header">
+                    <div class="ep-card__header-left">
+                        <div class="ep-card-icon ep-card-icon--violet">
+                            <span class="material-symbols-outlined">campaign</span>
+                        </div>
+                        <h3 class="ep-card__title">{% trans "Announcements" %}</h3>
+                    </div>
+                    <a href="{% url 'announcement-list' %}" class="ep-card__header-action">
+                        {% trans "View all" %} <span class="material-symbols-outlined">chevron_right</span>
+                    </a>
+                </div>
+                <div class="ep-announcements-body" hx-get="{% url 'announcement-list' %}" hx-trigger="load" hx-swap="innerHTML">
+                    <div class="ep-loading-shimmer">
+                        <div class="ep-shimmer-line"></div>
+                        <div class="ep-shimmer-line short"></div>
                     </div>
                 </div>
             </div>
+
         </div>
-        <div class="employee-dashboard-hero__aside">
-            <div class="employee-dashboard-hero__time-widget" aria-live="polite">
-                <div class="employee-dashboard-hero__time-widget-label">India / IST</div>
-                <div class="employee-dashboard-hero__time-widget-time" id="indiaTimeWidgetTime">--:-- --</div>
-                <div class="employee-dashboard-hero__time-widget-date" id="indiaTimeWidgetDate">--</div>
-            </div>
-        </div>
-        {% if birthdays %}
-        <div class="employee-dashboard-birthday">
-            <div class="employee-dashboard-birthday__label">{% trans "Upcoming birthdays" %}</div>
-            {% with birthday=birthdays.0 %}
-                <img src="{{ birthday.get_avatar }}" alt="{{ birthday.get_full_name }}">
-                <div class="employee-dashboard-birthday__details">
-                    <strong style="color:#294b47 !important;">{{ birthday.get_full_name }}</strong>
-                    <span style="color:#6b887d !important;">{{ birthday.dob|date:"F j" }} ·
-                        {% if birthday.days_until_birthday == 0 %}{% trans "Today" %}
-                        {% elif birthday.days_until_birthday == 1 %}{% trans "Tomorrow" %}
-                        {% else %}{% blocktrans with days=birthday.days_until_birthday %}In {{ days }} days{% endblocktrans %}{% endif %}
-                    </span>
+
+        {# ── RIGHT COLUMN (Sidebar: Leave Balance, Birthdays, Team) ── #}
+        <div class="ep-col-side">
+
+            {# ── 4. Leave & Time Off Balance ── #}
+            {% if "leave"|app_installed %}
+            <div class="ep-card ep-leave-card">
+                <div class="ep-card__header">
+                    <div class="ep-card__header-left">
+                        <div class="ep-card-icon ep-card-icon--emerald">
+                            <span class="material-symbols-outlined">event_available</span>
+                        </div>
+                        <h3 class="ep-card__title">{% trans "Leave Balance" %}</h3>
+                    </div>
+                    <a href="#objectCreateModal"
+                       data-toggle="oh-modal-toggle"
+                       data-target="#objectCreateModal"
+                       hx-get="{% url 'leave-request-create' %}"
+                       hx-target="#objectCreateModalTarget"
+                       class="ep-card__header-btn">
+                        <span class="material-symbols-outlined">add</span>
+                        <span>{% trans "Apply" %}</span>
+                    </a>
                 </div>
-            {% endwith %}
-        </div>
-        {% endif %}
-    </div>
 
-<script>
-(function(){
-    function setGreetingByLocalTime(){
-        var hr = new Date().getHours();
-        var period = 'morning';
-        if(hr >= 21) period = 'night';
-        else if(hr >= 17) period = 'evening';
-        else if(hr >= 13) period = 'afternoon';
-        else period = 'morning';
-
-        var hero = document.querySelector('.employee-dashboard-hero');
-        if(!hero) return;
-        hero.classList.remove('greeting--morning','greeting--afternoon','greeting--evening','greeting--night');
-        hero.classList.add('greeting--'+period);
-
-        var textEl = hero.querySelector('.employee-dashboard-hero__greeting-text');
-        var subEl = hero.querySelector('.employee-dashboard-hero__greeting-sub');
-        if(!textEl || !subEl) return;
-        var today = new Intl.DateTimeFormat(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).format(new Date());
-        if(period === 'morning') { textEl.textContent = 'Good morning'; }
-        else if(period === 'afternoon') { textEl.textContent = 'Good afternoon'; }
-        else if(period === 'evening') { textEl.textContent = 'Good evening'; }
-        else { textEl.textContent = 'Good night'; }
-        subEl.textContent = "Here's what's happening across EMPLY today, " + today + ".";
-    }
-
-    function updateIndiaTime(){
-        var timeEl = document.getElementById('indiaTimeWidgetTime');
-        var dateEl = document.getElementById('indiaTimeWidgetDate');
-        if(!timeEl || !dateEl) return;
-
-        var now = new Date();
-        var timeOptions = { timeZone: 'Asia/Kolkata', hour: 'numeric', minute: '2-digit', hour12: true };
-        var dateOptions = { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric' };
-        timeEl.textContent = new Intl.DateTimeFormat('en-US', timeOptions).format(now);
-        dateEl.textContent = new Intl.DateTimeFormat('en-GB', dateOptions).format(now);
-    }
-
-    document.addEventListener('DOMContentLoaded', function(){
-        setGreetingByLocalTime();
-        updateIndiaTime();
-    });
-    document.addEventListener('visibilitychange', function(){ if(!document.hidden) { setGreetingByLocalTime(); updateIndiaTime(); } });
-    setInterval(updateIndiaTime, 1000);
-})();
-</script>
-
-    <div class="employee-dashboard-summary-row">
-        {% if "leave"|app_installed %}
-            <div class="employee-dashboard-card employee-dashboard-card--wide">
-                <div class="oh-card-dashboard__header">
-                    <span class="leave-card-icon" aria-hidden="true">▣</span>
-                    <span class="leave-card-badge">{{ leave_remaining }} {% trans "left" %}</span>
-                </div>
-                <div class="oh-card-dashboard__body">
-                    {% if leave_available and leave_rows %}
-                        <div class="leave-overview">
-                            <div class="leave-overview__headline">
-                                <strong>{{ leave_remaining }}</strong>
-                                <span>/ {{ leave_allocated }} {% trans "days" %}</span>
+                <div class="ep-leave-card__body">
+                    <div class="ep-leave-summary">
+                        <div class="ep-leave-hero-stat">
+                            <span class="ep-leave-hero-number">{{ leave_remaining }}</span>
+                            <span class="ep-leave-hero-label">{% trans "Days Available" %}</span>
+                        </div>
+                        <div class="ep-leave-progress-wrap">
+                            <div class="ep-leave-progress-bar">
+                                <div class="ep-leave-progress-fill" style="width: {% if leave_allocated > 0 %}{{ leave_percent }}{% else %}0{% endif %}%;"></div>
                             </div>
-                            <div class="leave-overview__label">{% trans "Leave balance remaining" %}</div>
-                            <div class="leave-overview__details">
-                                <div class="leave-overview__ring" style="--leave-used: {{ leave_percent }}%;">
-                                    <span>{{ leave_percent }}%</span>
-                                </div>
-                                <div>
-                                    <strong>{% trans "Used so far" %}</strong>
-                                    <span>{{ leave_used }} {% trans "of" %} {{ leave_allocated }} {% trans "annual days taken" %}</span>
-                                </div>
-                            </div>
-                            <div class="leave-overview__progress">
-                                <div class="bar" style="width: {{ leave_percent }}%;"></div>
-                            </div>
-                            <div class="leave-overview__pending">
-                                {{ pending_leaves }} {% trans "pending requests" %}
+                            <div class="ep-leave-progress-meta">
+                                <span>{{ leave_used }} {% trans "used" %}</span>
+                                <span>{{ leave_allocated }} {% trans "allocated" %}</span>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="ep-leave-metrics-list">
+                        <div class="ep-leave-metric-item">
+                            <div class="ep-leave-metric-label">
+                                <span class="ep-dot ep-dot--allocated"></span>
+                                <span>{% trans "Total Allocated" %}</span>
+                            </div>
+                            <span class="ep-leave-metric-value">{{ leave_allocated }} {% trans "days" %}</span>
+                        </div>
+                        <div class="ep-leave-metric-item">
+                            <div class="ep-leave-metric-label">
+                                <span class="ep-dot ep-dot--used"></span>
+                                <span>{% trans "Days Taken" %}</span>
+                            </div>
+                            <span class="ep-leave-metric-value">{{ leave_used }} {% trans "days" %}</span>
+                        </div>
+                        <div class="ep-leave-metric-item">
+                            <div class="ep-leave-metric-label">
+                                <span class="ep-dot ep-dot--pending"></span>
+                                <span>{% trans "Pending Approval" %}</span>
+                            </div>
+                            <span class="ep-leave-metric-value">{{ pending_leaves }} {% trans "requests" %}</span>
+                        </div>
+                    </div>
+
+                    {% if not leave_available and not leave_rows %}
+                    <div class="ep-leave-empty-note">
+                        <span class="material-symbols-outlined">info</span>
+                        <span>{% trans "No leave policy assigned yet. Click Apply to submit a time off request." %}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            {# ── 5. Upcoming Birthdays (Celebrations) ── #}
+            <div class="ep-card ep-birthday-card">
+                <div class="ep-card__header">
+                    <div class="ep-card__header-left">
+                        <div class="ep-card-icon ep-card-icon--teal">
+                            <span class="material-symbols-outlined">cake</span>
+                        </div>
+                        <h3 class="ep-card__title">{% trans "Upcoming Birthdays" %}</h3>
+                    </div>
+                </div>
+
+                <div class="ep-birthday-card__body">
+                    {% if birthdays %}
+                        {% with bday=birthdays.0 %}
+                        <div class="ep-birthday-feature">
+                            <span class="ep-birthday-confetti" aria-hidden="true">
+                                <span></span><span></span><span></span><span></span>
+                                <span></span><span></span><span></span><span></span>
+                            </span>
+                            <span class="ep-birthday-sparkles" aria-hidden="true">
+                                <span></span><span></span><span></span><span></span><span></span>
+                            </span>
+                            <span class="ep-birthday-fireworks" aria-hidden="true">
+                                <span></span><span></span><span></span><span></span>
+                                <span></span><span></span><span></span><span></span>
+                            </span>
+                            <div class="ep-birthday-avatar-wrap">
+                                {% if bday.get_avatar %}
+                                    <img src="{{ bday.get_avatar }}" alt="{{ bday.get_full_name }}" class="ep-birthday-avatar">
+                                {% else %}
+                                    <div class="ep-birthday-avatar ep-avatar-placeholder">
+                                        {{ bday.get_full_name|default:"U"|slice:":1" }}
+                                    </div>
+                                {% endif %}
+                                <span class="ep-birthday-badge" aria-hidden="true">
+                                    <span class="material-symbols-outlined">celebration</span>
+                                </span>
+                            </div>
+                            <div class="ep-birthday-info">
+                                <h4 class="ep-birthday-name">{{ bday.get_full_name }}</h4>
+                                <div class="ep-birthday-meta">
+                                    <span class="ep-birthday-date">{{ bday.dob|date:"F j" }}</span>
+                                    <span class="ep-birthday-countdown">
+                                        {% if bday.days_until_birthday == 0 %}
+                                            <span class="ep-pill ep-pill--today">🎉 {% trans "Today!" %}</span>
+                                        {% elif bday.days_until_birthday == 1 %}
+                                            <span class="ep-pill">{% trans "Tomorrow" %}</span>
+                                        {% else %}
+                                            <span class="ep-pill">{% blocktrans with days=bday.days_until_birthday %}In {{ days }} days{% endblocktrans %}</span>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endwith %}
                     {% else %}
-                        <div class="empty-state">
-                            <div class="metric-value" style="font-size:1.5rem;">0</div>
-                            <div class="metric-label">{% trans "No leave balance available yet." %}</div>
-                            <div class="metric-subtitle">
-                                <strong>0</strong> {% trans "used" %} · <strong>0</strong> {% trans "pending" %}
-                            </div>
+                        <div class="ep-empty-widget">
+                            <span class="material-symbols-outlined ep-empty-icon">celebration</span>
+                            <p class="ep-empty-title">{% trans "No upcoming birthdays" %}</p>
+                            <p class="ep-empty-desc">{% trans "No team celebrations in the near future." %}</p>
                         </div>
                     {% endif %}
                 </div>
             </div>
-        {% endif %}
 
-        {% if "attendance"|app_installed %}
-            <div class="employee-dashboard-card employee-dashboard-card--wide work-hours-card">
-                <div class="oh-card-dashboard__header">
-                    <span class="oh-card-dashboard__title">{% trans "Work Hours This Week" %}</span>
-                </div>
-                <div class="oh-card-dashboard__body">
-                    <div class="metric-value">{{ week_hours }}</div>
-                    <div class="metric-label">{% trans "Worked this week" %}</div>
-                    <div class="work-hours-chart">
-                        {% for day in work_week_data %}
-                            <div class="work-hours-day">
-                                <div class="work-hours-day__bar-wrap">
-                                    <div class="work-hours-day__bar" style="height: {{ day.bar_percent }}%;"></div>
-                                </div>
-                                <div class="work-hours-day__value">{{ day.hours_text }}</div>
-                                <div class="work-hours-day__label">{{ day.label }}</div>
-                            </div>
-                        {% endfor %}
+            {# ── 6. Your Team ── #}
+            <div class="ep-card ep-team-card">
+                <div class="ep-card__header">
+                    <div class="ep-card__header-left">
+                        <div class="ep-card-icon ep-card-icon--indigo">
+                            <span class="material-symbols-outlined">groups</span>
+                        </div>
+                        <h3 class="ep-card__title">{% trans "Your Team" %}</h3>
                     </div>
+                    {% if team_members %}
+                        <span class="ep-card__badge">{{ team_members|length }} {% trans "members" %}</span>
+                    {% endif %}
+                </div>
+
+                <div class="ep-team-card__body">
+                    {% if team_members %}
+                        <div class="ep-team-list">
+                            {% for member in team_members %}
+                            <div class="ep-team-item">
+                                <div class="ep-team-avatar-wrap">
+                                    {% if member.get_avatar %}
+                                        <img src="{{ member.get_avatar }}" alt="{{ member.get_full_name }}" class="ep-team-avatar">
+                                    {% else %}
+                                        <div class="ep-team-avatar">
+                                            {{ member.get_full_name|default:member|slice:":1" }}
+                                        </div>
+                                    {% endif %}
+                                    <span class="ep-team-status-dot"></span>
+                                </div>
+                                <div class="ep-team-info">
+                                    <h5 class="ep-team-name">{{ member.get_full_name|default:member }}</h5>
+                                    <span class="ep-team-role">
+                                        {% if member.get_job_position %}
+                                            {{ member.get_job_position }}
+                                        {% elif member.get_department %}
+                                            {{ member.get_department }}
+                                        {% else %}
+                                            {% trans "Team member" %}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="ep-empty-widget">
+                            <span class="material-symbols-outlined ep-empty-icon">group</span>
+                            <p class="ep-empty-title">{% trans "No team members found" %}</p>
+                            <p class="ep-empty-desc">{% trans "Reporting manager and team will appear here." %}</p>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
-        {% endif %}
 
-        <div class="employee-dashboard-card employee-dashboard-announcements">
-            <div class="oh-card-dashboard__header">
-                <span class="oh-card-dashboard__title">{% trans "Announcements" %}</span>
-                {% if perms.base.add_announcement %}
-                    <button
-                        class="employee-announcement-add"
-                        type="button"
-                        hx-get="{% url 'create-announcement' %}"
-                        hx-target="#objectCreateModalTarget"
-                        hx-swap="innerHTML"
-                        data-toggle="oh-modal-toggle"
-                        data-target="#objectCreateModal"
-                        title="{% trans 'Create Announcement' %}"
-                        aria-label="{% trans 'Create Announcement' %}"
-                    >
-                        <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
-                    </button>
-                {% endif %}
-            </div>
-            <div class="oh-card-dashboard__body employee-dashboard-htmx" hx-get="{% url 'announcement-list' %}" hx-trigger="load" hx-swap="innerHTML"></div>
         </div>
+
     </div>
-    <style>
-        .employee-dashboard-shell .employee-dashboard-hero {
-            border: 1px solid rgba(47, 87, 82, 0.35) !important;
-            border-radius: 28px !important;
-            box-shadow: 0 12px 24px rgba(47, 87, 82, 0.12) !important;
-            box-sizing: border-box;
-        }
-
-        html body .oh-wrapper-main.employee-bottom-nav-active .employee-dashboard-shell .employee-dashboard-hero {
-            border: 1px solid rgba(47, 87, 82, 0.35) !important;
-            border-radius: 28px !important;
-            box-shadow: 0 12px 24px rgba(47, 87, 82, 0.12) !important;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-hero__status {
-            text-transform: none !important;
-            color: #8dd1b7 !important;
-            background: rgba(74,177,143,0.2) !important;
-            font-size: 0.86rem !important;
-            font-weight: 700 !important;
-            letter-spacing: 0 !important;
-            width: fit-content !important;
-            margin-top: 0.65rem !important;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-hero__status::before {
-            color: #8dd1b7 !important;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-hero__aside {
-            top: 7.8rem !important;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-birthday img {
-            height: 205px !important;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-birthday__details {
-            min-height: 70px !important;
-            padding: 0.78rem 0.7rem !important;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-hero.greeting--morning,
-        .employee-dashboard-shell .employee-dashboard-hero.greeting--afternoon,
-        .employee-dashboard-shell .employee-dashboard-hero.greeting--evening,
-        .employee-dashboard-shell .employee-dashboard-hero.greeting--night {
-            background: linear-gradient(110deg, #31594f 0%, #8fa3a0 72%, #f5f7f5 100%) !important;
-        }
-
-        /* Employee dashboard palette: preserve the existing layout and
-           component styling while matching the teal/light-blue reference. */
-        .employee-dashboard-shell {
-            --bg-main: #e8f5f7;
-            --card-bg-dark: #0d5064;
-            --card-bg-light: #c7e5eb;
-            --accent-green: #2a849b;
-            --accent-light-green: #b9e0e7;
-            --text-main-light: #173f50;
-            --text-muted-light: #557b84;
-            --border-soft: rgba(22, 91, 109, 0.22);
-            background: var(--bg-main);
-            color: var(--text-main-light);
-        }
-
-        .employee-dashboard-shell .employee-dashboard-card {
-            background: #c7e5eb !important;
-            border-color: rgba(42, 132, 155, 0.24);
-            box-shadow: 0 12px 28px rgba(17, 78, 94, 0.14);
-            color: var(--text-main-light);
-        }
-
-        .employee-dashboard-shell .employee-dashboard-card .oh-card-dashboard__title,
-        .employee-dashboard-shell .employee-dashboard-card .metric-label,
-        .employee-dashboard-shell .employee-dashboard-card .metric-subtitle,
-        .employee-dashboard-shell .work-hours-day__label {
-            color: var(--text-muted-light) !important;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-card .metric-value,
-        .employee-dashboard-shell .employee-dashboard-card .oh-card-dashboard__body,
-        .employee-dashboard-shell .work-hours-day__value {
-            color: var(--text-main-light);
-        }
-
-        .employee-dashboard-shell .employee-dashboard-hero,
-        .employee-dashboard-shell .employee-dashboard-hero.greeting--morning,
-        .employee-dashboard-shell .employee-dashboard-hero.greeting--afternoon,
-        .employee-dashboard-shell .employee-dashboard-hero.greeting--evening,
-        .employee-dashboard-shell .employee-dashboard-hero.greeting--night {
-            background: linear-gradient(110deg, #0b485d 0%, #176b82 62%, #2a8ca3 100%) !important;
-            border-color: rgba(28, 116, 137, 0.45) !important;
-            box-shadow: 0 12px 24px rgba(11, 72, 93, 0.2) !important;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-hero__avatar {
-            background: linear-gradient(135deg, #2a8ca3, #0d5064);
-        }
-
-        .employee-dashboard-shell .employee-dashboard-hero__status {
-            color: #79d0c0 !important;
-            background: rgba(70, 190, 171, 0.2) !important;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-hero__status::before {
-            color: #79d0c0 !important;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-card .leave-percent,
-        .employee-dashboard-shell .employee-dashboard-card .metric-subtitle strong {
-            color: #24758a !important;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-card .progress-bar,
-        .employee-dashboard-shell .work-hours-day__bar {
-            background: linear-gradient(180deg, #5eb8c8, #24758a);
-        }
-
-        .employee-dashboard-shell .employee-dashboard-lower-grid .employee-dashboard-card,
-        .employee-dashboard-shell .employee-dashboard-announcements {
-            background: #c7e5eb !important;
-            color: #173f50 !important;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-announcements .oh-card-dashboard__title,
-        .employee-dashboard-shell .employee-dashboard-announcements .employee-dashboard-card-link,
-        .employee-dashboard-shell .employee-dashboard-announcements .employee-dashboard-card-link:hover {
-            color: #173f50 !important;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-htmx,
-        .employee-dashboard-shell .employee-dashboard-htmx .oh-dashboard__event {
-            background: transparent !important;
-        }
-
-        .employee-dashboard-shell .employee-dashboard-card .work-hours-day__bar-wrap {
-            background: rgba(255,255,255,0.28);
-            border-color: rgba(42,132,155,0.16);
-        }
-
-        html body .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child,
-        html body .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:nth-child(2),
-        html body .employee-dashboard-shell .employee-dashboard-lower-grid > .employee-dashboard-card,
-        html body .employee-dashboard-shell .employee-dashboard-announcements {
-            background: #c7e5eb !important;
-            color: #173f50 !important;
-        }
-
-        html body .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child {
-            background: #0d5064 !important;
-            color: #ffffff !important;
-        }
-
-        /* Match the reference deep-teal to blue gradient on both primary
-           dashboard widgets without changing their existing layout. */
-        html body .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:first-child,
-        html body .employee-dashboard-shell .employee-dashboard-hero {
-            background: linear-gradient(112deg, #0a4d60 0%, #176d83 55%, #2b90a8 100%) !important;
-        }
-
-        /* Secondary widgets use the reference contrast pairing: a soft
-           light-blue work-hours card and a deep teal announcements card. */
-        html body .employee-dashboard-shell .employee-dashboard-lower-grid > .employee-dashboard-card:not(.employee-dashboard-announcements) {
-            background: #c7e5eb !important;
-            color: #173f50 !important;
-            border-color: rgba(42, 132, 155, 0.2) !important;
-            box-shadow: 0 14px 30px rgba(24, 91, 109, 0.12) !important;
-        }
-
-        html body .employee-dashboard-shell .employee-dashboard-lower-grid > .employee-dashboard-card:not(.employee-dashboard-announcements) .oh-card-dashboard__title,
-        html body .employee-dashboard-shell .employee-dashboard-lower-grid > .employee-dashboard-card:not(.employee-dashboard-announcements) .metric-label,
-        html body .employee-dashboard-shell .employee-dashboard-lower-grid > .employee-dashboard-card:not(.employee-dashboard-announcements) .work-hours-day__label {
-            color: #557b84 !important;
-        }
-
-        html body .employee-dashboard-shell .employee-dashboard-lower-grid > .employee-dashboard-card:not(.employee-dashboard-announcements) .metric-value,
-        html body .employee-dashboard-shell .employee-dashboard-lower-grid > .employee-dashboard-card:not(.employee-dashboard-announcements) .work-hours-day__value {
-            color: #173f50 !important;
-        }
-
-        html body .employee-dashboard-shell .employee-dashboard-announcements {
-            background: linear-gradient(145deg, #0f596a 0%, #176f80 58%, #278da0 100%) !important;
-            color: #ffffff !important;
-            border-color: rgba(42, 132, 155, 0.28) !important;
-            box-shadow: 0 14px 30px rgba(24, 91, 109, 0.16) !important;
-        }
-
-        html body .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-card:nth-child(2) {
-            background: #c7e5eb !important;
-            color: #173f50 !important;
-            border-color: rgba(42, 132, 155, 0.2) !important;
-            box-shadow: 0 14px 30px rgba(24, 91, 109, 0.12) !important;
-        }
-
-        html body .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-announcements {
-            background: linear-gradient(145deg, #0f596a 0%, #176f80 58%, #278da0 100%) !important;
-            color: #ffffff !important;
-        }
-
-        html body .employee-dashboard-shell .work-hours-card {
-            background: #c7e5eb !important;
-            color: #173f50 !important;
-        }
-
-        html body .employee-dashboard-shell .work-hours-card .oh-card-dashboard__header,
-        html body .employee-dashboard-shell .work-hours-card .oh-card-dashboard__title,
-        html body .employee-dashboard-shell .work-hours-card .metric-value,
-        html body .employee-dashboard-shell .work-hours-card .metric-label,
-        html body .employee-dashboard-shell .work-hours-card .work-hours-day__value,
-        html body .employee-dashboard-shell .work-hours-card .work-hours-day__label {
-            color: #173f50 !important;
-        }
-
-        html body .employee-dashboard-shell .work-hours-card .oh-card-dashboard__header {
-            border-bottom-color: rgba(23, 63, 80, 0.16) !important;
-        }
-
-        html body .employee-dashboard-shell .employee-dashboard-summary-row > .employee-dashboard-announcements .oh-card-dashboard__body {
-            color: #ffffff !important;
-        }
-
-        html body .employee-dashboard-shell .employee-dashboard-announcements {
-            background: linear-gradient(145deg, #0f596a 0%, #176f80 58%, #278da0 100%) !important;
-            color: #ffffff !important;
-        }
-
-        html body .employee-dashboard-shell .employee-dashboard-announcements .oh-card-dashboard__title {
-            color: #ffffff !important;
-        }
-
-        html body .employee-dashboard-shell .employee-dashboard-announcements .oh-card-dashboard__title {
-            color: #ffffff !important;
-        }
-
-        html body .employee-dashboard-shell .employee-announcement-item {
-            background: linear-gradient(100deg, #092e2b, #123f3a) !important;
-            border-color: rgba(157, 221, 220, 0.28) !important;
-        }
-
-        html body .employee-dashboard-shell .employee-announcement-item:hover {
-            background: linear-gradient(100deg, #0d3d39, #18534d) !important;
-            border-color: rgba(157, 221, 220, 0.55) !important;
-        }
-
-        html body .employee-dashboard-shell .employee-announcement-item__title {
-            color: #f5ffff !important;
-        }
-
-        html body .employee-dashboard-shell .employee-announcement-item__date {
-            color: #a9d3d1 !important;
-        }
-
-        html body .oh-wrapper-main.employee-panel-theme .oh-navbar {
-            border-bottom: 0 !important;
-            border-bottom-style: none !important;
-            box-shadow: none !important;
-        }
-
-        html body .oh-wrapper-main.employee-panel-theme #notificationIcon .oh-navbar__notification-link:hover,
-        html body .oh-wrapper-main.employee-panel-theme #notificationIcon .oh-navbar__notification-link:focus-visible {
-            background: #278da0 !important;
-            border-color: #278da0 !important;
-            box-shadow: 0 0 0 4px rgba(39, 141, 160, 0.2), 0 8px 18px rgba(10, 77, 96, 0.2) !important;
-        }
-
-        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .oh-modal__dialog {
-            background: #f4fbfc !important;
-            border: 1px solid rgba(42, 132, 155, 0.28) !important;
-            border-radius: 24px !important;
-            box-shadow: 0 24px 60px rgba(10, 77, 96, 0.24) !important;
-            color: #173f50 !important;
-        }
-
-        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .oh-modal__dialog-header {
-            background: linear-gradient(110deg, #0a4d60, #278da0) !important;
-            border-bottom: 1px solid rgba(199, 229, 235, 0.55) !important;
-            color: #ffffff !important;
-        }
-
-        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .oh-modal__dialog-title,
-        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .oh-modal__dialog-header h2 {
-            color: #ffffff !important;
-        }
-
-        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .oh-modal__dialog-body,
-        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .oh-modal__dialog-footer {
-            background: #f4fbfc !important;
-            color: #173f50 !important;
-        }
-
-        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal label,
-        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .oh-label,
-        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal legend,
-        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal p {
-            color: #173f50 !important;
-        }
-
-        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal input,
-        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal textarea,
-        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal select,
-        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .oh-input,
-        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .oh-select,
-        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .select2-selection {
-            background: #ffffff !important;
-            border-color: rgba(42, 132, 155, 0.2) !important;
-            color: #285d6b !important;
-        }
-
-        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal input::placeholder,
-        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal textarea::placeholder {
-            color: #7a9da5 !important;
-        }
-
-        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .oh-btn,
-        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal button[type="submit"],
-        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal input[type="submit"] {
-            background: linear-gradient(110deg, #0a4d60, #278da0) !important;
-            border-color: #176d83 !important;
-            color: #ffffff !important;
-            box-shadow: 0 8px 18px rgba(10, 77, 96, 0.2) !important;
-        }
-
-        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .oh-modal__close,
-        html body .oh-wrapper-main.employee-panel-theme #objectCreateModal .oh-modal__close--custom {
-            background: rgba(10, 77, 96, 0.22) !important;
-            border-color: rgba(199, 229, 235, 0.5) !important;
-            color: #ffffff !important;
-        }
-    </style>
 </div>

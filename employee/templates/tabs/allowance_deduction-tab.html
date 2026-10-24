@@ -2,6 +2,104 @@
 {% load static %}
 {% load basefilters %}
 {% load horillafilters %}
+<style>
+    #AllowanceAndDeduction .oh-tabs {
+        border: 1px solid #c7e5eb !important;
+        border-radius: 14px !important;
+        overflow: hidden;
+        background: #ffffff !important;
+    }
+    #AllowanceAndDeduction .oh-tabs__tablist {
+        display: flex !important;
+        justify-content: flex-start !important;
+        align-items: stretch !important;
+        flex-wrap: nowrap !important;
+        gap: 4px !important;
+        padding: 8px !important;
+        border-bottom: 1px solid #c7e5eb !important;
+        border-radius: 0 !important;
+        background: #f0f9fb !important;
+    }
+    #AllowanceAndDeduction .oh-tabs__tablist > .oh-tabs__tab {
+        display: inline-flex !important;
+        flex: 0 0 190px !important;
+        width: 190px !important;
+        min-width: 190px !important;
+        height: 48px !important;
+        max-height: 48px !important;
+        justify-content: space-between !important;
+        padding: 8px 14px !important;
+        border: 1px solid transparent !important;
+        border-radius: 10px !important;
+        background: transparent !important;
+        color: #285d6b !important;
+        white-space: nowrap;
+        box-sizing: border-box !important;
+    }
+    #AllowanceAndDeduction .oh-tabs__tablist > .oh-tabs__tab > div:first-child,
+    #AllowanceAndDeduction .oh-tabs__tablist > .oh-tabs__tab > div:first-child > div {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        min-width: 0;
+    }
+    #AllowanceAndDeduction .oh-tabs__tablist > .oh-tabs__tab:hover {
+        background: #e1f1f4 !important;
+        color: #0a4d60 !important;
+    }
+    #AllowanceAndDeduction .oh-tabs__tablist > .oh-tabs__tab--active,
+    #AllowanceAndDeduction .oh-tabs__tablist > .oh-tabs__tab--active:hover {
+        border-color: #176f80 !important;
+        background: #176f80 !important;
+        color: #ffffff !important;
+        box-shadow: 0 3px 9px rgba(23, 111, 128, 0.2) !important;
+    }
+    #AllowanceAndDeduction .oh-tabs__tablist > .oh-tabs__tab--active > div,
+    #AllowanceAndDeduction .oh-tabs__tablist > .oh-tabs__tab--active > div * {
+        color: #ffffff !important;
+    }
+    #AllowanceAndDeduction .oh-tabs__tab--active img {
+        filter: brightness(0) invert(1);
+    }
+    #AllowanceAndDeduction .oh-tabs__tablist > .oh-tabs__tab > button {
+        flex: 0 0 32px;
+        width: 32px;
+        height: 32px;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    #AllowanceAndDeduction .oh-tabs__contents,
+    #AllowanceAndDeduction .oh-tabs__content {
+        min-height: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+    }
+    #AllowanceAndDeduction .oh-sticky-table {
+        width: 100%;
+        overflow-x: auto;
+    }
+    #AllowanceAndDeduction .oh-sticky-table__table {
+        min-width: 900px;
+    }
+    #AllowanceAndDeduction .pt-empty-state {
+        min-height: 160px;
+        padding: 24px 16px;
+        text-align: center;
+    }
+    @media (max-width: 600px) {
+        #AllowanceAndDeduction .oh-tabs__tablist {
+            overflow-x: auto;
+        }
+        #AllowanceAndDeduction .oh-tabs__tablist > .oh-tabs__tab {
+            flex-basis: 168px !important;
+            width: 168px !important;
+            min-width: 168px !important;
+        }
+    }
+</style>
 {% if messages %}
     <div class="oh-wrapper">
         {% for message in messages %}
@@ -165,7 +263,7 @@
                         </div>
                     </div>
                 {% else %}
-                    <div class="d-flex justify-content-center align-items-center" style="height: 40vh">
+                    <div class="pt-empty-state d-flex justify-content-center align-items-center">
                         {% if active_contracts %}
                             {% if basic_pay <= 0 %}
                                 <h5 class="oh-404__subtitle">
@@ -287,7 +385,7 @@
                         </div>
                     </div>
                 {% else %}
-                    <div class="d-flex justify-content-center align-items-center" style="height: 40vh">
+                    <div class="pt-empty-state d-flex justify-content-center align-items-center">
                         {% if active_contracts %}
                             <h5 class="oh-404__subtitle">
                                 {% trans "This employee is not eligible for any deductions." %}
@@ -306,25 +404,33 @@
 
 <script>
     $(document).ready(function () {
-        const activeTab = localStorage.getItem('EmployeeAttendanceRequestActiveTab')
-        if (activeTab != null) {
-            $(".oh-tabs__content--active").toggleClass('oh-tabs__content--active');
-            $(".oh-tabs__tab--active").toggleClass('oh-tabs__tab--active');
-            $(`[data-target="${activeTab}"]`).toggleClass("oh-tabs__tab--active");
-            $(activeTab).toggleClass("oh-tabs__content--active");
+        const container = $("#AllowanceAndDeduction");
+        const storageKey = "EmployeeAllowanceDeductionActiveTab";
+        const tabs = container.find(".oh-tabs__tab[data-target]");
+        const panels = container.find(".oh-tabs__content");
+        const savedTab = localStorage.getItem(storageKey);
+        const hasSavedTab = tabs.filter(function () {
+            return $(this).attr("data-target") === savedTab;
+        }).length > 0;
+        const initialTab = hasSavedTab
+            ? savedTab
+            : tabs.first().attr("data-target");
+
+        function activateTab(target) {
+            tabs.removeClass("oh-tabs__tab--active");
+            panels.removeClass("oh-tabs__content--active");
+            tabs.filter(`[data-target="${target}"]`).addClass("oh-tabs__tab--active");
+            panels.filter(target).addClass("oh-tabs__content--active");
         }
-        $(".oh-tabs__tab[data-target]").click(function (e) {
+
+        activateTab(initialTab);
+
+        tabs.on("click", function (e) {
             e.preventDefault();
-            localStorage.setItem("EmployeeAttendanceRequestActiveTab", $(this).attr('data-target'))
-            var newActiveTab = $(this).attr('data-target')
-            $(".oh-tabs__content--active").toggleClass('oh-tabs__content--active');
-            $(".oh-tabs__tab--active").toggleClass('oh-tabs__tab--active');
-            $(`[data-target="${newActiveTab}"]`).toggleClass("oh-tabs__tab--active");
-            $(newActiveTab).toggleClass("oh-tabs__content--active");
+            const target = $(this).attr("data-target");
+            if (!target) return;
+            localStorage.setItem(storageKey, target);
+            activateTab(target);
         });
     });
-    let activeTabs = $("#AllowanceAndDeduction .oh-tabs__tab--active").length
-    if (!activeTabs) {
-        $("#AllowanceAndDeduction .oh-tabs__tab").first().toggleClass("oh-tabs__tab--active")
-    }
 </script>

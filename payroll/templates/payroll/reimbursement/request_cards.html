@@ -1,983 +1,822 @@
 {% load i18n %}
-{% load static horillafilters %}{% include "filter_tags.html" %}
-<div class="d-flex flex-row-reverse oh-wrapper">
-    <span
-        class="mb-3"
-        onclick="$('[name=status]').val('rejected').change();  $('.filterButton').click()"
-        style="cursor: pointer; margin-right: 15px"
-    >
-        <span
-            class="oh-dot oh-dot--small me-1"
-            style="background-color: red"
-        ></span>
-        {% trans "Rejected" %}
+{% load static horillafilters %}
+<style>
+/* ─── Status quick-filter bar ───────────────────────────────── */
+.reimb-status-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+.reimb-status-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 38px;
+    padding: 0 16px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 750;
+    line-height: 1;
+    cursor: pointer;
+    border: 1px solid currentColor;
+    box-shadow: 0 2px 5px rgba(10, 77, 96, .07);
+    transition: transform .16s, box-shadow .16s, background-color .16s;
+    user-select: none;
+    white-space: nowrap;
+}
+.reimb-status-pill:hover,
+.reimb-status-pill:focus-visible {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 12px rgba(10, 77, 96, .14);
+    outline: 3px solid rgba(39, 141, 160, .2);
+    outline-offset: 2px;
+}
+.reimb-status-pill:active { transform: translateY(0); box-shadow: 0 1px 3px rgba(10, 77, 96, .1); }
+.reimb-status-pill--requested { background:#fff7ef; border-color:#efb17f; color:#a94b0b; }
+.reimb-status-pill--approved  { background:#f0faf4; border-color:#8bc9a8; color:#0a6a3b; }
+.reimb-status-pill--rejected  { background:#fff4f4; border-color:#e8a0a6; color:#a82734; }
+.reimb-status-pill__dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    flex: 0 0 8px;
+    margin: 0;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+/* ─── Tabs ──────────────────────────────────────────────────── */
+.reimb-tabs {
+    background: #fff;
+    border: 1px solid #dce9e1;
+    border-radius: 18px;
+    box-shadow: 0 8px 26px rgba(18, 60, 40, 0.07);
+    overflow: hidden;
+}
+.reimb-tabs::before {
+    content: "";
+    display: block;
+    height: 3px;
+    background: linear-gradient(90deg, #1f7a5c 0%, #38a97b 50%, #8dcfb0 100%);
+}
+.reimb-tabs__nav {
+    display: flex;
+    gap: 6px;
+    background: #edf7f1;
+    border-bottom: 1px solid #dce9e1;
+    padding: 10px 14px;
+    list-style: none;
+    margin: 0;
+}
+.reimb-tabs__tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 18px;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #3d6652;
+    cursor: pointer;
+    border: 0;
+    background: transparent;
+    white-space: nowrap;
+    transition: background .16s, color .16s, box-shadow .16s;
+}
+.reimb-tabs__tab:hover { background: rgba(255,255,255,.7); color: #1f7a5c; }
+.reimb-tabs__tab.oh-tabs__tab--active,
+.reimb-tabs__tab.active {
+    background: #fff;
+    color: #1f7a5c;
+    box-shadow: 0 3px 12px rgba(18,60,40,.09);
+}
+.reimb-tabs__tab ion-icon { font-size: 15px; }
+.reimb-tabs__content { display: none; padding: 20px; }
+.reimb-tabs__content.active { display: block; }
+
+/* ─── Card grid ─────────────────────────────────────────────── */
+.reimb-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+/* ─── Individual card ───────────────────────────────────────── */
+.reimb-card {
+    background: #fff;
+    border: 1px solid #dce9e1;
+    border-radius: 16px;
+    padding: 18px 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: box-shadow .2s, transform .18s;
+    position: relative;
+    overflow: hidden;
+}
+.reimb-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    border-radius: 16px 16px 0 0;
+}
+.reimb-card[data-status="requested"]::before { background: linear-gradient(90deg,#3b90e0,#6db6f5); }
+.reimb-card[data-status="approved"]::before  { background: linear-gradient(90deg,#22a85a,#5dc68c); }
+.reimb-card[data-status="rejected"]::before  { background: linear-gradient(90deg,#d63535,#f07070); }
+.reimb-card:hover { box-shadow: 0 10px 30px rgba(18,60,40,.11); transform: translateY(-2px); }
+
+/* ─── Card header ───────────────────────────────────────────── */
+.reimb-card__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+}
+.reimb-card__type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    background: #edf7f1;
+    color: #1f7a5c;
+    border: 1px solid #c2e6d2;
+}
+.reimb-card__type-badge ion-icon { font-size: 12px; }
+.reimb-card__actions { display: flex; align-items: center; gap: 6px; }
+.reimb-card__action-btn {
+    display: grid;
+    place-items: center;
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: #f4f8f5;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background .15s;
+}
+.reimb-card__action-btn:hover { background: #e4f0ea; }
+.reimb-card__action-btn ion-icon { font-size: 15px; color: #3d6652; }
+.reimb-card__action-btn--danger:hover { background: #fde8e8; }
+.reimb-card__action-btn--danger ion-icon { color: #c0392b !important; }
+
+/* ─── Card employee row ─────────────────────────────────────── */
+.reimb-card__employee {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.reimb-card__avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #d4ebe0;
+    flex-shrink: 0;
+}
+.reimb-card__emp-name {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #132d22;
+    line-height: 1.2;
+}
+.reimb-card__emp-meta {
+    font-size: 0.72rem;
+    color: #7a9e8b;
+    margin-top: 2px;
+}
+
+/* ─── Card body ─────────────────────────────────────────────── */
+.reimb-card__title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1a3628;
+    margin: 0;
+    line-height: 1.35;
+}
+.reimb-card__desc {
+    font-size: 0.8rem;
+    color: #5a7869;
+    margin: 0;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ─── Card status badge ─────────────────────────────────────── */
+.reimb-card__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 11px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    border: 1px solid transparent;
+}
+.reimb-card__status--requested { background:#f97316; border-color:#f97316; color:#fff; }
+.reimb-card__status--approved  { background:#16a34a; border-color:#16a34a; color:#fff; }
+.reimb-card__status--rejected  { background:#dc2626; border-color:#dc2626; color:#fff; }
+.reimb-card__status::before { display: none; }
+.reimb-card__status--requested::before { display: none; }
+.reimb-card__status--approved::before  { display: none; }
+.reimb-card__status--rejected::before  { display: none; }
+
+/* ─── Card footer ───────────────────────────────────────────── */
+.reimb-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 10px;
+    border-top: 1px solid #eaf1ec;
+    font-size: 0.76rem;
+    color: #7a9e8b;
+}
+.reimb-card__footer-meta { display: flex; flex-direction: column; gap: 2px; }
+.reimb-card__footer-meta strong { color: #2a4d38; font-size: 0.78rem; }
+.reimb-card__footer-links { display: flex; align-items: center; gap: 10px; }
+.reimb-card__link {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #1f7a5c;
+    text-decoration: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.reimb-card__link:hover { text-decoration: underline; }
+.reimb-card__link ion-icon { font-size: 13px; }
+
+/* ─── Manager approval area ─────────────────────────────────── */
+.reimb-card__approval {
+    padding: 12px;
+    background: #f6fbf8;
+    border: 1px solid #dce9e1;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.reimb-card__approval-detail {
+    font-size: 0.78rem;
+    color: #3d6652;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.reimb-card__approval-detail ion-icon { font-size: 14px; color: #1f7a5c; flex-shrink: 0; }
+.reimb-card__approval-detail strong { color: #132d22; }
+.reimb-card__pdf-preview {
+    width: 100%;
+    height: 130px;
+    border-radius: 8px;
+    border: 1px solid #d4e8de;
+    overflow: hidden;
+}
+.reimb-card__pdf-preview iframe { width: 100%; height: 100%; border: 0; }
+.reimb-card__amount-input {
+    width: 100%;
+    height: 38px;
+    border: 1.5px solid #c8dfd3;
+    border-radius: 8px;
+    background: #fff;
+    padding: 0 12px;
+    font-size: 0.83rem;
+    color: #1b3a28;
+    outline: none;
+    transition: border-color .16s;
+}
+.reimb-card__amount-input:focus { border-color: #38a97b; }
+.reimb-card__approve-btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 4px;
+}
+.reimb-card__btn-approve,
+.reimb-card__btn-reject {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 38px;
+    border-radius: 9px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: 0;
+    transition: opacity .15s;
+}
+.reimb-card__btn-approve:hover, .reimb-card__btn-reject:hover { opacity: .85; }
+.reimb-card__btn-approve { background: linear-gradient(135deg,#1f7a5c,#28936e); color: #fff; }
+.reimb-card__btn-reject  { background: linear-gradient(135deg,#c0392b,#e05050); color: #fff; }
+.reimb-card__btn-approve:disabled,
+.reimb-card__btn-reject:disabled { background: #d1dcd8; color: #8ba898; cursor: not-allowed; }
+.reimb-card__btn-approve ion-icon,
+.reimb-card__btn-reject ion-icon { font-size: 15px; }
+
+/* ─── Empty state ───────────────────────────────────────────── */
+.reimb-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 52px 20px;
+    gap: 10px;
+}
+.reimb-empty img { width: 100px; opacity: .6; }
+.reimb-empty__title { font-size: 1rem; font-weight: 700; color: #3a5947; margin: 0; }
+.reimb-empty__sub   { font-size: 0.8rem; color: #7a9e8b; margin: 0; }
+
+/* ─── Pagination tweak ──────────────────────────────────────── */
+.reimb-tabs__content .oh-pagination { margin-top: 14px; }
+</style>
+
+{% include "filter_tags.html" %}
+
+<!-- Status quick-filter pills -->
+<div class="reimb-status-bar oh-wrapper">
+    <span class="reimb-status-pill reimb-status-pill--requested"
+        onclick="$('[name=status]').val('requested').change(); $('.filterButton').click()">
+        <span class="reimb-status-pill__dot"></span>{% trans "Requested" %}
     </span>
-    <span
-        class="mb-3"
-        onclick="$('[name=status]').val('approved').change();$('.filterButton').click()"
-        style="cursor: pointer; margin-right: 15px"
-    >
-        <span
-            class="oh-dot oh-dot--small me-1"
-            style="background-color: yellowgreen"
-        ></span>
-        {% trans "Approved" %}
+    <span class="reimb-status-pill reimb-status-pill--approved"
+        onclick="$('[name=status]').val('approved').change(); $('.filterButton').click()">
+        <span class="reimb-status-pill__dot"></span>{% trans "Approved" %}
     </span>
-    <span
-        class="mb-3"
-        onclick="$('[name=status]').val('requested').change(); $('.filterButton').click()"
-        style="cursor: pointer; margin-right: 15px"
-    >
-        <span
-            class="oh-dot oh-dot--small me-1"
-            style="background-color: rgba(128, 128, 128, 0.482)"
-        ></span>
-        {% trans "Requested" %}
+    <span class="reimb-status-pill reimb-status-pill--rejected"
+        onclick="$('[name=status]').val('rejected').change(); $('.filterButton').click()">
+        <span class="reimb-status-pill__dot"></span>{% trans "Rejected" %}
     </span>
 </div>
 
-<div class="oh-tabs oh-wrapper">
-    <ul class="oh-tabs__tablist">
-        <li class="oh-tabs__tab" data-target="#reimbursement_tab">
-            {% trans "Reimbursements" %}
+<!-- Tabs shell -->
+<div class="reimb-tabs oh-wrapper oh-tabs">
+    <ul class="reimb-tabs__nav oh-tabs__tablist">
+        <li class="reimb-tabs__tab oh-tabs__tab" data-target="#reimbursement_tab">
+            <ion-icon name="receipt-outline"></ion-icon>{% trans "Reimbursements" %}
         </li>
         {% if "leave"|app_installed %}
-            <li class="oh-tabs__tab" data-target="#leave_encashment_tab">
-                {% trans "Leave Encashments" %}
-            </li>
+        <li class="reimb-tabs__tab oh-tabs__tab" data-target="#leave_encashment_tab">
+            <ion-icon name="calendar-outline"></ion-icon>{% trans "Leave Encashments" %}
+        </li>
         {% endif %}
-        <li class="oh-tabs__tab" data-target="#bonus_encashment_tab">
-            {% trans "Bonus Encashments" %}
+        <li class="reimb-tabs__tab oh-tabs__tab" data-target="#bonus_encashment_tab">
+            <ion-icon name="star-outline"></ion-icon>{% trans "Bonus Encashments" %}
         </li>
     </ul>
-    <div>
-        <div class="oh-tabs__contents">
-            <!-- Reimbursement-->
-            <div class="oh-tabs__content" id="reimbursement_tab">
-                {% if reimbursements %}
-                    <div class="oh-faq-cards">
-                        {% for req in reimbursements %}
-                            <div class="oh-faq-card" id="requestCard{{ req.id }}">
-                                <div class="d-flex justify-content-between">
-                                    <div style="margin-bottom: 10px">
-                                        {% comment %} <div class="loan-type" style="display: inline; background:hsl(58.85deg 100% 80.93%);">
-                                        {{ req.get_type_display }}
-                                    </div> {% endcomment %}
-                                        <div
-                                            class="loan-type employee-reimbursement-status employee-reimbursement-status--{{ req.status }}"
-                                            style='display: inline;
-                                        {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "rejected" %}
-                                        background:#ff45002e;{% endif %}'
-                                        >
-                                            {{ req.get_status_display }}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        {% if req.status != "approved" %}
-                                            {% if perms.payroll.change_reimbursement or request.user.employee_get == req.employee_id %}
-                                                <a
-                                                    hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
-                                                    hx-target="#objectCreateModalTarget"
-                                                    class="mr-2"
-                                                    style="cursor: pointer"
-                                                    title='{% trans "Update" %}'
-                                                    data-toggle="oh-modal-toggle"
-                                                    data-target="#objectCreateModal"
-                                                ><ion-icon
-                                                        class="text-dark md hydrated"
-                                                        name="create-outline"
-                                                        role="img"
-                                                        aria-label="{% trans 'create outline' %}"
-                                                    ></ion-icon></a>
-                                            {% endif %}
-                                        {% endif %}
-                                        {% if perms.payroll.delete_reimbursement %}
-                                            <a
-                                                href='{% url "delete-reimbursement" %}?ids={{req.id}}'
-                                                onclick="return confirm('Do you want to delete this record?')"
-                                                title='{% trans "Delete" %}'
-                                            ><ion-icon
-                                                    class="text-danger md hydrated"
-                                                    name="trash-outline"
-                                                    role="img"
-                                                    aria-label="{% trans 'trash outline' %}"
-                                                ></ion-icon></a>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                <div class="oh-timeoff-modal__profile-content">
-                                    <div class="oh-profile mb-2">
-                                        <div class="oh-profile__avatar">
-                                            <img
-                                                src="{{ req.employee_id.get_avatar }}"
-                                                class="oh-profile__image me-2"
-                                            >
-                                        </div>
-                                        <div class="oh-timeoff-modal__profile-info">
-                                            <span
-                                                class="oh-timeoff-modal__user m-0 fw-bold"
-                                            >{{ req.employee_id }}</span>
-                                            <span
-                                                class="oh-timeoff-modal__user m-0"
-                                                style="font-size: 12px; color: #4d4a4a"
-                                            >
-                                                {{ req.employee_id.get_department }} /
-                                                {{ req.employee_id.get_job_position }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <h3 class="oh-faq-card__title">{{ req.title }}</h3>
-                                <p class="oh-faq-card__desc">{{ req.description }}.</p>
-                                <span
-                                    class="oh-card__footer--border-top pt-1"
-                                    style="display: block"
-                                >
-                                    {% if perms.payroll.view_reimbursementrequestcomment or request.user == req.employee_id.employee_user_id %}
-                                        <div class="mb-2">
-                                            <i><a
-                                                    hx-get="{% url 'payroll-request-view-comment' req.id %}"
-                                                    hx-target="#commentContainer"
-                                                    data-target="#activitySidebar"
-                                                    class="text-primary fw-bold oh-activity-sidebar__open w-100"
-                                                    style="cursor: pointer"
-                                                >{% trans 'Comments' %}</a></i>
-                                        </div>
-                                    {% endif %}
 
-                                    <i style="color: hsl(0, 0%, 45%)">{% trans 'Allowance on' %}</i>
-                                    <span class="dateformat_changer">{{ req.allowance_on }}</span>
-                                    {% if req.type == 'reimbursement' %}
-                                        <i><a
-                                                data-target="#reimbursementAttachementModal"
-                                                data-toggle="oh-modal-toggle"
-                                                hx-get='{% url "reimbursement-attachments" req.id %}'
-                                                hx-target="#reimbursementAttachementModalBody"
-                                                role="button"
-                                                class="text-danger"
-                                                title="{% trans 'Attachments' %}"
-                                                rel="noopener noreferrer"
-                                            >{% trans 'View Attachments' %}</a></i>
+    <div class="oh-tabs__contents">
+
+        {# ── REIMBURSEMENTS TAB ─────────────────────────────────── #}
+        <div class="oh-tabs__content" id="reimbursement_tab">
+            {% if reimbursements %}
+                <div class="reimb-cards">
+                    {% for req in reimbursements %}
+                    <div class="reimb-card" id="requestCard{{ req.id }}" data-status="{{ req.status }}">
+                        <!-- Card header -->
+                        <div class="reimb-card__header">
+                            <span class="reimb-card__type-badge">
+                                <ion-icon name="receipt-outline"></ion-icon>{% trans "Expense" %}
+                            </span>
+                            <div class="reimb-card__actions">
+                                {% if req.status != "approved" %}
+                                    {% if perms.payroll.change_reimbursement or request.user.employee_get == req.employee_id %}
+                                        <a hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
+                                           hx-target="#objectCreateModalTarget"
+                                           data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+                                           class="reimb-card__action-btn" title="{% trans 'Edit' %}">
+                                            <ion-icon name="create-outline"></ion-icon>
+                                        </a>
                                     {% endif %}
-                                </span>
-                                {% if perms.payroll.change_reimbursement %}
-                                    <form method="post" action="{% url 'approve-reimbursements' %}">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="ids" value="{{ req.id }}">
-                                        <input type="hidden" name="status">
-                                        {% if req.type == 'reimbursement' %}
-                                            <p class="oh-faq-card__desc" style="height: 150px">
-                                                <iframe
-                                                    id="iframe_pdf"
-                                                    src="{{ req.attachment.url }}"
-                                                    style="width: 100%"
-                                                    frameborder="0"
-                                                ></iframe>
-                                            </p>
-                                        {% elif req.type == 'bonus_encashment' %}
-                                            <p class="oh-faq-card__desc" style="max-height: 180px">
-                                                <i>
-                                                    {% trans 'Requsted for' %}
-                                                    <span class="text-danger">
-                                                        {{ req.bonus_to_encash }}
-                                                    </span>
-                                                    {% trans 'Bonus points to encash.' %}
-                                                </i>
-                                                <input
-                                                    style="display: block; padding: 10px; margin-top: 10px"
-                                                    type="number"
-                                                    required
-                                                    default="0"
-                                                    min="0"
-                                                    placeholder="{% trans 'Amount' %}"
-                                                    name="amount"
-                                                    class="mt-2"
-                                                    {% if req.status == "approved" %}
-                                                        disabled
-                                                    {% endif %}
-                                                    {% if req.amount %}
-                                                        value="{{req.amount}}"
-                                                    {% endif %}
-                                                >
-                                            </p>
-                                        {% else %}
-                                            <p class="oh-faq-card__desc" style="max-height: 180px">
-                                                <i>
-                                                    {% trans 'Requsted for total' %}
-                                                    <span class="text-danger">
-                                                        {{ req.ad_to_encash|add:req.cfd_to_encash }}
-                                                    </span>
-                                                    {% trans 'days' %}
-                                                    {% trans 'days to encash.' %}
-                                                </i>
-                                                <input
-                                                    style="display: block; padding: 10px; margin-top: 10px"
-                                                    type="number"
-                                                    required
-                                                    default="0"
-                                                    min="0"
-                                                    placeholder="{% trans 'Amount' %}"
-                                                    name="amount"
-                                                    class="mt-2"
-                                                    {% if req.status == "approved" %}
-                                                        disabled
-                                                    {% endif %}
-                                                    {% if req.amount %}
-                                                        value="{{req.amount}}"
-                                                    {% endif %}
-                                                >
-                                            </p>
-                                        {% endif %}
-                                        <div class="oh-btn-group">
-                                            <button
-                                                type="button"
-                                                title="{% trans 'Reject' %}"
-                                                onclick="$('#requestCard{{ req.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to reject the request?','#requestCard{{ req.id }}');$('#requestCard{{ req.id }} [name=status]').val('canceled')"
-                                                class="oh-btn oh-btn--danger w-100"
-                                            >
-                                                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                                            </button>
-                                            {% if req.status != "approved" and req.status != "rejected" %}
-                                                <button
-                                                    type="button"
-                                                    onclick="reimbursementConfirm('Do You really want to approve the request?','#requestCard{{ req.id }}',true);$('#requestCard{{ req.id }} [name=status]').val('approved')"
-                                                    title="{% trans 'Approve' %}"
-                                                    class="oh-btn oh-btn--success w-100"
-                                                >
-                                                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                                                </button>
-                                            {% else %}
-                                                <button
-                                                    type="button"
-                                                    class="oh-btn oh-btn--success oh-btn--disabled w-100"
-                                                >
-                                                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                                                </button>
-                                            {% endif %}
-                                        </div>
-                                        <input
-                                            type="submit"
-                                            hidden
-                                            id="requestCard{{ req.id }}Button"
-                                        >
-                                    </form>
+                                {% endif %}
+                                {% if perms.payroll.delete_reimbursement %}
+                                    <a href='{% url "delete-reimbursement" %}?ids={{ req.id }}'
+                                       onclick="return confirm('{% trans "Delete this request?" %}')"
+                                       class="reimb-card__action-btn reimb-card__action-btn--danger" title="{% trans 'Delete' %}">
+                                        <ion-icon name="trash-outline"></ion-icon>
+                                    </a>
                                 {% endif %}
                             </div>
-                        {% endfor %}
-                    </div>
-
-                    <div class="oh-wrapper w-100">
-                        <div class="oh-pagination">
-                            <span
-                                class="oh-pagination__page"
-                                data-toggle="modal"
-                                data-target="#addEmployeeModal"
-                            >{% trans 'Page' %} {{ reimbursements.number }} {% trans 'of' %}
-                                {{ reimbursements.paginator.num_pages }}.</span>
-
-                            <nav class="oh-pagination__nav">
-                                <div class="oh-pagination__input-container me-3">
-                                    <span class="oh-pagination__label me-1">{% trans 'Page' %}</span>
-
-                                    <input
-                                        type="number"
-                                        name="page"
-                                        class="oh-pagination__input"
-                                        value="{{ reimbursements.number }}"
-                                        hx-get="{% url 'search-reimbursement' %}?{{ pd }}"
-                                        hx-target="#reimbursementContainer"
-                                        min="1"
-                                    >
-                                    <span class="oh-pagination__label">{% trans 'of' %}
-                                        {{ reimbursements.paginator.num_pages }}</span>
-                                </div>
-
-                                <ul class="oh-pagination__items">
-                                    {% if reimbursements.has_previous %}
-                                        <li class="oh-pagination__item oh-pagination__item--wide">
-                                            <a
-                                                hx-target="#reimbursementContainer"
-                                                hx-get="{% url 'search-reimbursement' %}?{{ pd }}&rpage=1"
-                                                class="oh-pagination__link"
-                                            >{% trans 'First' %}</a>
-                                        </li>
-                                        <li class="oh-pagination__item oh-pagination__item--wide">
-                                            <a
-                                                hx-target="#reimbursementContainer"
-                                                hx-get="{% url 'search-reimbursement' %}?{{ pd }}&rpage={{ reimbursements.previous_page_number }}"
-                                                class="oh-pagination__link"
-                                            >{% trans 'Previous' %}</a>
-                                        </li>
-                                    {% endif %}
-                                    {% if reimbursements.has_next %}
-                                        <li class="oh-pagination__item oh-pagination__item--wide">
-                                            <a
-                                                hx-target="#reimbursementContainer"
-                                                hx-get="{% url 'search-reimbursement' %}?{{ pd }}&rpage={{ reimbursements.next_page_number }}"
-                                                class="oh-pagination__link"
-                                            >{% trans 'Next' %}</a>
-                                        </li>
-                                        <li class="oh-pagination__item oh-pagination__item--wide">
-                                            <a
-                                                hx-target="#reimbursementContainer"
-                                                hx-get="{% url 'search-reimbursement' %}?{{ pd }}&rpage={{ reimbursements.paginator.num_pages }}"
-                                                class="oh-pagination__link"
-                                            >{% trans 'Last' %}</a>
-                                        </li>
-                                    {% endif %}
-                                </ul>
-                            </nav>
                         </div>
-                    </div>
-                {% else %}
-                    <!-- start of empty page -->
-                    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%">
-                        <img
-                            style="width: 150px; height: 150px"
-                            src="{% static 'images/ui/no-results.png' %}"
-                            class="oh-404__image mb-4"
-                        >
-                        <h5 class="oh-404__subtitle">
-                            {% trans "No search result found!" %}
-                        </h5>
-                    </div>
-                    <!-- end of empty page -->
-                {% endif %}
-            </div>
-            <!--  Leave Encashments-->
-            <div class="oh-tabs__content" id="leave_encashment_tab">
-                {% if leave_encashments %}
-                    <div class="oh-faq-cards">
-                        {% for req in leave_encashments %}
-                            <div class="oh-faq-card" id="requestCard{{ req.id }}">
-                                <div class="d-flex justify-content-between">
-                                    <div style="margin-bottom: 10px">
-                                        {% comment %} <div class="loan-type" style="display: inline; background:hsl(58.85deg 100% 80.93%);">
-                                        {{ req.get_type_display }}
-                                    </div> {% endcomment %}
-                                        <div
-                                            class="loan-type employee-reimbursement-status employee-reimbursement-status--{{ req.status }}"
-                                            style='display: inline;
-                                        {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "rejected" %}
-                                        background:#ff45002e;{% endif %}'
-                                        >
-                                            {{ req.get_status_display }}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        {% if req.status != "approved" %}
-                                            {% if perms.payroll.change_reimbursement or request.user.employee_get == req.employee_id %}
-                                                <a
-                                                    hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
-                                                    hx-target="#objectCreateModalTarget"
-                                                    class="mr-2"
-                                                    style="cursor: pointer"
-                                                    title='{% trans "Update" %}'
-                                                    data-toggle="oh-modal-toggle"
-                                                    data-target="#objectCreateModal"
-                                                ><ion-icon
-                                                        class="text-dark md hydrated"
-                                                        name="create-outline"
-                                                        role="img"
-                                                        aria-label="{% trans 'create outline' %}"
-                                                    ></ion-icon></a>
-                                            {% endif %}
-                                        {% endif %}
-                                        {% if perms.payroll.delete_reimbursement %}
-                                            <a
-                                                href='{% url "delete-reimbursement" %}?ids={{req.id}}'
-                                                onclick="return confirm('Do you want to delete this record?')"
-                                                title='{% trans "Delete" %}'
-                                            ><ion-icon
-                                                    class="text-danger md hydrated"
-                                                    name="trash-outline"
-                                                    role="img"
-                                                    aria-label="{% trans 'trash outline' %}"
-                                                ></ion-icon></a>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                <div class="oh-timeoff-modal__profile-content">
-                                    <div class="oh-profile mb-2">
-                                        <div class="oh-profile__avatar">
-                                            <img
-                                                src="{{ req.employee_id.get_avatar }}"
-                                                class="oh-profile__image me-2"
-                                            >
-                                        </div>
-                                        <div class="oh-timeoff-modal__profile-info">
-                                            <span
-                                                class="oh-timeoff-modal__user m-0 fw-bold"
-                                            >{{ req.employee_id }}</span>
-                                            <span
-                                                class="oh-timeoff-modal__user m-0"
-                                                style="font-size: 12px; color: #4d4a4a"
-                                            >
-                                                {{ req.employee_id.get_department }} /
-                                                {{ req.employee_id.get_job_position }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <h3 class="oh-faq-card__title">{{ req.title }}</h3>
-                                <p class="oh-faq-card__desc">{{ req.description }}.</p>
-                                <span
-                                    class="oh-card__footer--border-top pt-1"
-                                    style="display: block"
-                                >
-                                    {% if perms.payroll.view_reimbursementrequestcomment or request.user == req.employee_id.employee_user_id %}
-                                        <div class="mb-2">
-                                            <i><a
-                                                    hx-target="#commentContainer"
-                                                    hx-get="{% url 'payroll-request-view-comment' req.id %}"
-                                                    class="text-primary fw-bold oh-activity-sidebar__open w-100"
-                                                    data-target="#activitySidebar"
-                                                    style="cursor: pointer"
-                                                >{% trans 'Comments' %}</a></i>
-                                        </div>
-                                    {% endif %}
-                                    <i style="color: hsl(0, 0%, 45%)">{% trans 'Allowance on' %}</i>
-                                    <span class="dateformat_changer">{{ req.allowance_on }}</span>
-                                    {% if req.type == 'reimbursement' %}
-                                        <i><a
-                                                data-target="#reimbursementAttachementModal"
-                                                data-toggle="oh-modal-toggle"
-                                                hx-get='{% url "reimbursement-attachments" req.id %}'
-                                                hx-target="#reimbursementAttachementModalBody"
-                                                class="text-danger"
-                                                title="{% trans 'Attachments' %}"
-                                                rel="noopener noreferrer"
-                                            >{% trans 'View Attachments' %}</a></i>
-                                    {% endif %}
-                                </span>
-                                {% if perms.payroll.change_reimbursement %}
-                                    <form method="post" action="{% url 'approve-reimbursements' %}">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="ids" value="{{ req.id }}">
-                                        <input type="hidden" name="status">
-                                        {% if req.type == 'reimbursement' %}
-                                            <p class="oh-faq-card__desc" style="height: 150px">
-                                                <iframe
-                                                    id="iframe_pdf"
-                                                    src="{{ req.attachment.url }}"
-                                                    style="width: 100%"
-                                                    frameborder="0"
-                                                ></iframe>
-                                            </p>
-                                        {% elif req.type == 'bonus_encashment' %}
-                                            <p class="oh-faq-card__desc" style="max-height: 180px">
-                                                <i>
-                                                    {% trans 'Requsted for' %}
-                                                    <span class="text-danger">
-                                                        {{ req.bonus_to_encash }}
-                                                    </span>
-                                                    {% trans 'Bonus points to encash.' %}
-                                                </i>
-                                                <input
-                                                    style="display: block; padding: 10px; margin-top: 10px"
-                                                    type="number"
-                                                    required
-                                                    default="0"
-                                                    min="0"
-                                                    placeholder="{% trans 'Amount' %}"
-                                                    name="amount"
-                                                    class="mt-2"
-                                                    {% if req.status == "approved" %}
-                                                        disabled
-                                                    {% endif %}
-                                                    {% if req.amount %}
-                                                        value="{{req.amount}}"
-                                                    {% endif %}
-                                                >
-                                            </p>
-                                        {% else %}
-                                            <p class="oh-faq-card__desc" style="max-height: 180px">
-                                                <i>
-                                                    {% trans 'Requsted for total' %}
-                                                    <span class="text-danger">
-                                                        {{ req.ad_to_encash|add:req.cfd_to_encash }}
-                                                    </span>
-                                                    {% trans 'days' %}
-                                                    {% trans 'days to encash.' %}
-                                                </i>
-                                                <input
-                                                    style="display: block; padding: 10px; margin-top: 10px"
-                                                    type="number"
-                                                    required
-                                                    default="0"
-                                                    min="0"
-                                                    placeholder="{% trans 'Amount' %}"
-                                                    name="amount"
-                                                    class="mt-2"
-                                                    {% if req.status == "approved" %}
-                                                        disabled
-                                                    {% endif %}
-                                                    {% if req.amount %}
-                                                        value="{{req.amount}}"
-                                                    {% endif %}
-                                                >
-                                            </p>
-                                        {% endif %}
-                                        <div class="oh-btn-group">
-                                            <button
-                                                type="button"
-                                                onclick="$('#requestCard{{ req.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to reject the request?','#requestCard{{ req.id }}');$('#requestCard{{ req.id }} [name=status]').val('canceled')"
-                                                class="oh-btn oh-btn--danger w-100"
-                                            >
-                                                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                                            </button>
-                                            {% if req.status != "approved" and req.status != 'rejected' %}
-                                                <button
-                                                    type="button"
-                                                    title="{% trans 'Approve' %}"
-                                                    onclick="reimbursementConfirm('Do You really want to approve the request?','#requestCard{{ req.id }}',true);$('#requestCard{{ req.id }} [name=status]').val('approved')"
-                                                    class="oh-btn oh-btn--success w-100"
-                                                >
-                                                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                                                </button>
-                                            {% else %}
-                                                <button
-                                                    type="button"
-                                                    title="{% trans 'Approve' %}"
-                                                    class="oh-btn oh-btn--success oh-btn--disabled w-100"
-                                                >
-                                                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                                                </button>
-                                            {% endif %}
-                                        </div>
-                                        <input
-                                            type="submit"
-                                            hidden
-                                            id="requestCard{{ req.id }}Button"
-                                        >
-                                    </form>
-                                {% endif %}
+
+                        <!-- Employee -->
+                        <div class="reimb-card__employee">
+                            <img src="{{ req.employee_id.get_avatar }}" class="reimb-card__avatar" alt="">
+                            <div>
+                                <div class="reimb-card__emp-name">{{ req.employee_id }}</div>
+                                <div class="reimb-card__emp-meta">{{ req.employee_id.get_department }} / {{ req.employee_id.get_job_position }}</div>
                             </div>
-                        {% endfor %}
-                    </div>
-                    <div class="oh-wrapper w-100">
-                        <div class="oh-pagination">
-                            <span
-                                class="oh-pagination__page"
-                                data-toggle="modal"
-                                data-target="#addEmployeeModal"
-                            >{% trans 'Page' %} {{ leave_encashments.number }} {% trans 'of' %}
-                                {{ leave_encashments.paginator.num_pages }}.</span>
-
-                            <nav class="oh-pagination__nav">
-                                <div class="oh-pagination__input-container me-3">
-                                    <span class="oh-pagination__label me-1">{% trans 'Page' %}</span>
-
-                                    <input
-                                        type="number"
-                                        name="page"
-                                        class="oh-pagination__input"
-                                        value="{{ leave_encashments.number }}"
-                                        hx-get="{% url 'search-reimbursement' %}?{{ pd }}"
-                                        hx-target="#reimbursementContainer"
-                                        min="1"
-                                    >
-                                    <span class="oh-pagination__label">{% trans 'of' %}
-                                        {{ leave_encashments.paginator.num_pages }}</span>
-                                </div>
-
-                                <ul class="oh-pagination__items">
-                                    {% if leave_encashments.has_previous %}
-                                        <li class="oh-pagination__item oh-pagination__item--wide">
-                                            <a
-                                                hx-target="#reimbursementContainer"
-                                                hx-get="{% url 'search-reimbursement' %}?{{ pd }}&lpage=1"
-                                                class="oh-pagination__link"
-                                            >{% trans 'First' %}</a>
-                                        </li>
-                                        <li class="oh-pagination__item oh-pagination__item--wide">
-                                            <a
-                                                hx-target="#reimbursementContainer"
-                                                hx-get="{% url 'search-reimbursement' %}?{{ pd }}&lpage={{ leave_encashments.previous_page_number }}"
-                                                class="oh-pagination__link"
-                                            >{% trans 'Previous' %}</a>
-                                        </li>
-                                    {% endif %}
-                                    {% if leave_encashments.has_next %}
-                                        <li class="oh-pagination__item oh-pagination__item--wide">
-                                            <a
-                                                hx-target="#reimbursementContainer"
-                                                hx-get="{% url 'search-reimbursement' %}?{{ pd }}&lpage={{ leave_encashments.next_page_number }}"
-                                                class="oh-pagination__link"
-                                            >{% trans 'Next' %}</a>
-                                        </li>
-                                        <li class="oh-pagination__item oh-pagination__item--wide">
-                                            <a
-                                                hx-target="#reimbursementContainer"
-                                                hx-get="{% url 'search-reimbursement' %}?{{ pd }}&lpage={{ leave_encashments.paginator.num_pages }}"
-                                                class="oh-pagination__link"
-                                            >{% trans 'Last' %}</a>
-                                        </li>
-                                    {% endif %}
-                                </ul>
-                            </nav>
                         </div>
-                    </div>
-                {% else %}
-                    <!-- start of empty page -->
-                    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%">
-                        <img
-                            style="width: 150px; height: 150px"
-                            src="{% static 'images/ui/no-results.png' %}"
-                            class="oh-404__image mb-4"
-                        >
-                        <h5 class="oh-404__subtitle">
-                            {% trans "No search result found!" %}
-                        </h5>
-                    </div>
-                    <!-- end of empty page -->
-                {% endif %}
-            </div>
-            <!-- Bonus Encashments-->
-            <div class="oh-tabs__content" id="bonus_encashment_tab">
-                {% if bonus_encashments %}
-                    <div class="oh-faq-cards">
-                        {% for req in bonus_encashments %}
-                            <div class="oh-faq-card" id="requestCard{{ req.id }}">
-                                <div class="d-flex justify-content-between">
-                                    <div style="margin-bottom: 10px">
-                                        {% comment %} <div class="loan-type" style="display: inline; background:hsl(58.85deg 100% 80.93%);">
-                                        {{ req.get_type_display }}
-                                    </div> {% endcomment %}
-                                        <div
-                                            class="loan-type employee-reimbursement-status employee-reimbursement-status--{{ req.status }}"
-                                            style='display: inline;
-                                        {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "rejected" %}
-                                        background:#ff45002e;{% endif %}'
-                                        >
-                                            {{ req.get_status_display }}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        {% if req.status != "approved" %}
-                                            {% if perms.payroll.change_reimbursement or request.user.employee_get == req.employee_id %}
-                                                <a
-                                                    hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
-                                                    hx-target="#objectCreateModalTarget"
-                                                    class="mr-2"
-                                                    style="cursor: pointer"
-                                                    title='{% trans "Update" %}'
-                                                    data-toggle="oh-modal-toggle"
-                                                    data-target="#objectCreateModal"
-                                                ><ion-icon
-                                                        class="text-dark md hydrated"
-                                                        name="create-outline"
-                                                        role="img"
-                                                        aria-label="{% trans 'create outline' %}"
-                                                    ></ion-icon></a>
-                                            {% endif %}
-                                        {% endif %}
-                                        {% if perms.payroll.delete_reimbursement %}
-                                            <a
-                                                href='{% url "delete-reimbursement" %}?ids={{req.id}}'
-                                                onclick="return confirm('Do you want to delete this record?')"
-                                                title='{% trans "Delete" %}'
-                                            ><ion-icon
-                                                    class="text-danger md hydrated"
-                                                    name="trash-outline"
-                                                    role="img"
-                                                    aria-label="{% trans 'trash outline' %}"
-                                                ></ion-icon></a>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                <div class="oh-timeoff-modal__profile-content">
-                                    <div class="oh-profile mb-2">
-                                        <div class="oh-profile__avatar">
-                                            <img
-                                                src="{{ req.employee_id.get_avatar }}"
-                                                class="oh-profile__image me-2"
-                                            >
-                                        </div>
-                                        <div class="oh-timeoff-modal__profile-info">
-                                            <span
-                                                class="oh-timeoff-modal__user m-0 fw-bold"
-                                            >{{ req.employee_id }}</span>
-                                            <span
-                                                class="oh-timeoff-modal__user m-0"
-                                                style="font-size: 12px; color: #4d4a4a"
-                                            >
-                                                {{ req.employee_id.get_department }} /
-                                                {{ req.employee_id.get_job_position }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <h3 class="oh-faq-card__title">{{ req.title }}</h3>
-                                <p class="oh-faq-card__desc">{{ req.description }}.</p>
-                                <span
-                                    class="oh-card__footer--border-top pt-1"
-                                    style="display: block"
-                                >
-                                    {% if perms.payroll.view_reimbursementrequestcomment or request.user == req.employee_id.employee_user_id %}
-                                        <div class="mb-2">
-                                            <i><a
-                                                    hx-target="#commentContainer"
-                                                    hx-get="{% url 'payroll-request-view-comment' req.id %}"
-                                                    class="text-primary fw-bold oh-activity-sidebar__open w-100"
-                                                    data-target="#activitySidebar"
-                                                    style="cursor: pointer"
-                                                >{% trans 'Comments' %}</a></i>
-                                        </div>
-                                    {% endif %}
 
-                                    <i style="color: hsl(0, 0%, 45%)">{% trans 'Allowance on' %}</i>
-                                    <span class="dateformat_changer">{{ req.allowance_on }}</span>
-                                    {% if req.type == 'reimbursement' %}
-                                        <i><a
-                                                data-target="#reimbursementAttachementModal"
-                                                data-toggle="oh-modal-toggle"
-                                                hx-get='{% url "reimbursement-attachments" req.id %}'
-                                                hx-target="#reimbursementAttachementModalBody"
-                                                class="text-danger"
-                                                title="{% trans 'Attachments' %}"
-                                                rel="noopener noreferrer"
-                                            >{% trans 'View Attachments' %}</a></i>
-                                    {% endif %}
-                                </span>
-                                {% if perms.payroll.change_reimbursement %}
-                                    <form method="post" action="{% url 'approve-reimbursements' %}">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="ids" value="{{ req.id }}">
-                                        <input type="hidden" name="status">
-                                        {% if req.type == 'reimbursement' %}
-                                            <p class="oh-faq-card__desc" style="height: 150px">
-                                                <iframe
-                                                    id="iframe_pdf"
-                                                    src="{{ req.attachment.url }}"
-                                                    style="width: 100%"
-                                                    frameborder="0"
-                                                ></iframe>
-                                            </p>
-                                        {% elif req.type == 'bonus_encashment' %}
-                                            <p class="oh-faq-card__desc" style="max-height: 180px">
-                                                <i>
-                                                    {% trans 'Requsted for' %}
-                                                    <span class="text-danger">
-                                                        {{ req.bonus_to_encash }}
-                                                    </span>
-                                                    {% trans 'Bonus points to encash.' %}
-                                                </i>
-                                                <input
-                                                    style="display: block; padding: 10px; margin-top: 10px"
-                                                    type="number"
-                                                    required
-                                                    default="0"
-                                                    min="0"
-                                                    placeholder="{% trans 'Amount' %}"
-                                                    name="amount"
-                                                    class="mt-2"
-                                                    {% if req.status == "approved" %}
-                                                        disabled
-                                                    {% endif %}
-                                                    {% if req.amount %}
-                                                        value="{{req.amount}}"
-                                                    {% endif %}
-                                                >
-                                            </p>
-                                        {% else %}
-                                            <p class="oh-faq-card__desc" style="max-height: 180px">
-                                                <i>
-                                                    {% trans 'Requsted for total' %}
-                                                    <span class="text-danger">
-                                                        {{ req.ad_to_encash|add:req.cfd_to_encash }}
-                                                    </span>
-                                                    {% trans 'days' %}
-                                                    {% trans 'days to encash.' %}
-                                                </i>
-                                                <input
-                                                    style="display: block; padding: 10px; margin-top: 10px"
-                                                    type="number"
-                                                    required
-                                                    default="0"
-                                                    min="0"
-                                                    placeholder="{% trans 'Amount' %}"
-                                                    name="amount"
-                                                    class="mt-2"
-                                                    {% if req.status == "approved" %}
-                                                        disabled
-                                                    {% endif %}
-                                                    {% if req.amount %}
-                                                        value="{{req.amount}}"
-                                                    {% endif %}
-                                                >
-                                            </p>
-                                        {% endif %}
-                                        <div class="oh-btn-group">
-                                            <button
-                                                type="button"
-                                                onclick="$('#requestCard{{ req.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to reject the request?','#requestCard{{ req.id }}');$('#requestCard{{ req.id }} [name=status]').val('canceled')"
-                                                class="oh-btn oh-btn--danger w-100"
-                                            >
-                                                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                                            </button>
-                                            {% if req.status != "approved" and req.status != 'rejected' %}
-                                                <button
-                                                    type="button"
-                                                    title="{% trans 'Approve' %}"
-                                                    onclick="reimbursementConfirm('Do You really want to approve the request?','#requestCard{{ req.id }}',true);$('#requestCard{{ req.id }} [name=status]').val('approved')"
-                                                    class="oh-btn oh-btn--success w-100"
-                                                >
-                                                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                                                </button>
-                                            {% else %}
-                                                <button
-                                                    type="button"
-                                                    class="oh-btn oh-btn--success oh-btn--disabled w-100"
-                                                >
-                                                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                                                </button>
-                                            {% endif %}
-                                        </div>
-                                        <input
-                                            type="submit"
-                                            hidden
-                                            id="requestCard{{ req.id }}Button"
-                                        >
-                                    </form>
-                                {% endif %}
+                        <!-- Title + desc -->
+                        <div>
+                            <h3 class="reimb-card__title">{{ req.title }}</h3>
+                            {% if req.description %}<p class="reimb-card__desc">{{ req.description }}</p>{% endif %}
+                        </div>
+
+                        <!-- Status -->
+                        <div><span class="reimb-card__status reimb-card__status--{{ req.status }}">{{ req.get_status_display }}</span></div>
+
+                        <!-- Footer -->
+                        <div class="reimb-card__footer">
+                            <div class="reimb-card__footer-meta">
+                                <span>{% trans "Allowance on" %}</span>
+                                <strong class="dateformat_changer">{{ req.allowance_on }}</strong>
                             </div>
-                        {% endfor %}
-                    </div>
-                    <div class="oh-wrapper w-100">
-                        <div class="oh-pagination">
-                            <span
-                                class="oh-pagination__page"
-                                data-toggle="modal"
-                                data-target="#addEmployeeModal"
-                            >{% trans 'Page' %} {{ bonus_encashments.number }} {% trans 'of' %}
-                                {{ bonus_encashments.paginator.num_pages }}.</span>
-
-                            <nav class="oh-pagination__nav">
-                                <div class="oh-pagination__input-container me-3">
-                                    <span class="oh-pagination__label me-1">{% trans 'Page' %}</span>
-
-                                    <input
-                                        type="number"
-                                        name="page"
-                                        class="oh-pagination__input"
-                                        value="{{ bonus_encashments.number }}"
-                                        hx-get="{% url 'search-reimbursement' %}?{{ pd }}"
-                                        hx-target="#reimbursementContainer"
-                                        min="1"
-                                    >
-                                    <span class="oh-pagination__label">{% trans 'of' %}
-                                        {{ bonus_encashments.paginator.num_pages }}</span>
-                                </div>
-
-                                <ul class="oh-pagination__items">
-                                    {% if bonus_encashments.has_previous %}
-                                        <li class="oh-pagination__item oh-pagination__item--wide">
-                                            <a
-                                                hx-target="#reimbursementContainer"
-                                                hx-get="{% url 'search-reimbursement' %}?{{ pd }}&bpage=1"
-                                                class="oh-pagination__link"
-                                            >{% trans 'First' %}</a>
-                                        </li>
-                                        <li class="oh-pagination__item oh-pagination__item--wide">
-                                            <a
-                                                hx-target="#reimbursementContainer"
-                                                hx-get="{% url 'search-reimbursement' %}?{{ pd }}&bpage={{ bonus_encashments.previous_page_number }}"
-                                                class="oh-pagination__link"
-                                            >{% trans 'Previous' %}</a>
-                                        </li>
-                                    {% endif %}
-                                    {% if bonus_encashments.has_next %}
-                                        <li class="oh-pagination__item oh-pagination__item--wide">
-                                            <a
-                                                hx-target="#reimbursementContainer"
-                                                hx-get="{% url 'search-reimbursement' %}?{{ pd }}&bpage={{ bonus_encashments.next_page_number }}"
-                                                class="oh-pagination__link"
-                                            >{% trans 'Next' %}</a>
-                                        </li>
-                                        <li class="oh-pagination__item oh-pagination__item--wide">
-                                            <a
-                                                hx-target="#reimbursementContainer"
-                                                hx-get="{% url 'search-reimbursement' %}?{{ pd }}&bpage={{ bonus_encashments.paginator.num_pages }}"
-                                                class="oh-pagination__link"
-                                            >{% trans 'Last' %}</a>
-                                        </li>
-                                    {% endif %}
-                                </ul>
-                            </nav>
+                            <div class="reimb-card__footer-links">
+                                {% if perms.payroll.view_reimbursementrequestcomment or request.user == req.employee_id.employee_user_id %}
+                                    <a hx-get="{% url 'payroll-request-view-comment' req.id %}"
+                                       hx-target="#commentContainer"
+                                       data-target="#activitySidebar"
+                                       class="reimb-card__link oh-activity-sidebar__open">
+                                        <ion-icon name="chatbubble-ellipses-outline"></ion-icon>{% trans "Comments" %}
+                                    </a>
+                                {% endif %}
+                                <a data-target="#reimbursementAttachementModal"
+                                   data-toggle="oh-modal-toggle"
+                                   hx-get='{% url "reimbursement-attachments" req.id %}'
+                                   hx-target="#reimbursementAttachementModalBody"
+                                   class="reimb-card__link" title="{% trans 'Attachments' %}">
+                                    <ion-icon name="attach-outline"></ion-icon>{% trans "Files" %}
+                                </a>
+                            </div>
                         </div>
+
+                        <!-- Manager approval block -->
+                        {% if perms.payroll.change_reimbursement %}
+                        <div class="reimb-card__approval">
+                            <form action="{% url 'approve-reimbursements' %}">
+                                <input type="hidden" name="ids" value="{{ req.id }}">
+                                <input type="hidden" name="status">
+                                <div class="reimb-card__pdf-preview">
+                                    <iframe src="{{ req.attachment.url }}" frameborder="0"></iframe>
+                                </div>
+                                <div class="reimb-card__approve-btns" style="margin-top:10px">
+                                    <button type="button" class="reimb-card__btn-reject"
+                                        onclick="$('#requestCard{{ req.id }} [name=amount]').attr('required',false);reimbursementConfirm('{% trans "Reject this request?" %}','#requestCard{{ req.id }}');$('#requestCard{{ req.id }} [name=status]').val('canceled')">
+                                        <ion-icon name="close-circle-outline"></ion-icon>{% trans "Reject" %}
+                                    </button>
+                                    {% if req.status != "approved" and req.status != "rejected" %}
+                                        <button type="button" class="reimb-card__btn-approve"
+                                            onclick="reimbursementConfirm('{% trans "Approve this request?" %}','#requestCard{{ req.id }}',true);$('#requestCard{{ req.id }} [name=status]').val('approved')">
+                                            <ion-icon name="checkmark-circle-outline"></ion-icon>{% trans "Approve" %}
+                                        </button>
+                                    {% else %}
+                                        <button type="button" class="reimb-card__btn-approve" disabled>
+                                            <ion-icon name="checkmark-circle-outline"></ion-icon>{% trans "Approve" %}
+                                        </button>
+                                    {% endif %}
+                                </div>
+                                <input type="submit" hidden id="requestCard{{ req.id }}Button">
+                            </form>
+                        </div>
+                        {% endif %}
                     </div>
-                {% else %}
-                    <!-- start of empty page -->
-                    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%">
-                        <img
-                            style="width: 150px; height: 150px"
-                            src="{% static 'images/ui/no-results.png' %}"
-                            class="oh-404__image mb-4"
-                        >
-                        <h5 class="oh-404__subtitle">
-                            {% trans "No search result found!" %}
-                        </h5>
+                    {% endfor %}
+                </div>
+                <!-- Pagination -->
+                <div class="oh-wrapper w-100">
+                    <div class="oh-pagination">
+                        <span class="oh-pagination__page">{% trans 'Page' %} {{ reimbursements.number }} {% trans 'of' %} {{ reimbursements.paginator.num_pages }}.</span>
+                        <nav class="oh-pagination__nav">
+                            <div class="oh-pagination__input-container me-3">
+                                <span class="oh-pagination__label me-1">{% trans 'Page' %}</span>
+                                <input type="number" name="page" class="oh-pagination__input" value="{{ reimbursements.number }}"
+                                    hx-get="{% url 'search-reimbursement' %}?{{ pd }}" hx-target="#reimbursementBody" min="1">
+                                <span class="oh-pagination__label">{% trans 'of' %} {{ reimbursements.paginator.num_pages }}</span>
+                            </div>
+                            <ul class="oh-pagination__items">
+                                {% if reimbursements.has_previous %}
+                                    <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&rpage=1" class="oh-pagination__link">{% trans 'First' %}</a></li>
+                                    <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&rpage={{ reimbursements.previous_page_number }}" class="oh-pagination__link">{% trans 'Previous' %}</a></li>
+                                {% endif %}
+                                {% if reimbursements.has_next %}
+                                    <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&rpage={{ reimbursements.next_page_number }}" class="oh-pagination__link">{% trans 'Next' %}</a></li>
+                                    <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&rpage={{ reimbursements.paginator.num_pages }}" class="oh-pagination__link">{% trans 'Last' %}</a></li>
+                                {% endif %}
+                            </ul>
+                        </nav>
                     </div>
-                    <!-- end of empty page -->
-                {% endif %}
-            </div>
+                </div>
+            {% else %}
+                <div class="reimb-empty">
+                    <img src="{% static 'images/ui/no-results.png' %}" alt="">
+                    <p class="reimb-empty__title">{% trans "No reimbursements found" %}</p>
+                    <p class="reimb-empty__sub">{% trans "Try adjusting your filters." %}</p>
+                </div>
+            {% endif %}
         </div>
-    </div>
 
-    <!-- Activty side bar for comment section-->
+        {# ── LEAVE ENCASHMENTS TAB ──────────────────────────────── #}
+        <div class="oh-tabs__content" id="leave_encashment_tab">
+            {% if leave_encashments %}
+                <div class="reimb-cards">
+                    {% for req in leave_encashments %}
+                    <div class="reimb-card" id="requestCard{{ req.id }}" data-status="{{ req.status }}">
+                        <div class="reimb-card__header">
+                            <span class="reimb-card__type-badge">
+                                <ion-icon name="calendar-outline"></ion-icon>{% trans "Leave" %}
+                            </span>
+                            <div class="reimb-card__actions">
+                                {% if req.status != "approved" %}
+                                    {% if perms.payroll.change_reimbursement or request.user.employee_get == req.employee_id %}
+                                        <a hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
+                                           hx-target="#objectCreateModalTarget"
+                                           data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+                                           class="reimb-card__action-btn" title="{% trans 'Edit' %}">
+                                            <ion-icon name="create-outline"></ion-icon>
+                                        </a>
+                                    {% endif %}
+                                {% endif %}
+                                {% if perms.payroll.delete_reimbursement %}
+                                    <a href='{% url "delete-reimbursement" %}?ids={{ req.id }}'
+                                       onclick="return confirm('{% trans "Delete this request?" %}')"
+                                       class="reimb-card__action-btn reimb-card__action-btn--danger" title="{% trans 'Delete' %}">
+                                        <ion-icon name="trash-outline"></ion-icon>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="reimb-card__employee">
+                            <img src="{{ req.employee_id.get_avatar }}" class="reimb-card__avatar" alt="">
+                            <div>
+                                <div class="reimb-card__emp-name">{{ req.employee_id }}</div>
+                                <div class="reimb-card__emp-meta">{{ req.employee_id.get_department }} / {{ req.employee_id.get_job_position }}</div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="reimb-card__title">{{ req.title }}</h3>
+                            {% if req.description %}<p class="reimb-card__desc">{{ req.description }}</p>{% endif %}
+                        </div>
+                        <div><span class="reimb-card__status reimb-card__status--{{ req.status }}">{{ req.get_status_display }}</span></div>
+                        <div class="reimb-card__footer">
+                            <div class="reimb-card__footer-meta">
+                                <span>{% trans "Allowance on" %}</span>
+                                <strong class="dateformat_changer">{{ req.allowance_on }}</strong>
+                            </div>
+                            <div class="reimb-card__footer-links">
+                                {% if perms.payroll.view_reimbursementrequestcomment or request.user == req.employee_id.employee_user_id %}
+                                    <a hx-get="{% url 'payroll-request-view-comment' req.id %}" hx-target="#commentContainer"
+                                       data-target="#activitySidebar" class="reimb-card__link oh-activity-sidebar__open">
+                                        <ion-icon name="chatbubble-ellipses-outline"></ion-icon>{% trans "Comments" %}
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if perms.payroll.change_reimbursement %}
+                        <div class="reimb-card__approval">
+                            <form action="{% url 'approve-reimbursements' %}">
+                                <input type="hidden" name="ids" value="{{ req.id }}">
+                                <input type="hidden" name="status">
+                                <div class="reimb-card__approval-detail">
+                                    <ion-icon name="information-circle-outline"></ion-icon>
+                                    {% trans "Requesting" %}
+                                    <strong>{{ req.ad_to_encash|add:req.cfd_to_encash }} {% trans "days" %}</strong>
+                                    {% trans "to encash" %}
+                                </div>
+                                <input class="reimb-card__amount-input" type="number" min="0" placeholder="{% trans 'Enter amount' %}"
+                                    name="amount" {% if req.status == "approved" %}disabled{% endif %} {% if req.amount %}value="{{ req.amount }}"{% endif %}>
+                                <div class="reimb-card__approve-btns">
+                                    <button type="button" class="reimb-card__btn-reject"
+                                        onclick="$('#requestCard{{ req.id }} [name=amount]').attr('required',false);reimbursementConfirm('{% trans "Reject this request?" %}','#requestCard{{ req.id }}');$('#requestCard{{ req.id }} [name=status]').val('canceled')">
+                                        <ion-icon name="close-circle-outline"></ion-icon>{% trans "Reject" %}
+                                    </button>
+                                    {% if req.status != "approved" and req.status != "rejected" %}
+                                        <button type="button" class="reimb-card__btn-approve"
+                                            onclick="reimbursementConfirm('{% trans "Approve this request?" %}','#requestCard{{ req.id }}',true);$('#requestCard{{ req.id }} [name=status]').val('approved')">
+                                            <ion-icon name="checkmark-circle-outline"></ion-icon>{% trans "Approve" %}
+                                        </button>
+                                    {% else %}
+                                        <button type="button" class="reimb-card__btn-approve" disabled>
+                                            <ion-icon name="checkmark-circle-outline"></ion-icon>{% trans "Approve" %}
+                                        </button>
+                                    {% endif %}
+                                </div>
+                                <input type="submit" hidden id="requestCard{{ req.id }}Button">
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="oh-wrapper w-100">
+                    <div class="oh-pagination">
+                        <span class="oh-pagination__page">{% trans 'Page' %} {{ leave_encashments.number }} {% trans 'of' %} {{ leave_encashments.paginator.num_pages }}.</span>
+                        <nav class="oh-pagination__nav">
+                            <div class="oh-pagination__input-container me-3">
+                                <span class="oh-pagination__label me-1">{% trans 'Page' %}</span>
+                                <input type="number" name="page" class="oh-pagination__input" value="{{ leave_encashments.number }}"
+                                    hx-get="{% url 'search-reimbursement' %}?{{ pd }}" hx-target="#reimbursementBody" min="1">
+                                <span class="oh-pagination__label">{% trans 'of' %} {{ leave_encashments.paginator.num_pages }}</span>
+                            </div>
+                            <ul class="oh-pagination__items">
+                                {% if leave_encashments.has_previous %}
+                                    <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&lpage=1" class="oh-pagination__link">{% trans 'First' %}</a></li>
+                                    <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&lpage={{ leave_encashments.previous_page_number }}" class="oh-pagination__link">{% trans 'Previous' %}</a></li>
+                                {% endif %}
+                                {% if leave_encashments.has_next %}
+                                    <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&lpage={{ leave_encashments.next_page_number }}" class="oh-pagination__link">{% trans 'Next' %}</a></li>
+                                    <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&lpage={{ leave_encashments.paginator.num_pages }}" class="oh-pagination__link">{% trans 'Last' %}</a></li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            {% else %}
+                <div class="reimb-empty">
+                    <img src="{% static 'images/ui/no-results.png' %}" alt="">
+                    <p class="reimb-empty__title">{% trans "No leave encashments found" %}</p>
+                    <p class="reimb-empty__sub">{% trans "Try adjusting your filters." %}</p>
+                </div>
+            {% endif %}
+        </div>
 
-    <div class="oh-activity-sidebar" id="activitySidebar" style="z-index: 1000">
-        <div class="oh-activity-sidebar__body" id="commentContainer"></div>
-    </div>
+        {# ── BONUS ENCASHMENTS TAB ──────────────────────────────── #}
+        <div class="oh-tabs__content" id="bonus_encashment_tab">
+            {% if bonus_encashments %}
+                <div class="reimb-cards">
+                    {% for req in bonus_encashments %}
+                    <div class="reimb-card" id="requestCard{{ req.id }}" data-status="{{ req.status }}">
+                        <div class="reimb-card__header">
+                            <span class="reimb-card__type-badge">
+                                <ion-icon name="star-outline"></ion-icon>{% trans "Bonus" %}
+                            </span>
+                            <div class="reimb-card__actions">
+                                {% if req.status != "approved" %}
+                                    {% if perms.payroll.change_reimbursement or request.user.employee_get == req.employee_id %}
+                                        <a hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
+                                           hx-target="#objectCreateModalTarget"
+                                           data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+                                           class="reimb-card__action-btn" title="{% trans 'Edit' %}">
+                                            <ion-icon name="create-outline"></ion-icon>
+                                        </a>
+                                    {% endif %}
+                                {% endif %}
+                                {% if perms.payroll.delete_reimbursement %}
+                                    <a href='{% url "delete-reimbursement" %}?ids={{ req.id }}'
+                                       onclick="return confirm('{% trans "Delete this request?" %}')"
+                                       class="reimb-card__action-btn reimb-card__action-btn--danger" title="{% trans 'Delete' %}">
+                                        <ion-icon name="trash-outline"></ion-icon>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="reimb-card__employee">
+                            <img src="{{ req.employee_id.get_avatar }}" class="reimb-card__avatar" alt="">
+                            <div>
+                                <div class="reimb-card__emp-name">{{ req.employee_id }}</div>
+                                <div class="reimb-card__emp-meta">{{ req.employee_id.get_department }} / {{ req.employee_id.get_job_position }}</div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="reimb-card__title">{{ req.title }}</h3>
+                            {% if req.description %}<p class="reimb-card__desc">{{ req.description }}</p>{% endif %}
+                        </div>
+                        <div><span class="reimb-card__status reimb-card__status--{{ req.status }}">{{ req.get_status_display }}</span></div>
+                        <div class="reimb-card__footer">
+                            <div class="reimb-card__footer-meta">
+                                <span>{% trans "Allowance on" %}</span>
+                                <strong class="dateformat_changer">{{ req.allowance_on }}</strong>
+                            </div>
+                            <div class="reimb-card__footer-links">
+                                {% if perms.payroll.view_reimbursementrequestcomment or request.user == req.employee_id.employee_user_id %}
+                                    <a hx-get="{% url 'payroll-request-view-comment' req.id %}" hx-target="#commentContainer"
+                                       data-target="#activitySidebar" class="reimb-card__link oh-activity-sidebar__open">
+                                        <ion-icon name="chatbubble-ellipses-outline"></ion-icon>{% trans "Comments" %}
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if perms.payroll.change_reimbursement %}
+                        <div class="reimb-card__approval">
+                            <form action="{% url 'approve-reimbursements' %}">
+                                <input type="hidden" name="ids" value="{{ req.id }}">
+                                <input type="hidden" name="status">
+                                <div class="reimb-card__approval-detail">
+                                    <ion-icon name="star-outline"></ion-icon>
+                                    {% trans "Requesting" %}
+                                    <strong>{{ req.bonus_to_encash }} {% trans "bonus points" %}</strong>
+                                    {% trans "to encash" %}
+                                </div>
+                                <input class="reimb-card__amount-input" type="number" min="0" placeholder="{% trans 'Enter amount' %}"
+                                    name="amount" {% if req.status == "approved" %}disabled{% endif %} {% if req.amount %}value="{{ req.amount }}"{% endif %}>
+                                <div class="reimb-card__approve-btns">
+                                    <button type="button" class="reimb-card__btn-reject"
+                                        onclick="$('#requestCard{{ req.id }} [name=amount]').attr('required',false);reimbursementConfirm('{% trans "Reject this request?" %}','#requestCard{{ req.id }}');$('#requestCard{{ req.id }} [name=status]').val('canceled')">
+                                        <ion-icon name="close-circle-outline"></ion-icon>{% trans "Reject" %}
+                                    </button>
+                                    {% if req.status != "approved" and req.status != "rejected" %}
+                                        <button type="button" class="reimb-card__btn-approve"
+                                            onclick="reimbursementConfirm('{% trans "Approve this request?" %}','#requestCard{{ req.id }}',true);$('#requestCard{{ req.id }} [name=status]').val('approved')">
+                                            <ion-icon name="checkmark-circle-outline"></ion-icon>{% trans "Approve" %}
+                                        </button>
+                                    {% else %}
+                                        <button type="button" class="reimb-card__btn-approve" disabled>
+                                            <ion-icon name="checkmark-circle-outline"></ion-icon>{% trans "Approve" %}
+                                        </button>
+                                    {% endif %}
+                                </div>
+                                <input type="submit" hidden id="requestCard{{ req.id }}Button">
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="oh-wrapper w-100">
+                    <div class="oh-pagination">
+                        <span class="oh-pagination__page">{% trans 'Page' %} {{ bonus_encashments.number }} {% trans 'of' %} {{ bonus_encashments.paginator.num_pages }}.</span>
+                        <nav class="oh-pagination__nav">
+                            <div class="oh-pagination__input-container me-3">
+                                <span class="oh-pagination__label me-1">{% trans 'Page' %}</span>
+                                <input type="number" name="page" class="oh-pagination__input" value="{{ bonus_encashments.number }}"
+                                    hx-get="{% url 'search-reimbursement' %}?{{ pd }}" hx-target="#reimbursementBody" min="1">
+                                <span class="oh-pagination__label">{% trans 'of' %} {{ bonus_encashments.paginator.num_pages }}</span>
+                            </div>
+                            <ul class="oh-pagination__items">
+                                {% if bonus_encashments.has_previous %}
+                                    <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&bpage=1" class="oh-pagination__link">{% trans 'First' %}</a></li>
+                                    <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&bpage={{ bonus_encashments.previous_page_number }}" class="oh-pagination__link">{% trans 'Previous' %}</a></li>
+                                {% endif %}
+                                {% if bonus_encashments.has_next %}
+                                    <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&bpage={{ bonus_encashments.next_page_number }}" class="oh-pagination__link">{% trans 'Next' %}</a></li>
+                                    <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&bpage={{ bonus_encashments.paginator.num_pages }}" class="oh-pagination__link">{% trans 'Last' %}</a></li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            {% else %}
+                <div class="reimb-empty">
+                    <img src="{% static 'images/ui/no-results.png' %}" alt="">
+                    <p class="reimb-empty__title">{% trans "No bonus encashments found" %}</p>
+                    <p class="reimb-empty__sub">{% trans "Try adjusting your filters." %}</p>
+                </div>
+            {% endif %}
+        </div>
 
-    <!-- End of Activty side bar for comment section-->
+    </div>{# oh-tabs__contents #}
+</div>{# reimb-tabs #}
 
-    <script>
-        function reimbursementConfirm(params, target, approve = false) {
-            Swal.fire({
-                text: params,
-                icon: "question",
-                showCancelButton: true,
-                confirmButtonColor: "#008000",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Confirm",
-                cancelButtonText: "Close",
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    if (approve) {
-                        $(`${target} [name=amount]`).attr("required", true);
-                    }
-                    $(target + "Button").click();
-                    if (event.target.tagName.toLowerCase() === "form") {
-                        event.target.submit();
-                    } else if (event.target.tagName.toLowerCase() === "a") {
-                        window.location.href = event.target.href;
-                    }
-                } else {
-                }
-            });
-        }
-        $(document).ready(function () {
-            var activeTab = localStorage.getItem("activeTabReimbursment");
-            if (activeTab != null) {
-                var tab = $(`[data-target="${activeTab}"]`);
-                var tabContent = $(activeTab);
-                $(tab).addClass( "oh-tabs__tab--active");
-                $(tabContent).addClass( "oh-tabs__content--active");
-            } else {
-                $('[data-target="#reimbursement_tab"]').attr(
-                    "class",
-                    "oh-tabs__tab oh-tabs__tab--active"
-                );
-                $("#reimbursement_tab").attr("class", "oh-tabs__content oh-tabs__content--active");
-            }
+<script>
+(function () {
+    /* Activate the correct tab on load, persisting choice in localStorage */
+    function initTabs() {
+        var saved = localStorage.getItem("activeTabReimbursment");
+        var target = (saved && document.querySelector('[data-target="' + saved + '"]'))
+            ? saved
+            : "#reimbursement_tab";
 
-            $(".oh-tabs__tab").click(function (e) {
-                var activeTab = $(this).attr("data-target");
-                $(".oh-tabs__content--active").toggleClass('oh-tabs__content--active');
-                $(".oh-tabs__tab--active").toggleClass('oh-tabs__tab--active');
-                $(`[data-target="${activeTab}"]`).toggleClass("oh-tabs__tab--active");
-                $(activeTab).toggleClass("oh-tabs__content--active");
-                localStorage.setItem("activeTabReimbursment", activeTab);
+        document.querySelectorAll(".oh-tabs__tab").forEach(function (t) {
+            t.classList.remove("oh-tabs__tab--active");
+        });
+        document.querySelectorAll(".oh-tabs__content").forEach(function (c) {
+            c.classList.remove("oh-tabs__content--active");
+        });
+
+        var activeTab = document.querySelector('[data-target="' + target + '"]');
+        var activeContent = document.querySelector(target);
+        if (activeTab)    activeTab.classList.add("oh-tabs__tab--active");
+        if (activeContent) activeContent.classList.add("oh-tabs__content--active");
+    }
+
+    /* Wire up click handlers */
+    function wireClicks() {
+        document.querySelectorAll(".oh-tabs__tab").forEach(function (tab) {
+            tab.addEventListener("click", function () {
+                var t = tab.getAttribute("data-target");
+                document.querySelectorAll(".oh-tabs__tab").forEach(function (x) {
+                    x.classList.remove("oh-tabs__tab--active");
+                });
+                document.querySelectorAll(".oh-tabs__content").forEach(function (x) {
+                    x.classList.remove("oh-tabs__content--active");
+                });
+                tab.classList.add("oh-tabs__tab--active");
+                var content = document.querySelector(t);
+                if (content) content.classList.add("oh-tabs__content--active");
+                localStorage.setItem("activeTabReimbursment", t);
             });
         });
-    </script>
-</div>
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", function () { initTabs(); wireClicks(); });
+    } else {
+        initTabs(); wireClicks();
+    }
+})();
+</script>
