@@ -693,6 +693,269 @@
             box-sizing: border-box;
         }
 
+        body:has(#userRequest) .user-leave-balance {
+            width: min(1480px, calc(100% - 40px)) !important;
+            max-width: none !important;
+            margin: 16px auto 18px !important;
+            padding: 12px !important;
+            overflow: visible !important;
+            border: 1px solid rgba(39, 141, 160, .18);
+            border-radius: 20px;
+            background: #f8fcfd;
+            box-shadow: 0 10px 26px rgba(10, 77, 96, .07);
+            box-sizing: border-box;
+        }
+
+        body:has(#userRequest) .user-leave-balance__grid {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+            width: 100%;
+            margin: 0 !important;
+        }
+
+        body:has(#userRequest) .user-leave-balance__card {
+            position: relative;
+            display: block !important;
+            width: auto !important;
+            min-width: 0;
+            min-height: 0;
+            margin: 0 !important;
+            padding: 16px !important;
+            border: 1px solid rgba(39, 141, 160, .18) !important;
+            border-top: 3px solid #278da0 !important;
+            border-radius: 16px !important;
+            background: #ffffff !important;
+            box-shadow: 0 5px 14px rgba(10, 77, 96, .07) !important;
+            transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+        }
+
+        body:has(#userRequest) .user-leave-balance__card:hover,
+        body:has(#userRequest) .user-leave-balance__card:focus-within {
+            border-color: rgba(39, 141, 160, .4) !important;
+            box-shadow: 0 10px 22px rgba(10, 77, 96, .12) !important;
+            transform: translateY(-2px);
+        }
+
+        body:has(#userRequest) .user-leave-balance__card .oh-kanban-card__avatar {
+            margin: 0 0 10px;
+        }
+
+        body:has(#userRequest) .user-leave-balance__card .oh-kanban-card__profile-container {
+            display: grid;
+            width: 44px;
+            height: 44px;
+            place-items: center;
+            overflow: hidden;
+            border: 1px solid #c7e5eb !important;
+            border-radius: 14px !important;
+            background: #e8f5f7 !important;
+        }
+
+        body:has(#userRequest) .user-leave-balance__card .oh-kanban-card__profile-image {
+            width: 100%;
+            height: 100%;
+            border: 2px solid #ffffff !important;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+
+        body:has(#userRequest) .user-leave-balance__card .oh-kanban-card__details {
+            display: block;
+            margin-top: 0 !important;
+            white-space: normal;
+        }
+
+        body:has(#userRequest) .user-leave-balance__card .oh-kanban-card__title {
+            display: block;
+            margin-bottom: 5px;
+            color: #173f50 !important;
+            font-size: .82rem;
+            font-weight: 800 !important;
+        }
+
+        body:has(#userRequest) .user-leave-balance__card .oh-kanban-card__subtitle {
+            color: #557b84 !important;
+            font-size: .73rem;
+            line-height: 1.55 !important;
+        }
+
+        body:has(#userRequest) #userRequest > .employee-leave-status-legend {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 9px;
+            flex-wrap: wrap;
+            width: min(1480px, calc(100% - 40px));
+            margin: 0 auto 10px !important;
+            padding: 0;
+        }
+
+        body:has(#userRequest) .employee-leave-status-legend > span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 38px;
+            padding: 0 16px;
+            border: 1px solid currentColor;
+            border-radius: 999px;
+            background: #ffffff;
+            font-size: .7rem;
+            font-weight: 750;
+            line-height: 1;
+            white-space: nowrap;
+            box-shadow: 0 2px 5px rgba(10, 77, 96, .07);
+            cursor: pointer;
+            transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+        }
+
+        body:has(#userRequest) .employee-leave-status-legend > span:hover,
+        body:has(#userRequest) .employee-leave-status-legend > span:focus-visible {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 12px rgba(10, 77, 96, .14);
+            outline: 3px solid rgba(39, 141, 160, .2);
+            outline-offset: 2px;
+        }
+
+        body:has(#userRequest) .employee-leave-status-legend > span:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 3px rgba(10, 77, 96, .1);
+        }
+
+        body:has(#userRequest) .employee-leave-status-legend__dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            flex: 0 0 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        body:has(#userRequest) .employee-leave-status-legend > span:has(.employee-leave-status-legend__dot--requested) {
+            color: #1565a3;
+            border-color: #a9cce9;
+            background: #f2f8fd;
+        }
+
+        body:has(#userRequest) .employee-leave-status-legend > span:has(.employee-leave-status-legend__dot--approved) {
+            color: #557d16;
+            border-color: #c4df8d;
+            background: #f5fae9;
+        }
+
+        body:has(#userRequest) .employee-leave-status-legend > span:has(.employee-leave-status-legend__dot--cancelled) {
+            color: #60686d;
+            border-color: #c9ced1;
+            background: #f5f6f6;
+        }
+
+        body:has(#userRequest) .employee-leave-status-legend > span:has(.employee-leave-status-legend__dot--rejected) {
+            color: #b42323;
+            border-color: #efb2b2;
+            background: #fff4f4;
+        }
+
+        body:has(#userRequest) #userRequest > .oh-checkpoint-badge {
+            display: inline-flex;
+            min-height: 30px;
+            align-items: center;
+            margin: 0 0 10px !important;
+            padding: 0 12px;
+            border: 1px solid #b9dce4;
+            border-radius: 999px;
+            background: #ffffff;
+            color: #176f80 !important;
+            font-size: .72rem;
+            font-weight: 750;
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table {
+            width: 100%;
+            overflow-x: auto !important;
+            border: 1px solid rgba(39, 141, 160, .18) !important;
+            border-radius: 16px !important;
+            background: #ffffff !important;
+            box-shadow: 0 8px 22px rgba(10, 77, 96, .08) !important;
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table__table {
+            min-width: 1040px;
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table__thead,
+        body:has(#userRequest) #userRequest .oh-sticky-table__thead .oh-sticky-table__tr {
+            background: #0a4d60 !important;
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table__th {
+            min-height: 44px;
+            padding: 12px 14px !important;
+            border-color: rgba(199, 229, 235, .2) !important;
+            background: #0a4d60 !important;
+            color: #ffffff !important;
+            font-size: .68rem;
+            font-weight: 800 !important;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table__tbody .oh-sticky-table__tr {
+            min-height: 62px;
+            border-bottom: 1px solid rgba(39, 141, 160, .12) !important;
+            background: #ffffff !important;
+            transition: background-color 150ms ease;
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table__tbody .oh-sticky-table__tr:hover {
+            background: #f1fafb !important;
+            transform: none !important;
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table__td,
+        body:has(#userRequest) #userRequest .oh-sticky-table__sd {
+            padding: 10px 12px !important;
+            border-color: rgba(39, 141, 160, .1) !important;
+            color: #285d6b !important;
+            font-size: .78rem;
+            vertical-align: middle;
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table__td .oh-profile {
+            min-width: 130px;
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table__td .oh-btn {
+            min-height: 36px;
+            border-radius: 10px !important;
+            font-size: .74rem;
+        }
+
+        @media (max-width: 768px) {
+            body:has(#userRequest) .user-leave-balance {
+                width: calc(100% - 24px) !important;
+                margin: 12px auto 14px !important;
+                padding: 9px !important;
+            }
+
+            body:has(#userRequest) .user-leave-balance__grid {
+                grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+                gap: 10px;
+            }
+
+            body:has(#userRequest) #userRequest > .employee-leave-status-legend {
+                width: calc(100% - 24px);
+                justify-content: flex-start;
+                gap: 7px;
+            }
+
+            body:has(#userRequest) .employee-leave-status-legend > span {
+                min-height: 34px;
+                padding: 0 12px;
+            }
+        }
+
         @media (max-width: 768px) {
             body:has(#userRequest) .oh-main__topbar {
                 flex-wrap: wrap;

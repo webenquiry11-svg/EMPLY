@@ -1,5 +1,290 @@
 {% load i18n %}
 {% load static %}
+<style>
+    #objectCreateModal:has(#shiftRequestForm) {
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 16px !important;
+        background: rgba(7, 20, 23, 0.62) !important;
+        backdrop-filter: blur(6px);
+    }
+
+    #objectCreateModal:has(#shiftRequestForm) > #objectCreateModalTarget {
+        width: min(680px, calc(100vw - 32px)) !important;
+        max-width: 680px !important;
+        max-height: min(82vh, 680px) !important;
+        overflow: hidden;
+        border: 1px solid rgba(201, 224, 229, 0.9) !important;
+        border-radius: 22px !important;
+        box-shadow: 0 24px 64px rgba(10, 46, 54, 0.3) !important;
+    }
+
+    #objectCreateModal:has(#shiftRequestForm) .oh-modal__dialog-header {
+        display: flex;
+        align-items: center;
+        min-height: 62px !important;
+        padding: 0.75rem 1.1rem !important;
+        gap: 1rem;
+        border: 0 !important;
+        background: linear-gradient(115deg, #0a4d60 0%, #176f80 58%, #278da0 100%) !important;
+    }
+
+    #objectCreateModal:has(#shiftRequestForm) .oh-modal__dialog-title {
+        margin: 0;
+        color: #fff !important;
+        font-size: 1.1rem;
+        font-weight: 800;
+    }
+
+    #objectCreateModal:has(#shiftRequestForm) .oh-modal__close {
+        position: relative !important;
+        top: auto !important;
+        right: auto !important;
+        display: inline-flex !important;
+        flex: 0 0 38px;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 38px !important;
+        height: 38px !important;
+        margin: 0 0 0 auto !important;
+        padding: 0 !important;
+        transform: none !important;
+        border: 1px solid rgba(255, 255, 255, 0.45) !important;
+        border-radius: 50% !important;
+        background: rgba(255, 255, 255, 0.14) !important;
+        color: #fff !important;
+        opacity: 1 !important;
+    }
+
+    #objectCreateModal:has(#shiftRequestForm) .oh-modal__close ion-icon {
+        display: block;
+        width: 20px;
+        height: 20px;
+        margin: 0;
+        font-size: 20px;
+        line-height: 0;
+    }
+
+    #objectCreateModal:has(#shiftRequestForm) .oh-modal__dialog-body {
+        max-height: calc(82vh - 62px);
+        overflow-y: auto;
+        padding: 1.1rem !important;
+        background: linear-gradient(145deg, #edf7f8 0%, #f7fbfa 68%, #eef6f3 100%) !important;
+    }
+
+    #shiftRequestForm {
+        margin: 0 !important;
+        padding: 0 !important;
+        color: #173f50 !important;
+    }
+
+    #shiftRequestForm > .oh-general__tab-target#personal {
+        width: 100% !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    #shiftRequestForm .oh-profile-section__card {
+        padding: 1rem !important;
+        border: 1px solid #dcebed !important;
+        border-radius: 16px !important;
+        background: rgba(255, 255, 255, 0.94) !important;
+        box-shadow: 0 8px 24px rgba(23, 63, 80, 0.07) !important;
+    }
+
+    #shiftRequestForm .row {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 0.85rem 1rem !important;
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    #shiftRequestForm .row > .col-12:first-child {
+        grid-column: 1 / -1 !important;
+    }
+
+    #shiftRequestForm .row > .col,
+    #shiftRequestForm .row > [class*="col-"] {
+        width: auto !important;
+        max-width: none !important;
+        padding: 0 !important;
+    }
+
+    #shiftRequestForm .row > .oh-label__info,
+    #shiftRequestForm .row > div[style*="width: 100%"] {
+        grid-column: 1 / -1 !important;
+        min-width: 0;
+        padding: 0 !important;
+    }
+
+    #shiftRequestForm label {
+        display: block;
+        margin-bottom: 0.35rem;
+        color: #24515e;
+        font-size: 0.78rem;
+        font-weight: 800;
+    }
+
+    #shiftRequestForm input:not([type="checkbox"]),
+    #shiftRequestForm select,
+    #shiftRequestForm textarea,
+    #shiftRequestForm .select2-selection {
+        width: 100% !important;
+        min-width: 0 !important;
+        min-height: 40px !important;
+        box-sizing: border-box;
+        padding: 0.45rem 0.7rem !important;
+        border: 1px solid #cfe1e5 !important;
+        border-radius: 11px !important;
+        background: #fff !important;
+        color: #285d6b !important;
+        font-size: 0.84rem;
+        box-shadow: 0 1px 2px rgba(23, 63, 80, 0.04);
+        transition: border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    #shiftRequestForm input:not([type="checkbox"]):focus,
+    #shiftRequestForm select:focus,
+    #shiftRequestForm textarea:focus,
+    #shiftRequestForm .select2-container--focus .select2-selection {
+        outline: 0;
+        border-color: #278da0 !important;
+        box-shadow: 0 0 0 3px rgba(39, 141, 160, 0.15) !important;
+    }
+
+    #shiftRequestForm .select2-selection--single { height: 40px !important; }
+    #shiftRequestForm .select2-selection__rendered { line-height: 1.3 !important; }
+    #shiftRequestForm .select2-selection__arrow { height: 38px !important; }
+
+    #shiftRequestForm textarea {
+        min-height: 64px !important;
+        height: 64px !important;
+        resize: vertical;
+    }
+
+    #shiftRequestForm .oh-switch {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        width: 48px !important;
+        min-width: 48px !important;
+        height: 28px;
+        min-height: 28px;
+        margin: 0;
+        cursor: pointer;
+    }
+
+    #shiftRequestForm .oh-switch::before {
+        position: absolute;
+        inset: 0;
+        border: 1px solid #8eb9c2;
+        border-radius: 999px;
+        background: #d9eef2;
+        content: "";
+        transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    #shiftRequestForm .oh-switch::after {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        z-index: 1;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #176f80;
+        box-shadow: 0 1px 4px rgba(10, 77, 96, 0.3);
+        content: "";
+        pointer-events: none;
+        transition: left 180ms ease, background-color 180ms ease;
+    }
+
+    #shiftRequestForm .oh-switch:has(#id_is_permanent_shift:checked)::before {
+        border-color: #0a4d60;
+        background: #278da0;
+        box-shadow: 0 0 0 3px rgba(39, 141, 160, 0.14);
+    }
+
+    #shiftRequestForm .oh-switch:has(#id_is_permanent_shift:checked)::after {
+        left: 25px;
+        background: #fff;
+    }
+
+    #shiftRequestForm #id_is_permanent_shift {
+        position: absolute !important;
+        inset: 0;
+        z-index: 2;
+        width: 48px !important;
+        min-width: 48px !important;
+        height: 28px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        border: 0 !important;
+        border-radius: 999px !important;
+        background: transparent !important;
+        opacity: 0 !important;
+        cursor: pointer !important;
+    }
+
+    #shiftRequestForm .oh-switch:has(#id_is_permanent_shift:focus-visible)::before {
+        outline: 3px solid rgba(39, 141, 160, 0.35);
+        outline-offset: 3px;
+    }
+
+    #shiftRequestForm .oh-modal__dialog-footer {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 0.9rem !important;
+        padding: 0 !important;
+    }
+
+    #shiftRequestForm .oh-modal__dialog-footer .oh-btn {
+        min-width: 112px;
+        min-height: 44px;
+        padding: 0.65rem 1.25rem;
+        border: 1px solid #176d83 !important;
+        border-radius: 11px !important;
+        background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+        color: #fff !important;
+        font-weight: 800;
+        box-shadow: 0 7px 16px rgba(10, 77, 96, 0.2);
+    }
+
+    #shiftRequestForm .errorlist {
+        margin: 0.3rem 0 0;
+        padding-left: 1rem;
+        color: #b54747;
+        font-size: 0.76rem;
+    }
+
+    @media (max-width: 640px) {
+        #objectCreateModal:has(#shiftRequestForm) { padding: 8px !important; }
+        #objectCreateModal:has(#shiftRequestForm) > #objectCreateModalTarget {
+            width: calc(100vw - 16px) !important;
+            max-height: 88vh !important;
+            border-radius: 18px !important;
+        }
+        #objectCreateModal:has(#shiftRequestForm) .oh-modal__dialog-body {
+            max-height: calc(88vh - 62px);
+            padding: 0.8rem !important;
+        }
+        #shiftRequestForm .row {
+            grid-template-columns: minmax(0, 1fr) !important;
+            gap: 0.8rem !important;
+        }
+        #shiftRequestForm .row > .oh-label__info,
+        #shiftRequestForm .row > div[style*="width: 100%"] {
+            grid-column: 1 !important;
+        }
+    }
+</style>
 <div class="oh-modal__dialog-header">
     <h2 class="oh-modal__dialog-title" id="createTitle">
         {% trans "Create" %} {{ form.verbose_name }}
@@ -28,15 +313,17 @@
         </div>
     {% endif %}
 
-    <div class="oh-modal__dialog-body" style="padding: 0">
-        <form hx-post="{% url 'shift-request' %}" hx-target="#objectCreateModalTarget" id="addForm">
+    <form hx-post="{% url 'shift-request' %}" hx-target="#objectCreateModalTarget" id="shiftRequestForm">
             {{ form.as_p }}
-        </form>
-    </div>
+    </form>
 </div>
 <script>
     function toggleFunctionShiftRequestForm() {
-        if ($("#id_is_permanent_shift").is(":checked")) {
+        var permanentRequest = $("#id_is_permanent_shift");
+        var isPermanent = permanentRequest.is(":checked");
+        permanentRequest.closest(".oh-switch").toggleClass("is-checked", isPermanent);
+
+        if (isPermanent) {
             $("#id_requested_till").parent().hide();
         } else {
             $("#id_requested_till").parent().show();
@@ -44,8 +331,7 @@
     }
     toggleFunctionShiftRequestForm();
     $(document).ready(function () {
-        $("[type=checkbox]").change(function (e) {
-            e.preventDefault();
+        $("#shiftRequestForm [type=checkbox]").change(function () {
             toggleFunctionShiftRequestForm();
         });
     });

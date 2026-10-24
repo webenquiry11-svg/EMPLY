@@ -671,25 +671,29 @@ body:has(.oh-wrapper-main.employee-panel-theme) .rl-tabs .oh-sticky-dropdown_btn
                     </div>
                     <div class="oh-wrapper w-100">
                         <div class="oh-pagination">
-                            <span class="oh-pagination__page">{% trans 'Page' %} {{ reimbursements.number }} {% trans 'of' %} {{ reimbursements.paginator.num_pages }}.</span>
-                            <nav class="oh-pagination__nav">
-                                <div class="oh-pagination__input-container me-3">
-                                    <span class="oh-pagination__label me-1">{% trans 'Page' %}</span>
-                                    <input type="number" name="page" class="oh-pagination__input" value="{{ reimbursements.number }}"
-                                        hx-get="{% url 'search-reimbursement' %}?{{ pd }}" hx-target="#reimbursementBody" min="1">
-                                    <span class="oh-pagination__label">{% trans 'of' %} {{ reimbursements.paginator.num_pages }}</span>
-                                </div>
-                                <ul class="oh-pagination__items">
-                                    {% if reimbursements.has_previous %}
-                                        <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&rpage=1" class="oh-pagination__link">{% trans 'First' %}</a></li>
-                                        <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&rpage={{ reimbursements.previous_page_number }}" class="oh-pagination__link">{% trans 'Previous' %}</a></li>
-                                    {% endif %}
-                                    {% if reimbursements.has_next %}
-                                        <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&rpage={{ reimbursements.next_page_number }}" class="oh-pagination__link">{% trans 'Next' %}</a></li>
-                                        <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&rpage={{ reimbursements.paginator.num_pages }}" class="oh-pagination__link">{% trans 'Last' %}</a></li>
-                                    {% endif %}
-                                </ul>
-                            </nav>
+                                <nav class="oh-pagination__nav">
+                                    <ul class="oh-pagination__items" aria-label="{% trans 'Pagination' %}">
+                                        <li class="oh-pagination__item oh-pagination__item--wide{% if not reimbursements.has_previous %} oh-pagination__item--disabled{% endif %}">
+                                            {% if reimbursements.has_previous %}
+                                                <a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&rpage={{ reimbursements.previous_page_number }}" class="oh-pagination__link" aria-label="{% trans 'Previous page' %}"><ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon></a>
+                                            {% else %}
+                                                <span class="oh-pagination__link" aria-label="{% trans 'Previous page' %}" aria-disabled="true"><ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon></span>
+                                            {% endif %}
+                                        </li>
+                                        {% for page_number in reimbursements.paginator.page_range %}
+                                            <li class="oh-pagination__item{% if page_number == reimbursements.number %} oh-pagination__item--current{% endif %}">
+                                                <a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&rpage={{ page_number }}" class="oh-pagination__link" {% if page_number == reimbursements.number %}aria-current="page"{% endif %}>{{ page_number }}</a>
+                                            </li>
+                                        {% endfor %}
+                                        <li class="oh-pagination__item oh-pagination__item--wide{% if not reimbursements.has_next %} oh-pagination__item--disabled{% endif %}">
+                                            {% if reimbursements.has_next %}
+                                                <a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&rpage={{ reimbursements.next_page_number }}" class="oh-pagination__link" aria-label="{% trans 'Next page' %}"><ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon></a>
+                                            {% else %}
+                                                <span class="oh-pagination__link" aria-label="{% trans 'Next page' %}" aria-disabled="true"><ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon></span>
+                                            {% endif %}
+                                        </li>
+                                    </ul>
+                                </nav>
                         </div>
                     </div>
                 </div>
@@ -836,25 +840,29 @@ body:has(.oh-wrapper-main.employee-panel-theme) .rl-tabs .oh-sticky-dropdown_btn
                     </div>
                     <div class="oh-wrapper w-100">
                         <div class="oh-pagination">
-                            <span class="oh-pagination__page">{% trans 'Page' %} {{ leave_encashments.number }} {% trans 'of' %} {{ leave_encashments.paginator.num_pages }}.</span>
-                            <nav class="oh-pagination__nav">
-                                <div class="oh-pagination__input-container me-3">
-                                    <span class="oh-pagination__label me-1">{% trans 'Page' %}</span>
-                                    <input type="number" name="page" class="oh-pagination__input" value="{{ leave_encashments.number }}"
-                                        hx-get="{% url 'search-reimbursement' %}?{{ pd }}" hx-target="#reimbursementBody" min="1">
-                                    <span class="oh-pagination__label">{% trans 'of' %} {{ leave_encashments.paginator.num_pages }}</span>
-                                </div>
-                                <ul class="oh-pagination__items">
-                                    {% if leave_encashments.has_previous %}
-                                        <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&lpage=1" class="oh-pagination__link">{% trans 'First' %}</a></li>
-                                        <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&lpage={{ leave_encashments.previous_page_number }}" class="oh-pagination__link">{% trans 'Previous' %}</a></li>
-                                    {% endif %}
-                                    {% if leave_encashments.has_next %}
-                                        <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&lpage={{ leave_encashments.next_page_number }}" class="oh-pagination__link">{% trans 'Next' %}</a></li>
-                                        <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&lpage={{ leave_encashments.paginator.num_pages }}" class="oh-pagination__link">{% trans 'Last' %}</a></li>
-                                    {% endif %}
-                                </ul>
-                            </nav>
+                                <nav class="oh-pagination__nav">
+                                    <ul class="oh-pagination__items" aria-label="{% trans 'Pagination' %}">
+                                        <li class="oh-pagination__item oh-pagination__item--wide{% if not leave_encashments.has_previous %} oh-pagination__item--disabled{% endif %}">
+                                            {% if leave_encashments.has_previous %}
+                                                <a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&lpage={{ leave_encashments.previous_page_number }}" class="oh-pagination__link" aria-label="{% trans 'Previous page' %}"><ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon></a>
+                                            {% else %}
+                                                <span class="oh-pagination__link" aria-label="{% trans 'Previous page' %}" aria-disabled="true"><ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon></span>
+                                            {% endif %}
+                                        </li>
+                                        {% for page_number in leave_encashments.paginator.page_range %}
+                                            <li class="oh-pagination__item{% if page_number == leave_encashments.number %} oh-pagination__item--current{% endif %}">
+                                                <a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&lpage={{ page_number }}" class="oh-pagination__link" {% if page_number == leave_encashments.number %}aria-current="page"{% endif %}>{{ page_number }}</a>
+                                            </li>
+                                        {% endfor %}
+                                        <li class="oh-pagination__item oh-pagination__item--wide{% if not leave_encashments.has_next %} oh-pagination__item--disabled{% endif %}">
+                                            {% if leave_encashments.has_next %}
+                                                <a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&lpage={{ leave_encashments.next_page_number }}" class="oh-pagination__link" aria-label="{% trans 'Next page' %}"><ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon></a>
+                                            {% else %}
+                                                <span class="oh-pagination__link" aria-label="{% trans 'Next page' %}" aria-disabled="true"><ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon></span>
+                                            {% endif %}
+                                        </li>
+                                    </ul>
+                                </nav>
                         </div>
                     </div>
                 </div>
@@ -996,25 +1004,29 @@ body:has(.oh-wrapper-main.employee-panel-theme) .rl-tabs .oh-sticky-dropdown_btn
                     </div>
                     <div class="oh-wrapper w-100">
                         <div class="oh-pagination">
-                            <span class="oh-pagination__page">{% trans 'Page' %} {{ bonus_encashments.number }} {% trans 'of' %} {{ bonus_encashments.paginator.num_pages }}.</span>
-                            <nav class="oh-pagination__nav">
-                                <div class="oh-pagination__input-container me-3">
-                                    <span class="oh-pagination__label me-1">{% trans 'Page' %}</span>
-                                    <input type="number" name="page" class="oh-pagination__input" value="{{ bonus_encashments.number }}"
-                                        hx-get="{% url 'search-reimbursement' %}?{{ pd }}" hx-target="#reimbursementBody" min="1">
-                                    <span class="oh-pagination__label">{% trans 'of' %} {{ bonus_encashments.paginator.num_pages }}</span>
-                                </div>
-                                <ul class="oh-pagination__items">
-                                    {% if bonus_encashments.has_previous %}
-                                        <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&bpage=1" class="oh-pagination__link">{% trans 'First' %}</a></li>
-                                        <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&bpage={{ bonus_encashments.previous_page_number }}" class="oh-pagination__link">{% trans 'Previous' %}</a></li>
-                                    {% endif %}
-                                    {% if bonus_encashments.has_next %}
-                                        <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&bpage={{ bonus_encashments.next_page_number }}" class="oh-pagination__link">{% trans 'Next' %}</a></li>
-                                        <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&bpage={{ bonus_encashments.paginator.num_pages }}" class="oh-pagination__link">{% trans 'Last' %}</a></li>
-                                    {% endif %}
-                                </ul>
-                            </nav>
+                                <nav class="oh-pagination__nav">
+                                    <ul class="oh-pagination__items" aria-label="{% trans 'Pagination' %}">
+                                        <li class="oh-pagination__item oh-pagination__item--wide{% if not bonus_encashments.has_previous %} oh-pagination__item--disabled{% endif %}">
+                                            {% if bonus_encashments.has_previous %}
+                                                <a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&bpage={{ bonus_encashments.previous_page_number }}" class="oh-pagination__link" aria-label="{% trans 'Previous page' %}"><ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon></a>
+                                            {% else %}
+                                                <span class="oh-pagination__link" aria-label="{% trans 'Previous page' %}" aria-disabled="true"><ion-icon name="chevron-back-outline" aria-hidden="true"></ion-icon></span>
+                                            {% endif %}
+                                        </li>
+                                        {% for page_number in bonus_encashments.paginator.page_range %}
+                                            <li class="oh-pagination__item{% if page_number == bonus_encashments.number %} oh-pagination__item--current{% endif %}">
+                                                <a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&bpage={{ page_number }}" class="oh-pagination__link" {% if page_number == bonus_encashments.number %}aria-current="page"{% endif %}>{{ page_number }}</a>
+                                            </li>
+                                        {% endfor %}
+                                        <li class="oh-pagination__item oh-pagination__item--wide{% if not bonus_encashments.has_next %} oh-pagination__item--disabled{% endif %}">
+                                            {% if bonus_encashments.has_next %}
+                                                <a hx-target="#reimbursementBody" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&bpage={{ bonus_encashments.next_page_number }}" class="oh-pagination__link" aria-label="{% trans 'Next page' %}"><ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon></a>
+                                            {% else %}
+                                                <span class="oh-pagination__link" aria-label="{% trans 'Next page' %}" aria-disabled="true"><ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon></span>
+                                            {% endif %}
+                                        </li>
+                                    </ul>
+                                </nav>
                         </div>
                     </div>
                 </div>

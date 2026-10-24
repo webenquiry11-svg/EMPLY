@@ -12,21 +12,29 @@
 </div>
 {% endif %}
 {% include 'filter_tags.html' %}
-<div class="d-flex flex-row-reverse mb-2">
-    <span class="me-3" style="cursor:pointer;" onclick="$('[name=status]').val('rejected');$('[name=status]').first().change();$('.filterButton').click()">
-        <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
+<div class="employee-leave-status-legend" aria-label="{% trans 'Filter requests by status' %}">
+    <span role="button" tabindex="0" aria-label="{% trans 'Show rejected requests' %}"
+        onkeydown="if(event.key === 'Enter' || event.key === ' '){event.preventDefault();this.click()}"
+        onclick="$('[name=status]').val('rejected');$('[name=status]').first().change();$('.filterButton').click()">
+        <span class="employee-leave-status-legend__dot employee-leave-status-legend__dot--rejected"></span>
         {% trans "Rejected" %}
     </span>
-    <span class="me-3" style="cursor:pointer;" onclick="$('[name=status]').val('cancelled');$('[name=status]').first().change();$('.filterButton').click()">
-        <span class="oh-dot oh-dot--small me-1" style="background-color:gray"></span>
+    <span role="button" tabindex="0" aria-label="{% trans 'Show cancelled requests' %}"
+        onkeydown="if(event.key === 'Enter' || event.key === ' '){event.preventDefault();this.click()}"
+        onclick="$('[name=status]').val('cancelled');$('[name=status]').first().change();$('.filterButton').click()">
+        <span class="employee-leave-status-legend__dot employee-leave-status-legend__dot--cancelled"></span>
         {% trans "Cancelled" %}
     </span>
-    <span class="me-3" style="cursor:pointer;" onclick="$('[name=status]').val('approved');$('[name=status]').first().change();$('.filterButton').click()">
-        <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
+    <span role="button" tabindex="0" aria-label="{% trans 'Show approved requests' %}"
+        onkeydown="if(event.key === 'Enter' || event.key === ' '){event.preventDefault();this.click()}"
+        onclick="$('[name=status]').val('approved');$('[name=status]').first().change();$('.filterButton').click()">
+        <span class="employee-leave-status-legend__dot employee-leave-status-legend__dot--approved"></span>
         {% trans "Approved" %}
     </span>
-    <span class="me-3" style="cursor:pointer;" onclick="$('[name=status]').val('requested');$('[name=status]').first().change();$('.filterButton').click()">
-        <span class="oh-dot oh-dot--small me-1" style="background-color:#1565A3;"></span>
+    <span role="button" tabindex="0" aria-label="{% trans 'Show requested requests' %}"
+        onkeydown="if(event.key === 'Enter' || event.key === ' '){event.preventDefault();this.click()}"
+        onclick="$('[name=status]').val('requested');$('[name=status]').first().change();$('.filterButton').click()">
+        <span class="employee-leave-status-legend__dot employee-leave-status-legend__dot--requested"></span>
         {% trans "Requested" %}
     </span>
 </div>

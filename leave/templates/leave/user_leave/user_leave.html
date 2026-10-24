@@ -19,11 +19,11 @@
     }
 </style>
 
-<div class="oh-scrollable-container oh-wrapper mb-3">
-    <div class="oh-layout--grid-3 mt-2 mb-2">
+<div class="oh-scrollable-container oh-wrapper mb-3 user-leave-balance">
+    <div class="oh-layout--grid-3 mt-2 mb-2 user-leave-balance__grid">
         {% for user_leave in user_leaves %}
             <div
-                class="oh-kanban-card"
+                class="oh-kanban-card user-leave-balance__card"
                 id="requestCreateCard"
                 data-toggle="oh-modal-toggle"
                 data-target="#objectCreateModal"
