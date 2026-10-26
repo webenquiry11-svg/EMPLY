@@ -827,10 +827,6 @@
                                 {% blocktrans with date=navbar_date %}Here's what's happening across EMPLY today, {{ date }}.{% endblocktrans %}
                             </div>
                         </div>
-                        <div class="employee-navbar-period" aria-label="{% trans 'Dashboard period' %}">
-                            <span class="is-active">{% trans "Today" %}</span>
-                            <span>{% trans "This week" %}</span>
-                        </div>
                     {% endif %}
                     <div class="oh-navbar__search oh-global-search">
                         <div class="oh-global-search__box">
@@ -839,7 +835,7 @@
                                 id="globalSearchInput"
                                 type="search"
                                 class="oh-global-search__input"
-                                placeholder="Search anything..."
+                                placeholder="{% trans 'Search employees, attendance, leave, and more...' %}"
                                 aria-label="Global search"
                                 aria-controls="globalSearchResults"
                                 aria-expanded="false"
@@ -5830,7 +5826,7 @@
         body:has(.employee-panel-theme) #objectDetailsModalW25Target .oh-modal__dialog-body,
         body:has(.employee-panel-theme) #objectDetailsModalW25Target .oh-modal__body,
         body:has(.employee-panel-theme) #objectDetailsModalW25Target .oh-modal__dialog-content {
-            background: #f4fbfc !important;
+            background: #ffffff !important;
             background-image: none !important;
             color: #173f50 !important;
         }
@@ -9524,9 +9520,9 @@
     }
 
     html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active .oh-global-search {
-        flex: 0 1 300px !important;
+        flex: 1 1 300px !important;
         min-width: 220px !important;
-        max-width: 300px !important;
+        max-width: none !important;
         margin: 0 !important;
     }
 
@@ -9536,7 +9532,7 @@
         padding: 0 15px !important;
         border: 1px solid #c5e1e7 !important;
         border-radius: 18px !important;
-        background: #f4fbfc !important;
+        background: #ffffff !important;
         box-shadow: 0 4px 12px rgba(10,77,96,.06), inset 0 1px 0 #ffffff !important;
     }
 

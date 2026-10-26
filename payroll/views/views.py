@@ -12,24 +12,28 @@ from urllib.parse import parse_qs
 
 import pandas as pd
 import pdfkit
-from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required as django_login_required
 from django.contrib import messages
+from django.contrib.auth import logout
+from django.contrib.auth.context_processors import PermWrapper
+from django.contrib.auth.decorators import login_required as django_login_required
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.db.models import ProtectedError, Q, Sum
+from django.db.models import Count, ProtectedError, Q, Sum
 from django.http import (
     HttpResponse,
     HttpResponseBadRequest,
+    HttpResponseForbidden,
     HttpResponseNotAllowed,
     HttpResponseRedirect,
     JsonResponse,
 )
+from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from swapper import load_model
 
 from base.methods import (
     closest_numbers,
@@ -39,6 +43,7 @@ from base.methods import (
     generate_pdf,
     get_key_instances,
     get_working_days,
+    filter_own_records,
     sortby,
 )
 from base.models import Company
@@ -52,14 +57,23 @@ from horilla.decorators import (
 from horilla.group_by import group_by_queryset
 from horilla.horilla_settings import HORILLA_DATE_FORMATS
 from horilla.http.response import HorillaRedirect
-from notifications.signals import notify
+from payroll.notifications import (
+    notify_payroll_admins,
+    notify_payslip_status,
+    send_payroll_notification,
+)
 from payroll.context_processors import get_active_employees
 from payroll.services import (
     calculate_employee_payroll,
     create_current_payslip,
     employee_payslips,
+    monthly_period,
 )
-from payroll.filters import ContractFilter, ContractReGroup, PayslipFilter
+from payroll.filters import (
+    ContractFilter,
+    ContractReGroup,
+    PayslipFilter,
+)
 from payroll.forms.component_forms import (
     ContractExportFieldForm,
     PayrollSettingsForm,
@@ -67,11 +81,14 @@ from payroll.forms.component_forms import (
 )
 from payroll.methods.methods import get_daily_salary, paginator_qry, save_payslip
 from payroll.models.models import (
+    Allowance,
     Contract,
+    Deduction,
     FilingStatus,
     PayrollGeneralSetting,
     Payslip,
     PayslipAutoGenerate,
+    PayrollRun,
     Reimbursement,
     ReimbursementFile,
     ReimbursementrequestComment,
@@ -86,6 +103,58 @@ status_choices = {
     "confirmed": _("Confirmed"),
     "paid": _("Paid"),
 }
+
+Notification = load_model("notifications", "Notification")
+
+
+@django_login_required
+def payroll_notification_feed(request):
+    """Return the signed-in user's payroll notifications only."""
+    notifications = request.user.notifications.filter(
+        data__payroll_event=True,
+        deleted=False,
+    ).order_by("-timestamp")[:10]
+    unread_count = request.user.notifications.filter(
+        data__payroll_event=True,
+        unread=True,
+        deleted=False,
+    ).count()
+    items = []
+    for notification in notifications:
+        data = notification.data or {}
+        target_url = data.get("redirect", "")
+        if not isinstance(target_url, str) or not target_url.startswith("/") or target_url.startswith("//"):
+            target_url = ""
+        items.append(
+            {
+                "id": notification.pk,
+                "verb": notification.verb,
+                "timestamp": notification.timestamp.isoformat(),
+                "unread": notification.unread,
+                "url": target_url,
+                "icon": data.get("icon", "notifications-outline"),
+            }
+        )
+    return JsonResponse({"unread_count": unread_count, "notifications": items})
+
+
+@django_login_required
+def mark_payroll_notification_read(request, notification_id):
+    """Mark one of the current user's payroll notifications as read."""
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    notification = request.user.notifications.filter(
+        pk=notification_id,
+        data__payroll_event=True,
+        deleted=False,
+    ).first()
+    if notification is None:
+        return JsonResponse(
+            {"success": False, "error": _("Notification not found.")},
+            status=404,
+        )
+    notification.mark_as_read()
+    return JsonResponse({"success": True})
 
 PAYSLIP_STATUS_TRANSITIONS = {
     "draft": {"review_ongoing"},
@@ -502,6 +571,7 @@ def update_payslip_status(request, payslip_id):
         payslip = get_object_or_404(
             Payslip.objects.select_for_update(), id=payslip_id
         )
+        previous_status = payslip.status
         error = _payslip_status_error(payslip, new_status)
         if error:
             messages.error(request, error)
@@ -529,6 +599,7 @@ def update_payslip_status(request, payslip_id):
             messages.success(request, _("Payslip status updated"))
         except ValidationError as exc:
             return HttpResponse("; ".join(exc.messages), status=400)
+    notify_payslip_status(request.user, payslip, previous_status)
     if view:
         from .component_views import filter_payslip
 
@@ -578,6 +649,7 @@ def update_payslip_status_no_id(request):
         )
     ids = [int(pk) for pk in ids]
     new_status = request.POST.get("status")
+    changed_slips = []
     try:
         with transaction.atomic():
             slips = list(
@@ -599,12 +671,16 @@ def update_payslip_status_no_id(request):
                     )
             for payslip in slips:
                 if payslip.status != new_status:
+                    previous_status = payslip.status
                     payslip.status = new_status
                     payslip.save(update_fields=["status"])
+                    changed_slips.append((payslip, previous_status))
     except ValidationError as exc:
         return JsonResponse(
             {"type": "error", "message": "; ".join(exc.messages)}, status=400
         )
+    for payslip, previous_status in changed_slips:
+        notify_payslip_status(request.user, payslip, previous_status)
     return JsonResponse(
         {
             "type": "success",
@@ -638,6 +714,7 @@ def bulk_update_payslip_status(request):
             status=400,
         )
 
+    saved_statuses = []
     try:
         with transaction.atomic():
             for json_entry in pay_data:
@@ -657,6 +734,7 @@ def bulk_update_payslip_status(request):
                 instance = Payslip.objects.select_for_update().filter(
                     **payslip_kwargs
                 ).first()
+                previous_status = instance.status if instance is not None else None
                 if instance is None:
                     instance = Payslip()
                 else:
@@ -674,6 +752,7 @@ def bulk_update_payslip_status(request):
                 instance.net_pay = data["net_pay"]
                 instance.pay_head_data = data
                 instance.save()
+                saved_statuses.append((instance, previous_status))
     except (KeyError, TypeError, ValueError, ValidationError) as exc:
         error_message = (
             "; ".join(exc.messages)
@@ -682,6 +761,8 @@ def bulk_update_payslip_status(request):
         )
         return JsonResponse({"type": "error", "message": error_message}, status=400)
 
+    for payslip, previous_status in saved_statuses:
+        notify_payslip_status(request.user, payslip, previous_status)
     return JsonResponse({"type": "success", "message": _("Payslips saved.")})
 
 
@@ -866,10 +947,17 @@ def contract_info_initial(request):
     return JsonResponse(response_data)
 
 
-@login_required
+@django_login_required
 def employee_payroll_dashboard(request):
-    """Frontend-only employee payroll dashboard."""
+    """Render the authenticated employee's payroll dashboard."""
+
     employee = getattr(request.user, "employee_get", None)
+    if (
+        employee is None
+        or not employee.is_active
+        or getattr(employee, "is_suspended", False)
+    ):
+        return redirect("login")
     work_info = getattr(employee, "employee_work_info", None)
     salary_value = getattr(work_info, "basic_salary", None)
     salary_configured = salary_value is not None and salary_value > 0
@@ -885,20 +973,71 @@ def employee_payroll_dashboard(request):
         return redirect(f"{reverse('login')}?login_mode=payroll")
 
     payroll = calculate_employee_payroll(employee)
-    payslips = list(employee_payslips(employee)[:6])
-    finalized_payslip = employee_payslips(employee).filter(
-        start_date=payroll["start_date"],
-        end_date=payroll["end_date"],
-        status__in=("confirmed", "paid"),
-    ).first()
-    payroll_is_finalized = finalized_payslip is not None
-    if finalized_payslip is not None:
-        snapshot = finalized_payslip.pay_head_data
-        payroll["basic_salary"] = finalized_payslip.basic_pay or 0
-        payroll["current_salary"] = finalized_payslip.basic_pay or 0
-        payroll["gross_pay"] = finalized_payslip.gross_pay or 0
-        payroll["total_deductions"] = finalized_payslip.deduction or 0
-        payroll["net_pay"] = finalized_payslip.net_pay or 0
+    payslips = list(employee_payslips(employee))
+    current_period = payroll["start_date"].strftime("%Y-%m")
+    payslip_by_period = {}
+    finalized_by_period = {}
+    for payslip in payslips:
+        period = payslip.start_date.strftime("%Y-%m")
+        payslip_by_period.setdefault(period, payslip)
+        if payslip.status in ("confirmed", "paid"):
+            finalized_by_period.setdefault(period, payslip)
+
+    available_periods = set(payslip_by_period) | {current_period}
+    period_options = {}
+    for period in available_periods:
+        payslip = finalized_by_period.get(period) or payslip_by_period.get(period)
+        label = (
+            payslip.start_date.strftime("%B %Y")
+            if payslip
+            else payroll["start_date"].strftime("%B %Y")
+        )
+        if period == current_period and period not in finalized_by_period:
+            label += " · Estimate"
+        elif period not in finalized_by_period and payslip:
+            label += f" · {payslip.get_status_display()}"
+        period_options[period] = label
+    requested_period = request.GET.get("period", current_period)
+    selected_period = (
+        requested_period if requested_period in period_options else current_period
+    )
+    if selected_period == current_period:
+        finalized_payslip = next(
+            (
+                payslip
+                for payslip in payslips
+                if payslip.start_date == payroll["start_date"]
+                and payslip.end_date == payroll["end_date"]
+                and payslip.status in ("confirmed", "paid")
+            ),
+            None,
+        )
+    else:
+        finalized_payslip = finalized_by_period.get(selected_period)
+    selected_payslip = finalized_payslip or (
+        payslip_by_period.get(selected_period)
+        if selected_period != current_period
+        else None
+    )
+    selected_month = (
+        selected_payslip.start_date.strftime("%B %Y")
+        if selected_payslip
+        else payroll["start_date"].strftime("%B %Y")
+    )
+    payroll_has_snapshot = selected_payslip is not None
+    payroll_is_finalized = payroll_has_snapshot and selected_payslip.status in (
+        "confirmed",
+        "paid",
+    )
+    if payroll_has_snapshot:
+        snapshot = selected_payslip.pay_head_data
+        payroll["start_date"] = selected_payslip.start_date
+        payroll["end_date"] = selected_payslip.end_date
+        payroll["basic_salary"] = selected_payslip.basic_pay or 0
+        payroll["current_salary"] = selected_payslip.basic_pay or 0
+        payroll["gross_pay"] = selected_payslip.gross_pay or 0
+        payroll["total_deductions"] = selected_payslip.deduction or 0
+        payroll["net_pay"] = selected_payslip.net_pay or 0
         payroll["basic_salary_display"] = f"₹{payroll['basic_salary']:,.2f}"
         payroll["total_deductions_display"] = (
             f"₹{payroll['total_deductions']:,.2f}"
@@ -910,8 +1049,10 @@ def employee_payroll_dashboard(request):
         payroll["unpaid_leave_days"] = None
         payroll["absence_days"] = None
         payroll["sandwich_days"] = None
-        payroll["daily_rate_basis"] = _(
-            "Amounts and days below are read from the finalized payslip snapshot."
+        payroll["daily_rate_basis"] = (
+            _("Amounts and days below are read from the finalized payslip snapshot.")
+            if payroll_is_finalized
+            else _("Amounts and days below are read from the stored draft payslip.")
         )
         payroll["deduction_details"] = []
         deduction_categories = (
@@ -938,6 +1079,10 @@ def employee_payroll_dashboard(request):
                     }
                 )
         payroll["total_affected_days"] = len(payroll["deduction_details"])
+    period_options = [
+        {"key": period, "label": label}
+        for period, label in sorted(period_options.items(), reverse=True)
+    ]
     for payslip in payslips:
         payslip.net_pay_display = (
             f"₹{payslip.net_pay:,.2f}"
@@ -954,6 +1099,11 @@ def employee_payroll_dashboard(request):
             if payslip.deduction is not None
             else _("Not available yet")
         )
+    selected_month_payslips = [
+        payslip
+        for payslip in payslips
+        if payslip.start_date.strftime("%Y-%m") == selected_period
+    ]
     previous_month_date = payroll["start_date"] - timedelta(days=1)
     previous_payslip = next(
         (
@@ -1011,15 +1161,14 @@ def employee_payroll_dashboard(request):
                 "has_change": bool(previous_amount),
                 "sparkline": f"M {' L '.join(points)}" if len(points) > 1 else "",
             }
+    salary_denominator = payroll["basic_salary"] or 1
     deduction_ratio = min(
         100,
         max(
             0,
             round(
                 float(
-                    payroll["total_deductions"]
-                    / payroll["basic_salary"]
-                    * 100
+                    payroll["total_deductions"] / salary_denominator * 100
                 ),
                 2,
             ),
@@ -1027,7 +1176,7 @@ def employee_payroll_dashboard(request):
     )
     net_pay_ratio = min(
         100,
-        max(0, round(float(payroll["net_pay"] / payroll["basic_salary"] * 100), 2)),
+        max(0, round(float(payroll["net_pay"] / salary_denominator * 100), 2)),
     )
 
     context = {
@@ -1039,18 +1188,291 @@ def employee_payroll_dashboard(request):
         and f"{employee.employee_first_name} {employee.employee_last_name}".strip(),
         "salary_configured": salary_configured,
         "salary_value": salary_value,
-        "current_period": payroll["start_date"].strftime("%B %Y"),
-        "current_month": payroll["start_date"].strftime("%B %Y"),
+        "current_period": selected_period,
+        "current_month": selected_month,
+        "period_options": period_options,
+        "selected_period": selected_period,
         "payroll": payroll,
         "payroll_is_finalized": payroll_is_finalized,
+        "payroll_has_snapshot": payroll_has_snapshot,
         "finalized_payslip": finalized_payslip,
+        "selected_payslip": selected_payslip,
         "payslips": payslips,
+        "selected_month_payslips": selected_month_payslips,
+        "selected_is_current_period": selected_period == current_period,
         "employee_avatar": employee.get_avatar(),
         "deduction_ratio": deduction_ratio,
         "net_pay_ratio": net_pay_ratio,
         "payroll_trends": payroll_trends,
     }
     return render(request, "payroll/employee_dashboard.html", context=context)
+
+
+@django_login_required
+@permission_required("payroll.view_contract")
+def payroll_management_dashboard(request):
+    """Render the dedicated payroll management workspace."""
+    valid_sections = {
+        "dashboard",
+        "payslips",
+        "runs",
+        "employees",
+        "reports",
+        "contracts",
+        "allowances",
+        "deductions",
+        "reimbursements",
+        "settings",
+    }
+    section = request.GET.get("section", "dashboard")
+    if section not in valid_sections:
+        section = "dashboard"
+    section_permissions = {
+        "payslips": "payroll.view_payslip",
+        "employees": "employee.view_employee",
+        "reports": "payroll.view_payslip",
+        "contracts": "payroll.view_contract",
+        "allowances": "payroll.view_allowance",
+        "deductions": "payroll.view_deduction",
+        "reimbursements": "payroll.view_reimbursement",
+        "settings": "payroll.view_payrollsettings",
+    }
+    if (
+        section in section_permissions
+        and not request.user.is_superuser
+        and not request.user.has_perm(section_permissions[section])
+    ):
+        return HttpResponseForbidden(_("You do not have access to this payroll section."))
+    selected_period = request.GET.get("period", "")
+    if selected_period:
+        try:
+            period_start = datetime.strptime(selected_period, "%Y-%m").date()
+        except ValueError:
+            return HttpResponseBadRequest(_("Select a valid payroll period."))
+    else:
+        period_start = timezone.localdate().replace(day=1)
+        selected_period = period_start.strftime("%Y-%m")
+
+    payslips = (
+        Payslip._base_manager
+        if request.user.is_superuser
+        else Payslip.objects
+    ).select_related(
+        "employee_id", "employee_id__employee_work_info__department_id"
+    )
+    runs = (
+        PayrollRun._base_manager
+        if request.user.is_superuser
+        else PayrollRun.objects
+    ).select_related("company", "created_by")
+    period_filter = {
+        "start_date__year": period_start.year,
+        "start_date__month": period_start.month,
+    }
+    month_payslips = payslips.filter(**period_filter)
+    status_counts = {
+        status: month_payslips.filter(status=status).count()
+        for status, _label in Payslip.status_choices
+    }
+    summary = month_payslips.aggregate(
+        total_net=Sum("net_pay"),
+        total_deductions=Sum("deduction"),
+        employee_count=Count("employee_id", distinct=True),
+    )
+    payslip_count = month_payslips.count()
+    chart_statuses = [
+        ("paid", _("Paid"), "#16b981"),
+        ("confirmed", _("Confirmed"), "#3988fa"),
+        ("review_ongoing", _("In review"), "#ffab21"),
+        ("draft", _("Draft"), "#8798b2"),
+    ]
+    status_total = sum(status_counts.values())
+    status_percent = {}
+    assigned_percent = 0
+    for index, (status, _label, _color) in enumerate(chart_statuses):
+        if not status_total:
+            percent = 0
+        elif index == len(chart_statuses) - 1:
+            percent = 100 - assigned_percent
+        else:
+            percent = int(status_counts[status] * 100 / status_total)
+        status_percent[status] = percent
+        assigned_percent += percent
+    donut_segments = []
+    donut_position = 0
+    for index, (status, _label, color) in enumerate(chart_statuses):
+        segment_end = (
+            100
+            if index == len(chart_statuses) - 1
+            else donut_position + status_percent[status]
+        )
+        donut_segments.append(f"{color} {donut_position}% {segment_end}%")
+        donut_position = segment_end
+    donut_background = (
+        f"conic-gradient({', '.join(donut_segments)})"
+        if status_total
+        else "conic-gradient(#e8eef7 0% 100%)"
+    )
+    available_months = set(payslips.dates("start_date", "month", order="DESC"))
+    available_months.update(runs.dates("start_date", "month", order="DESC"))
+    available_months.add(period_start)
+    period_options = [
+        {
+            "key": month.strftime("%Y-%m"),
+            "label": month.strftime("%B %Y"),
+        }
+        for month in sorted(available_months, reverse=True)
+    ]
+    deduction_months = set(available_months)
+    month_index = period_start.year * 12 + period_start.month - 1
+    for offset in range(12):
+        year, month = divmod(month_index - offset, 12)
+        deduction_months.add(date(year, month + 1, 1))
+    deduction_period_options = [
+        {"key": month.strftime("%Y-%m"), "label": month.strftime("%B %Y")}
+        for month in sorted(deduction_months, reverse=True)
+    ]
+    month_runs = runs.filter(**period_filter)
+    contracts = []
+    allowances = []
+    deductions = []
+    reimbursements = []
+    reimbursement_counts = {}
+    reimbursement_filter = ""
+    reimbursement_search = ""
+    employees = []
+    deduction_employees = []
+    selected_deduction_employee = None
+    selected_deduction_payroll = None
+    if section == "contracts":
+        contracts = Contract.objects.select_related("employee_id").order_by(
+            "-contract_start_date"
+        )[:100]
+    elif section == "employees":
+        employee_queryset = (
+            Employee._base_manager
+            if request.user.is_superuser
+            else Employee.objects
+        )
+        employees = employee_queryset.select_related(
+            "employee_work_info__department_id"
+        ).filter(is_active=True).order_by(
+            "employee_first_name", "employee_last_name"
+        )[:100]
+    elif section == "allowances":
+        allowances = Allowance.objects.order_by("title")[:100]
+    elif section == "deductions":
+        deductions = Deduction.objects.order_by("title")[:100]
+        employee_queryset = (
+            Employee._base_manager
+            if request.user.is_superuser
+            else Employee.objects
+        )
+        deduction_employees = employee_queryset.select_related(
+            "employee_work_info__department_id",
+            "employee_work_info__employee_type_id",
+        ).order_by("employee_first_name", "employee_last_name")
+        employee_id = request.GET.get("employee", "").strip()
+        if employee_id.isdigit():
+            selected_deduction_employee = deduction_employees.filter(
+                pk=employee_id
+            ).first()
+        if selected_deduction_employee is not None:
+            period_start, period_end = monthly_period(period_start)
+            selected_deduction_payroll = calculate_employee_payroll(
+                selected_deduction_employee,
+                start_date=period_start,
+                end_date=period_end,
+            )
+    elif section == "reimbursements" and (
+        request.user.is_superuser or request.user.has_perm("payroll.view_reimbursement")
+    ):
+        reimbursement_queryset = (
+            Reimbursement._base_manager
+            if request.user.is_superuser
+            else Reimbursement.objects
+        ).select_related("employee_id")
+        reimbursement_queryset = filter_own_records(
+            request,
+            reimbursement_queryset,
+            "payroll.view_reimbursement",
+        )
+        reimbursement_search = request.GET.get("search", "").strip()
+        reimbursement_filter = request.GET.get("status", "")
+        reimbursement_filters = {}
+        if reimbursement_search:
+            reimbursement_filters["title__icontains"] = reimbursement_search
+        if reimbursement_filter in dict(Reimbursement.status_types):
+            reimbursement_filters["status"] = reimbursement_filter
+        if reimbursement_filters:
+            reimbursement_queryset = reimbursement_queryset.filter(
+                **reimbursement_filters
+            )
+        reimbursements = reimbursement_queryset.order_by("-allowance_on")[:100]
+        reimbursement_counts = {
+            status: (
+                (
+                    Reimbursement._base_manager
+                    if request.user.is_superuser
+                    else Reimbursement.objects
+                )
+                .filter(status=status)
+                .count()
+            )
+            for status, _label in Reimbursement.status_types
+        }
+    context = {
+        "section": section,
+        "selected_period": selected_period,
+        "selected_month": period_start.strftime("%B %Y"),
+        "period_options": period_options,
+        "deduction_period_options": deduction_period_options,
+        "payslips": month_payslips.order_by("employee_id__employee_first_name")[:100],
+        "runs": month_runs[:8],
+        "all_runs": month_runs[:100],
+        "run_count": month_runs.count(),
+        "employees": employees,
+        "contracts": contracts,
+        "allowances": allowances,
+        "deductions": deductions,
+        "deduction_employees": deduction_employees,
+        "selected_deduction_employee": selected_deduction_employee,
+        "selected_deduction_payroll": selected_deduction_payroll,
+        "reimbursements": reimbursements,
+        "reimbursement_counts": reimbursement_counts,
+        "reimbursement_statuses": Reimbursement.status_types,
+        "reimbursement_filter": reimbursement_filter,
+        "reimbursement_search": reimbursement_search,
+        "status_counts": status_counts,
+        "status_percent": status_percent,
+        "chart_statuses": [
+            {
+                "label": label,
+                "count": status_counts[status],
+                "percent": status_percent[status],
+            }
+            for status, label, _color in chart_statuses
+        ],
+        "donut_background": donut_background,
+        "employee_count": summary["employee_count"] or 0,
+        "payslip_count": payslip_count,
+        "total_net": summary["total_net"] or 0,
+        "total_deductions": summary["total_deductions"] or 0,
+        "pending_runs": month_runs.filter(status__in=("draft", "submitted")).count(),
+        "is_superuser": request.user.is_superuser,
+        "user_name": request.user.get_full_name()
+        or (_("Super Admin") if request.user.is_superuser else _("Payroll Admin")),
+        "user_role": _("Super Admin") if request.user.is_superuser else _("Payroll Admin"),
+        "user_email": request.user.email,
+        "perms": PermWrapper(request.user),
+        "csrf_token": get_token(request),
+    }
+    return HttpResponse(
+        render_to_string(
+            "payroll/management_dashboard.html",
+            context,
+        )
+    )
 
 
 @login_required
@@ -2076,7 +2498,7 @@ def create_payrollrequest_comment(request, payroll_id):
                     rec = (
                         payroll.employee_id.employee_work_info.reporting_manager_id.employee_user_id
                     )
-                    notify.send(
+                    send_payroll_notification(
                         request.user.employee_get,
                         recipient=rec,
                         verb=f"{payroll.employee_id}'s reimbursement request has received a comment.",
@@ -2092,7 +2514,7 @@ def create_payrollrequest_comment(request, payroll_id):
                     == payroll.employee_id.employee_work_info.reporting_manager_id.id
                 ):
                     rec = payroll.employee_id.employee_user_id
-                    notify.send(
+                    send_payroll_notification(
                         request.user.employee_get,
                         recipient=rec,
                         verb="Your reimbursement request has received a comment.",
@@ -2108,7 +2530,7 @@ def create_payrollrequest_comment(request, payroll_id):
                         payroll.employee_id.employee_user_id,
                         payroll.employee_id.employee_work_info.reporting_manager_id.employee_user_id,
                     ]
-                    notify.send(
+                    send_payroll_notification(
                         request.user.employee_get,
                         recipient=rec,
                         verb=f"{payroll.employee_id}'s reimbursement request has received a comment.",
@@ -2121,7 +2543,7 @@ def create_payrollrequest_comment(request, payroll_id):
                     )
             else:
                 rec = payroll.employee_id.employee_user_id
-                notify.send(
+                send_payroll_notification(
                     request.user.employee_get,
                     recipient=rec,
                     verb="Your reimbursement request has received a comment.",
@@ -2132,6 +2554,13 @@ def create_payrollrequest_comment(request, payroll_id):
                     redirect=reverse("view-reimbursement"),
                     icon="chatbox-ellipses",
                 )
+            notify_payroll_admins(
+                request.user,
+                payroll.employee_id.employee_work_info.company_id,
+                f"{payroll.employee_id}'s reimbursement request received a comment.",
+                redirect=reverse("view-reimbursement") + f"?id={payroll_id}",
+                icon="chatbox-ellipses",
+            )
 
             return render(
                 request,

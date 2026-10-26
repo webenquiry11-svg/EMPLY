@@ -94,6 +94,21 @@ urlpatterns = [
         name="payroll-dashboard",
     ),
     path(
+        "management/",
+        views.payroll_management_dashboard,
+        name="payroll-management-dashboard",
+    ),
+    path(
+        "api/notifications/",
+        views.payroll_notification_feed,
+        name="payroll-notification-feed",
+    ),
+    path(
+        "api/notifications/<int:notification_id>/read/",
+        views.mark_payroll_notification_read,
+        name="payroll-notification-read",
+    ),
+    path(
         "dashboard/generate-payslip/",
         views.generate_employee_payslip,
         name="generate-employee-payslip",

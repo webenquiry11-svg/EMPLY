@@ -838,6 +838,22 @@
             font-size: 8px;
             font-weight: 700;
         }
+        .notification-count[hidden], .payroll-notification-panel[hidden] { display: none; }
+        .notification-widget { position: relative; }
+        .payroll-notification-panel {
+            position: absolute; top: calc(100% + 12px); right: -14px; z-index: 30;
+            width: min(350px, calc(100vw - 24px)); overflow: hidden; border: 1px solid #dce9f7;
+            border-radius: 14px; background: #fff; box-shadow: 0 18px 45px rgba(27, 72, 123, .18);
+        }
+        .payroll-notification-heading { padding: 14px 16px; border-bottom: 1px solid #e9eef7; color: #173767; font-size: 13px; font-weight: 750; }
+        .payroll-notification-list { max-height: 340px; overflow-y: auto; margin: 0; padding: 0; list-style: none; }
+        .payroll-notification-item { border-bottom: 1px solid #f0f3f8; }
+        .payroll-notification-link { display: grid; gap: 5px; padding: 12px 15px; color: #536987; font-size: 11px; line-height: 1.45; text-decoration: none; }
+        .payroll-notification-link:hover { background: #f5f8ff; }
+        .payroll-notification-item.is-unread .payroll-notification-link { color: #173767; background: #f5f8ff; font-weight: 650; }
+        .payroll-notification-time { color: #8998ae; font-size: 9px; font-weight: 500; }
+        .payroll-notification-empty { padding: 22px 16px; color: #8393ad; font-size: 11px; text-align: center; }
+        .payroll-notification-empty.is-error { color: #b93649; }
         .header-action, .logout {
             color: #1676e8;
             background: linear-gradient(180deg, #fff, #f5faff);
@@ -922,29 +938,6 @@
         }
         .metric-icon svg { width: 19px; height: 19px; }
         .section-icon svg { width: 13px; height: 13px; vertical-align: middle; }
-        .sidebar-tagline {
-            position: absolute;
-            bottom: 88px;
-            left: 26px;
-            color: #2876c9;
-            font-family: "Segoe Script", "Brush Script MT", cursive;
-            font-size: 16px;
-            font-style: italic;
-            font-weight: 700;
-            line-height: 1.03;
-            transform: rotate(-10deg);
-        }
-        .sidebar-tagline span { display: block; }
-        .sidebar-tagline span + span { margin-left: 6px; }
-        .sidebar-tagline::after {
-            display: block;
-            width: 100px;
-            height: 1px;
-            margin-top: 5px;
-            transform: rotate(-7deg);
-            content: "";
-            background: #3287d8;
-        }
         @media (min-width: 761px) {
             .sidebar {
                 position: sticky;
@@ -1230,6 +1223,7 @@
         .status-confirmed { color: #1869ba; background: #eaf4ff; }
         .salary-slips-panel { margin-top: 0 !important; padding: 22px; border-color: #dcecff; box-shadow: 0 9px 28px rgba(34, 106, 177, .075); }
         .salary-slips-heading { justify-content: flex-start; margin-bottom: 18px; }
+        .salary-slips-heading .salary-period-controls { margin-left: auto; }
         .salary-slips-heading .section-icon { width: 38px; height: 38px; flex: 0 0 auto; margin-right: 11px; color: #1684f2; border: 1px solid #e3f0ff; background: #eef7ff; }
         .salary-slips-heading .section-icon svg { width: 19px; height: 19px; }
         .salary-slips-heading h2 { font-size: 18px; }
@@ -1271,6 +1265,8 @@
         @media (max-width: 540px) {
             .salary-slips-panel { padding: 13px; }
             .salary-slips-heading { margin-bottom: 12px; }
+            .salary-slips-heading { align-items: flex-start; flex-wrap: wrap; }
+            .salary-slips-heading .salary-period-controls { flex-basis: 100%; margin-left: 0; }
             .salary-slips-summary { grid-template-columns: 1fr; gap: 7px; margin-bottom: 10px; }
             .salary-slips-card { min-height: 64px; padding: 9px; }
             .salary-slips-card-icon { width: 36px; height: 36px; }
@@ -1284,8 +1280,14 @@
         .salary-section-icon svg { width: 21px; height: 21px; }
         .salary-section-header h2 { margin: 0; color: #19396f; font-size: 17px; }
         .salary-section-header p { margin: 4px 0 0; color: #6680a6; font-size: 11px; }
-        .salary-period-badge { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 7px; padding: 8px 11px; color: #2368ae; border: 1px solid #dcecff; border-radius: 999px; background: #fff; font-size: 10px; font-weight: 650; }
-        .salary-period-badge svg { width: 14px; height: 14px; }
+        .salary-period-controls { display: flex; align-items: center; gap: 8px; }
+        .salary-period-controls form { display: flex; flex: 1; min-width: 0; align-items: center; gap: 7px; }
+        .salary-period-select { min-height: 38px; padding: 0 32px 0 12px; color: #2368ae; border: 1px solid #d0e4fa; border-radius: 9px; background: #fff; font: inherit; font-size: 11px; font-weight: 700; }
+        .salary-period-submit { min-height: 38px; padding: 0 13px; color: #fff; border: 1px solid #1684f2; border-radius: 9px; background: #1684f2; font: inherit; font-size: 11px; font-weight: 700; cursor: pointer; }
+        .salary-period-submit:hover { border-color: #0e6fd1; background: #0e6fd1; }
+        .salary-payslip-link { display: inline-flex; align-items: center; gap: 7px; padding: 8px 11px; color: #14784f; border: 1px solid #cbe9dc; border-radius: 9px; background: #effaf5; font-size: 10px; font-weight: 700; text-decoration: none; white-space: nowrap; }
+        .salary-payslip-link:hover { border-color: #9ed9bf; background: #e3f6ed; }
+        .salary-payslip-link svg { width: 14px; height: 14px; }
         .salary-summary-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 11px; }
         .salary-summary-card { display: flex; min-width: 0; min-height: 91px; align-items: center; gap: 12px; padding: 14px; border: 1px solid #e0edfb; border-radius: 12px; background: linear-gradient(120deg, #f7fbff, #fff 86%); box-shadow: 0 4px 14px rgba(34, 106, 177, .045); transition: transform .18s ease, box-shadow .18s ease; }
         .salary-summary-card:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(34, 106, 177, .09); }
@@ -1339,10 +1341,13 @@
         @media (max-width: 540px) {
             .salary-section { gap: 9px; }
             .salary-section-header { padding: 10px; }
+            .salary-section-header { align-items: flex-start; flex-direction: column; }
+            .salary-period-controls { width: 100%; }
+            .salary-period-select { flex: 1; min-width: 0; }
             .salary-section-header h2 { font-size: 15px; }
             .salary-section-header p { font-size: 9px; }
             .salary-section-icon { width: 34px; height: 34px; }
-            .salary-period-badge { gap: 4px; padding: 7px; font-size: 9px; }
+
             .salary-summary-cards { grid-template-columns: 1fr; gap: 7px; }
             .salary-summary-card { min-height: 67px; padding: 9px; }
             .salary-summary-icon { width: 36px; height: 36px; }
@@ -1352,8 +1357,33 @@
             .salary-legend-row { grid-template-columns: minmax(0, 1fr) auto; gap: 5px; }
             .salary-legend-share { display: none; }
         }
+        @media (max-width: 900px) {
+            .deductions-header, .history-header { flex-wrap: wrap; }
+            .deductions-header .salary-period-controls, .history-header .salary-period-controls { flex: 1 1 100%; order: 3; }
+            .deductions-header .salary-period-controls form, .history-header .salary-period-controls form { width: 100%; }
+            .deductions-period, .history-record-count { margin-left: auto; }
+        }
         .deductions-section { display: grid; gap: 13px; }
         .deductions-header { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 17px; border: 1px solid #dcecff; border-radius: 12px; background: linear-gradient(110deg, #f4f9ff, #fff 68%, #f1f8ff); box-shadow: 0 4px 14px rgba(34, 106, 177, .045); }
+        .deduction-policy-trigger { display: inline-flex; min-height: 36px; flex: 0 0 auto; align-items: center; justify-content: center; padding: 0 13px; border: 1px solid #1684f2; border-radius: 9px; color: #fff; background: linear-gradient(135deg, #258df2, #176dca); font-size: 10px; font-weight: 750; cursor: pointer; }
+        .employee-deduction-dialog { width: min(720px, calc(100vw - 28px)); max-width: 720px; max-height: min(84vh, 760px); padding: 0; overflow: hidden; border: 1px solid #dcecff; border-radius: 15px; color: #19396f; background: #fff; box-shadow: 0 24px 70px rgba(20, 70, 45, .22); }
+        .employee-deduction-dialog::backdrop { background: rgba(13, 35, 63, .58); backdrop-filter: blur(3px); }
+        .employee-deduction-dialog__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; padding: 16px 19px; color: #fff; background: linear-gradient(110deg, #123b70, #258df2); }
+        .employee-deduction-dialog__header h2 { margin: 0; font-size: 18px; }
+        .employee-deduction-dialog__header p { margin: 5px 0 0; color: #e3f2ff; font-size: 12px; line-height: 1.5; }
+        .employee-deduction-dialog__close { width: 34px; height: 34px; flex: 0 0 34px; border: 1px solid rgba(255,255,255,.4); border-radius: 9px; color: #fff; background: rgba(255,255,255,.14); font-size: 20px; cursor: pointer; }
+        .employee-deduction-dialog__body { display: grid; max-height: calc(min(84vh, 760px) - 72px); gap: 10px; overflow: auto; padding: 15px; background: #f5f9ff; }
+        .employee-deduction-policy-card { display: grid; gap: 9px; padding: 13px; border: 1px solid #dfebf8; border-radius: 11px; background: #fff; }
+        .employee-deduction-policy-card h3 { margin: 0; color: #19396f; font-size: 14px; }
+        .employee-deduction-policy-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px; }
+        .employee-deduction-policy-item { display: grid; min-width: 0; gap: 3px; }
+        .employee-deduction-policy-item small { color: #7187a4; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+        .employee-deduction-policy-item span { color: #35567f; font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+        .employee-deduction-policy-empty { margin: 0; padding: 22px; border: 1px dashed #cbdcf0; border-radius: 10px; color: #607ba4; background: #fff; font-size: 11px; text-align: center; }
+        @media (max-width: 640px) {
+            .employee-deduction-policy-grid { grid-template-columns: minmax(0, 1fr); }
+            .deduction-policy-trigger { flex: 1 1 100%; }
+        }
         .deductions-title { display: flex; min-width: 0; align-items: center; gap: 11px; }
         .deductions-title-icon { display: grid; width: 39px; height: 39px; flex: 0 0 auto; place-items: center; color: #1684f2; border: 1px solid #dcecff; border-radius: 11px; background: #eaf5ff; }
         .deductions-title-icon svg { width: 21px; height: 21px; }
@@ -1527,7 +1557,6 @@
             .user-profile { gap: 0; padding: 3px; border: 0; background: transparent; }
             .workspace { display: block; }
             .sidebar { position: static; height: auto; min-height: auto; padding: 7px 9px; border-right: 0; border-bottom: 1px solid var(--line); }
-            .sidebar-tagline { display: none; }
             .nav-list { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2px; }
             .nav-list a { min-height: 42px; justify-content: center; gap: 4px; padding: 4px 2px; flex-direction: column; }
             .nav-list a span:last-child { display: block; max-width: 100%; font-size: 8px; text-align: center; }
@@ -1612,9 +1641,20 @@
                 <div class="payroll-search-results" id="payroll-search-results" role="listbox" hidden></div>
             </div>
             <div class="user-area">
-                <button class="notification-button" type="button" aria-label="Notifications">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg>
-                </button>
+                <div class="notification-widget" data-payroll-notification-widget
+                    data-feed-url="{% url 'payroll-notification-feed' %}"
+                    data-read-url="{% url 'payroll-notification-read' 0 %}"
+                    data-csrf-token="{{ csrf_token }}">
+                    <button class="notification-button" type="button" data-payroll-notification-toggle
+                        aria-label="Payroll notifications" aria-expanded="false" aria-controls="payroll-notification-panel">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg>
+                        <span class="notification-count" data-payroll-notification-count hidden></span>
+                    </button>
+                    <section class="payroll-notification-panel" id="payroll-notification-panel" data-payroll-notification-panel hidden aria-label="Payroll notifications">
+                        <div class="payroll-notification-heading">Payroll notifications</div>
+                        <ul class="payroll-notification-list" data-payroll-notification-list aria-live="polite"></ul>
+                    </section>
+                </div>
                 <div class="user-profile">
                     <div class="avatar">
                         {% if employee_avatar %}
@@ -1628,7 +1668,7 @@
                         <span>Employee</span>
                     </div>
                 </div>
-                <a class="logout" href="{% url 'logout' %}">
+                <a class="logout" href="{% url 'home-page' %}">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3"></path><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"></path></svg>
                     Logout
                 </a>
@@ -1647,7 +1687,6 @@
                         <li><a href="#payroll-history"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"></path><path d="M3 3v5h5M12 7v5l3 2"></path></svg></span><span>Payroll History</span></a></li>
                     </ul>
                 </nav>
-                <div class="sidebar-tagline" aria-hidden="true"><span>Better People</span><span>Better Business</span></div>
             </aside>
 
             <main class="content">
@@ -1737,6 +1776,9 @@
                                 {{ finalized_payslip.get_status_display }} payslip
                             </a>
                             and are not recalculated from current settings.
+                        {% elif payroll_has_snapshot %}
+                            <strong>{{ selected_payslip.get_status_display }} payslip snapshot:</strong>
+                            This period's salary and deductions are from the selected month's stored payslip.
                         {% else %}
                             <strong>Estimate only:</strong>
                             Current-period amounts are an estimate from available employee, leave, and attendance data.
@@ -1768,7 +1810,7 @@
                                     {% if payroll_trends.deductions.change > 0 %}+{% endif %}{{ payroll_trends.deductions.change|floatformat:1 }}% vs. last month
                                 </div>
                             {% else %}
-                                <div class="metric-note">{% if payroll_is_finalized %}Finalized payslip period{% else %}Estimated current pay period{% endif %}</div>
+                                <div class="metric-note">{% if payroll_is_finalized %}Finalized payslip period{% elif payroll_has_snapshot %}{{ selected_payslip.get_status_display }} payslip period{% else %}Estimated current pay period{% endif %}</div>
                             {% endif %}
                         </div>
                         <div class="metric">
@@ -1787,7 +1829,7 @@
                                     {% if payroll_trends.earnings.change > 0 %}+{% endif %}{{ payroll_trends.earnings.change|floatformat:1 }}% vs. last month
                                 </div>
                             {% else %}
-                                <div class="metric-note">{% if payroll_is_finalized %}Stored payslip basic pay{% else %}Configured basic salary estimate{% endif %}</div>
+                                <div class="metric-note">{% if payroll_has_snapshot %}Stored payslip basic pay{% else %}Configured basic salary estimate{% endif %}</div>
                             {% endif %}
                         </div>
                     </section>
@@ -1852,23 +1894,39 @@
                         <header class="salary-section-header">
                             <div class="salary-section-title">
                                 <span class="salary-section-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M14 3v5h5M9 12h6M9 16h6"></path></svg></span>
-                            <div><h2>Salary</h2><p>{% if payroll_is_finalized %}Stored finalized payslip details{% else %}Estimated current pay details and calculation summary{% endif %}</p></div>
+                            <div><h2>Salary</h2><p>{% if payroll_is_finalized %}Stored finalized payslip details{% elif payroll_has_snapshot %}Stored {{ selected_payslip.get_status_display|lower }} payslip details{% else %}Estimated current pay details and calculation summary{% endif %}</p></div>
                             </div>
-                            <span class="salary-period-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="2"></rect><path d="M8 3v4M16 3v4M4 9h16"></path></svg>{{ current_month }}</span>
+                            <div class="salary-period-controls">
+                                <form method="get" action="{% url 'payroll-dashboard' %}#salary">
+                                    <label class="sr-only" for="salary-period">Choose payroll month</label>
+                                    <select class="salary-period-select" id="salary-period" name="period">
+                                        {% for option in period_options %}
+                                            <option value="{{ option.key }}" {% if option.key == selected_period %}selected{% endif %}>{{ option.label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class="salary-period-submit" type="submit">View month</button>
+                                </form>
+                                {% if selected_payslip %}
+                                    <a class="salary-payslip-link" href="{% url 'view-payslip-pdf' selected_payslip.id %}">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"></path><path d="M14 3v5h5M9 12h6M9 16h6"></path></svg>
+                                        View {{ current_month }} payslip
+                                    </a>
+                                {% endif %}
+                            </div>
                         </header>
 
                         <div class="salary-summary-cards">
                             <article class="salary-summary-card">
                                 <span class="salary-summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"></rect><path d="M3 10h18M7 15h2"></path></svg></span>
-                                <div class="salary-summary-copy"><span>Basic salary</span><strong>{{ payroll.basic_salary_display|default:"Not available yet" }}</strong><small>{% if payroll_is_finalized %}Finalized payslip snapshot{% else %}Configured employee salary estimate{% endif %}</small></div>
+                                <div class="salary-summary-copy"><span>Basic salary</span><strong>{{ payroll.basic_salary_display|default:"Not available yet" }}</strong><small>{% if payroll_is_finalized %}Finalized payslip snapshot{% elif payroll_has_snapshot %}Stored {{ selected_payslip.get_status_display|lower }} payslip{% else %}Configured employee salary estimate{% endif %}</small></div>
                             </article>
                             <article class="salary-summary-card">
                                 <span class="salary-summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M17 7H9.5a3 3 0 0 0 0 6h5a3 3 0 0 1 0 6H6"></path></svg></span>
-                                <div class="salary-summary-copy"><span>{% if payroll_is_finalized %}Finalized deductions{% else %}Estimated deductions{% endif %}</span><strong>{{ payroll.total_deductions_display }}</strong><small>{{ payroll.total_affected_days }} {% if payroll_is_finalized %}stored deduction component{{ payroll.total_affected_days|pluralize }}{% else %}deduction event{{ payroll.total_affected_days|pluralize }}{% endif %}</small></div>
+                                <div class="salary-summary-copy"><span>{% if payroll_is_finalized %}Finalized deductions{% elif payroll_has_snapshot %}Payslip deductions{% else %}Estimated deductions{% endif %}</span><strong>{{ payroll.total_deductions_display }}</strong><small>{{ payroll.total_affected_days }} {% if payroll_has_snapshot %}stored deduction component{{ payroll.total_affected_days|pluralize }}{% else %}deduction event{{ payroll.total_affected_days|pluralize }}{% endif %}</small></div>
                             </article>
                             <article class="salary-summary-card">
                                 <span class="salary-summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v13H4z"></path><path d="M4 10h16M8 15h3"></path><path d="M7 4h10"></path></svg></span>
-                                <div class="salary-summary-copy"><span>Net salary</span><strong>{{ payroll.net_pay_display }}</strong><small>{% if payroll_is_finalized %}Stored finalized payslip amount{% else %}Estimate after current deductions{% endif %}</small></div>
+                                <div class="salary-summary-copy"><span>Net salary</span><strong>{{ payroll.net_pay_display }}</strong><small>{% if payroll_is_finalized %}Stored finalized payslip amount{% elif payroll_has_snapshot %}Stored payslip amount{% else %}Estimate after current deductions{% endif %}</small></div>
                             </article>
                         </div>
 
@@ -1880,7 +1938,7 @@
                                         <div class="salary-breakdown-chart-inner"><strong>{{ payroll.basic_salary_display }}</strong><span>Basic salary</span></div>
                                     </div>
                                     <div class="salary-legend">
-                                        <div class="salary-legend-row"><span class="salary-legend-label"><i class="salary-legend-dot deductions"></i>Current deductions</span><strong>{{ payroll.total_deductions_display }}</strong><span class="salary-legend-share">{{ deduction_ratio }}%</span></div>
+                                        <div class="salary-legend-row"><span class="salary-legend-label"><i class="salary-legend-dot deductions"></i>{% if payroll_has_snapshot %}Selected month deductions{% else %}Current deductions{% endif %}</span><strong>{{ payroll.total_deductions_display }}</strong><span class="salary-legend-share">{{ deduction_ratio }}%</span></div>
                                         <div class="salary-legend-row"><span class="salary-legend-label"><i class="salary-legend-dot net"></i>Net salary</span><strong>{{ payroll.net_pay_display }}</strong><span class="salary-legend-share">{{ net_pay_ratio }}%</span></div>
                                     </div>
                                 </div>
@@ -1895,13 +1953,13 @@
                                     <span class="salary-insight-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M17 7H9.5a3 3 0 0 0 0 6h5a3 3 0 0 1 0 6H6"></path></svg></span>
                                     <div class="salary-insight-copy"><span>Allowances</span><strong>Not available in this dashboard</strong></div>
                                 </div>
-                                <div class="salary-info-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg><span>Net salary is calculated from basic salary after the current attendance and leave deductions.</span></div>
+                                <div class="salary-info-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg><span>{% if payroll_has_snapshot %}Amounts and deductions are shown from the selected month's stored payslip.{% else %}Net salary is estimated from basic salary after current attendance and leave deductions.{% endif %}</span></div>
                             </aside>
                         </div>
 
                         <a class="panel-link salary-detail-link" href="#deductions">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"></path><path d="M14 3v5h5M9 12h6M9 16h6"></path></svg>
-                            <span>View the attendance and leave deductions included in this salary calculation.</span>
+                            <span>{% if payroll_has_snapshot %}View the stored deduction details for {{ current_month }}.{% else %}View the attendance and leave deductions included in this salary estimate.{% endif %}</span>
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
                         </a>
                     </section>
@@ -1911,6 +1969,18 @@
                                 <span class="deductions-title-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M17 7H9.5a3 3 0 0 0 0 6h5a3 3 0 0 1 0 6H6"></path></svg></span>
                                 <div><h2>Deductions</h2><p>Leave and attendance deductions applied to your payroll</p></div>
                             </div>
+                            <div class="salary-period-controls">
+                                <form method="get" action="{% url 'payroll-dashboard' %}#deductions">
+                                    <label class="sr-only" for="deductions-period">Choose deductions month</label>
+                                    <select class="salary-period-select" id="deductions-period" name="period">
+                                        {% for option in period_options %}
+                                            <option value="{{ option.key }}" {% if option.key == selected_period %}selected{% endif %}>{{ option.label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class="salary-period-submit" type="submit">View month</button>
+                                </form>
+                            </div>
+                            <button class="deduction-policy-trigger" type="button" data-deduction-policy-open>View deduction policies</button>
                             <span class="deductions-period"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="2"></rect><path d="M8 3v4M16 3v4M4 9h16"></path></svg>{{ current_month }}</span>
                         </header>
 
@@ -1930,7 +2000,7 @@
                             <section class="deductions-impact-card" id="attendance-impact" aria-label="Leave and attendance impact">
                                 <h3 class="deductions-impact-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"></rect><path d="M8 2v4M16 2v4M3 9h18M8 13h3M8 17h7"></path></svg>Leave &amp; attendance impact</h3>
                                 <div class="deductions-impact-grid">
-                                    {% if payroll_is_finalized %}
+                                    {% if payroll_has_snapshot %}
                                         <div class="deductions-impact-item"><span>Recorded paid days</span><strong>{{ payroll.paid_days|default_if_none:"Not recorded" }}</strong></div>
                                         <div class="deductions-impact-item"><span>Recorded unpaid days</span><strong>{{ payroll.unpaid_days|default_if_none:"Not recorded" }}</strong></div>
                                     {% else %}
@@ -1948,9 +2018,9 @@
                                 <h3 class="deductions-subheading" id="deductions-breakdown-heading"><span class="deductions-subheading-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"></path><circle cx="8" cy="6" r="1"></circle><circle cx="8" cy="12" r="1"></circle><circle cx="8" cy="18" r="1"></circle></svg></span>Deduction breakdown</h3>
                                 <div class="deductions-basis">
                                     <strong>How each deduction is calculated</strong>
-                                    {% if payroll_is_finalized %}
+                                    {% if payroll_has_snapshot %}
                                         <span>{{ payroll.daily_rate_basis }}</span>
-                                        <span>Deduction components below are taken from the stored official payslip; current salary and attendance settings are not used to recalculate them.</span>
+                                        <span>Deduction components below are taken from the selected stored payslip; current salary and attendance settings are not used to recalculate them.</span>
                                     {% else %}
                                         <span>{{ payroll.daily_rate_basis }} Per-day deductions are rounded to the nearest paisa.</span>
                                         <span>Absence deductions count only completed scheduled workdays without validated attendance or approved leave. Weekends, holidays, future days, and the current unfinished workday are not counted as absences.</span>
@@ -1960,7 +2030,7 @@
                                 <div class="deductions-table-wrap">
                                     <table class="deductions-table">
                                         <thead>
-                                            {% if payroll_is_finalized %}
+                                            {% if payroll_has_snapshot %}
                                                 <tr><th>Stored deduction component</th><th>Snapshot detail</th><th>Amount</th></tr>
                                             {% else %}
                                                 <tr><th>Date</th><th>Deduction</th><th>Rate</th><th>Reason &amp; policy</th><th>Calculation</th><th>Amount</th></tr>
@@ -1968,7 +2038,7 @@
                                         </thead>
                                         <tbody>
                                             {% for detail in payroll.deduction_details %}
-                                                {% if payroll_is_finalized %}
+                                                {% if payroll_has_snapshot %}
                                                     <tr><td>{{ detail.leave_type }}</td><td>{{ detail.reason }}</td><td class="deductions-table-amount">{{ detail.amount_display }}</td></tr>
                                                 {% else %}
                                                     <tr>
@@ -1981,7 +2051,7 @@
                                                     </tr>
                                                 {% endif %}
                                             {% empty %}
-                                                <tr><td colspan="{% if payroll_is_finalized %}3{% else %}6{% endif %}"><div class="empty-row"><strong>No deductions recorded</strong><span>No deduction detail applies to this payroll period.</span></div></td></tr>
+                                                <tr><td colspan="{% if payroll_has_snapshot %}3{% else %}6{% endif %}"><div class="empty-row"><strong>No deductions recorded</strong><span>No deduction detail applies to this payroll period.</span></div></td></tr>
                                             {% endfor %}
                                         </tbody>
                                     </table>
@@ -1995,7 +2065,7 @@
                                     </div>
                                     <div class="deductions-chart-caption">{{ payroll.total_deductions_display }} deducted from {{ payroll.basic_salary_display|default:"basic salary" }}</div>
                                 </div>
-                                <div class="deductions-net-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg><span>Each deduction above includes its recorded reason, applicable policy, and payroll calculation.</span></div>
+                                <div class="deductions-net-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg><span>{% if payroll_has_snapshot %}Stored deduction components are shown as recorded in the selected payslip.{% else %}Each deduction includes its recorded reason, applicable policy, and payroll calculation.{% endif %}</span></div>
                             </aside>
                         </div>
 
@@ -2011,33 +2081,44 @@
                         <div class="section-heading salary-slips-heading">
                             <span class="section-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"></path><path d="M14 3v5h5M9 12h7M9 16h7"></path></svg></span>
                             <div><h2>Salary Slips</h2><p>Access and download your monthly payslips</p></div>
+                            <div class="salary-period-controls">
+                                <form method="get" action="{% url 'payroll-dashboard' %}#salary-slips">
+                                    <label class="sr-only" for="salary-slips-period">Choose salary slip month</label>
+                                    <select class="salary-period-select" id="salary-slips-period" name="period">
+                                        {% for option in period_options %}
+                                            <option value="{{ option.key }}" {% if option.key == selected_period %}selected{% endif %}>{{ option.label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class="salary-period-submit" type="submit">View month</button>
+                                </form>
+                            </div>
                         </div>
                         <div class="salary-slips-summary">
                             <div class="salary-slips-card">
                                 <span class="salary-slips-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"></rect><path d="M8 3v4M16 3v4M4 9h16M9 13h6M9 17h4"></path></svg></span>
                                 <div class="salary-slips-card-copy">
-                                    <span>Payslips shown</span>
-                                    <strong>{{ payslips|length }}</strong>
+                                    <span>Payslips for {{ current_month }}</span>
+                                    <strong>{{ selected_month_payslips|length }}</strong>
                                 </div>
                             </div>
                             <div class="salary-slips-card">
                                 <span class="salary-slips-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"></rect><path d="M8 3v4M16 3v4M4 9h16M8 13h3M8 17h7"></path></svg></span>
                                 <div class="salary-slips-card-copy">
-                                    <span>Latest payslip</span>
-                                    {% if payslips %}
-                                        <strong>{{ payslips.0.start_date|date:"F Y" }}</strong>
-                                        <small>Net Pay: {{ payslips.0.net_pay_display }}</small>
+                                    <span>Payslip for selected month</span>
+                                    {% if selected_month_payslips %}
+                                        <strong>{{ selected_month_payslips.0.start_date|date:"F Y" }}</strong>
+                                        <small>Net Pay: {{ selected_month_payslips.0.net_pay_display }}</small>
                                     {% else %}
-                                        <strong>No payslip yet</strong>
-                                        <small>Generated payslips will appear here</small>
+                                        <strong>No payslip for this month</strong>
+                                        <small>{{ current_month }} has no stored payslip</small>
                                     {% endif %}
                                 </div>
                             </div>
                             <div class="salary-slips-card salary-slips-quick-action">
-                                {% if payslips %}
-                                    <a href="{% url 'view-payslip-pdf' payslips.0.id %}" class="header-action" aria-label="View latest payslip">
+                                {% if selected_month_payslips %}
+                                    <a href="{% url 'view-payslip-pdf' selected_month_payslips.0.id %}" class="header-action" aria-label="View {{ current_month }} payslip">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3h7v7M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
-                                        View latest
+                                        View selected
                                     </a>
                                 {% else %}
                                     <span class="salary-slips-card-copy"><span>Available documents</span><strong>None yet</strong></span>
@@ -2048,7 +2129,7 @@
                             <table class="data-table salary-slips-table">
                                 <thead><tr><th>Month &amp; Year</th><th>Pay Period</th><th>Net Pay</th><th>Status</th><th>Action</th></tr></thead>
                                 <tbody>
-                                    {% for payslip in payslips %}
+                                    {% for payslip in selected_month_payslips %}
                                         <tr>
                                             <td>
                                                 <div class="salary-slips-period">
@@ -2065,14 +2146,12 @@
                                             </a></td>
                                         </tr>
                                     {% empty %}
-                                        <tr><td colspan="5"><div class="empty-row salary-slips-empty"><strong>No salary slips available</strong><span>Generate a snapshot from the current payroll calculation.</span><form method="post" action="{% url 'generate-employee-payslip' %}">{% csrf_token %}<button type="submit" class="disabled-action" style="cursor:pointer;color:var(--green-dark);">Generate Salary Slip</button></form></div></td></tr>
+                                        <tr><td colspan="5"><div class="empty-row salary-slips-empty"><strong>No salary slips for {{ current_month }}</strong><span>{% if selected_is_current_period %}Generate a snapshot from the current payroll calculation.{% else %}There is no stored payslip for this month.{% endif %}</span>{% if selected_is_current_period %}<form method="post" action="{% url 'generate-employee-payslip' %}">{% csrf_token %}<button type="submit" class="disabled-action" style="cursor:pointer;color:var(--green-dark);">Generate Salary Slip</button></form>{% endif %}</div></td></tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
                         </div>
-                        {% if payslips %}
-                            <div class="salary-slips-footer"><span>Showing {{ payslips|length }} recent payslip{{ payslips|length|pluralize }}</span></div>
-                        {% endif %}
+                        <div class="salary-slips-footer"><span>{{ selected_month_payslips|length }} payslip{{ selected_month_payslips|length|pluralize }} for {{ current_month }}</span></div>
                     </section>
 
                     <section class="history-section" id="payroll-history" data-payroll-section="payroll-history">
@@ -2081,23 +2160,34 @@
                                 <span class="history-title-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 2"></path><circle cx="12" cy="12" r="9"></circle><path d="M5.6 5.6 4 4M18.4 5.6 20 4"></path></svg></span>
                                 <div><h2>Payroll History</h2><p>Review past payroll details and payslip status</p></div>
                             </div>
-                            <span class="history-record-count"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13"></path><path d="M3 6h.01M3 12h.01M3 18h.01"></path></svg>{{ payslips|length }} recent record{{ payslips|length|pluralize }}</span>
+                            <div class="salary-period-controls">
+                                <form method="get" action="{% url 'payroll-dashboard' %}#payroll-history">
+                                    <label class="sr-only" for="history-period">Choose payroll history month</label>
+                                    <select class="salary-period-select" id="history-period" name="period">
+                                        {% for option in period_options %}
+                                            <option value="{{ option.key }}" {% if option.key == selected_period %}selected{% endif %}>{{ option.label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class="salary-period-submit" type="submit">View month</button>
+                                </form>
+                            </div>
+                            <span class="history-record-count"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13"></path><path d="M3 6h.01M3 12h.01M3 18h.01"></path></svg>{{ selected_month_payslips|length }} record{{ selected_month_payslips|length|pluralize }}</span>
                         </header>
 
                         <div class="history-summary">
                             <article class="history-summary-card">
                                 <span class="history-summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"></rect><path d="M3 10h18M7 15h2"></path></svg></span>
-                                <div class="history-summary-copy"><span>Recent payroll records</span><strong>{{ payslips|length }} record{{ payslips|length|pluralize }}</strong><small>Latest available payslips</small></div>
+                                <div class="history-summary-copy"><span>Payroll records for {{ current_month }}</span><strong>{{ selected_month_payslips|length }} record{{ selected_month_payslips|length|pluralize }}</strong><small>Stored employee payslips for this month</small></div>
                             </article>
                             <article class="history-summary-card">
                                 <span class="history-summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"></rect><path d="M8 3v4M16 3v4M4 9h16M8 13h3M8 17h7"></path></svg></span>
                                 <div class="history-summary-copy">
-                                    {% if payslips %}
-                                        <span>Latest payroll record</span>
-                                        <strong>{{ payslips.0.start_date|date:"F Y" }}</strong>
-                                        <small>{{ payslips.0.net_pay_display }} net pay · {{ payslips.0.get_status_display }}</small>
+                                    {% if selected_month_payslips %}
+                                        <span>Payroll record for selected month</span>
+                                        <strong>{{ selected_month_payslips.0.start_date|date:"F Y" }}</strong>
+                                        <small>{{ selected_month_payslips.0.net_pay_display }} net pay · {{ selected_month_payslips.0.get_status_display }}</small>
                                     {% else %}
-                                        <span>Latest payroll record</span><strong>No records yet</strong><small>A payslip will appear here when available</small>
+                                        <span>Payroll record for selected month</span><strong>No records for this month</strong><small>No payslip is stored for {{ current_month }}</small>
                                     {% endif %}
                                 </div>
                             </article>
@@ -2108,7 +2198,7 @@
                                 <table class="history-table">
                                     <thead><tr><th>Payroll period</th><th>Basic salary</th><th>Deductions</th><th>Net pay</th><th>Status</th><th>Action</th></tr></thead>
                                     <tbody>
-                                        {% for payslip in payslips %}
+                                        {% for payslip in selected_month_payslips %}
                                             <tr>
                                                 <td><div class="history-period"><strong>{{ payslip.start_date|date:"F Y" }}</strong><small>{{ payslip.start_date|date:"d M Y" }} – {{ payslip.end_date|date:"d M Y" }}</small></div></td>
                                                 <td>{{ payslip.basic_pay_display }}</td>
@@ -2126,7 +2216,7 @@
                                 </table>
                             </div>
                             <footer class="history-footer">
-                                <span>Showing {{ payslips|length }} recent payroll record{{ payslips|length|pluralize }}</span>
+                                <span>Showing {{ selected_month_payslips|length }} payroll record{{ selected_month_payslips|length|pluralize }} for {{ current_month }}</span>
                                 <span class="history-footer-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg>Use View / PDF to open the available payslip</span>
                             </footer>
                         </section>
@@ -2136,6 +2226,32 @@
             </main>
         </div>
     </div>
+    <dialog class="employee-deduction-dialog" aria-labelledby="employee-deduction-dialog-title">
+        <header class="employee-deduction-dialog__header">
+            <div>
+                <h2 id="employee-deduction-dialog-title">Deduction policies</h2>
+                <p>{% if payroll_has_snapshot %}These are the deduction components recorded on your {{ current_month }} payslip.{% else %}These are the attendance and leave rules that affect your {{ current_month }} payroll estimate.{% endif %}</p>
+            </div>
+            <form method="dialog"><button class="employee-deduction-dialog__close" aria-label="Close">&times;</button></form>
+        </header>
+        <div class="employee-deduction-dialog__body">
+            {% for detail in payroll.deduction_details %}
+                <article class="employee-deduction-policy-card">
+                    <h3>{{ detail.leave_type }}</h3>
+                    <div class="employee-deduction-policy-grid">
+                        {% if detail.date %}<div class="employee-deduction-policy-item"><small>Date</small><span>{{ detail.date|date:"d M Y" }}</span></div>{% endif %}
+                        <div class="employee-deduction-policy-item"><small>Policy</small><span>{{ detail.policy|default:"Recorded deduction policy" }}</span></div>
+                        <div class="employee-deduction-policy-item"><small>Reason</small><span>{{ detail.reason|default:detail.leave_type }}</span></div>
+                        {% if detail.calculation %}<div class="employee-deduction-policy-item"><small>Calculation</small><span>{{ detail.calculation }}</span></div>{% endif %}
+                        <div class="employee-deduction-policy-item"><small>Deducted amount</small><span>{{ detail.amount_display }}</span></div>
+                    </div>
+                </article>
+            {% empty %}
+                <p class="employee-deduction-policy-empty">No deduction policy affected this payroll period.</p>
+            {% endfor %}
+        </div>
+    </dialog>
+    <script src="{% static 'payroll/notifications.js' %}" defer></script>
     <script>
         (() => {
             const validSections = ["overview", "salary", "deductions", "salary-slips", "payroll-history"];
@@ -2236,12 +2352,24 @@
                     activateSection(section);
                 });
             });
-            const initialSection = window.location.hash.slice(1);
+            const deductionPolicyDialog = document.querySelector(".employee-deduction-dialog");
+            document.querySelector("[data-deduction-policy-open]")?.addEventListener("click", () => {
+                deductionPolicyDialog?.showModal();
+            });
+            deductionPolicyDialog?.addEventListener("click", (event) => {
+                if (event.target === deductionPolicyDialog) deductionPolicyDialog.close();
+            });
+            const hasSelectedPeriod = new URLSearchParams(window.location.search).has("period");
+            const initialSection = window.location.hash.slice(1) || (hasSelectedPeriod ? "salary" : "");
             if (validSections.includes(initialSection)) {
                 history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
             }
             activateSection(initialSection);
-            window.scrollTo(0, 0);
+            if (hasSelectedPeriod) {
+                requestAnimationFrame(() => document.querySelector(`#${initialSection}`)?.scrollIntoView({ block: "start" }));
+            } else {
+                window.scrollTo(0, 0);
+            }
         })();
     </script>
 </body>

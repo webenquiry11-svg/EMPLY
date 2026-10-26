@@ -9,9 +9,12 @@ from django.http import HttpResponse
 from django.test import Client, TestCase
 from django.urls import reverse
 
+from notifications.signals import notify
 from base.models import Company
 from employee.models import Employee, EmployeeWorkInformation
+from horilla import horilla_middlewares
 from payroll.models.models import Contract, Payslip, PayrollApprovalEvent, PayrollRun
+from payroll.notifications import send_payroll_notification
 
 
 class PayrollRunIntegrationTests(TestCase):
@@ -100,6 +103,9 @@ class PayrollRunIntegrationTests(TestCase):
 
         self.assertEqual(response.status_code, 302)
         run = PayrollRun.objects.get()
+        self.assertTrue(
+            self.admin.notifications.filter(data__payroll_event=True).exists()
+        )
         self.assertEqual(run.status, "draft")
         self.assertEqual(run.items.count(), 1)
         item = run.items.get()
@@ -112,6 +118,12 @@ class PayrollRunIntegrationTests(TestCase):
         self.client.post(submit_url)
         run.refresh_from_db()
         self.assertEqual(run.status, "submitted")
+        self.assertTrue(
+            self.employee.employee_user_id.notifications.filter(
+                data__payroll_event=True,
+                verb__contains="ready for review",
+            ).exists()
+        )
         payslip = Payslip.objects.get()
         self.assertEqual(payslip.status, "review_ongoing")
         self.assertEqual(payslip.net_pay, 900)
@@ -126,6 +138,12 @@ class PayrollRunIntegrationTests(TestCase):
         run.refresh_from_db()
         payslip.refresh_from_db()
         self.assertEqual(run.status, "finalized")
+        self.assertTrue(
+            self.employee.employee_user_id.notifications.filter(
+                data__payroll_event=True,
+                verb__contains="finalized",
+            ).exists()
+        )
         self.assertEqual(payslip.status, "confirmed")
         self.assertEqual(payslip.net_pay, 900)
         self.assertEqual(payslip.pay_head_data, item.snapshot["pay_data"])
@@ -272,6 +290,21 @@ class PayrollRunIntegrationTests(TestCase):
             net_pay=4300,
             status="confirmed",
         )
+        historical = Payslip._base_manager.create(
+            employee_id=self.employee,
+            start_date=date(2024, 12, 1),
+            end_date=date(2024, 12, 31),
+            pay_head_data={
+                "basic_pay_deductions": [
+                    {"title": "Attendance deduction", "amount": 125}
+                ]
+            },
+            basic_pay=4200,
+            gross_pay=4300,
+            deduction=125,
+            net_pay=4175,
+            status="paid",
+        )
         for month in range(2, 8):
             Payslip._base_manager.create(
                 employee_id=self.employee,
@@ -314,7 +347,7 @@ class PayrollRunIntegrationTests(TestCase):
         with (
             patch(
                 "payroll.views.views.calculate_employee_payroll",
-                return_value=payroll,
+                side_effect=lambda *_args, **_kwargs: payroll.copy(),
             ),
             patch(
                 "payroll.views.views.render",
@@ -328,6 +361,279 @@ class PayrollRunIntegrationTests(TestCase):
         self.assertTrue(context["payroll_is_finalized"])
         self.assertEqual(context["finalized_payslip"].pk, finalized.pk)
         self.assertEqual(context["payroll"]["net_pay"], 4300)
+        self.assertEqual(len(context["payslips"]), 8)
+        available_periods = {option["key"] for option in context["period_options"]}
+        self.assertIn("2024-12", available_periods)
+        self.assertIn("2025-01", available_periods)
+        self.assertIn("2025-02", available_periods)
+        with (
+            patch(
+                "payroll.views.views.calculate_employee_payroll",
+                side_effect=lambda *_args, **_kwargs: payroll.copy(),
+            ),
+            patch(
+                "payroll.views.views.render",
+                return_value=HttpResponse("ok"),
+            ) as historical_render,
+        ):
+            response = employee_client.get(
+                reverse("payroll-dashboard"), {"period": "2024-12"}
+            )
+            self.assertEqual(response.status_code, 200)
+            context = historical_render.call_args.kwargs["context"]
+            self.assertEqual(context["selected_period"], "2024-12")
+            self.assertEqual(context["current_month"], "December 2024")
+            self.assertEqual(context["finalized_payslip"].pk, historical.pk)
+            self.assertEqual(context["payroll"]["net_pay"], 4175)
+            self.assertEqual(context["payroll"]["total_deductions"], 125)
+            self.assertEqual(context["selected_month_payslips"], [historical])
+            self.assertFalse(context["selected_is_current_period"])
+
+            response = employee_client.get(
+                reverse("payroll-dashboard"), {"period": "2025-07"}
+            )
+            self.assertEqual(response.status_code, 200)
+            context = historical_render.call_args.kwargs["context"]
+            self.assertTrue(context["payroll_has_snapshot"])
+            self.assertFalse(context["payroll_is_finalized"])
+            self.assertEqual(context["selected_payslip"].status, "draft")
+            self.assertEqual(
+                context["payroll"]["daily_rate_basis"],
+                "Amounts and days below are read from the stored draft payslip.",
+            )
+            self.assertEqual(
+                [payslip.start_date.strftime("%Y-%m") for payslip in context["selected_month_payslips"]],
+                ["2025-07"],
+            )
+            self.assertEqual(context["payroll"]["net_pay"], 1000)
+
+
+class PayrollDashboardRoleRoutingTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        user_model = get_user_model()
+        cls.superuser = user_model.objects.create_superuser(
+            username="payroll-dashboard-superuser",
+            email="payroll-dashboard-superuser@example.test",
+            password="Test-password-239!",
+        )
+        cls.payroll_admin = user_model.objects.create_user(
+            username="payroll-dashboard-admin",
+            password="Test-password-239!",
+        )
+        permission = Permission.objects.get(
+            content_type__app_label="payroll",
+            codename="view_contract",
+        )
+        cls.payroll_admin.user_permissions.add(permission)
+
+    @classmethod
+    def tearDownClass(cls):
+        horilla_middlewares._thread_locals.request = None
+        super().tearDownClass()
+
+    def test_payroll_management_dashboard_uses_dedicated_ui_for_superuser(self):
+        client = Client()
+        client.force_login(self.superuser)
+
+        response = client.get(reverse("payroll-management-dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "payroll/management_dashboard.html")
+        self.assertContains(response, "Good Morning,")
+        self.assertContains(response, "Dashboard")
+        self.assertNotContains(response, '>Overview</a>')
+        self.assertContains(response, "data-payroll-notification-widget")
+        self.assertContains(response, 'aria-label="Payroll notifications"')
+
+    def test_payroll_management_dashboard_uses_dedicated_ui_for_admin(self):
+        client = Client()
+        client.force_login(self.payroll_admin)
+
+        response = client.get(reverse("payroll-management-dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "payroll/management_dashboard.html")
+        self.assertContains(response, "Good Morning,")
+
+    def test_notification_feed_is_payroll_scoped_and_read_is_recipient_scoped(self):
+        client = Client()
+        client.force_login(self.superuser)
+        notification = send_payroll_notification(
+            self.superuser,
+            self.superuser,
+            "A payroll item is ready.",
+            redirect="/payroll/dashboard/",
+            icon="cash-outline",
+        )[0][1][0]
+        notify.send(
+            self.superuser,
+            recipient=self.superuser,
+            verb="A non-payroll notification.",
+        )
+
+        response = client.get(reverse("payroll-notification-feed"))
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["unread_count"], 1)
+        self.assertEqual(payload["notifications"][0]["id"], notification.pk)
+        self.assertEqual(payload["notifications"][0]["url"], "/payroll/dashboard/")
+
+        other_user_notification = send_payroll_notification(
+            self.superuser,
+            self.payroll_admin,
+            "A private payroll notification.",
+        )[0][1][0]
+        self.assertEqual(
+            client.post(
+                reverse(
+                    "payroll-notification-read",
+                    args=[other_user_notification.pk],
+                )
+            ).status_code,
+            404,
+        )
+
+        response = client.post(
+            reverse("payroll-notification-read", args=[notification.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        notification.refresh_from_db()
+        self.assertFalse(notification.unread)
+
+    def test_payroll_management_dashboard_month_selector_updates_period(self):
+        client = Client()
+        client.force_login(self.superuser)
+
+        response = client.get(
+            reverse("payroll-management-dashboard"),
+            {"period": "2025-02"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "February 2025")
+        self.assertContains(response, 'value="2025-02" selected')
+
+    def test_payroll_workspace_sections_render_inside_the_dashboard(self):
+        client = Client()
+        client.force_login(self.superuser)
+        sections = {
+            "payslips": "Employee payslips",
+            "runs": "Payroll runs",
+            "contracts": "Contracts",
+            "employees": "Employee directory",
+            "reports": "Payroll reports",
+            "allowances": "Allowances",
+            "deductions": "Deductions",
+            "reimbursements": "Reimbursements",
+            "settings": "Payroll settings",
+        }
+
+        for section, heading in sections.items():
+            with self.subTest(section=section):
+                response = client.get(
+                    reverse("payroll-management-dashboard"),
+                    {"section": section},
+                )
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, heading)
+                self.assertContains(response, 'data-section="' + section + '"')
+
+        self.assertNotContains(response, ">Loans</a>")
+
+    def test_deduction_section_selects_employee_and_monthly_policy_details(self):
+        employee = Employee.objects.create(
+            employee_first_name="Policy",
+            employee_last_name="Employee",
+            email="policy-employee@example.test",
+            phone="5550123",
+        )
+        work_info, _ = EmployeeWorkInformation.objects.get_or_create(
+            employee_id=employee
+        )
+        work_info.basic_salary = 20000
+        work_info.save()
+        client = Client()
+        client.force_login(self.superuser)
+        url = reverse("payroll-management-dashboard")
+
+        employee_list = client.get(url, {"section": "deductions"})
+
+        self.assertEqual(employee_list.status_code, 200)
+        self.assertContains(employee_list, "Policy Employee")
+        self.assertContains(employee_list, f"employee={employee.pk}")
+
+        details = client.get(
+            url,
+            {
+                "section": "deductions",
+                "employee": employee.pk,
+                "period": "2026-09",
+            },
+        )
+
+        self.assertEqual(details.status_code, 200)
+        self.assertContains(details, "Monthly deductions")
+        self.assertContains(details, "View month")
+        self.assertContains(details, 'value="2026-09" selected')
+        self.assertContains(details, "Leave and attendance deductions for")
+        self.assertContains(details, "Reason and policy")
+        self.assertContains(details, "Calculation")
+
+    def test_payroll_quick_actions_stay_in_workspace_or_open_workspace_modal(self):
+        client = Client()
+        client.force_login(self.superuser)
+
+        response = client.get(reverse("payroll-management-dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            'data-workspace-modal-url="'
+            + reverse("payroll-run-create")
+            + '"',
+        )
+        self.assertContains(
+            response,
+            'data-workspace-modal-url="'
+            + reverse("generate-payslip")
+            + '"',
+        )
+        self.assertContains(response, 'href="?section=employees&amp;period=')
+        self.assertContains(response, 'href="?section=reports&amp;period=')
+        self.assertContains(response, 'id="workspace-action-modal"')
+        self.assertNotContains(response, 'class="quick-link" href="/employee/')
+
+    def test_payroll_workspace_sections_respect_permissions(self):
+        client = Client()
+        client.force_login(self.payroll_admin)
+
+        for section in ("reimbursements", "employees", "reports"):
+            with self.subTest(section=section):
+                response = client.get(
+                    reverse("payroll-management-dashboard"),
+                    {"section": section},
+                )
+                self.assertEqual(response.status_code, 403)
+
+    def test_payroll_login_mode_opens_dedicated_management_dashboard(self):
+        password = "Test-password-239!"
+        for user in (self.superuser, self.payroll_admin):
+            response = Client().post(
+                reverse("login"),
+                {
+                    "username": user.username,
+                    "password": password,
+                    "login_mode": "payroll",
+                },
+            )
+            self.assertRedirects(
+                response,
+                reverse("payroll-management-dashboard"),
+                fetch_redirect_response=False,
+            )
 
 
 class SuperAdminManagementIntegrationTests(TestCase):

@@ -85,8 +85,6 @@ def _eligible_paid_leave(leave, category):
         return True
     if "probation" in category or "intern" in category:
         return False
-    if "contract" in category:
-        return False
     return name in PAID_NAMES or name in {"ccl", "compensatory casual leave"}
 
 

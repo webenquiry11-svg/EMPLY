@@ -26,8 +26,12 @@
         <nav class="payroll-workflow__nav" aria-label="{% trans 'Payroll navigation' %}">
             {% if request.user.is_superuser %}
                 <a class="oh-btn oh-btn--secondary" href="{% url 'super-admin-dashboard' %}">{% trans "Super Admin" %}</a>
-            {% else %}
-                <a class="oh-btn oh-btn--secondary" href="{% url 'view-payroll-dashboard' %}">{% trans "Payroll dashboard" %}</a>
+            {% endif %}
+            {% if request.user.is_superuser or perms.payroll.view_contract %}
+                <a class="oh-btn oh-btn--secondary" href="{% url 'payroll-management-dashboard' %}">{% trans "Payroll workspace" %}</a>
+            {% endif %}
+            {% if not request.user.is_superuser and perms.payroll.view_contract %}
+                <a class="oh-btn oh-btn--secondary" href="{% url 'view-payroll-dashboard' %}">{% trans "Payroll overview" %}</a>
             {% endif %}
             <a class="oh-btn oh-btn--secondary" href="{% url 'payroll-run-list' %}">{% trans "Payroll runs" %}</a>
             <a class="oh-btn oh-btn--secondary" href="{% url 'view-payslip' %}">{% trans "Payslips" %}</a>

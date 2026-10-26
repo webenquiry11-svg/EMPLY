@@ -5,7 +5,7 @@
 <section class="oh-card">
     <div class="oh-card__header"><h1 class="oh-card__title">{% trans "Create payroll preview" %}</h1></div>
     <div class="oh-card__body">
-        <p>{% trans "This preview uses Horilla's existing payroll calculation engine. It does not create payslips or transfer money until an authorized user submits the run." %}</p>
+        <p>{% trans "This preview uses EMPLY's existing payroll calculation engine. It does not create payslips or transfer money until an authorized user submits the run." %}</p>
         <form method="post">
             {% csrf_token %}
             {% if form.non_field_errors %}<div class="oh-alert oh-alert--danger">{{ form.non_field_errors }}</div>{% endif %}

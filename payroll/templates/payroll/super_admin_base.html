@@ -21,6 +21,7 @@
 <main class="super-admin-shell">
     <nav class="super-admin-nav" aria-label="{% trans 'Super Admin navigation' %}">
         <a class="oh-btn oh-btn--secondary" href="{% url 'super-admin-dashboard' %}">{% trans "Overview" %}</a>
+        <a class="oh-btn oh-btn--secondary" href="{% url 'payroll-management-dashboard' %}">{% trans "Payroll workspace" %}</a>
         <a class="oh-btn oh-btn--secondary" href="{% url 'super-admin-users' %}">{% trans "Admin accounts" %}</a>
         <a class="oh-btn oh-btn--secondary" href="{% url 'super-admin-groups' %}">{% trans "Groups and permissions" %}</a>
         <a class="oh-btn oh-btn--secondary" href="{% url 'super-admin-companies' %}">{% trans "Companies" %}</a>

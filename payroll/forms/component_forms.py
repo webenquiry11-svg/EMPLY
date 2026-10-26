@@ -18,13 +18,13 @@ import payroll.models.models
 from base.forms import Form, ModelForm
 from base.methods import reload_queryset
 from employee.filters import EmployeeFilter
-from employee.models import BonusPoint, Employee
+from employee.models import BonusPoint, Employee, EmployeeWorkInformation
 from horilla import horilla_middlewares
 from horilla.methods import get_horilla_model_class
 from horilla_widgets.forms import HorillaForm, default_select_option_template
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
-from notifications.signals import notify
+from payroll.notifications import notify_payroll_admins, send_payroll_notification
 from payroll.models import tax_models as models
 from payroll.models.models import (
     Allowance,
@@ -1010,7 +1010,7 @@ class ReimbursementForm(ModelForm):
             try:
                 manager = instance.employee_id.employee_work_info.reporting_manager_id
                 if manager and manager.employee_user_id:
-                    notify.send(
+                    send_payroll_notification(
                         instance.employee_id,  # 816
                         recipient=manager.employee_user_id,
                         verb=f"You have a new reimbursement request to approve for {instance.employee_id}.",
@@ -1023,6 +1023,17 @@ class ReimbursementForm(ModelForm):
                     )
             except Exception:
                 pass
+            work_info = EmployeeWorkInformation.objects.filter(
+                employee_id=instance.employee_id
+            ).first()
+            company = work_info.company_id if work_info else None
+            notify_payroll_admins(
+                instance.employee_id,
+                company,
+                f"{instance.employee_id} submitted a reimbursement request.",
+                icon="information",
+                redirect=f"/payroll/view-reimbursement?id={instance.id}",
+            )
 
         return instance, attachments
 

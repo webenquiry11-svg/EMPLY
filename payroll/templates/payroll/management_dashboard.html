@@ -1,0 +1,997 @@
+{% load static i18n %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% trans "Payroll Management" %} | EMPLY</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --navy: #ffffff;
+            --navy-light: #f5f8ff;
+            --blue: #2854d9;
+            --blue-bright: #3179f6;
+            --ink: #102b5c;
+            --muted: #7385a6;
+            --line: #e1eaf7;
+            --canvas: #f4f8fe;
+            --green: #16b981;
+            --purple: #8a52f5;
+            --orange: #ff9d18;
+            --shadow: 0 5px 18px rgba(31, 73, 142, .055);
+        }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { zoom: 1.25; margin: 0; color: var(--ink); background: var(--canvas); font: 14px Inter, "Segoe UI", Arial, sans-serif; }
+        a { color: inherit; text-decoration: none; }
+        button, select { font: inherit; }
+        .app { min-height: 100vh; }
+        .sidebar {
+            position: fixed; z-index: 8; inset: 0 auto 0 0; display: flex; width: 196px;
+            flex-direction: column; padding: 12px 9px 10px; color: #17335f;
+            border-right: 1px solid #e5ebf8;
+            background:
+                radial-gradient(ellipse at 8% 106%, rgba(119, 150, 255, .12), transparent 23%),
+                linear-gradient(180deg, #fff 0%, #fbfcff 72%, #f4f6ff 100%);
+        }
+        .brand { display: flex; min-height: 46px; align-items: center; gap: 9px; padding: 0 7px 12px; }
+        .brand-mark { display: grid; width: 31px; height: 31px; flex: 0 0 31px; place-items: center; border-radius: 50%; color: #fff; background: linear-gradient(145deg, #52a8ff, #5748ee); font-size: 18px; font-weight: 900; }
+        .brand-copy { display: grid; gap: 1px; }
+        .brand-copy strong { font-size: 15px; letter-spacing: .025em; }
+        .brand-copy small { color: #788aa9; font-size: 9px; }
+        .side-nav { display: grid; gap: 3px; }
+        .side-link { position: relative; display: flex; min-height: 36px; align-items: center; gap: 10px; padding: 0 9px; border-radius: 7px; color: #29466f; font-size: 10px; font-weight: 600; transition: color .16s ease, background .16s ease; }
+        .side-link:hover { color: #315fe5; background: #f1f4ff; }
+        .side-link.active { color: #315fe5; background: #e9edff; }
+        .side-link.active::before { position: absolute; top: 7px; bottom: 7px; left: -9px; width: 3px; border-radius: 0 4px 4px 0; background: #5265ff; content: ""; }
+        .side-icon { display: grid; width: 18px; height: 18px; flex: 0 0 18px; place-items: center; color: #415b86; }
+        .side-icon svg { display: block; width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
+        .side-link.active .side-icon, .side-link:hover .side-icon { color: #315fe5; }
+        .side-link[data-section-link="allowances"] .side-icon,
+        .side-link[data-section-link="deductions"] .side-icon,
+        .side-link[data-section-link="reimbursements"] .side-icon { width: 22px; height: 22px; flex-basis: 22px; border-radius: 50%; color: #fff; }
+        .side-link[data-section-link="allowances"] .side-icon { background: linear-gradient(145deg, #6595ff, #315fe5); }
+        .side-link[data-section-link="deductions"] .side-icon { background: linear-gradient(145deg, #ff8b9a, #ec526e); }
+        .side-link[data-section-link="reimbursements"] .side-icon { background: linear-gradient(145deg, #a17bff, #704bfa); }
+        .side-heading { display: flex; align-items: center; gap: 8px; margin: 12px 0 4px; padding: 0 9px; color: #8293af; font-size: 8px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+        .side-heading::after { height: 1px; flex: 1; background: #e4eaf5; content: ""; }
+        .side-sub { margin-left: 0; }
+        .side-link::after { margin-left: auto; color: #8da0c0; font-size: 14px; line-height: 1; content: "›"; }
+        .side-link[data-section-link="dashboard"]::after { content: ""; }
+        .sidebar-bottom { position: relative; display: flex; align-items: center; gap: 9px; min-height: 56px; margin: auto -9px -10px; padding: 10px 12px; border-top: 1px solid #e9edf7; background: rgba(245,247,255,.78); }
+        .mini-avatar { display: grid; width: 29px; height: 29px; flex: 0 0 29px; place-items: center; border-radius: 50%; color: #fff; background: #7d91fa; font-size: 12px; font-weight: 800; }
+        .sidebar-bottom div:last-child { display: grid; gap: 2px; min-width: 0; }
+        .sidebar-bottom strong { overflow: hidden; color: #203c69; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+        .sidebar-bottom small { overflow: hidden; color: #7588a8; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+        .sidebar-online { display: flex; align-items: center; gap: 4px; margin-top: 2px; color: #258d63; font-size: 8px; }
+        .sidebar-online::before { width: 5px; height: 5px; border-radius: 50%; background: #34c987; content: ""; }
+        .workspace { min-height: 100vh; margin-left: 196px; }
+        .topbar { position: sticky; z-index: 7; top: 0; display: flex; height: 59px; align-items: center; justify-content: space-between; gap: 15px; padding: 0 22px; border-bottom: 1px solid #e7edf6; background: rgba(255,255,255,.97); }
+        .search { display: flex; width: min(380px, 42vw); height: 35px; align-items: center; gap: 9px; padding: 0 12px; border: 1px solid #e8eef7; border-radius: 7px; color: #8a9ab6; background: #f7f9fd; font-size: 10px; }
+        .search kbd { margin-left: auto; padding: 2px 4px; border-radius: 3px; color: #7d8daa; background: #eef2f9; font: inherit; }
+        .top-actions { display: flex; align-items: center; gap: 10px; }
+        .notification-widget { position: relative; }
+        .notification {
+            position: relative; display: grid; width: 34px; height: 34px; place-items: center;
+            padding: 0; border: 1px solid #e2eaf7; border-radius: 50%; color: #315fe5;
+            background: #f6f8ff; cursor: pointer;
+        }
+        .notification:hover { color: #fff; border-color: #315fe5; background: #315fe5; }
+        .notification svg { width: 18px; height: 18px; }
+        .notification-count {
+            position: absolute; top: -4px; right: -5px; display: grid; min-width: 16px; height: 16px;
+            place-items: center; padding: 0 4px; border: 1px solid #fff; border-radius: 999px;
+            color: #fff; background: #eb5267; font-size: 8px; font-weight: 800;
+        }
+        .notification-count[hidden], .payroll-notification-panel[hidden] { display: none; }
+        .payroll-notification-panel {
+            position: absolute; top: calc(100% + 12px); right: -20px; z-index: 20;
+            width: min(350px, calc(100vw - 24px)); overflow: hidden; border: 1px solid #dce6f4;
+            border-radius: 12px; background: #fff; box-shadow: 0 18px 45px rgba(16,36,73,.18);
+        }
+        .payroll-notification-heading { padding: 14px 16px; border-bottom: 1px solid #e9eef7; color: #17345f; font-size: 13px; font-weight: 750; }
+        .payroll-notification-list { max-height: 340px; overflow-y: auto; margin: 0; padding: 0; list-style: none; }
+        .payroll-notification-item { border-bottom: 1px solid #f0f3f8; }
+        .payroll-notification-link { display: grid; gap: 5px; padding: 12px 15px; color: #536987; font-size: 11px; line-height: 1.45; text-decoration: none; }
+        .payroll-notification-link:hover { background: #f5f8ff; }
+        .payroll-notification-item.is-unread .payroll-notification-link { color: #17345f; background: #f5f8ff; font-weight: 650; }
+        .payroll-notification-time { color: #8998ae; font-size: 9px; font-weight: 500; }
+        .payroll-notification-empty { padding: 22px 16px; color: #8393ad; font-size: 11px; text-align: center; }
+        .payroll-notification-empty.is-error { color: #b93649; }
+        .top-user { display: grid; gap: 1px; text-align: right; }
+        .top-user strong { font-size: 10px; }
+        .top-user small { color: var(--muted); font-size: 9px; }
+        .topbar .mini-avatar { width: 30px; height: 30px; }
+        .content-grid { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 16px; max-width: 1900px; margin: 0 auto; padding: 16px 15px 24px; }
+        .main-column, .right-column { min-width: 0; }
+        .hero {
+            position: relative; display: flex; min-height: 148px; align-items: center; overflow: hidden;
+            padding: 22px 24px; border-radius: 11px; color: #fff;
+            background:
+                radial-gradient(ellipse at 77% 50%, rgba(45,100,238,.62), transparent 29%),
+                radial-gradient(ellipse at 91% 10%, rgba(45,84,201,.58), transparent 36%),
+                linear-gradient(105deg, #061a3c 0%, #0d2e68 58%, #102b68 100%);
+            box-shadow: 0 8px 20px rgba(16,42,92,.13);
+        }
+        .hero::before, .hero::after { position: absolute; right: -34px; width: 270px; height: 160px; border: 1px solid rgba(107,151,255,.16); border-radius: 50%; content: ""; transform: rotate(-18deg); }
+        .hero::before { top: -84px; }
+        .hero::after { right: 42px; bottom: -126px; width: 300px; }
+        .hero-content { position: relative; z-index: 2; max-width: calc(100% - 235px); }
+        .eyebrow { margin-bottom: 7px; color: #d5e2ff; font-size: 10px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+        .hero h1 { margin: 0 0 8px; font-size: clamp(20px, 1.8vw, 27px); letter-spacing: -.035em; }
+        .hero h1 span { color: #8b92ff; }
+        .hero p { margin: 0 0 12px; color: #c2d3f7; font-size: 11px; }
+        .hero-period-form { display: inline-flex; align-items: center; gap: 7px; }
+        .hero-period-form label { color: #e5edff; font-size: 11px; }
+        .hero-period-form select { max-width: 170px; padding: 4px 7px; border: 1px solid rgba(213,226,255,.35); border-radius: 5px; color: #fff; background: rgba(10,34,78,.48); font-size: 11px; }
+        .hero-period-form option { color: var(--ink); background: #fff; }
+        .hero-illustration { position: absolute; top: 16px; right: 18px; width: 225px; height: 110px; }
+        .paper { position: absolute; top: 0; right: 52px; width: 85px; height: 102px; padding: 12px 9px; border: 1px solid #dfeaff; border-radius: 8px; color: #204cc2; background: linear-gradient(160deg, #fff, #dce9ff); box-shadow: 0 10px 20px rgba(0,0,0,.22); transform: rotate(5deg); }
+        .paper strong { display: block; margin-bottom: 9px; font-size: 11px; }
+        .paper-line { height: 4px; margin: 7px 0; border-radius: 4px; background: #c5d6ff; }
+        .paper-check { display: inline-grid; width: 11px; height: 11px; margin-right: 4px; place-items: center; border-radius: 50%; color: #fff; background: #3985ff; font-size: 8px; }
+        .rupee-orb { position: absolute; right: 133px; bottom: 5px; display: grid; width: 48px; height: 48px; place-items: center; border: 4px solid rgba(191,174,255,.7); border-radius: 50%; color: white; background: linear-gradient(145deg, #bd72ff, #643cde); box-shadow: 0 7px 16px rgba(96,57,215,.55); font-size: 25px; font-weight: 700; }
+        .floating-payroll-art { position: absolute; right: 0; bottom: 4px; display: grid; width: 58px; height: 58px; place-items: center; border: 1px solid rgba(255,255,255,.82); border-radius: 16px; background: linear-gradient(145deg, #fff, #e7efff); box-shadow: 0 9px 22px rgba(3,14,44,.25); transform: rotate(5deg); }
+        .floating-payroll-art img { display: block; width: 41px; height: 41px; object-fit: contain; filter: invert(27%) sepia(94%) saturate(2252%) hue-rotate(212deg) brightness(94%) contrast(93%); }
+        .cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 11px; margin-top: 12px; }
+        .metric, .status-card, .panel, .quick-panel, .period-panel, .quick-links { border: 1px solid var(--line); border-radius: 8px; background: #fff; box-shadow: var(--shadow); }
+        .metric { position: relative; min-height: 126px; overflow: hidden; padding: 14px 15px; }
+        .metric-head { display: flex; align-items: center; gap: 9px; color: var(--ink); font-size: 10px; }
+        .metric-icon { display: grid; width: 31px; height: 31px; place-items: center; border-radius: 50%; color: #3476ef; background: #e7f1ff; font-size: 15px; }
+        .metric:nth-child(2) .metric-icon { color: #12a976; background: #def8ec; }
+        .metric:nth-child(3) .metric-icon { color: #8a4bec; background: #f0e8ff; }
+        .metric:nth-child(4) .metric-icon { color: #ed8d11; background: #fff0d9; }
+        .metric strong { display: block; margin-top: 9px; color: #123372; font-size: clamp(21px, 1.8vw, 27px); letter-spacing: -.025em; }
+        .metric small { display: block; margin-top: 4px; color: #8293b0; font-size: 9px; }
+        .metric .trend { display: none; }
+        .status-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 11px; margin: 11px 0; }
+        .status-card { display: flex; min-height: 62px; align-items: center; gap: 10px; padding: 9px 13px; }
+        .status-dot { display: grid; width: 30px; height: 30px; flex: 0 0 30px; place-items: center; border-radius: 50%; color: white; background: var(--green); font-size: 13px; }
+        .status-card:nth-child(2) .status-dot { background: var(--blue-bright); }
+        .status-card:nth-child(3) .status-dot { background: var(--orange); }
+        .status-card:nth-child(4) .status-dot { background: #8294ad; }
+        .status-copy { display: grid; gap: 3px; }
+        .status-copy small { color: #7183a1; font-size: 9px; }
+        .status-copy strong { font-size: 12px; }
+        .status-arrow { margin-left: auto; color: #8294b1; font-size: 14px; }
+        .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; margin-bottom: 11px; }
+        .panel { min-width: 0; overflow: hidden; }
+        .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: 13px 14px 0; }
+        .panel-head h2, .section-heading h2 { margin: 0; font-size: 12px; }
+        .panel-head p, .section-heading p { margin: 4px 0 0; color: #8293b0; font-size: 9px; }
+        .legend { display: flex; gap: 10px; color: #7082a1; font-size: 9px; }
+        .legend span::before { display: inline-block; width: 5px; height: 5px; margin-right: 4px; border-radius: 50%; background: var(--blue-bright); content: ""; }
+        .bar-chart { display: flex; height: 136px; align-items: end; justify-content: space-around; gap: 7px; padding: 14px 16px 19px 34px; background: repeating-linear-gradient(to bottom, transparent 0, transparent 31px, #edf2fa 32px); }
+        .bar-group { display: flex; height: 100%; align-items: end; gap: 2px; }
+        .bar { width: 9px; min-height: 3px; border-radius: 3px 3px 0 0; background: var(--blue-bright); }
+        .bar.alt { background: #9c57fa; }
+        .chart-axis { display: flex; justify-content: space-around; gap: 3px; padding: 0 8px 11px 25px; color: #8394b0; font-size: 8px; }
+        .distribution { display: flex; min-height: 158px; align-items: center; justify-content: center; gap: 22px; padding: 10px; }
+        .donut { display: grid; width: 112px; height: 112px; flex: 0 0 112px; place-items: center; border-radius: 50%; }
+        .donut-hole { display: grid; width: 74px; height: 74px; place-content: center; border-radius: 50%; background: #fff; text-align: center; }
+        .donut-hole strong { color: #173b79; font-size: 16px; }
+        .donut-hole small { margin-top: 3px; color: #8393ad; font-size: 8px; }
+        .distribution-legend { display: grid; gap: 9px; min-width: 135px; }
+        .distribution-row { display: grid; grid-template-columns: 9px 1fr auto; align-items: center; gap: 7px; color: #637794; font-size: 9px; }
+        .distribution-row i { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+        .distribution-row:nth-child(2) i { background: var(--blue-bright); }
+        .distribution-row:nth-child(3) i { background: var(--orange); }
+        .distribution-row:nth-child(4) i { background: #8798b2; }
+        .distribution-row strong { color: #18366d; font-size: 9px; }
+        .section-heading { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px 9px; }
+        .management-panel { margin-bottom: 11px; }
+        .tools-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; padding: 0 12px 12px; }
+        .tool { display: flex; min-height: 66px; align-items: center; gap: 9px; padding: 9px; border: 1px solid #e7eef9; border-radius: 8px; background: linear-gradient(135deg, #fff, #fbfdff); }
+        .tool:hover { border-color: #adcaff; box-shadow: 0 4px 10px rgba(50,107,220,.1); }
+        .tool-icon { display: grid; width: 31px; height: 31px; flex: 0 0 31px; place-items: center; border-radius: 8px; color: #536bfa; background: #edf1ff; font-size: 15px; }
+        .tool:nth-child(3n+2) .tool-icon { color: #3186ed; background: #e9f4ff; }
+        .tool:nth-child(3n+3) .tool-icon { color: #9756ea; background: #f4eaff; }
+        .tool-copy { display: grid; gap: 4px; min-width: 0; }
+        .tool-copy strong { font-size: 9px; }
+        .tool-copy small { color: #8293b0; font-size: 8px; line-height: 1.4; }
+        .tool-arrow { margin-left: auto; color: #6984b4; font-size: 13px; }
+        .right-column { display: grid; align-content: start; gap: 11px; }
+        .quick-panel, .period-panel, .quick-links { padding: 13px; }
+        .right-title { display: flex; align-items: center; justify-content: space-between; gap: 9px; margin-bottom: 10px; }
+        .right-title h2 { margin: 0; font-size: 12px; }
+        .right-title a { color: var(--blue); font-size: 9px; }
+        .quick-actions { display: grid; gap: 7px; }
+        .quick-action { display: flex; min-height: 37px; align-items: center; gap: 9px; padding: 0 10px; border: 1px solid #e5edf9; border-radius: 7px; color: #15366f; font-size: 9px; }
+        .quick-action.primary { border-color: #3154d6; color: #fff; background: linear-gradient(100deg, #405ce5, #2b42bb); }
+        .quick-action:hover { border-color: #9ebcf7; background-color: #f5f8ff; }
+        .quick-action.primary:hover { background: #2947cb; }
+        .quick-action .action-icon { width: 17px; text-align: center; font-size: 14px; }
+        .quick-action .action-arrow { margin-left: auto; font-size: 13px; }
+        .activity-list { display: grid; }
+        .activity { display: grid; grid-template-columns: 29px 1fr auto; align-items: center; gap: 8px; min-height: 49px; border-top: 1px solid #eff3fa; }
+        .activity:first-child { border-top: 0; }
+        .activity-icon { display: grid; width: 26px; height: 26px; place-items: center; border-radius: 7px; color: #984ce9; background: #f2e8ff; font-size: 13px; }
+        .activity:nth-child(2n) .activity-icon { color: #0da979; background: #e2f8ee; }
+        .activity-copy { display: grid; gap: 4px; min-width: 0; }
+        .activity-copy strong { overflow: hidden; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+        .activity-copy small, .activity time { color: #8594ad; font-size: 8px; }
+        .period-panel { display: grid; grid-template-columns: 31px 1fr; align-items: center; gap: 9px; }
+        .period-icon { display: grid; width: 29px; height: 29px; place-items: center; border-radius: 50%; color: #2654c6; background: #edf3ff; }
+        .period-label { display: grid; gap: 6px; }
+        .period-label strong { font-size: 9px; }
+        .period-form { display: flex; min-width: 0; }
+        .period-form select { width: 100%; min-width: 0; padding: 7px 8px; border: 1px solid #e6edf8; border-radius: 6px; color: #193b79; background: #fff; font-size: 9px; }
+        .period-form button { padding: 0 7px; border: 0; color: #365bd4; background: transparent; cursor: pointer; font-size: 15px; }
+        .quick-links { display: grid; gap: 4px; }
+        .quick-links .right-title { margin-bottom: 3px; }
+        .quick-link { display: flex; align-items: center; gap: 9px; min-height: 26px; color: #526b91; font-size: 9px; }
+        .quick-link span { width: 18px; color: #244c9f; text-align: center; }
+        .empty { padding: 16px 7px; color: #8494ad; font-size: 9px; text-align: center; }
+        .scope { padding: 0 3px 5px; color: #8494ad; font-size: 9px; text-align: right; }
+        .content-grid[data-section]:not([data-section="dashboard"]) .main-column,
+        .content-grid[data-section]:not([data-section="dashboard"]) .right-column { display: none; }
+        .section-page { display: none; grid-column: 1 / -1; min-width: 0; }
+        .content-grid[data-section="payslips"] [data-view="payslips"],
+        .content-grid[data-section="runs"] [data-view="runs"],
+        .content-grid[data-section="contracts"] [data-view="contracts"],
+        .content-grid[data-section="allowances"] [data-view="allowances"],
+        .content-grid[data-section="deductions"] [data-view="deductions"],
+        .content-grid[data-section="reimbursements"] [data-view="reimbursements"],
+        .content-grid[data-section="employees"] [data-view="employees"],
+        .content-grid[data-section="reports"] [data-view="reports"],
+        .content-grid[data-section="settings"] [data-view="settings"] { display: block; }
+        .section-heading-panel { margin-bottom: 14px; }
+        .section-heading-panel .section-heading { padding: 18px 20px; }
+        .section-heading-panel .section-heading h1 { margin: 0; font-size: 22px; }
+        .section-heading-panel .section-heading p { margin-top: 6px; font-size: 12px; }
+        .deduction-policy-empty { margin: 0 0 12px; padding: 14px 16px; border: 1px solid #dce6f4; border-radius: 9px; color: #607796; background: #fff; font-size: 11px; line-height: 1.5; }
+        .section-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; padding: 12px 16px; border-top: 1px solid var(--line); }
+        .section-toolbar input, .section-toolbar select { min-height: 36px; padding: 0 11px; border: 1px solid var(--line); border-radius: 7px; color: var(--ink); background: #fff; font: inherit; }
+        .section-toolbar input { min-width: min(260px, 100%); }
+        .section-toolbar button, .section-action { display: inline-flex; min-height: 36px; flex: 0 0 auto; align-items: center; padding: 0 13px; border: 0; border-radius: 7px; color: #fff; background: var(--blue); font-size: 11px; font-weight: 700; white-space: nowrap; cursor: pointer; }
+        .section-table-wrap { overflow-x: auto; }
+        .section-table { width: 100%; border-collapse: collapse; min-width: 680px; }
+        .section-table th { padding: 13px 15px; color: #577096; background: #f5f8fd; font-size: 10px; text-align: left; white-space: nowrap; }
+        .section-table td { padding: 13px 15px; border-top: 1px solid #edf2f8; color: #586f91; font-size: 11px; white-space: nowrap; }
+        .section-table td strong { color: var(--ink); }
+        .section-empty { padding: 32px 16px !important; color: #8393ad !important; text-align: center; white-space: normal !important; }
+        .section-stats { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; margin-bottom: 12px; }
+        .section-stat { padding: 14px 16px; border: 1px solid var(--line); border-radius: 9px; background: #fff; }
+        .section-stat small { color: var(--muted); font-size: 10px; }
+        .section-stat strong { display: block; margin-top: 6px; font-size: 20px; }
+        .status-label { display: inline-flex; padding: 5px 9px; border-radius: 20px; color: #187765; background: #e5f8f1; font-size: 9px; font-weight: 750; }
+        .status-label.requested, .status-label.draft, .status-label.review_ongoing { color: #946600; background: #fff5d8; }
+        .status-label.rejected, .status-label.terminated { color: #a43d3d; background: #ffeded; }
+        .workspace-modal[hidden] { display: none; }
+        .workspace-modal { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 24px; zoom: .8; background: rgba(9, 24, 48, .68); }
+        .workspace-modal__dialog { display: flex; width: min(1200px, calc(100vw - 48px)); height: min(820px, calc(100vh - 48px)); max-height: calc(100dvh - 48px); flex-direction: column; overflow: hidden; border: 1px solid #dce6f4; border-radius: 14px; background: #f5f8fd; box-shadow: 0 24px 70px rgba(5, 18, 42, .3); }
+        .workspace-modal__header { display: flex; min-height: 56px; align-items: center; justify-content: space-between; padding: 0 18px; color: #fff; background: #102449; }
+        .workspace-modal__header h2 { margin: 0; font-size: 15px; }
+        .workspace-modal__close { width: 34px; height: 34px; border: 1px solid rgba(255,255,255,.25); border-radius: 8px; color: #fff; background: rgba(255,255,255,.1); font-size: 22px; cursor: pointer; }
+        .workspace-modal__frame { width: 100%; min-height: 0; flex: 1; border: 0; background: #f5f8fd; }
+        @media (max-width: 760px) {
+            .workspace-modal { padding: 10px; }
+            .workspace-modal__dialog { width: calc(100vw - 20px); height: calc(100vh - 20px); max-height: calc(100dvh - 20px); border-radius: 10px; }
+            .workspace-modal__header { min-height: 48px; padding: 0 12px; }
+        }
+        @media (max-width: 640px) {
+            .section-page[data-view="deductions"] .section-heading { align-items: stretch; flex-direction: column; }
+        }
+        @media (min-width: 1500px) { .content-grid { padding: 18px 20px 28px; grid-template-columns: minmax(0, 1fr) 300px; gap: 18px; } .hero { min-height: 160px; } .metric { min-height: 140px; } }
+        @media (max-width: 1500px) { .content-grid { grid-template-columns: minmax(0, 1fr); } .right-column { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+        @media (max-width: 1060px) { .content-grid { grid-template-columns: minmax(0,1fr); } .right-column { grid-template-columns: repeat(2, minmax(0,1fr)); } .tools-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+        @media (max-width: 760px) {
+            .sidebar { position: static; width: auto; min-height: 0; padding: 8px 10px; }
+            .brand { min-height: 36px; padding: 0 3px 8px; }
+            .side-nav { display: flex; overflow-x: auto; gap: 4px; }
+            .side-heading, .side-sub, .sidebar-bottom { display: none; }
+            .side-link { flex: 0 0 auto; min-height: 36px; }
+            .workspace { margin-left: 0; }
+            .topbar { top: 0; height: 54px; }
+            .content-grid { grid-template-columns: minmax(0,1fr); padding: 12px; }
+            .right-column { grid-template-columns: repeat(2, minmax(0,1fr)); }
+            .hero-illustration { opacity: .72; transform: scale(.8); transform-origin: right center; }
+        }
+        @media (max-width: 520px) {
+            .cards { grid-template-columns: repeat(2, minmax(0,1fr)); }
+            .status-strip { grid-template-columns: repeat(2, minmax(0,1fr)); }
+            .chart-grid { grid-template-columns: 1fr; }
+            .right-column { grid-template-columns: 1fr; }
+            .hero { min-height: 130px; padding: 17px 14px; }
+            .hero-illustration { right: -21px; opacity: .42; transform: scale(.68); }
+            .hero-content { max-width: 76%; }
+            .hero h1 { font-size: 23px; }
+            .tools-grid { grid-template-columns: 1fr 1fr; }
+            .search { width: auto; flex: 1; }
+            .topbar { padding: 0 10px; }
+            .top-user { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar" aria-label="{% trans 'Payroll workspace navigation' %}">
+        <a class="brand" href="{% url 'payroll-management-dashboard' %}">
+            <span class="brand-mark">E</span>
+            <span class="brand-copy"><strong>EMPLY</strong><small>{% trans "Payroll Management" %}</small></span>
+        </a>
+        <nav class="side-nav">
+            <a class="side-link {% if section == 'dashboard' %}active{% endif %}" data-section-link="dashboard" href="{% url 'payroll-management-dashboard' %}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9M9 20v-7h6v7"/></svg></span>{% trans "Dashboard" %}</a>
+            <a class="side-link {% if section == 'payslips' %}active{% endif %}" data-section-link="payslips" href="?section=payslips&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h7"/></svg></span>{% trans "Employee payslips" %}</a>
+            <a class="side-link {% if section == 'runs' %}active{% endif %}" data-section-link="runs" href="?section=runs&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11a8 8 0 1 1 1 6"/><path d="M4 5v6h6M12 7v5l3 2"/></svg></span>{% trans "Payroll runs" %}</a>
+            <div class="side-heading">{% trans "Management" %}</div>
+            {% if perms.payroll.view_contract or is_superuser %}<a class="side-link side-sub {% if section == 'contracts' %}active{% endif %}" data-section-link="contracts" href="?section=contracts&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h5"/></svg></span>{% trans "Contracts" %}</a>{% endif %}
+            {% if is_superuser or perms.employee.view_employee %}<a class="side-link side-sub {% if section == 'employees' %}active{% endif %}" data-section-link="employees" href="?section=employees&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20v-1a6 6 0 0 1 12 0v1zM16 5a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3 5v1h-3"/></svg></span>{% trans "Employees" %}</a>{% endif %}
+            {% if perms.payroll.view_payslip or is_superuser %}<a class="side-link {% if section == 'reports' %}active{% endif %}" data-section-link="reports" href="?section=reports&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V12h4v8zM10 20V7h4v13zM16 20V3h4v17z"/></svg></span>{% trans "Reports" %}</a>{% endif %}
+            {% if perms.payroll.view_allowance or is_superuser %}<a class="side-link side-sub {% if section == 'allowances' %}active{% endif %}" data-section-link="allowances" href="?section=allowances&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v10M7 12h10"/></svg></span>{% trans "Allowances" %}</a>{% endif %}
+            {% if perms.payroll.view_deduction or is_superuser %}<a class="side-link side-sub {% if section == 'deductions' %}active{% endif %}" data-section-link="deductions" href="?section=deductions&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M7 12h10"/></svg></span>{% trans "Deductions" %}</a>{% endif %}
+            {% if perms.payroll.view_reimbursement or is_superuser %}<a class="side-link side-sub {% if section == 'reimbursements' %}active{% endif %}" data-section-link="reimbursements" href="?section=reimbursements&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 10 10-10 10L2 12z"/><path d="M8.5 12h7M12 8.5v7"/></svg></span>{% trans "Reimbursements" %}</a>{% endif %}
+            {% if is_superuser or perms.payroll.view_payrollsettings %}<a class="side-link {% if section == 'settings' %}active{% endif %}" data-section-link="settings" href="?section=settings&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.4 1.1-1.5 2.6-1.7-.6a8 8 0 0 1-1.7 1l-.3 1.8h-3l-.3-1.8a8 8 0 0 1-1.7-1l-1.7.6-1.5-2.6 1.4-1.1a7 7 0 0 1 0-2l-1.4-1.1 1.5-2.6 1.7.6a8 8 0 0 1 1.7-1l.3-1.8h3l.3 1.8a8 8 0 0 1 1.7 1l1.7-.6 1.5 2.6-1.4 1.1a7 7 0 0 1 0 1.9z" transform="translate(-1 -1)"/></svg></span>{% trans "Settings" %}</a>{% endif %}
+        </nav>
+        <div class="sidebar-bottom">
+            <span class="mini-avatar">{{ user_name|slice:":1"|upper }}</span>
+            <div><strong>{{ user_name }}</strong><small>{{ user_email|default:"Payroll administrator" }}</small><span class="sidebar-online">{% trans "Online" %}</span></div>
+        </div>
+    </aside>
+    <div class="workspace">
+        <header class="topbar">
+            <div class="search" aria-label="{% trans 'Search' %}"><span>⌕</span><span>{% trans "Search employees, payslips, reports..." %}</span><kbd>Ctrl + K</kbd></div>
+            <div class="top-actions">
+                <div class="notification-widget" data-payroll-notification-widget
+                    data-feed-url="{% url 'payroll-notification-feed' %}"
+                    data-read-url="{% url 'payroll-notification-read' 0 %}"
+                    data-csrf-token="{{ csrf_token }}">
+                    <button class="notification" type="button" data-payroll-notification-toggle
+                        aria-label="{% trans 'Payroll notifications' %}" aria-expanded="false" aria-controls="payroll-notification-panel">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
+                        <span class="notification-count" data-payroll-notification-count hidden></span>
+                    </button>
+                    <section class="payroll-notification-panel" id="payroll-notification-panel" data-payroll-notification-panel hidden aria-label="{% trans 'Payroll notifications' %}">
+                        <div class="payroll-notification-heading">{% trans "Payroll notifications" %}</div>
+                        <ul class="payroll-notification-list" data-payroll-notification-list aria-live="polite"></ul>
+                    </section>
+                </div>
+                <div class="top-user"><strong>{{ user_name }}</strong><small>{% trans "Administrator" %}</small></div>
+                <span class="mini-avatar">{{ user_name|slice:":1"|upper }}</span>
+                <a class="quick-action" href="{% url 'home-page' %}">{% trans "Exit workspace" %}</a>
+            </div>
+        </header>
+        <div class="content-grid" id="dashboard" data-section="{{ section }}">
+            <main class="section-page" data-view="payslips">
+                <section class="panel section-heading-panel"><header class="section-heading"><div><h1>{% trans "Employee payslips" %}</h1><p>{% blocktrans with month=selected_month %}Payslips for {{ month }}{% endblocktrans %}</p></div>{% if perms.payroll.add_payslip or is_superuser %}<a class="section-action" href="?section=payslips&amp;period={{ selected_period }}" data-workspace-modal-url="{% url 'generate-payslip' %}" data-workspace-modal-title="{% trans 'Generate payslips' %}">{% trans "Generate payslips" %}</a>{% endif %}</header></section>
+                <section class="section-stats"><article class="section-stat"><small>{% trans "Payslips in period" %}</small><strong>{{ payslip_count }}</strong></article><article class="section-stat"><small>{% trans "Paid" %}</small><strong>{{ status_counts.paid|default:0 }}</strong></article><article class="section-stat"><small>{% trans "Awaiting review" %}</small><strong>{{ status_counts.review_ongoing|default:0 }}</strong></article></section>
+                <section class="panel section-table-wrap"><table class="section-table"><thead><tr><th>{% trans "Employee" %}</th><th>{% trans "Pay period" %}</th><th>{% trans "Basic pay" %}</th><th>{% trans "Deductions" %}</th><th>{% trans "Net pay" %}</th><th>{% trans "Status" %}</th><th></th></tr></thead><tbody>
+                    {% for payslip in payslips %}<tr><td><strong>{{ payslip.employee_id }}</strong></td><td>{{ payslip.start_date|date:"d M Y" }} – {{ payslip.end_date|date:"d M Y" }}</td><td>₹{{ payslip.basic_pay|default:0|floatformat:2 }}</td><td>₹{{ payslip.deduction|default:0|floatformat:2 }}</td><td><strong>₹{{ payslip.net_pay|default:0|floatformat:2 }}</strong></td><td><span class="status-label {{ payslip.status }}">{{ payslip.get_status_display }}</span></td><td><a class="section-action" href="{% url 'view-payslip-pdf' payslip.id %}">{% trans "View" %}</a></td></tr>{% empty %}<tr><td class="section-empty" colspan="7">{% trans "No payslips found for this month." %}</td></tr>{% endfor %}
+                </tbody></table></section>
+            </main>
+            <main class="section-page" data-view="runs">
+                <section class="panel section-heading-panel"><header class="section-heading"><div><h1>{% trans "Payroll runs" %}</h1><p>{% blocktrans with month=selected_month %}Payroll processing and approvals for {{ month }}{% endblocktrans %}</p></div>{% if perms.payroll.add_payslip or is_superuser %}<a class="section-action" href="?section=runs&amp;period={{ selected_period }}" data-workspace-modal-url="{% url 'payroll-run-create' %}" data-workspace-modal-title="{% trans 'Create payroll run' %}">{% trans "Create payroll run" %}</a>{% endif %}</header></section>
+                <section class="panel section-table-wrap"><table class="section-table"><thead><tr><th>{% trans "Company" %}</th><th>{% trans "Period" %}</th><th>{% trans "Attempt" %}</th><th>{% trans "Employees" %}</th><th>{% trans "Status" %}</th><th>{% trans "Updated" %}</th><th></th></tr></thead><tbody>
+                    {% for run in all_runs %}<tr><td><strong>{{ run.company }}</strong></td><td>{{ run.start_date|date:"d M Y" }} – {{ run.end_date|date:"d M Y" }}</td><td>{{ run.attempt }}</td><td>{{ run.items.count }}</td><td><span class="status-label {{ run.status }}">{{ run.get_status_display }}</span></td><td>{{ run.updated_at|date:"d M Y, H:i" }}</td><td><a class="section-action" href="{% url 'payroll-run-detail' run.pk %}">{% trans "Review" %}</a></td></tr>{% empty %}<tr><td class="section-empty" colspan="7">{% trans "No payroll runs found for this month." %}</td></tr>{% endfor %}
+                </tbody></table></section>
+            </main>
+            <main class="section-page" data-view="contracts">
+                <section class="panel section-heading-panel"><header class="section-heading"><div><h1>{% trans "Contracts" %}</h1><p>{% trans "Employee agreements, pay rates, and contract status." %}</p></div></header></section>
+                <section class="panel section-table-wrap"><table class="section-table"><thead><tr><th>{% trans "Contract" %}</th><th>{% trans "Employee" %}</th><th>{% trans "Start date" %}</th><th>{% trans "End date" %}</th><th>{% trans "Salary" %}</th><th>{% trans "Status" %}</th></tr></thead><tbody>
+                    {% for contract in contracts %}<tr><td><strong>{{ contract.contract_name }}</strong></td><td>{{ contract.employee_id }}</td><td>{{ contract.contract_start_date|date:"d M Y" }}</td><td>{{ contract.contract_end_date|date:"d M Y"|default:"—" }}</td><td>₹{{ contract.wage|default:0|floatformat:2 }}</td><td><span class="status-label {{ contract.contract_status }}">{{ contract.get_contract_status_display }}</span></td></tr>{% empty %}<tr><td class="section-empty" colspan="6">{% trans "No contracts found." %}</td></tr>{% endfor %}
+                </tbody></table></section>
+            </main>
+            <main class="section-page" data-view="allowances">
+                <section class="panel section-heading-panel"><header class="section-heading"><div><h1>{% trans "Allowances" %}</h1><p>{% trans "Configured employee allowances and amounts." %}</p></div></header></section>
+                <section class="panel section-table-wrap"><table class="section-table"><thead><tr><th>{% trans "Allowance" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Calculation" %}</th><th>{% trans "Taxable" %}</th><th>{% trans "Targeting" %}</th></tr></thead><tbody>
+                    {% for allowance in allowances %}<tr><td><strong>{{ allowance.title }}</strong></td><td>{% if allowance.is_fixed %}₹{{ allowance.amount|default:0|floatformat:2 }}{% else %}{{ allowance.rate|default:0|floatformat:2 }}%{% endif %}</td><td>{% if allowance.is_fixed %}{% trans "Fixed amount" %}{% else %}{{ allowance.get_based_on_display|default:allowance.based_on }}{% endif %}</td><td>{% if allowance.is_taxable %}{% trans "Taxable" %}{% else %}{% trans "Non-taxable" %}{% endif %}</td><td>{% if allowance.include_active_employees %}{% trans "All active employees" %}{% else %}{% trans "Selected employees" %}{% endif %}</td></tr>{% empty %}<tr><td class="section-empty" colspan="5">{% trans "No allowances found." %}</td></tr>{% endfor %}
+                </tbody></table></section>
+            </main>
+            <main class="section-page" data-view="deductions">
+                <section class="panel section-heading-panel"><header class="section-heading"><div><h1>{% trans "Deductions" %}</h1><p>{% if selected_deduction_employee %}{% blocktrans with name=selected_deduction_employee %}Leave and attendance deductions for {{ name }}.{% endblocktrans %}{% else %}{% trans "Choose an employee to inspect leave and attendance deductions by month." %}{% endif %}</p></div>{% if selected_deduction_employee %}<a class="section-action" href="?section=deductions&amp;period={{ selected_period }}">{% trans "All employees" %}</a>{% endif %}</header></section>
+                {% if selected_deduction_employee and selected_deduction_payroll %}
+                    <section class="section-stats">
+                        <article class="section-stat"><small>{% trans "Employee" %}</small><strong>{{ selected_deduction_employee }}</strong></article>
+                        <article class="section-stat"><small>{% trans "Monthly deductions" %}</small><strong>{{ selected_deduction_payroll.total_deductions_display }}</strong></article>
+                        <article class="section-stat"><small>{% trans "Deduction events" %}</small><strong>{{ selected_deduction_payroll.total_affected_days }}</strong></article>
+                    </section>
+                    <section class="panel section-heading-panel">
+                        <form class="section-toolbar" method="get">
+                            <input type="hidden" name="section" value="deductions">
+                            <input type="hidden" name="employee" value="{{ selected_deduction_employee.pk }}">
+                            <label for="deduction-period">{% trans "Payroll month" %}</label>
+                            <select id="deduction-period" name="period" aria-label="{% trans 'Payroll month' %}">
+                                {% for option in deduction_period_options %}<option value="{{ option.key }}" {% if option.key == selected_period %}selected{% endif %}>{{ option.label }}</option>{% endfor %}
+                            </select>
+                            <button type="submit">{% trans "View month" %}</button>
+                        </form>
+                    </section>
+                    <p class="deduction-policy-empty">{% blocktrans with month=selected_month %}The details below use approved leave, validated attendance, unpaid leave, absence, and the configured leave policy for {{ month }}. Future and unfinished workdays are not counted as absence.{% endblocktrans %}</p>
+                    <section class="panel section-table-wrap"><table class="section-table"><thead><tr><th>{% trans "Date" %}</th><th>{% trans "Deduction" %}</th><th>{% trans "Rate" %}</th><th>{% trans "Reason and policy" %}</th><th>{% trans "Calculation" %}</th><th>{% trans "Amount" %}</th></tr></thead><tbody>
+                        {% for detail in selected_deduction_payroll.deduction_details %}<tr><td>{{ detail.date|date:"d M Y" }}</td><td><strong>{{ detail.leave_type }}</strong></td><td>{{ detail.rate_label }}</td><td>{{ detail.reason }}<br><small>{{ detail.policy }}</small></td><td>{{ detail.calculation }}</td><td><strong>{{ detail.amount_display }}</strong></td></tr>{% empty %}<tr><td class="section-empty" colspan="6">{% trans "No leave or attendance deductions apply to this employee for the selected month." %}</td></tr>{% endfor %}
+                    </tbody></table></section>
+                {% else %}
+                    <section class="panel section-table-wrap"><table class="section-table"><thead><tr><th>{% trans "Employee" %}</th><th>{% trans "Department" %}</th><th>{% trans "Employee type" %}</th><th></th></tr></thead><tbody>
+                        {% for employee in deduction_employees %}<tr><td><strong>{{ employee }}</strong></td><td>{{ employee.employee_work_info.department_id|default:"—" }}</td><td>{{ employee.employee_work_info.employee_type_id|default:"—" }}</td><td><a class="section-action" href="?section=deductions&amp;period={{ selected_period }}&amp;employee={{ employee.pk }}">{% trans "View deductions" %}</a></td></tr>{% empty %}<tr><td class="section-empty" colspan="4">{% trans "No employees found." %}</td></tr>{% endfor %}
+                    </tbody></table></section>
+                {% endif %}
+            </main>
+            <main class="section-page" data-view="reimbursements">
+                <section class="panel section-heading-panel"><header class="section-heading"><div><h1>{% trans "Reimbursements" %}</h1><p>{% trans "Review reimbursement and encashment requests without leaving the payroll workspace." %}</p></div><a class="section-action" href="{% url 'view-reimbursement' %}">{% trans "Full management" %}</a></header>
+                    <form class="section-toolbar" method="get"><input type="hidden" name="section" value="reimbursements"><input type="hidden" name="period" value="{{ selected_period }}"><input type="search" name="search" value="{{ reimbursement_search }}" placeholder="{% trans 'Search request titles' %}" aria-label="{% trans 'Search reimbursements' %}"><select name="status" aria-label="{% trans 'Filter by status' %}"><option value="">{% trans "All statuses" %}</option>{% for value,label in reimbursement_statuses %}<option value="{{ value }}" {% if reimbursement_filter == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select><button type="submit">{% trans "Filter" %}</button></form>
+                </section>
+                <section class="section-stats"><article class="section-stat"><small>{% trans "Requested" %}</small><strong>{{ reimbursement_counts.requested|default:0 }}</strong></article><article class="section-stat"><small>{% trans "Approved" %}</small><strong>{{ reimbursement_counts.approved|default:0 }}</strong></article><article class="section-stat"><small>{% trans "Rejected" %}</small><strong>{{ reimbursement_counts.rejected|default:0 }}</strong></article></section>
+                <section class="panel section-table-wrap"><table class="section-table"><thead><tr><th>{% trans "Employee" %}</th><th>{% trans "Request" %}</th><th>{% trans "Type" %}</th><th>{% trans "Date" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Status" %}</th><th></th></tr></thead><tbody>
+                    {% for reimbursement in reimbursements %}<tr><td><strong>{{ reimbursement.employee_id }}</strong></td><td>{{ reimbursement.title }}</td><td>{{ reimbursement.get_type_display }}</td><td>{{ reimbursement.allowance_on|date:"d M Y" }}</td><td>₹{{ reimbursement.amount|default:0|floatformat:2 }}</td><td><span class="status-label {{ reimbursement.status }}">{{ reimbursement.get_status_display }}</span></td><td><a class="section-action" href="{% url 'reimbursement-individual-view' reimbursement.pk %}">{% trans "Review" %}</a></td></tr>{% empty %}<tr><td class="section-empty" colspan="7">{% trans "No reimbursement requests match this filter." %}</td></tr>{% endfor %}
+                </tbody></table></section>
+            </main>
+            <main class="section-page" data-view="employees">
+                <section class="panel section-heading-panel"><header class="section-heading"><div><h1>{% trans "Employee directory" %}</h1><p>{% trans "Active employees available to your payroll account." %}</p></div>{% if is_superuser or perms.employee.view_employee %}<a class="section-action" href="?section=employees&amp;period={{ selected_period }}" data-workspace-modal-url="{% url 'employee-view' %}" data-workspace-modal-title="{% trans 'Employee management' %}">{% trans "Open employee management" %}</a>{% endif %}</header></section>
+                <section class="panel section-table-wrap"><table class="section-table"><thead><tr><th>{% trans "Employee" %}</th><th>{% trans "Email" %}</th><th>{% trans "Badge ID" %}</th><th>{% trans "Status" %}</th></tr></thead><tbody>
+                    {% for employee in employees %}<tr><td><strong>{{ employee.employee_first_name }} {{ employee.employee_last_name|default:"" }}</strong></td><td>{{ employee.email }}</td><td>{{ employee.badge_id|default:"—" }}</td><td><span class="status-label">{% trans "Active" %}</span></td></tr>{% empty %}<tr><td class="section-empty" colspan="4">{% trans "No active employees found." %}</td></tr>{% endfor %}
+                </tbody></table></section>
+            </main>
+            <main class="section-page" data-view="reports">
+                <section class="panel section-heading-panel"><header class="section-heading"><div><h1>{% trans "Payroll reports" %}</h1><p>{% blocktrans with month=selected_month %}Payroll report summary for {{ month }}{% endblocktrans %}</p></div></header></section>
+                <section class="section-stats"><article class="section-stat"><small>{% trans "Payslips processed" %}</small><strong>{{ payslip_count }}</strong></article><article class="section-stat"><small>{% trans "Net payroll" %}</small><strong>₹{{ total_net|floatformat:2 }}</strong></article><article class="section-stat"><small>{% trans "Deductions" %}</small><strong>₹{{ total_deductions|floatformat:2 }}</strong></article></section>
+                <section class="panel section-table-wrap"><table class="section-table"><thead><tr><th>{% trans "Status" %}</th><th>{% trans "Payslips" %}</th><th>{% trans "Selected period" %}</th></tr></thead><tbody>
+                    {% for item in chart_statuses %}<tr><td><strong>{{ item.label }}</strong></td><td>{{ item.count }}</td><td>{{ selected_month }}</td></tr>{% endfor %}
+                    <tr><td><strong>{% trans "Payroll runs" %}</strong></td><td>{{ run_count }}</td><td>{{ selected_month }}</td></tr>
+                </tbody></table></section>
+            </main>
+            <main class="section-page" data-view="settings">
+                <section class="panel section-heading-panel"><header class="section-heading"><div><h1>{% trans "Payroll settings" %}</h1><p>{% trans "Open the configuration controls available to your account." %}</p></div></header></section>
+                <div class="tools-grid">
+                    {% if is_superuser %}<a class="tool" href="?section=settings&amp;period={{ selected_period }}" data-workspace-modal-url="{% url 'super-admin-payroll-settings' %}" data-workspace-modal-title="{% trans 'Organization payroll settings' %}"><span class="tool-icon">⚙</span><span class="tool-copy"><strong>{% trans "Organization payroll settings" %}</strong><small>{% trans "Configure payroll settings across companies." %}</small></span><span class="tool-arrow">›</span></a>{% elif perms.payroll.view_payrollsettings %}<a class="tool" href="?section=settings&amp;period={{ selected_period }}" data-workspace-modal-url="{% url 'payroll-settings' %}" data-workspace-modal-title="{% trans 'Payroll configuration' %}"><span class="tool-icon">⚙</span><span class="tool-copy"><strong>{% trans "Payroll configuration" %}</strong><small>{% trans "View available payroll settings." %}</small></span><span class="tool-arrow">›</span></a>{% endif %}
+                </div>
+            </main>
+            <main class="main-column">
+                <section class="hero" id="overview">
+                    <div class="hero-content">
+                        <div class="eyebrow">{% trans "Payroll Management" %}</div>
+                        <h1>{% trans "Good Morning," %} <span>{{ user_role }}!</span></h1>
+                        <p>{% trans "Manage payroll, track deductions, and keep your team paid — all in one place." %}</p>
+                        <form class="hero-period-form" method="get">
+                            <label for="hero-period">{% trans "Payroll period" %}</label>
+                            <select id="hero-period" name="period" aria-label="{% trans 'Select payroll month' %}" onchange="this.form.submit()">
+                                {% for option in period_options %}<option value="{{ option.key }}" {% if option.key == selected_period %}selected{% endif %}>{{ option.label }}</option>{% endfor %}
+                            </select>
+                        </form>
+                    </div>
+                    <div class="hero-illustration" aria-hidden="true">
+                        <div class="paper"><strong>PAYROLL</strong><div class="paper-line"></div><span class="paper-check">✓</span><div class="paper-line"></div><span class="paper-check">✓</span><div class="paper-line"></div></div>
+                        <div class="rupee-orb">₹</div>
+                        <div class="floating-payroll-art"><img src="{% static 'images/ui/salary.png' %}" alt=""></div>
+                    </div>
+                </section>
+                <section class="cards" aria-label="{% trans 'Payroll summary' %}">
+                    <article class="metric"><div class="metric-head"><span class="metric-icon">♙</span>{% trans "Employees on payroll" %}</div><strong>{{ employee_count }}</strong><small>{% trans "Active employees this period" %}</small><span class="trend">↗ &nbsp;{% trans "Payroll team" %}</span></article>
+                    <article class="metric"><div class="metric-head"><span class="metric-icon">▣</span>{% trans "Payslips processed" %}</div><strong>{{ payslip_count }}</strong><small>{% trans "Across all available statuses" %}</small><span class="trend">↗ &nbsp;{% trans "This period" %}</span></article>
+                    <article class="metric"><div class="metric-head"><span class="metric-icon">₹</span>{% trans "Net payroll" %}</div><strong>₹{{ total_net|floatformat:2 }}</strong><small>{% trans "Recorded net pay for this period" %}</small><span class="trend">↗ &nbsp;{% trans "Net pay" %}</span></article>
+                    <article class="metric"><div class="metric-head"><span class="metric-icon">▤</span>{% trans "Total deductions" %}</div><strong>₹{{ total_deductions|floatformat:2 }}</strong><small>{{ pending_runs }} {% trans "payroll runs need attention" %}</small><span class="trend warn">● &nbsp;{% trans "View details" %} →</span></article>
+                </section>
+                <section class="status-strip" aria-label="{% trans 'Payroll status summary' %}">
+                    <div class="status-card"><span class="status-dot">✓</span><span class="status-copy"><small>{% trans "Paid" %}</small><strong>{{ status_counts.paid|default:0 }}</strong></span><span class="status-arrow">›</span></div>
+                    <div class="status-card"><span class="status-dot">◷</span><span class="status-copy"><small>{% trans "Confirmed" %}</small><strong>{{ status_counts.confirmed|default:0 }}</strong></span><span class="status-arrow">›</span></div>
+                    <div class="status-card"><span class="status-dot">▣</span><span class="status-copy"><small>{% trans "In review" %}</small><strong>{{ status_counts.review_ongoing|default:0 }}</strong></span><span class="status-arrow">›</span></div>
+                    <div class="status-card"><span class="status-dot">▰</span><span class="status-copy"><small>{% trans "Draft" %}</small><strong>{{ status_counts.draft|default:0 }}</strong></span><span class="status-arrow">›</span></div>
+                </section>
+                <section class="chart-grid">
+                    <article class="panel">
+                        <header class="panel-head"><div><h2>{% trans "Payroll Overview" %}</h2><p>{% blocktrans with month=selected_month %}Payroll status summary for {{ month }}{% endblocktrans %}</p></div><div class="legend"><span>{% trans "Payslips" %}</span></div></header>
+                        <div class="bar-chart" aria-label="{% trans 'Monthly payroll overview chart' %}">
+                            {% for item in chart_statuses %}
+                                <div class="bar-group" title="{{ item.label }}: {{ item.count }}"><span class="bar" style="height:{{ item.percent }}%"></span></div>
+                            {% endfor %}
+                        </div>
+                        <div class="chart-axis"><span>{% trans "Paid" %}</span><span>{% trans "Confirmed" %}</span><span>{% trans "In review" %}</span><span>{% trans "Draft" %}</span></div>
+                    </article>
+                    <article class="panel">
+                        <header class="panel-head"><div><h2>{% trans "Payroll Status Distribution" %}</h2><p>{% trans "Payslip status for the selected period" %}</p></div></header>
+                        <div class="distribution">
+                            <div class="donut" style="background:{{ donut_background }}"><div class="donut-hole"><strong>{{ payslip_count }}</strong><small>{% trans "Payslips" %}</small></div></div>
+                            <div class="distribution-legend">
+                                <div class="distribution-row"><i></i><span>{% trans "Paid" %}</span><strong>{{ status_counts.paid|default:0 }}</strong></div>
+                                <div class="distribution-row"><i></i><span>{% trans "Confirmed" %}</span><strong>{{ status_counts.confirmed|default:0 }}</strong></div>
+                                <div class="distribution-row"><i></i><span>{% trans "In review" %}</span><strong>{{ status_counts.review_ongoing|default:0 }}</strong></div>
+                                <div class="distribution-row"><i></i><span>{% trans "Draft" %}</span><strong>{{ status_counts.draft|default:0 }}</strong></div>
+                            </div>
+                        </div>
+                    </article>
+                </section>
+                <section class="panel management-panel" id="management">
+                    <header class="section-heading"><div><h2>{% trans "Payroll Management" %}</h2><p>{% trans "Go directly to the tools you need to administer payroll." %}</p></div></header>
+                    <div class="tools-grid">
+                        {% if perms.payroll.add_payslip or is_superuser %}<a class="tool" href="?section=runs&amp;period={{ selected_period }}" data-workspace-modal-url="{% url 'payroll-run-create' %}" data-workspace-modal-title="{% trans 'Create payroll preview' %}"><span class="tool-icon">▤</span><span class="tool-copy"><strong>{% trans "Create payroll preview" %}</strong><small>{% trans "Prepare payroll and review calculations before submission." %}</small></span><span class="tool-arrow">›</span></a>{% endif %}
+                        <a class="tool" href="?section=runs&amp;period={{ selected_period }}"><span class="tool-icon">◉</span><span class="tool-copy"><strong>{% trans "Review payroll runs" %}</strong><small>{% trans "Track drafts, approvals, rejections, and finalization." %}</small></span><span class="tool-arrow">›</span></a>
+                        {% if perms.payroll.view_payslip or is_superuser %}<a class="tool" href="?section=payslips&amp;period={{ selected_period }}"><span class="tool-icon">▣</span><span class="tool-copy"><strong>{% trans "Manage payslips" %}</strong><small>{% trans "Review employee payslips and payment status." %}</small></span><span class="tool-arrow">›</span></a>{% endif %}
+                        {% if perms.payroll.view_contract or is_superuser %}<a class="tool" href="?section=contracts&amp;period={{ selected_period }}"><span class="tool-icon">▤</span><span class="tool-copy"><strong>{% trans "Contracts and salary" %}</strong><small>{% trans "View employee agreements, pay rates, and contract status." %}</small></span><span class="tool-arrow">›</span></a>{% endif %}
+                        {% if perms.payroll.view_deduction or is_superuser %}<a class="tool" href="?section=deductions&amp;period={{ selected_period }}"><span class="tool-icon">◉</span><span class="tool-copy"><strong>{% trans "Deduction policies" %}</strong><small>{% trans "Review configured payroll deductions." %}</small></span><span class="tool-arrow">›</span></a>{% endif %}
+                        {% if is_superuser %}<a class="tool" href="?section=settings&amp;period={{ selected_period }}" data-workspace-modal-url="{% url 'super-admin-payroll-settings' %}" data-workspace-modal-title="{% trans 'Payroll configuration' %}"><span class="tool-icon">⚙</span><span class="tool-copy"><strong>{% trans "Payroll configuration" %}</strong><small>{% trans "Configure payroll settings across companies." %}</small></span><span class="tool-arrow">›</span></a>{% elif perms.payroll.view_payrollsettings %}<a class="tool" href="?section=settings&amp;period={{ selected_period }}" data-workspace-modal-url="{% url 'payroll-settings' %}" data-workspace-modal-title="{% trans 'Payroll configuration' %}"><span class="tool-icon">⚙</span><span class="tool-copy"><strong>{% trans "Payroll configuration" %}</strong><small>{% trans "Review settings available to your account." %}</small></span><span class="tool-arrow">›</span></a>{% endif %}
+                        {% if perms.payroll.view_payslip or is_superuser %}<a class="tool" href="?section=reports&amp;period={{ selected_period }}"><span class="tool-icon">▥</span><span class="tool-copy"><strong>{% trans "Reports and exports" %}</strong><small>{% trans "Review payroll totals and status for this period." %}</small></span><span class="tool-arrow">›</span></a>{% endif %}
+                        {% if is_superuser or perms.employee.view_employee %}<a class="tool" href="?section=employees&amp;period={{ selected_period }}"><span class="tool-icon">♙</span><span class="tool-copy"><strong>{% trans "Employee management" %}</strong><small>{% trans "View active employee records in this workspace." %}</small></span><span class="tool-arrow">›</span></a>{% endif %}
+                    </div>
+                </section>
+                <div class="scope">{% if is_superuser %}{% trans "Super Admin · all companies" %}{% else %}{% trans "Payroll Admin · authorized company data" %}{% endif %}</div>
+            </main>
+            <aside class="right-column">
+                <section class="quick-panel">
+                    <header class="right-title"><h2>{% trans "Quick Actions" %}</h2></header>
+                    <div class="quick-actions">
+                        {% if perms.payroll.add_payslip or is_superuser %}<a class="quick-action primary" href="?section=runs&amp;period={{ selected_period }}" data-workspace-modal-url="{% url 'payroll-run-create' %}" data-workspace-modal-title="{% trans 'Create payroll run' %}"><span class="action-icon">＋</span>{% trans "Create payroll run" %}<span class="action-arrow">›</span></a>{% endif %}
+                        {% if perms.payroll.add_payslip or is_superuser %}<a class="quick-action" href="?section=payslips&amp;period={{ selected_period }}" data-workspace-modal-url="{% url 'generate-payslip' %}" data-workspace-modal-title="{% trans 'Generate payslips' %}"><span class="action-icon">▤</span>{% trans "Generate payslips" %}<span class="action-arrow">›</span></a>{% endif %}
+                        {% if is_superuser or perms.employee.view_employee %}<a class="quick-action" href="?section=employees&amp;period={{ selected_period }}" data-workspace-modal-url="{% url 'employee-view' %}" data-workspace-modal-title="{% trans 'Employee management' %}"><span class="action-icon">♙</span>{% trans "Manage employees" %}<span class="action-arrow">›</span></a>{% endif %}
+                        {% if perms.payroll.view_payslip or is_superuser %}<a class="quick-action" href="?section=reports&amp;period={{ selected_period }}"><span class="action-icon">▤</span>{% trans "Payroll reports" %}<span class="action-arrow">›</span></a>{% endif %}
+                        {% if is_superuser %}<a class="quick-action" href="?section=settings&amp;period={{ selected_period }}" data-workspace-modal-url="{% url 'super-admin-payroll-settings' %}" data-workspace-modal-title="{% trans 'Payroll settings' %}"><span class="action-icon">⚙</span>{% trans "Payroll settings" %}<span class="action-arrow">›</span></a>{% elif perms.payroll.view_payrollsettings %}<a class="quick-action" href="?section=settings&amp;period={{ selected_period }}" data-workspace-modal-url="{% url 'payroll-settings' %}" data-workspace-modal-title="{% trans 'Payroll settings' %}"><span class="action-icon">⚙</span>{% trans "Payroll settings" %}<span class="action-arrow">›</span></a>{% endif %}
+                    </div>
+                </section>
+                <section class="quick-panel" id="runs">
+                    <header class="right-title"><h2>{% trans "Recent Activity" %}</h2><a href="?section=runs&amp;period={{ selected_period }}">{% trans "View all" %}</a></header>
+                    <div class="activity-list">
+                        {% for run in runs|slice:":5" %}
+                            <a class="activity" href="?section=runs&amp;period={{ selected_period }}"><span class="activity-icon">▣</span><span class="activity-copy"><strong>{% trans "Payroll run" %} {{ run.get_status_display }}</strong><small>{{ run.company }} · {{ run.start_date|date:"M Y" }}</small></span><time>{{ run.updated_at|date:"d M" }}</time></a>
+                        {% empty %}
+                            {% for payslip in payslips|slice:":5" %}
+                                <a class="activity" href="?section=payslips&amp;period={{ selected_period }}"><span class="activity-icon">▤</span><span class="activity-copy"><strong>{% trans "Payslip" %} {{ payslip.get_status_display }}</strong><small>{{ payslip.employee_id }}</small></span><time>{{ payslip.start_date|date:"d M" }}</time></a>
+                            {% empty %}
+                                <div class="empty">{% trans "No payroll activity for this period yet." %}</div>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                </section>
+                <form class="period-panel" method="get">
+                    <span class="period-icon">▦</span>
+                    <span class="period-label"><strong>{% trans "Payroll Period" %}</strong><span class="period-form"><select name="period" aria-label="{% trans 'Payroll period' %}" onchange="this.form.submit()">{% for option in period_options %}<option value="{{ option.key }}" {% if option.key == selected_period %}selected{% endif %}>{{ option.label }}</option>{% endfor %}</select><button type="submit" aria-label="{% trans 'View selected month' %}">›</button></span></span>
+                </form>
+                <section class="quick-links">
+                    <header class="right-title"><h2>{% trans "Quick Links" %}</h2></header>
+                    {% if perms.payroll.view_payslip or is_superuser %}<a class="quick-link" href="?section=payslips&amp;period={{ selected_period }}"><span>▤</span>{% trans "View all payslips" %}</a>{% endif %}
+                    <a class="quick-link" href="?section=reports&amp;period={{ selected_period }}"><span>▣</span>{% trans "Run payroll report" %}</a>
+                    {% if is_superuser or perms.payroll.view_filingstatus %}<a class="quick-link" href="?section=reports&amp;period={{ selected_period }}" data-workspace-modal-url="{% url 'filing-status-view' %}" data-workspace-modal-title="{% trans 'Tax summary' %}"><span>▥</span>{% trans "Tax summary" %}</a>{% endif %}
+                    {% if is_superuser or perms.employee.view_employee %}<a class="quick-link" href="?section=employees&amp;period={{ selected_period }}"><span>♙</span>{% trans "Employee directory" %}</a>{% endif %}
+                </section>
+            </aside>
+        </div>
+    </div>
+</div>
+<div class="workspace-modal" id="workspace-action-modal" hidden role="dialog" aria-modal="true" aria-labelledby="workspace-modal-title">
+    <div class="workspace-modal__dialog">
+        <header class="workspace-modal__header">
+            <h2 id="workspace-modal-title">{% trans "Payroll workspace action" %}</h2>
+            <button class="workspace-modal__close" type="button" aria-label="{% trans 'Close' %}">&times;</button>
+        </header>
+        <iframe class="workspace-modal__frame" title="{% trans 'Payroll action form' %}"></iframe>
+    </div>
+</div>
+<script src="{% static 'payroll/notifications.js' %}" defer></script>
+<script>
+    (() => {
+        const allowedSections = new Set([
+            "dashboard", "payslips", "runs", "contracts", "allowances",
+            "deductions", "reimbursements", "employees", "reports", "settings",
+        ]);
+        const requestedSection = new URLSearchParams(window.location.search).get("section");
+        const section = allowedSections.has(requestedSection) ? requestedSection : "dashboard";
+        const dashboard = document.querySelector(".content-grid");
+        if (!dashboard) return;
+        dashboard.dataset.section = section;
+        document.querySelectorAll(".side-nav a").forEach((link) => {
+            const linkSection = new URL(link.href, window.location.href).searchParams.get("section");
+            link.classList.toggle(
+                "active",
+                section === (linkSection || "dashboard")
+            );
+        });
+
+        const modal = document.getElementById("workspace-action-modal");
+        const frame = modal.querySelector(".workspace-modal__frame");
+        const modalTitle = modal.querySelector("#workspace-modal-title");
+        const closeButton = modal.querySelector(".workspace-modal__close");
+        let previouslyFocusedElement = null;
+        const closeModal = () => {
+            modal.hidden = true;
+            frame.src = "about:blank";
+            document.body.style.overflow = "";
+            if (previouslyFocusedElement instanceof HTMLElement) previouslyFocusedElement.focus();
+        };
+        document.querySelectorAll("[data-workspace-modal-url]").forEach((link) => {
+            link.addEventListener("click", (event) => {
+                event.preventDefault();
+                previouslyFocusedElement = link;
+                modalTitle.textContent = link.dataset.workspaceModalTitle;
+                frame.src = link.dataset.workspaceModalUrl;
+                modal.hidden = false;
+                document.body.style.overflow = "hidden";
+                closeButton.focus();
+            });
+        });
+        frame.addEventListener("load", () => {
+            if (frame.src === "about:blank") return;
+            const frameDocument = frame.contentDocument;
+            if (!frameDocument) return;
+            frameDocument.getElementById("workspace-modal-theme")?.remove();
+            const style = frameDocument.createElement("style");
+            style.id = "workspace-modal-theme";
+            style.textContent = `
+                html, body { min-height: 100%; background: #f4f8fe !important; }
+                body { margin: 0 !important; color: #17345f !important; font-family: Inter, "Segoe UI", Arial, sans-serif !important; }
+                body > #employeeBottomNav, body > .employee-bottom-nav, body > .oh-bottom-nav,
+                body > #employeeMobileNavDrawer, body > .employee-mobile-nav-drawer,
+                #employeeBottomNav, .employee-bottom-nav, .oh-bottom-nav,
+                #employeeMobileNavDrawer, .employee-mobile-nav-drawer,
+                #sidebar, .oh-navbar, .oh-navbar__wrapper, .oh-modal__backdrop,
+                .super-admin-nav, .super-admin-actions, #oh-sidebar-tooltip, #oh-sidebar-flyout,
+                #announcementNotificationPrompt, #announcementPopup { display: none !important; }
+                #main { width: 100% !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important; background: #f4f8fe !important; }
+                .payroll-workflow { max-width: 100% !important; margin: 0 auto !important; padding: 12px !important; font-size: 14px !important; }
+                .payroll-workflow__nav { display: none !important; }
+                .oh-wrapper-main { display: block !important; min-height: 0 !important; margin: 0 !important; }
+                .oh-wrapper-main > #main { width: 100% !important; min-width: 0 !important; padding: 12px !important; }
+                .oh-card, .oh-profile-section, .oh-onboarding-card, #contractFormTarget > .oh-wrapper,
+                .oh-toolbar, .oh-sticky-table, .oh-pagination {
+                    border: 1px solid #dfe8f4 !important; border-radius: 12px !important;
+                    background: #fff !important; box-shadow: 0 8px 24px rgba(16,36,73,.06) !important;
+                }
+                .oh-card__header, .oh-card__body, .oh-profile-section, .oh-onboarding-card { padding: 16px !important; }
+                .oh-card__title, .oh-card h1 { font-size: clamp(22px, 2.4vw, 30px) !important; line-height: 1.2 !important; }
+                .oh-onboarding-card { width: min(720px, 100%) !important; margin: 8px auto !important; }
+                .oh-onboarding-card .oh-input__group, .oh-onboarding-card .oh-input-group { margin-bottom: 14px !important; }
+                .oh-onboarding-card .oh-input__label, .oh-onboarding-card label { display: block; margin-bottom: 6px !important; }
+                .workspace-modal-generate-payslips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; }
+                .workspace-modal-generate-payslips > p:nth-of-type(-n+2),
+                .workspace-modal-generate-payslips > .workspace-modal-submit { grid-column: 1 / -1; }
+                .workspace-modal-submit { position: sticky; bottom: 0; z-index: 2; display: flex; justify-content: flex-end; padding: 10px 0 0; background: #fff; }
+                .workspace-modal-submit button { min-height: 40px; padding: 0 18px; border: 0 !important; border-radius: 7px !important; color: #fff !important; background: #3152d5 !important; font: inherit; font-weight: 700; cursor: pointer; }
+                .workspace-modal-submit button:hover { background: #2444c3 !important; }
+                .oh-modal__dialog-body { max-height: calc(100dvh - 130px) !important; overflow-y: auto !important; }
+                .oh-card__body > p { margin: 0 0 12px !important; font-size: 13px !important; line-height: 1.45 !important; }
+                .payroll-workflow__form-row { margin: 0 !important; min-width: 0; }
+                .payroll-workflow__form-row input, .payroll-workflow__form-row select, .payroll-workflow__form-row textarea,
+                input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="hidden"]),
+                select, textarea, .oh-select {
+                    box-sizing: border-box; max-width: 100%; min-height: 40px; border: 1px solid #d5e0ef !important;
+                    border-radius: 7px !important; color: #102b5c !important; background-color: #fff !important; font-size: 14px !important;
+                }
+                label, .oh-label, .oh-input__label { color: #27436d !important; font-weight: 650 !important; }
+                .oh-alert--danger, .errorlist { color: #a43d3d !important; }
+                .payroll-workflow__form-row select[multiple] { min-height: 90px; }
+                .oh-card__body > form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; }
+                .oh-onboarding-card > .row { margin: 0 0 12px !important; }
+                .oh-onboarding-card > .row > [class*="col-"] { padding: 0 !important; }
+                .oh-card__body > form > .oh-alert, .oh-card__body > form > .payroll-workflow__actions { grid-column: 1 / -1; }
+                .payroll-workflow__actions { position: sticky; bottom: -12px; padding: 10px 0 0; background: #fff; }
+                .oh-btn--secondary, .oh-btn--success {
+                    border: 0 !important; border-radius: 7px !important; background: #3152d5 !important; color: #fff !important;
+                }
+                .oh-btn--secondary:hover, .oh-btn--success:hover { background: #2444c3 !important; }
+                .oh-modal { z-index: 1100 !important; }
+                .oh-modal__dialog { max-width: min(720px, calc(100vw - 24px)) !important; border: 1px solid #dfe8f4 !important; border-radius: 12px !important; }
+                .oh-modal__dialog-header { color: #fff !important; background: linear-gradient(105deg, #102449, #1e4384) !important; }
+                html body .announcement-multiselect-modal {
+                    position: fixed !important; inset: 0 !important; z-index: 1300 !important;
+                    display: none !important; align-items: center !important; justify-content: center !important;
+                    overflow: auto !important; padding: 18px !important; background: rgba(10,25,50,.58) !important;
+                    backdrop-filter: blur(3px);
+                }
+                html body .announcement-multiselect-modal.oh-modal--show { display: flex !important; }
+                html body .announcement-multiselect-modal .announcement-multiselect-modal__dialog {
+                    display: flex !important; width: min(100%, 820px) !important; max-width: 820px !important;
+                    max-height: min(88vh, 760px) !important; max-height: min(88dvh, 760px) !important;
+                    min-height: 0 !important; flex: 0 1 820px; flex-direction: column;
+                    margin: auto !important; padding: 0 !important; overflow: hidden !important;
+                    border: 1px solid #d7e2f5 !important; border-radius: 15px !important;
+                    background: #fff !important; box-shadow: 0 24px 64px rgba(8,26,60,.3) !important;
+                }
+                html body .announcement-multiselect-modal .announcement-multiselect-modal__header {
+                    position: relative !important; display: flex !important; min-height: 60px !important;
+                    flex: 0 0 auto !important; align-items: center !important; justify-content: flex-start !important;
+                    margin: 0 !important; padding: 12px 68px 12px 20px !important;
+                    border: 0 !important; background: linear-gradient(110deg, #102449, #2854a0) !important;
+                }
+                html body .announcement-multiselect-modal .announcement-multiselect-modal__title {
+                    margin: 0 !important; padding: 0 !important; color: #fff !important;
+                    font-size: 16px !important; font-weight: 750 !important; line-height: 1.35 !important;
+                }
+                html body .announcement-multiselect-modal button.announcement-multiselect-modal__close {
+                    position: absolute !important; top: 50% !important; right: 14px !important; z-index: 2;
+                    display: grid !important; width: 36px !important; min-width: 36px !important;
+                    height: 36px !important; min-height: 36px !important; place-items: center !important;
+                    margin: 0 !important; padding: 0 !important; transform: translateY(-50%) !important;
+                    border: 1px solid rgba(255,255,255,.35) !important; border-radius: 10px !important;
+                    color: #fff !important; background: rgba(255,255,255,.12) !important;
+                    box-shadow: none !important; opacity: 1 !important;
+                }
+                html body .announcement-multiselect-modal .announcement-multiselect-modal__close ion-icon {
+                    display: block !important; width: 20px; height: 20px; margin: 0;
+                    color: #fff !important; font-size: 20px !important; opacity: 1 !important;
+                }
+                html body .announcement-multiselect-modal .announcement-multiselect-modal__close:hover {
+                    border-color: #fff !important; background: rgba(255,255,255,.24) !important;
+                }
+                html body .announcement-multiselect-modal .announcement-multiselect-modal__body {
+                    display: flex !important; min-height: 0 !important; flex: 1 1 auto !important;
+                    flex-direction: column !important; overflow: auto !important; padding: 16px 18px !important;
+                    border: 0 !important; color: #17345f !important; background: #f6f8fd !important;
+                }
+                html body .announcement-multiselect-modal .announcement-multiselect-modal__body > .oh-wrapper {
+                    display: flex !important; width: 100% !important; max-width: none !important;
+                    min-height: 0 !important; flex: 1 1 auto !important; flex-direction: column !important;
+                    gap: 10px !important; margin: 0 !important; padding: 0 !important;
+                    color: #17345f !important; background: transparent !important;
+                }
+                html body .announcement-multiselect-modal .announcement-multiselect-toolbar {
+                    display: flex !important; width: 100% !important; min-height: 66px !important;
+                    flex: 0 0 auto !important; flex-flow: row wrap !important; align-items: center !important;
+                    justify-content: space-between !important; gap: 10px !important; margin: 0 !important;
+                    padding: 10px 12px !important; border: 1px solid #dfe7f4 !important;
+                    border-radius: 11px !important; background: #fff !important;
+                    box-shadow: 0 4px 14px rgba(23,55,103,.04) !important;
+                }
+                html body .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-main__titlebar--left,
+                html body .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-main__titlebar--right {
+                    display: flex !important; min-width: 0 !important; height: auto !important;
+                    align-items: center !important; margin: 0 !important; padding: 0 !important;
+                    background: transparent !important;
+                }
+                html body .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-main__titlebar--left > div { margin: 0 !important; }
+                html body .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-main__titlebar-title {
+                    margin: 0 !important; color: #17345f !important; font-size: 14px !important;
+                    font-weight: 750 !important; line-height: 1.35 !important;
+                }
+                html body .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-main__titlebar--right {
+                    flex: 0 1 390px !important; flex-flow: row nowrap !important;
+                    justify-content: flex-end !important; gap: 8px !important;
+                }
+                html body .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-input__search-group {
+                    display: flex !important; position: static !important; min-width: 0 !important;
+                    flex: 1 1 180px !important; margin: 0 !important; padding: 0 !important;
+                    transform: none !important; background: transparent !important; box-shadow: none !important;
+                }
+                html body .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-input {
+                    box-sizing: border-box !important; width: 100% !important; min-width: 0 !important;
+                    min-height: 38px !important; margin: 0 !important; padding: 0 11px !important;
+                    border: 1px solid #d5e0ef !important; border-radius: 8px !important;
+                    color: #17345f !important; background: #fff !important; box-shadow: none !important;
+                    font-size: 12px !important;
+                }
+                html body .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-main__titlebar-button-container {
+                    display: flex !important; flex: 0 0 auto !important; align-items: center !important;
+                    margin: 0 !important; padding: 0 !important;
+                }
+                html body .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-btn {
+                    display: inline-flex !important; min-width: 82px !important; min-height: 38px !important;
+                    align-items: center !important; justify-content: center !important; gap: 6px !important;
+                    margin: 0 !important; padding: 0 12px !important;
+                    border: 1px solid #315fe5 !important; border-radius: 8px !important;
+                    color: #fff !important; background: linear-gradient(135deg,#3568ea,#294fce) !important;
+                    box-shadow: 0 4px 10px rgba(45,89,216,.15) !important;
+                    font-size: 11px !important; font-weight: 700 !important;
+                }
+                html body .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-btn ion-icon {
+                    display: block !important; width: 16px; height: 16px; margin: 0;
+                    color: #fff !important; font-size: 16px !important; opacity: 1 !important;
+                }
+                html body .announcement-multiselect-modal .oh-filter-tag-container {
+                    display: flex !important; flex-wrap: wrap !important; gap: 6px !important; margin: 0 !important;
+                }
+                html body .announcement-multiselect-modal .ration-container {
+                    display: flex !important; min-width: 0 !important; flex: 0 0 auto !important;
+                    align-items: center !important; justify-content: space-between !important;
+                    flex-wrap: wrap !important; gap: 8px !important; margin: 0 !important; padding: 0 !important;
+                }
+                html body .announcement-multiselect-modal .ration-container > div:first-child {
+                    display: flex !important; min-width: 0 !important; align-items: center !important;
+                    flex-wrap: wrap !important; gap: 7px !important;
+                }
+                html body .announcement-multiselect-modal .oh-checkpoint-badge {
+                    display: inline-flex !important; min-height: 34px !important; align-items: center !important;
+                    justify-content: center !important; margin: 0 !important; padding: 6px 10px !important;
+                    border: 1px solid #d5e0ef !important; border-radius: 8px !important;
+                    color: #3d587d !important; background: #f4f7fc !important;
+                    font-size: 11px !important; font-weight: 700 !important; line-height: 1.2 !important;
+                    cursor: pointer !important; box-shadow: none !important;
+                }
+                html body .announcement-multiselect-modal #selectAllInstances {
+                    border-color: #315fe5 !important; color: #fff !important;
+                    background: linear-gradient(135deg,#3568ea,#294fce) !important;
+                }
+                html body .announcement-multiselect-modal .oh-sticky-table {
+                    box-sizing: border-box !important; width: 100% !important;
+                    height: clamp(190px, 40vh, 390px) !important; height: clamp(190px, 40dvh, 390px) !important;
+                    min-height: 180px !important; flex: 1 1 auto !important; overflow: auto !important;
+                    border: 1px solid #dce6f4 !important; border-radius: 10px !important;
+                    background: #fff !important; scrollbar-color: #9aadd1 #f0f3f9; scrollbar-width: thin;
+                }
+                html body .announcement-multiselect-modal #chooseTableHeaderParent,
+                html body .announcement-multiselect-modal #chooseTableHeader,
+                html body .announcement-multiselect-modal .oh-sticky-table__tbody,
+                html body .announcement-multiselect-modal .oh-sticky-table__tr {
+                    box-sizing: border-box !important; width: 100% !important; min-width: 0 !important;
+                }
+                html body .announcement-multiselect-modal .oh-sticky-table__table {
+                    width: 100% !important; min-width: 0 !important; background: #fff !important;
+                }
+                html body .announcement-multiselect-modal .oh-sticky-table__thead {
+                    position: sticky !important; z-index: 1 !important; top: 0 !important;
+                    background: #f1f5fc !important;
+                }
+                html body .announcement-multiselect-modal .oh-sticky-table__th,
+                html body .announcement-multiselect-modal .oh-sticky-table__sd {
+                    box-sizing: border-box !important; width: 100% !important; min-width: 0 !important;
+                    padding: 9px 12px !important; border-color: #e6ecf5 !important; color: #29466f !important;
+                }
+                html body .announcement-multiselect-modal .oh-sticky-table__tbody { display: block !important; background: #fff !important; }
+                html body .announcement-multiselect-modal .oh-sticky-table__tr--custom {
+                    display: flex !important; min-height: 50px !important; align-items: stretch !important;
+                    border-bottom: 1px solid #edf1f7 !important; background: #fff !important;
+                    transition: background-color .16s ease;
+                }
+                html body .announcement-multiselect-modal .oh-sticky-table__tr--custom:hover,
+                html body .announcement-multiselect-modal .oh-sticky-table__tr--selected { background: #f2f6ff !important; }
+                html body .announcement-multiselect-modal .oh-sticky-table__tr--custom .oh-sticky-table__sd {
+                    display: flex !important; align-items: center !important; padding: 8px 12px !important;
+                    background: transparent !important;
+                }
+                html body .announcement-multiselect-modal .oh-profile--md {
+                    display: flex !important; min-width: 0 !important; align-items: center !important; gap: 8px !important;
+                }
+                html body .announcement-multiselect-modal .oh-profile__avatar {
+                    width: 32px !important; height: 32px !important; flex: 0 0 32px !important;
+                    margin: 0 !important; overflow: hidden !important; border: 1px solid #dce6f4 !important;
+                    border-radius: 50% !important;
+                }
+                html body .announcement-multiselect-modal .oh-profile__image { width: 100% !important; height: 100% !important; object-fit: cover !important; }
+                html body .announcement-multiselect-modal .oh-profile__name {
+                    min-width: 0 !important; color: #17345f !important; line-height: 1.4 !important; overflow-wrap: anywhere;
+                }
+                html body .announcement-multiselect-modal .oh-input__checkbox { flex: 0 0 auto !important; margin: 0 8px 0 0 !important; accent-color: #315fe5; }
+                html body .announcement-multiselect-modal .oh-pagination { display: flex !important; justify-content: center !important; margin: 0 !important; }
+                html body .announcement-multiselect-modal .announcement-multiselect-modal__body > .oh-wrapper > .d-flex.flex-row-reverse {
+                    display: flex !important; flex: 0 0 auto !important; justify-content: flex-end !important;
+                    margin: 0 !important; padding: 2px 0 0 !important;
+                }
+                html body .announcement-multiselect-modal .announcement-multiselect-modal__body > .oh-wrapper > .d-flex.flex-row-reverse .oh-btn {
+                    min-width: 100px !important; min-height: 38px !important; align-items: center !important;
+                    justify-content: center !important; border: 1px solid #315fe5 !important;
+                    border-radius: 8px !important; color: #fff !important;
+                    background: linear-gradient(135deg,#3568ea,#294fce) !important;
+                    font-size: 11px !important; font-weight: 700 !important; text-decoration: none !important;
+                }
+                html body .oh-wrapper-main .oh-btn--secondary,
+                html body .oh-wrapper-main .oh-btn--shadow,
+                html body .oh-wrapper-main .oh-btn--small,
+                html body .oh-wrapper-main .oh-btn--success,
+                html body .oh-wrapper-main button:not(.oh-modal__close):not(.oh-modal__close-custom):not(.oh-dropdown__close),
+                html body .oh-wrapper-main input[type="submit"],
+                html body .oh-wrapper-main a.oh-btn {
+                    display: inline-flex !important; min-height: 36px !important; align-items: center !important;
+                    justify-content: center !important; gap: 7px !important; padding: 8px 13px !important;
+                    border: 1px solid #2d59d8 !important; border-radius: 8px !important;
+                    color: #fff !important; background: linear-gradient(135deg, #3568ea, #294fce) !important;
+                    box-shadow: 0 4px 10px rgba(45,89,216,.16) !important;
+                    font-family: inherit !important; font-size: 11px !important; font-weight: 700 !important;
+                    line-height: 1.2 !important; text-decoration: none !important; cursor: pointer !important;
+                }
+                html body .oh-wrapper-main .oh-btn--secondary:hover,
+                html body .oh-wrapper-main .oh-btn--shadow:hover,
+                html body .oh-wrapper-main .oh-btn--small:hover,
+                html body .oh-wrapper-main .oh-btn--success:hover,
+                html body .oh-wrapper-main button:not(.oh-modal__close):not(.oh-modal__close-custom):not(.oh-dropdown__close):hover,
+                html body .oh-wrapper-main input[type="submit"]:hover,
+                html body .oh-wrapper-main a.oh-btn:hover { border-color: #2445b7 !important; background: linear-gradient(135deg, #2b58da, #2044b8) !important; }
+                html body .oh-wrapper-main .oh-btn--danger:not(.oh-modal__cancel):not(.oh-modal__close):not(.oh-modal__close-custom):not(.oh-dropdown__close),
+                html body .oh-wrapper-main button.oh-btn--danger:not(.oh-modal__cancel):not(.oh-modal__close):not(.oh-modal__close-custom):not(.oh-dropdown__close) {
+                    border-color: #d95a68 !important; color: #fff !important;
+                    background: linear-gradient(135deg, #e76b78, #ca4354) !important;
+                    box-shadow: 0 4px 10px rgba(202,67,84,.14) !important;
+                }
+                html body .oh-wrapper-main .oh-btn--danger-outline:not(.oh-modal__cancel):not(.oh-modal__close):not(.oh-modal__close-custom):not(.oh-dropdown__close) {
+                    border-color: #e5a0a8 !important; color: #b93649 !important; background: #fff3f4 !important;
+                    box-shadow: none !important;
+                }
+                html body .oh-wrapper-main .oh-btn--danger:not(.oh-modal__cancel):not(.oh-modal__close):not(.oh-modal__close-custom):not(.oh-dropdown__close):hover,
+                html body .oh-wrapper-main button.oh-btn--danger:not(.oh-modal__cancel):not(.oh-modal__close):not(.oh-modal__close-custom):not(.oh-dropdown__close):hover {
+                    border-color: #b93649 !important; background: linear-gradient(135deg, #d95767, #b93649) !important;
+                }
+                html body .oh-wrapper-main .oh-btn--danger.oh-modal__cancel:not(.oh-modal__close):not(.oh-modal__close-custom):not(.oh-dropdown__close) {
+                    border-color: #d5deec !important; color: #405a7e !important; background: #f4f7fb !important;
+                    box-shadow: none !important;
+                }
+                html body .oh-wrapper-main .oh-btn ion-icon,
+                html body .oh-wrapper-main button ion-icon,
+                html body .oh-wrapper-main a.oh-btn ion-icon,
+                html body .oh-wrapper-main .oh-btn .material-symbols-outlined,
+                html body .oh-wrapper-main button .material-symbols-outlined,
+                html body .oh-wrapper-main a.oh-btn .material-symbols-outlined { display: inline-block; width: 16px; height: 16px; flex: 0 0 16px; font-size: 16px; line-height: 1; }
+                html body .oh-wrapper-main .oh-dropdown__menu { border: 1px solid #dfe8f4 !important; border-radius: 10px !important; box-shadow: 0 12px 32px rgba(16,36,73,.16) !important; }
+                html body .oh-wrapper-main .oh-input,
+                html body .oh-wrapper-main .oh-select,
+                html body .oh-wrapper-main input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="hidden"]),
+                html body .oh-wrapper-main select,
+                html body .oh-wrapper-main textarea {
+                    min-height: 36px !important; border: 1px solid #d5e0ef !important; border-radius: 8px !important;
+                    color: #17345f !important; background: #fff !important; box-shadow: none !important;
+                    font-family: inherit !important; font-size: 11px !important;
+                }
+                html body .oh-wrapper-main input:focus,
+                html body .oh-wrapper-main select:focus,
+                html body .oh-wrapper-main textarea:focus { border-color: #6687ee !important; outline: 3px solid rgba(73,112,230,.13) !important; }
+                html body .oh-wrapper-main .oh-card__header,
+                html body .oh-wrapper-main .oh-modal__dialog-title { color: #17345f !important; font-weight: 750 !important; }
+                html body .oh-wrapper-main .oh-modal__dialog-header .oh-modal__dialog-title { color: #fff !important; }
+                html body .oh-wrapper-main .oh-sticky-table th { color: #486487 !important; background: #f3f6fc !important; }
+                html body .oh-wrapper-main .oh-sticky-table td { border-color: #e8edf5 !important; }
+                html body .oh-wrapper-main .oh-profile-section,
+                html body .oh-wrapper-main .oh-card { color: #17345f !important; }
+                html body .oh-wrapper-main .oh-modal__close,
+                html body .oh-wrapper-main .oh-modal__close-custom,
+                html body .oh-wrapper-main .oh-dropdown__close { display: inline-flex !important; width: 32px !important; height: 32px !important; align-items: center !important; justify-content: center !important; padding: 0 !important; border: 1px solid rgba(255,255,255,.3) !important; border-radius: 8px !important; color: #fff !important; background: rgba(255,255,255,.12) !important; }
+                html body #main .oh-main__titlebar-button-container .oh-btn,
+                html body #main .oh-main__titlebar-button-container button,
+                html body #main .oh-main__titlebar-button-container a.oh-btn {
+                    display: inline-flex !important; min-height: 36px !important; align-items: center !important;
+                    justify-content: center !important; gap: 7px !important; padding: 8px 13px !important;
+                    border: 1px solid #2d59d8 !important; border-radius: 8px !important;
+                    color: #fff !important; background: linear-gradient(135deg, #3568ea, #294fce) !important;
+                    box-shadow: 0 4px 10px rgba(45,89,216,.16) !important;
+                    font-family: inherit !important; font-size: 11px !important; font-weight: 700 !important;
+                    line-height: 1.2 !important; text-decoration: none !important;
+                }
+                html body #main .oh-main__titlebar-button-container .oh-btn:hover,
+                html body #main .oh-main__titlebar-button-container button:hover,
+                html body #main .oh-main__titlebar-button-container a.oh-btn:hover {
+                    border-color: #2445b7 !important; background: linear-gradient(135deg, #2b58da, #2044b8) !important;
+                }
+                html body #main .oh-main__topbar .oh-view-types .oh-btn--view {
+                    width: 36px !important; min-height: 36px !important; padding: 8px !important;
+                    border: 1px solid #d7e2f5 !important; border-radius: 8px !important;
+                    color: #315fe5 !important; background: #edf3ff !important; box-shadow: none !important;
+                }
+                html body #main .oh-main__topbar .oh-view-types .oh-btn--view:hover,
+                html body #main .oh-main__topbar .oh-view-types .oh-btn--view-active {
+                    border-color: #315fe5 !important; color: #fff !important;
+                    background: linear-gradient(135deg, #3568ea, #294fce) !important;
+                    box-shadow: 0 4px 10px rgba(45,89,216,.16) !important;
+                }
+                table { max-width: 100%; }
+                @media (max-width: 640px) {
+                    .payroll-workflow { padding: 8px !important; }
+                    .oh-card__header, .oh-card__body, .oh-profile-section, .oh-onboarding-card { padding: 12px !important; }
+                    html body .announcement-multiselect-modal { padding: 8px !important; }
+                    html body .announcement-multiselect-modal .announcement-multiselect-modal__dialog {
+                        width: 100% !important; max-width: none !important; max-height: 94vh !important; max-height: 94dvh !important;
+                        border-radius: 12px !important;
+                    }
+                    html body .announcement-multiselect-modal .announcement-multiselect-modal__header { min-height: 54px !important; padding: 10px 58px 10px 14px !important; }
+                    html body .announcement-multiselect-modal .announcement-multiselect-modal__body { padding: 10px !important; }
+                    html body .announcement-multiselect-modal .announcement-multiselect-toolbar { align-items: stretch !important; }
+                    html body .announcement-multiselect-modal .announcement-multiselect-toolbar .oh-main__titlebar--right { flex: 1 1 100% !important; }
+                    html body .announcement-multiselect-modal .oh-sticky-table {
+                        height: clamp(180px, 42vh, 360px) !important; height: clamp(180px, 42dvh, 360px) !important;
+                    }
+                    .workspace-modal-generate-payslips { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+                    .oh-card__body > form { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+                    .oh-card__body > form > .oh-alert, .oh-card__body > form > .payroll-workflow__actions { grid-column: auto; }
+                    .workspace-modal-generate-payslips > p,
+                    .workspace-modal-generate-payslips > .workspace-modal-submit { grid-column: auto; }
+                }
+            `;
+            frameDocument.head.appendChild(style);
+            if (frameDocument.location.pathname.endsWith("/generate-payslip")) {
+                const form = frameDocument.querySelector(".oh-onboarding-card");
+                if (form && form.querySelector('[name="group_name"]')) {
+                    form.classList.add("workspace-modal-generate-payslips");
+                    if (!form.querySelector(".workspace-modal-submit")) {
+                        const actions = frameDocument.createElement("div");
+                        actions.className = "workspace-modal-submit";
+                        const submitButton = frameDocument.createElement("button");
+                        submitButton.type = "submit";
+                        submitButton.textContent = "{% trans 'Generate payslips' %}";
+                        actions.appendChild(submitButton);
+                        form.appendChild(actions);
+                    }
+                }
+            }
+        });
+        closeButton.addEventListener("click", closeModal);
+        modal.addEventListener("click", (event) => {
+            if (event.target === modal) closeModal();
+        });
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape" && !modal.hidden) closeModal();
+        });
+    })();
+</script>
+</body>
+</html>

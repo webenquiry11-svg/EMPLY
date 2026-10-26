@@ -56,7 +56,7 @@ from horilla.http.response import HorillaRedirect
 from horilla.methods import dynamic_attr, get_horilla_model_class, get_urlencode
 
 # from leave.models import AvailableLeave
-from notifications.signals import notify
+from payroll.notifications import notify_payroll_admins, send_payroll_notification
 from payroll.filters import (
     AllowanceFilter,
     DeductionFilter,
@@ -797,7 +797,7 @@ def generate_payslip(request):
                 data["installments"] = payslip["installments"]
                 instance = save_payslip(**data)
                 instances.append(instance)
-                notify.send(
+                send_payroll_notification(
                     request.user.employee_get,
                     recipient=employee.employee_user_id,
                     verb="Payslip has been generated for you.",
@@ -809,6 +809,15 @@ def generate_payslip(request):
                         "view-created-payslip", kwargs={"payslip_id": instance.id}
                     ),
                     icon="close",
+                )
+                notify_payroll_admins(
+                    request.user,
+                    employee.employee_work_info.company_id,
+                    f"A payslip was generated for {employee}.",
+                    redirect=reverse(
+                        "view-created-payslip", kwargs={"payslip_id": instance.id}
+                    ),
+                    icon="document-text-outline",
                 )
             messages.success(request, f"{employees.count()} payslip saved as draft")
             return redirect(
@@ -929,7 +938,7 @@ def create_payslip(request, new_post_data=None):
                 form = forms.PayslipForm()
                 messages.success(request, _("Payslip Saved"))
                 payslip = payslip_data["instance"]
-                notify.send(
+                send_payroll_notification(
                     request.user.employee_get,
                     recipient=employee.employee_user_id,
                     verb="Payslip has been generated for you.",
@@ -941,6 +950,15 @@ def create_payslip(request, new_post_data=None):
                         "view-created-payslip", kwargs={"payslip_id": payslip.pk}
                     ),
                     icon="close",
+                )
+                notify_payroll_admins(
+                    request.user,
+                    employee.employee_work_info.company_id,
+                    f"A payslip was generated for {employee}.",
+                    redirect=reverse(
+                        "view-created-payslip", kwargs={"payslip_id": payslip.pk}
+                    ),
+                    icon="document-text-outline",
                 )
                 return HorillaRedirect(
                     request,
@@ -1807,10 +1825,18 @@ def approve_reimbursements(request):
                     request,
                     _(f"Request {reimbursement.get_status_display()} successfully"),
                 )
+                notify_payroll_admins(
+                    request.user,
+                    reimbursement.employee_id.employee_work_info.company_id,
+                    f"{reimbursement.employee_id}'s reimbursement request was {reimbursement.get_status_display().lower()}.",
+                    redirect=reverse("view-reimbursement")
+                    + f"?id={reimbursement.id}",
+                    icon="receipt-outline",
+                )
         if reimbursement.status == "requested":
             return redirect(view_reimbursement)
         if status == "rejected":
-            notify.send(
+            send_payroll_notification(
                 request.user.employee_get,
                 recipient=emp.employee_user_id,
                 verb="Your reimbursement request has been rejected.",
@@ -1822,7 +1848,7 @@ def approve_reimbursements(request):
                 icon="checkmark",
             )
         else:
-            notify.send(
+            send_payroll_notification(
                 request.user.employee_get,
                 recipient=emp.employee_user_id,
                 verb="Your reimbursement request has been approved.",
@@ -1848,7 +1874,7 @@ def delete_reimbursements(request):
         user = reimbursement.employee_id.employee_user_id
     reimbursements.delete()
     messages.success(request, "Reimbursements deleted")
-    notify.send(
+    send_payroll_notification(
         request.user.employee_get,
         recipient=user,
         verb="Your reimbursement request has been deleted.",

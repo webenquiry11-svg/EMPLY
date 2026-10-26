@@ -899,6 +899,12 @@ def login_user(request):
         else:
             request.session.set_expiry(0)
 
+        if login_mode == "payroll" and (
+            user.is_superuser or user.has_perm("payroll.view_contract")
+        ):
+            messages.success(request, _("Login successful."))
+            return redirect("payroll-management-dashboard")
+
         if user.is_superuser:
             messages.success(request, _("Login successful."))
             return redirect("super-admin-dashboard")

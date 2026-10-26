@@ -110,6 +110,15 @@ class PayrollPolicyTests(TestCase):
         self.assertEqual(result["paid_leave_days"], 1)
         self.assertEqual(result["total_deductions"], result["absence_deduction"] + result["other_unpaid_deduction"] + result["lwp_deduction"] + result["double_lwp_deduction"] + result["sandwich_deduction"])
 
+    def test_contract_employee_approved_paid_leave_is_not_deducted(self):
+        self.employee.employee_work_info.employee_type_id.employee_type = "Contract"
+        result = self.calculate([self.leave(self.cl, date(2026, 1, 5))])
+
+        self.assertEqual(result["paid_leave_days"], 1)
+        self.assertFalse(
+            any(event["date"] == date(2026, 1, 5) for event in result["deduction_details"])
+        )
+
     def test_partial_october_absence_uses_31_calendar_day_daily_rate(self):
         result = self.calculate(
             [],
@@ -256,8 +265,8 @@ class PayrollPolicyTests(TestCase):
         event_dates = [item["date"] for item in result["deduction_details"]]
         self.assertEqual(len(event_dates), len(set(event_dates)))
 
-    def test_non_permanent_categories_do_not_receive_paid_leave(self):
-        for category in ("Contract", "Intern", "Probationary"):
+    def test_interns_and_probationers_do_not_receive_paid_leave(self):
+        for category in ("Intern", "Probationary"):
             self.employee.employee_work_info.employee_type_id.employee_type = category
             result = self.calculate([self.leave(self.cl, date(2026, 1, 5))])
             self.assertEqual(result["paid_leave_days"], 0)

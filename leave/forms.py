@@ -62,6 +62,12 @@ def _policy_leave_validation(cleaned_data, instance=None):
 
     if name in {"cl", "casual leave"} and advance_days < 4:
         raise ValidationError(_("Casual Leave must be requested at least 4 days in advance."))
+    if name in {"sl", "sick leave"} and requested_days > 2 and not cleaned_data.get(
+        "doctor_certificate"
+    ):
+        raise ValidationError(
+            _("A doctor's certificate is required for Sick Leave longer than 2 days.")
+        )
     if name in {"al", "annual leave"} and advance_days < 7:
         raise ValidationError(_("Annual Leave must be requested at least 7 days in advance."))
     if name in {"al", "annual leave"} and leave_type.require_approval != "yes":
@@ -90,7 +96,7 @@ def _policy_leave_validation(cleaned_data, instance=None):
             )
     if name in {"cl", "casual leave"} and requested_days > 2 and leave_type.require_approval != "yes":
         raise ValidationError(_("Casual Leave longer than 2 days requires approval."))
-    if any(term in category for term in ("contract", "intern", "probation")) and name in {
+    if any(term in category for term in ("intern", "probation")) and name in {
         "cl", "casual leave", "sl", "sick leave", "al", "annual leave"
     }:
         raise ValidationError(_("This employee category has no paid entitlement for this leave type."))

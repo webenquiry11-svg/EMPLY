@@ -38,17 +38,10 @@
                 </a>
             </li>
             <li class="employee-mobile-nav-item simple">
-                {% if request.user.is_superuser or request.user.is_staff %}
-                    <a href="{% url 'view-contract' %}" class="employee-mobile-nav-link {% if '/payroll/' in request.path and request.path != '/payroll/view-reimbursement/' %}active{% endif %}">
-                        <span class="employee-mobile-nav-icon material-symbols-outlined">credit_card</span>
-                        <span>{% trans "Payroll" %}</span>
-                    </a>
-                {% else %}
-                    <button type="button" class="employee-mobile-nav-link employee-payroll-login-trigger" aria-haspopup="dialog" aria-controls="employeePayrollLoginModal">
-                        <span class="employee-mobile-nav-icon material-symbols-outlined">payments</span>
-                        <span>{% trans "Payroll" %}</span>
-                    </button>
-                {% endif %}
+                <button type="button" class="employee-mobile-nav-link employee-payroll-login-trigger" aria-haspopup="dialog" aria-controls="employeePayrollLoginModal">
+                    <span class="employee-mobile-nav-icon material-symbols-outlined">payments</span>
+                    <span>{% trans "Payroll" %}</span>
+                </button>
             </li>
             {% if request.user.is_superuser or request.user.is_staff and perms.base.add_announcement %}
                 <li class="employee-mobile-nav-item simple">
@@ -147,19 +140,11 @@
             </a>
         </li>
         <li role="none" class="oh-bottom-nav__item">
-            {% if request.user.is_superuser or request.user.is_staff %}
-                <a role="menuitem" href="{% url 'view-contract' %}" class="oh-bottom-nav__link {% if '/payroll/' in request.path and request.path != '/payroll/view-reimbursement/' %}active{% endif %}" aria-label="{% trans 'Payroll' %}">
-                    <span class="oh-bottom-nav__icon material-symbols-outlined">credit_card</span>
-                    <span class="oh-bottom-nav__label">{% trans "Payroll" %}</span>
-                    <span class="oh-bottom-nav__tooltip">{% trans "Payroll" %}</span>
-                </a>
-            {% else %}
-                <button type="button" class="oh-bottom-nav__link employee-payroll-login-trigger" aria-label="{% trans 'Payroll' %}" aria-haspopup="dialog" aria-controls="employeePayrollLoginModal">
-                    <span class="oh-bottom-nav__icon material-symbols-outlined">payments</span>
-                    <span class="oh-bottom-nav__label">{% trans "Payroll" %}</span>
-                    <span class="oh-bottom-nav__tooltip">{% trans "Payroll" %}</span>
-                </button>
-            {% endif %}
+            <button type="button" class="oh-bottom-nav__link employee-payroll-login-trigger" aria-label="{% trans 'Payroll' %}" aria-haspopup="dialog" aria-controls="employeePayrollLoginModal">
+                <span class="oh-bottom-nav__icon material-symbols-outlined">payments</span>
+                <span class="oh-bottom-nav__label">{% trans "Payroll" %}</span>
+                <span class="oh-bottom-nav__tooltip">{% trans "Payroll" %}</span>
+            </button>
         </li>
         {% if request.user.is_superuser or request.user.is_staff and perms.base.add_announcement %}
             <li role="none" class="oh-bottom-nav__item">

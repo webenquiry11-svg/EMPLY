@@ -11,10 +11,10 @@ from leave.models import AvailableLeave, LeaveType
 
 
 class LeavePolicyBoundaryTests(SimpleTestCase):
-    def employee(self):
+    def employee(self, employee_type="Permanent"):
         return SimpleNamespace(
             employee_work_info=SimpleNamespace(
-                employee_type_id=SimpleNamespace(employee_type="Permanent"),
+                employee_type_id=SimpleNamespace(employee_type=employee_type),
                 company_id=None,
             )
         )
@@ -27,7 +27,7 @@ class LeavePolicyBoundaryTests(SimpleTestCase):
             payment="paid",
         )
 
-    def validate(self, name, start, end=None, approval="yes", attachment=None, certificate=None, overlap=False):
+    def validate(self, name, start, end=None, approval="yes", attachment=None, certificate=None, overlap=False, employee_type="Permanent"):
         empty = SimpleNamespace(
             values_list=lambda *args, **kwargs: [],
             exclude=lambda **kwargs: SimpleNamespace(exists=lambda: overlap),
@@ -38,7 +38,7 @@ class LeavePolicyBoundaryTests(SimpleTestCase):
         ):
             _policy_leave_validation(
                 {
-                    "employee_id": self.employee(),
+                    "employee_id": self.employee(employee_type),
                     "leave_type_id": self.leave_type(name, approval),
                     "start_date": start,
                     "end_date": end or start,
@@ -62,17 +62,32 @@ class LeavePolicyBoundaryTests(SimpleTestCase):
         self.validate("CL", date.today() + timedelta(days=5),
                       date.today() + timedelta(days=7), approval="yes")
 
+    def test_contract_employees_can_request_paid_leave(self):
+        self.validate(
+            "CL",
+            date.today() + timedelta(days=4),
+            employee_type="Contract",
+        )
+
+    def test_interns_and_probationers_cannot_request_paid_leave(self):
+        start = date.today() + timedelta(days=7)
+        for employee_type in ("Intern", "Probationer"):
+            with self.subTest(employee_type=employee_type):
+                with self.assertRaises(ValidationError):
+                    self.validate("SL", start, employee_type=employee_type)
+
     def test_paid_leave_combinations_are_rejected(self):
         start = date.today() + timedelta(days=7)
         for name in ("CL", "SL", "AL"):
             with self.assertRaises(ValidationError):
                 self.validate(name, start, overlap=True)
 
-    def test_sick_leave_is_allowed_with_or_without_optional_certificate(self):
+    def test_sick_leave_certificate_is_required_after_two_days(self):
         start = date.today() + timedelta(days=7)
         self.validate("SL", start, start + timedelta(days=1))
-        self.validate("SL", start, start + timedelta(days=2))
         self.validate("SL", start, start + timedelta(days=1), certificate=object())
+        with self.assertRaises(ValidationError):
+            self.validate("SL", start, start + timedelta(days=2))
         self.validate("SL", start, start + timedelta(days=2), certificate=object())
 
     def test_al_weekend_requires_explicit_approval(self):

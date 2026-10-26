@@ -11,11 +11,17 @@ from django.db import IntegrityError, transaction
 from django.db.models import Max, Q
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from base.models import Company
 from employee.models import Employee
+from payroll.notifications import (
+    notify_payroll_admins,
+    payroll_run_notification_url,
+    send_payroll_notification,
+)
 from payroll.models.models import (
     Contract,
     Payslip,
@@ -332,6 +338,18 @@ def payroll_run_create(request):
                 request,
                 _("Payroll preview created. Review the calculation snapshot before submission."),
             )
+            notify_payroll_admins(
+                request.user,
+                run.company,
+                _("Payroll run for %(company)s (%(start)s–%(end)s) was created.")
+                % {
+                    "company": run.company,
+                    "start": run.start_date,
+                    "end": run.end_date,
+                },
+                redirect=payroll_run_notification_url(run),
+                icon="calculator-outline",
+            )
             return redirect("payroll-run-detail", run_id=run.pk)
 
     return render(request, "payroll/run_form.html", {"form": form})
@@ -476,4 +494,34 @@ def payroll_run_action(request, run_id, action):
         messages.error(request, _("The payroll operation conflicted with another update. No changes were saved."))
     else:
         messages.success(request, _("Payroll run %(status)s.") % {"status": run.get_status_display()})
+        notify_payroll_admins(
+            request.user,
+            run.company,
+            _("Payroll run for %(company)s (%(start)s–%(end)s) is now %(status)s.")
+            % {
+                "company": run.company,
+                "start": run.start_date,
+                "end": run.end_date,
+                "status": run.get_status_display(),
+            },
+            redirect=payroll_run_notification_url(run),
+            icon="cash-outline",
+        )
+        if action in {"submit", "approve", "finalize"}:
+            employee_verb = {
+                "submit": _("A payslip for %(start)s–%(end)s is ready for review."),
+                "approve": _("Your payslip for %(start)s–%(end)s has been approved."),
+                "finalize": _("Your payroll for %(start)s–%(end)s has been finalized."),
+            }[action] % {"start": run.start_date, "end": run.end_date}
+            for item in items:
+                recipient = item.employee.employee_user_id
+                if recipient is None:
+                    continue
+                send_payroll_notification(
+                    request.user,
+                    recipient=recipient,
+                    verb=employee_verb,
+                    redirect=reverse("payroll-dashboard"),
+                    icon="cash-outline",
+                )
     return redirect("payroll-run-detail", run_id=run_id)
