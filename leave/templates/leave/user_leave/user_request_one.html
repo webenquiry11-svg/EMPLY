@@ -63,7 +63,7 @@
         <div class="oh-timeoff-modal__stats-container">
             <div class="oh-timeoff-modal__stat">
                 <span class="oh-timeoff-modal__stat-title">{% trans "Leave Type" %}</span>
-                <span class="oh-timeoff-modal__stat-count">{{ leave_request.leave_type_id }}</span>
+                <span class="oh-timeoff-modal__stat-count">{% if leave_request.notice_period_request %}{{ leave_request.leave_type_id }} — {% trans "Notice Period Leave" %}{% else %}{{ leave_request.leave_type_id }}{% endif %}</span>
             </div>
             <div class="oh-timeoff-modal__stat">
                 <span class="oh-timeoff-modal__stat-title">{% trans "Days" %}</span>
@@ -99,7 +99,7 @@
             </div>
         </div>
         {% if leave_request.reject_reason %}
-            {% if leave_request.status == "rejected" %}
+            {% if leave_request.status == "rejected" or leave_request.status == "not_approved" %}
                 <div class="oh-timeoff-modal__stats w-100 mt-3 p-2 row-status--gray diff-cell">
                     <div class="oh-timeoff-modal__stat">
                         <span class="oh-timeoff-modal__stat-title">{% trans "Reason for Rejection" %}</span>

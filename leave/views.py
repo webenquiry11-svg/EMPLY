@@ -1022,6 +1022,23 @@ def leave_request_approve(request, id, emp_id=None):
           Otherwise, it returns to the default leave request view template.
     """
     leave_request = get_object_or_404(LeaveRequest, id=id)
+    if getattr(leave_request, "notice_period_request", False):
+        employee = getattr(request.user, "employee_get", None)
+        allowed = request.user.is_superuser or request.user.has_perm("leave.change_leaverequest")
+        try:
+            reporting_manager = leave_request.employee_id.employee_work_info.reporting_manager_id
+            allowed = allowed or employee == reporting_manager
+        except Exception:
+            pass
+        if not allowed:
+            messages.error(request, _("You do not have permission to approve this request."))
+            return HorillaRedirect(request)
+        leave_request.status = "approved"
+        leave_request.save(update_fields=["status"])
+        messages.success(request, _("Notice period leave request approved."))
+        if emp_id:
+            return redirect(f"/employee/employee-view/{emp_id}/")
+        return HorillaRedirect(request)
     employee_id = leave_request.employee_id
     leave_type_id = leave_request.leave_type_id
     send_notification = False
@@ -1108,7 +1125,16 @@ def leave_request_approve(request, id, emp_id=None):
     # Day-based AvailableLeave logic
     else:
         available_leave = get_object_or_404(AvailableLeave, leave_type_id=leave_type_id, employee_id=employee_id)
-        total_available_leave = available_leave.available_days + available_leave.carryforward_days
+        if available_leave.uses_monthly_accrual:
+            total_available_leave = (
+                available_leave.effective_available_days(
+                    include_pending=True,
+                    exclude_request_id=leave_request.pk,
+                )
+                + available_leave.usable_carryforward_days()
+            )
+        else:
+            total_available_leave = available_leave.available_days + available_leave.carryforward_days
         
         if total_available_leave < leave_request.requested_days:
             messages.error(request, f"{employee_id} dont have enough leave days to approve the request..")
@@ -1143,15 +1169,25 @@ def leave_request_approve(request, id, emp_id=None):
                                 final_approval = True
 
             if final_approval:
-                if leave_request.requested_days > available_leave.carryforward_days:
-                    leave = leave_request.requested_days - available_leave.carryforward_days
-                    leave_request.approved_carryforward_days = available_leave.carryforward_days
-                    available_leave.carryforward_days = 0
-                    available_leave.available_days -= leave
-                    leave_request.approved_available_days = leave
-                else:
-                    available_leave.carryforward_days -= leave_request.requested_days
-                    leave_request.approved_carryforward_days = leave_request.requested_days
+                if not available_leave.consume_monthly_accrual_balance(leave_request):
+                    if leave_request.requested_days > available_leave.carryforward_days:
+                        leave = (
+                            leave_request.requested_days
+                            - available_leave.carryforward_days
+                        )
+                        leave_request.approved_carryforward_days = (
+                            available_leave.carryforward_days
+                        )
+                        available_leave.carryforward_days = 0
+                        available_leave.available_days -= leave
+                        leave_request.approved_available_days = leave
+                    else:
+                        available_leave.carryforward_days -= (
+                            leave_request.requested_days
+                        )
+                        leave_request.approved_carryforward_days = (
+                            leave_request.requested_days
+                        )
 
                 leave_request.status = "approved"
                 leave_request.save()
@@ -1256,15 +1292,15 @@ def leave_request_cancel(request, id, emp_id=None):
         if form.is_valid():
             leave_request = get_object_or_404(LeaveRequest, id=id)
 
-            if leave_request.status == "rejected":
-                messages.error(request, _("Leave request already rejected."))
+            if leave_request.status == "not_approved":
+                messages.error(request, _("Leave request is already not approved."))
                 if emp_id:
                     return redirect(f"/employee/employee-view/{emp_id}/")
                 return HorillaRedirect(request)
 
             original_status = leave_request.status
             leave_request.reject_reason = form.cleaned_data["reason"]
-            leave_request.status = "rejected"
+            leave_request.status = "not_approved"
             leave_request.leave_clashes_count = 0
 
             leave_type = leave_request.leave_type_id
@@ -1337,12 +1373,12 @@ def leave_request_cancel(request, id, emp_id=None):
             comment.comment = leave_request.reject_reason
             comment.save()
 
-            messages.success(request, _("Leave request rejected successfully.."))
+            messages.success(request, _("Leave request marked as not approved successfully."))
             with contextlib.suppress(Exception):
                 notify.send(
                     request.user.employee_get,
                     recipient=leave_request.employee_id.employee_user_id,
-                    verb="Your leave request has been rejected.",
+                    verb="Your leave request has not been approved.",
                     icon="people-circle",
                     redirect=reverse("user-request-view") + f"?id={leave_request.id}",
                 )
@@ -1537,10 +1573,11 @@ def leave_assign_one(request, obj_id):
         if new_employees:
             available_leaves = []
             for employee_id in new_employees:
+                employee = Employee.objects.get(id=employee_id)
                 leave = AvailableLeave(
                     leave_type_id=leave_type,
-                    employee_id_id=employee_id,
-                    available_days=leave_type.total_days,
+                    employee_id=employee,
+                    available_days=prorated_leave_days(employee, leave_type),
                 )
                 if leave.reset_date is None:
                     if leave_type.reset:
@@ -1774,7 +1811,7 @@ def leave_assign(request):
                         new_assignment = AvailableLeave(
                             leave_type_id=leave_type,
                             employee_id=employee,
-                            available_days=leave_type.total_days,
+                            available_days=prorated_leave_days(employee, leave_type),
                         )
                         new_assignments.append(new_assignment)
                         new_assignment.pre_save_processing()
@@ -2358,6 +2395,11 @@ def user_leave_request(request, id):
         available_total_leave = (
             available_leave.available_days + available_leave.carryforward_days
         )
+        if available_leave.uses_monthly_accrual:
+            available_total_leave = (
+                available_leave.effective_available_days(include_pending=True)
+                + available_leave.usable_carryforward_days()
+            )
         requested_days = calculate_requested_days(
             start_date, end_date, start_date_breakdown, end_date_breakdown
         )
@@ -2402,23 +2444,28 @@ def user_leave_request(request, id):
                 available_leave = AvailableLeave.objects.get(
                     leave_type_id=leave_type_id, employee_id=employee_id
                 )
-                if leave_request.requested_days > available_leave.available_days:
-                    leave = (
-                        leave_request.requested_days - available_leave.available_days
-                    )
-                    leave_request.approved_available_days = (
-                        available_leave.available_days
-                    )
-                    available_leave.available_days = 0
-                    available_leave.carryforward_days = (
-                        available_leave.carryforward_days - leave
-                    )
-                    leave_request.approved_carryforward_days = leave
-                else:
-                    available_leave.available_days = (
-                        available_leave.available_days - leave_request.requested_days
-                    )
-                    leave_request.approved_available_days = leave_request.requested_days
+                if not available_leave.consume_monthly_accrual_balance(leave_request):
+                    if leave_request.requested_days > available_leave.available_days:
+                        leave = (
+                            leave_request.requested_days
+                            - available_leave.available_days
+                        )
+                        leave_request.approved_available_days = (
+                            available_leave.available_days
+                        )
+                        available_leave.available_days = 0
+                        available_leave.carryforward_days = (
+                            available_leave.carryforward_days - leave
+                        )
+                        leave_request.approved_carryforward_days = leave
+                    else:
+                        available_leave.available_days = (
+                            available_leave.available_days
+                            - leave_request.requested_days
+                        )
+                        leave_request.approved_available_days = (
+                            leave_request.requested_days
+                        )
                 leave_request.status = "approved"
                 available_leave.save()
             if save:
@@ -2537,6 +2584,14 @@ def user_request_update(request, id):
                         available_leave.available_days
                         + available_leave.carryforward_days
                     )
+                    if available_leave.uses_monthly_accrual:
+                        available_total_leave = (
+                            available_leave.effective_available_days(
+                                include_pending=True,
+                                exclude_request_id=leave_request.pk,
+                            )
+                            + available_leave.usable_carryforward_days()
+                        )
                     requested_days = calculate_requested_days(
                         start_date, end_date, start_date_breakdown, end_date_breakdown
                     )
@@ -2636,27 +2691,28 @@ def leave_request_create(request):
                     available_leave = AvailableLeave.objects.get(
                         leave_type_id=leave_type_id, employee_id=employee_id
                     )
-                    if leave_request.requested_days > available_leave.available_days:
-                        leave = (
-                            leave_request.requested_days
-                            - available_leave.available_days
-                        )
-                        leave_request.approved_available_days = (
-                            available_leave.available_days
-                        )
-                        available_leave.available_days = 0
-                        available_leave.carryforward_days = (
-                            available_leave.carryforward_days - leave
-                        )
-                        leave_request.approved_carryforward_days = leave
-                    else:
-                        available_leave.available_days = (
-                            available_leave.available_days
-                            - leave_request.requested_days
-                        )
-                        leave_request.approved_available_days = (
-                            leave_request.requested_days
-                        )
+                    if not available_leave.consume_monthly_accrual_balance(leave_request):
+                        if leave_request.requested_days > available_leave.available_days:
+                            leave = (
+                                leave_request.requested_days
+                                - available_leave.available_days
+                            )
+                            leave_request.approved_available_days = (
+                                available_leave.available_days
+                            )
+                            available_leave.available_days = 0
+                            available_leave.carryforward_days = (
+                                available_leave.carryforward_days - leave
+                            )
+                            leave_request.approved_carryforward_days = leave
+                        else:
+                            available_leave.available_days = (
+                                available_leave.available_days
+                                - leave_request.requested_days
+                            )
+                            leave_request.approved_available_days = (
+                                leave_request.requested_days
+                            )
                     leave_request.status = "approved"
                     available_leave.save()
                 if save:
@@ -2797,7 +2853,102 @@ def user_leave_filter(request):
 
 
 @login_required
-@block_notice_period
+@require_http_methods(["GET", "POST"])
+def notice_period_leave_request(request):
+    """Create a special leave request for an employee in notice period."""
+    employee = getattr(request.user, "employee_get", None)
+    if not employee or not getattr(employee, "notice_period", False):
+        messages.error(request, _("This request is available only during notice period."))
+        return redirect("user-request-view")
+
+    if request.method == "POST":
+        description = request.POST.get("description", "").strip()
+        attachment = request.FILES.get("attachment")
+        start_date_text = request.POST.get("start_date", "").strip()
+        end_date_text = request.POST.get("end_date", "").strip()
+        if not description:
+            messages.error(request, _("Description is required for this leave request."))
+            return redirect("user-request-view")
+        if not attachment:
+            messages.error(request, _("Attachment is required for this leave request."))
+            return redirect("user-request-view")
+        if not start_date_text or not end_date_text:
+            messages.error(request, _("Start date and end date are required."))
+            return redirect("user-request-view")
+        try:
+            start_date = datetime.strptime(start_date_text, "%Y-%m-%d").date()
+            end_date = datetime.strptime(end_date_text, "%Y-%m-%d").date()
+        except ValueError:
+            messages.error(request, _("Please select valid start and end dates."))
+            return redirect("user-request-view")
+        if end_date < start_date:
+            messages.error(request, _("End date cannot be before start date."))
+            return redirect("user-request-view")
+        if start_date < date.today():
+            messages.error(request, _("Leave dates cannot be in the past."))
+            return redirect("user-request-view")
+        if LeaveRequest.objects.filter(
+            employee_id=employee,
+            start_date__lte=end_date,
+            end_date__gte=start_date,
+        ).exclude(status__in=["cancelled", "rejected", "not_approved"]).exists():
+            messages.error(request, _("A notice period leave request already exists for these dates."))
+            return redirect("user-request-view")
+
+        leave_type = AvailableLeave.objects.filter(
+            employee_id=employee
+        ).exclude(leave_type_id__is_compensatory_leave=True).first()
+        leave_type = leave_type.leave_type_id if leave_type else LeaveType.objects.first()
+        if not leave_type:
+            messages.error(request, _("No leave type is configured. Please contact HR."))
+            return redirect("user-request-view")
+
+        LeaveRequest.objects.create(
+            employee_id=employee,
+            leave_type_id=leave_type,
+            start_date=start_date,
+            end_date=end_date,
+            start_date_breakdown="full_day",
+            end_date_breakdown="full_day",
+            requested_days=0,
+            description=description,
+            attachment=attachment,
+            status="requested",
+            notice_period_request=True,
+            created_by=employee,
+        )
+        messages.success(request, _("Notice period leave request submitted for review."))
+        return redirect("user-request-view")
+
+    return render(request, "leave/user_leave/notice_period_request_modal.html")
+
+
+@login_required
+@require_http_methods(["POST"])
+def notice_period_leave_status(request, id):
+    """Allow an authorised approver to set the notice-period request status."""
+    leave_request = get_object_or_404(LeaveRequest, id=id, notice_period_request=True)
+    employee = getattr(request.user, "employee_get", None)
+    allowed = request.user.is_superuser or request.user.has_perm("leave.change_leaverequest")
+    try:
+        reporting_manager = leave_request.employee_id.employee_work_info.reporting_manager_id
+        if employee and employee == reporting_manager:
+            allowed = True
+    except Exception:
+        pass
+    status = request.POST.get("status")
+    if not allowed:
+        return HttpResponse(_("You do not have permission to change this status."), status=403)
+    if status not in {"approved", "in_review", "not_approved"}:
+        return HttpResponse(_("Invalid leave request status."), status=400)
+
+    leave_request.status = status
+    leave_request.save(update_fields=["status"])
+    messages.success(request, _("Leave request status updated."))
+    return redirect(request.META.get("HTTP_REFERER", "request-view"))
+
+
+@login_required
 def user_request_view(request):
     """
     function used to view user leave request.
@@ -2964,7 +3115,6 @@ def user_request_filter(request):
 
 
 @login_required
-@block_notice_period
 @hx_request_required
 def user_request_one(request, id):
     """
@@ -3067,7 +3217,7 @@ def dashboard(request):
         status="approved", start_date__month=today.month
     )
     rejected = LeaveRequest.objects.filter(
-        status="rejected", start_date__month=today.month
+        status__in=["not_approved", "rejected"], start_date__month=today.month
     )
     holidays = Holidays.objects.filter(start_date__gte=today)
     next_holiday = holidays.order_by("start_date").first() if holidays else None
@@ -3104,7 +3254,7 @@ def employee_dashboard(request):
     leave_requests = LeaveRequest.objects.filter(employee_id=user)
     requested = leave_requests.filter(status="requested")
     approved = leave_requests.filter(status="approved")
-    rejected = leave_requests.filter(status="rejected")
+    rejected = leave_requests.filter(status__in=["not_approved", "rejected"])
 
     holidays = Holidays.objects.filter(start_date__gte=today)
     next_holiday = (
@@ -3176,7 +3326,14 @@ def available_leave_chart(request):
     leave_count = []
     labels = []
     for leave in available_leaves:
-        leave_count.append(leave.available_days + leave.carryforward_days)
+        available_days = (
+            leave.effective_total_leave_days
+            if leave.uses_monthly_accrual
+            else leave.available_days + leave.carryforward_days
+        )
+        if available_days <= 0:
+            continue
+        leave_count.append(available_days)
 
         labels.append(leave.leave_type_id.name)
     dataset = [
@@ -4146,20 +4303,22 @@ def employee_available_leave_count(request):
     if available_leave and (leave_unit != "minute"):
         leave_type = available_leave.leave_type_id
         total_leave_days = available_leave.total_leave_days
+        if available_leave.uses_monthly_accrual:
+            total_leave_days = available_leave.effective_total_leave_days
+        else:
+            next_reset = leave_type.leave_type_next_reset_date()
+            if next_reset and start_date >= next_reset:
+                forcasted_days = available_leave.forcasted_leaves(start_date)
 
-        next_reset = leave_type.leave_type_next_reset_date()
-        if next_reset and start_date >= next_reset:
-            forcasted_days = available_leave.forcasted_leaves(start_date)
+                if leave_type.carryforward_type == "no carryforward":
+                    total_leave_days = 0
+                elif (
+                    leave_type.carryforward_type in ["carryforward", "carryforward expire"]
+                    and leave_type.carryforward_max < total_leave_days
+                ):
+                    total_leave_days = leave_type.carryforward_max
 
-            if leave_type.carryforward_type == "no carryforward":
-                total_leave_days = 0
-            elif (
-                leave_type.carryforward_type in ["carryforward", "carryforward expire"]
-                and leave_type.carryforward_max < total_leave_days
-            ):
-                total_leave_days = leave_type.carryforward_max
-
-            total_leave_days += forcasted_days
+                total_leave_days += forcasted_days
 
         # Only query pending requests if we have a valid employee
         if available_leave.employee_id_id:
@@ -4609,7 +4768,7 @@ def view_clashes(request, leave_request_id):
     """
     record = get_object_or_404(LeaveRequest, id=leave_request_id)
 
-    if record.status == "rejected" or record.status == "cancelled":
+    if record.status in ["rejected", "not_approved", "cancelled"]:
         overlapping_requests = LeaveRequest.objects.none()
         clashed_due_to_department = LeaveRequest.objects.none()
         clashed_due_to_job_position = LeaveRequest.objects.none()
@@ -4631,7 +4790,7 @@ def view_clashes(request, leave_request_id):
                 end_date__gte=record.start_date,
             )
             .exclude(id=leave_request_id)
-            .exclude(Q(status="cancelled") | Q(status="rejected"))
+            .exclude(Q(status="cancelled") | Q(status="rejected") | Q(status="not_approved"))
         )
 
         clashed_due_to_department = overlapping_requests.filter(

@@ -19,7 +19,7 @@
     {% for leave_request in data %}
     <tr>
       <td>{{leave_request.employee_id}}</td>
-      <td>{{leave_request.leave_type_id}}</td>
+      <td>{% if leave_request.notice_period_request %}{{ leave_request.leave_type_id }} — {% trans "Notice Period Leave" %}{% else %}{{leave_request.leave_type_id}}{% endif %}</td>
       <td>{{leave_request.leave_start_date|date:'d/m/Y'}}</td>
       <td>{{leave_request.leave_end_date|date:'d/m/Y'}}</td>
       <td>{{leave_request.leave_days}}</td>

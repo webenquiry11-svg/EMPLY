@@ -126,8 +126,9 @@ ACCRUAL_PLAN = [("job_position", _("Job Position")), ("job_role", _("Job Role"))
 LEAVE_STATUS = (
     ("requested", _("Requested")),
     ("approved", _("Approved")),
+    ("in_review", _("In Review")),
+    ("not_approved", _("Not Approved")),
     ("cancelled", _("Cancelled")),
-    ("rejected", _("Rejected")),
 )
 
 LEAVE_ALLOCATION_STATUS = (
@@ -398,6 +399,31 @@ class CompanyLeave(HorillaModel):
         return f"{dict(WEEK_DAYS).get(self.based_on_week_day)} | {dict(WEEKS).get(self.based_on_week)}"
 
 
+def prorated_leave_days(employee, leave_type, reference_date=None):
+    """Return the annual day leave allocation for current-year joiners."""
+    if leave_type is None or leave_type.leave_unit != "day":
+        return leave_type.total_days if leave_type else 0
+
+    reference_date = reference_date or timezone.now().date()
+    if employee is None or not getattr(employee, "pk", None):
+        return leave_type.total_days or 0
+    try:
+        joining_date = employee.employee_work_info.date_joining
+    except (EmployeeWorkInformation.DoesNotExist, AttributeError):
+        joining_date = None
+
+    if joining_date is None:
+        return leave_type.total_days or 0
+    if joining_date.year < reference_date.year:
+        return leave_type.total_days or 0
+    if joining_date.year > reference_date.year or joining_date.month > reference_date.month:
+        return 0
+
+    annual_days = leave_type.total_days or 0
+    remaining_months = 13 - joining_date.month
+    return round(annual_days * remaining_months / 12, 3)
+
+
 class AvailableLeave(HorillaModel):
     employee_id = models.ForeignKey(
         Employee,
@@ -443,15 +469,168 @@ class AvailableLeave(HorillaModel):
     def __str__(self):
         return f"{self.employee_id} | {self.leave_type_id}"
 
+    @property
+    def uses_monthly_accrual(self):
+        employee = self.employee_id
+        leave_type = self.leave_type_id
+        return bool(
+            employee
+            and getattr(employee, "employment_status", None) == "permanent"
+            and leave_type
+            and leave_type.limit_leave
+            and leave_type.leave_unit == "day"
+            and leave_type.reset
+            and leave_type.reset_based == "yearly"
+        )
+
+    def _annual_accrual_cycle_start(self, reference_date):
+        leave_type = self.leave_type_id
+        reset_month = int(leave_type.reset_month or 1)
+        reset_day = leave_type.reset_day or "1"
+        is_last_day = reset_day == "last day"
+        if is_last_day:
+            reset_day = calendar.monthrange(reference_date.year, reset_month)[1]
+        else:
+            reset_day = min(
+                int(reset_day), calendar.monthrange(reference_date.year, reset_month)[1]
+            )
+        cycle_start = date(reference_date.year, reset_month, reset_day)
+        if cycle_start > reference_date:
+            cycle_year = reference_date.year - 1
+            if is_last_day:
+                reset_day = calendar.monthrange(cycle_year, reset_month)[1]
+            cycle_start = date(cycle_year, reset_month, reset_day)
+        return cycle_start
+
+    def monthly_accrued_days(self, reference_date=None):
+        if not self.uses_monthly_accrual:
+            return self.available_days or 0
+
+        reference_date = reference_date or timezone.localdate()
+        cycle_start = self._annual_accrual_cycle_start(reference_date)
+        start_date = max(cycle_start, self.assigned_date)
+        try:
+            joining_date = self.employee_id.employee_work_info.date_joining
+        except (EmployeeWorkInformation.DoesNotExist, AttributeError):
+            joining_date = None
+        if joining_date:
+            start_date = max(start_date, joining_date)
+        if start_date > reference_date:
+            return 0
+
+        months_accrued = min(
+            12,
+            (reference_date.year - start_date.year) * 12
+            + reference_date.month
+            - start_date.month
+            + 1,
+        )
+        return round((self.leave_type_id.total_days or 0) * months_accrued / 12, 3)
+
+    def effective_available_days(
+        self, reference_date=None, include_pending=False, exclude_request_id=None
+    ):
+        if not self.uses_monthly_accrual:
+            return self.available_days or 0
+
+        reference_date = reference_date or timezone.localdate()
+        cycle_start = self._annual_accrual_cycle_start(reference_date)
+        cycle_end = self._annual_accrual_cycle_start(
+            reference_date + relativedelta(years=1)
+        )
+        requests = LeaveRequest.objects.filter(
+            employee_id=self.employee_id,
+            leave_type_id=self.leave_type_id,
+            status="approved",
+            start_date__gte=cycle_start,
+            start_date__lt=cycle_end,
+        ).values_list(
+            "requested_days", "approved_available_days", "approved_carryforward_days"
+        )
+        approved_available_days = 0
+        for requested_days, approved_days, approved_carryforward_days in requests:
+            if approved_days:
+                approved_available_days += approved_days
+            else:
+                approved_available_days += max(
+                    (requested_days or 0) - (approved_carryforward_days or 0), 0
+                )
+        annual_allowance = self.leave_type_id.total_days or 0
+        earned_remaining = max(
+            self.monthly_accrued_days(reference_date) - approved_available_days, 0
+        )
+        additional_allocation = max((self.available_days or 0) - annual_allowance, 0)
+        remaining = min(
+            max(self.available_days or 0, 0),
+            earned_remaining + additional_allocation,
+        )
+        if include_pending:
+            pending_requests = LeaveRequest.objects.filter(
+                employee_id=self.employee_id,
+                leave_type_id=self.leave_type_id,
+                status__in=("requested", "in_review"),
+                start_date__gte=cycle_start,
+                start_date__lt=cycle_end,
+            )
+            if exclude_request_id is not None:
+                pending_requests = pending_requests.exclude(pk=exclude_request_id)
+            pending_days = pending_requests.aggregate(total=Sum("requested_days"))[
+                "total"
+            ] or 0
+            remaining = max(remaining - pending_days, 0)
+        return round(remaining, 3)
+
+    def usable_carryforward_days(self):
+        carryforward_days = max(self.carryforward_days or 0, 0)
+        carryforward_type = self.leave_type_id.carryforward_type
+        if carryforward_type == "no carryforward":
+            return 0
+        if carryforward_type in ("carryforward", "carryforward expire"):
+            return min(carryforward_days, self.leave_type_id.carryforward_max or 0)
+        return carryforward_days
+
+    @property
+    def effective_total_leave_days(self):
+        if not self.uses_monthly_accrual:
+            return self.total_leave_days or 0
+        available_days = self.effective_available_days()
+        return round(available_days + self.usable_carryforward_days(), 3)
+
+    def consume_monthly_accrual_balance(self, leave_request):
+        if not self.uses_monthly_accrual:
+            return False
+
+        requested_days = leave_request.requested_days or 0
+        carryforward_days = self.usable_carryforward_days()
+        carryforward_used = min(requested_days, carryforward_days)
+        available_used = requested_days - carryforward_used
+        available_days = self.effective_available_days()
+        if available_used > available_days:
+            raise ValidationError(
+                _("Does not have sufficient leave balance for the requested dates.")
+            )
+
+        self.available_days = max((self.available_days or 0) - available_used, 0)
+        self.carryforward_days = max(
+            (self.carryforward_days or 0) - carryforward_used, 0
+        )
+        leave_request.approved_available_days = available_used
+        leave_request.approved_carryforward_days = carryforward_used
+        return True
+
     def forcasted_leaves(self, date):
         if isinstance(date, str):
             date = datetime.strptime(date, "%Y-%m-%d").date()
+
+        if self.uses_monthly_accrual:
+            return 0
 
         if self.leave_type_id.reset_based != "monthly":
             # For non-monthly resets, use original logic
             next_reset_date = self.leave_type_id.leave_type_next_reset_date()
             if next_reset_date and next_reset_date <= date:
-                return self.leave_type_id.total_days
+                employee = self.employee_id if self.employee_id_id else None
+                return prorated_leave_days(employee, self.leave_type_id)
             return 0
 
         # For monthly resets, count how many resets occur up to the given date,
@@ -481,7 +660,8 @@ class AvailableLeave(HorillaModel):
                 self.carryforward_days = self.total_leave_days
             else:
                 self.carryforward_days = self.leave_type_id.carryforward_max
-        self.available_days = self.leave_type_id.total_days
+        employee = self.employee_id if self.employee_id_id else None
+        self.available_days = prorated_leave_days(employee, self.leave_type_id)
 
     # Setting the reset date for carryforward leaves
 
@@ -563,7 +743,12 @@ class AvailableLeave(HorillaModel):
             expired_date = assigned_date + relativedelta(years=period)
 
         available_leave.carryforward_days = 0
-        available_leave.available_days = available_leave.leave_type_id.total_days
+        employee = (
+            available_leave.employee_id if available_leave.employee_id_id else None
+        )
+        available_leave.available_days = prorated_leave_days(
+            employee, available_leave.leave_type_id
+        )
         return expired_date
 
     def pre_save_processing(self):
@@ -749,6 +934,10 @@ class LeaveRequest(HorillaModel):
         upload_to=upload_path,
         verbose_name=_("Doctor Certificate"),
     )
+    notice_period_request = models.BooleanField(
+        default=False,
+        verbose_name=_("Notice Period Request"),
+    )
     status = models.CharField(
         max_length=30,
         choices=LEAVE_STATUS,
@@ -791,6 +980,13 @@ class LeaveRequest(HorillaModel):
 
     def __str__(self):
         return f"{self.employee_id} | {self.leave_type_id} | {self.status}"
+
+    def display_leave_type_name(self):
+        """Return a distinct label for notice-period leave requests."""
+        base_name = str(self.leave_type_id)
+        if self.notice_period_request:
+            return _("%(leave_type)s — Notice Period Leave") % {"leave_type": base_name}
+        return base_name
 
     def employees_on_leave_today(today=None, status=None):
         """
@@ -929,6 +1125,13 @@ class LeaveRequest(HorillaModel):
 
         with transaction.atomic():
             is_new = not self.pk
+            if (
+                self.leave_type_id.leave_unit == "minute"
+                and getattr(self.employee_id, "employment_status", "active") != "permanent"
+            ):
+                raise ValidationError(
+                    _("Short Leave is available only for employees with Permanent status.")
+                )
             self.end_date = self.end_date or self.start_date
             if self.leave_type_id.leave_unit == "minute":
                 self.requested_days = 0
@@ -963,7 +1166,7 @@ class LeaveRequest(HorillaModel):
                 else:
                     self.exclude_leaves()
 
-            if self.status in ["cancelled", "rejected"]:
+            if self.status in ["cancelled", "rejected", "not_approved"]:
                 self.leave_clashes_count = 0
             else:
                 self.leave_clashes_count = self.count_leave_clashes()
@@ -1025,6 +1228,12 @@ class LeaveRequest(HorillaModel):
         leave_type = getattr(self, "leave_type_id", None)
         if not leave_type:  # 836
             return
+        if leave_type.leave_unit == "minute" and getattr(
+            self.employee_id, "employment_status", "active"
+        ) != "permanent":
+            raise ValidationError(
+                _("Short Leave is available only for employees with Permanent status.")
+            )
         attachment = getattr(self, "attachment", None)
         requ_days = set(self.requested_dates())
         restricted_leaves = RestrictLeave.objects.all()
@@ -1094,7 +1303,7 @@ class LeaveRequest(HorillaModel):
         if self.start_date and self.end_date:
             overlapping_requests = self.leaveoverlapping().exclude(id=self.id)
             if overlapping_requests.exclude(
-                status__in=["cancelled", "rejected"]
+                status__in=["cancelled", "rejected", "not_approved"]
             ).exists():
                 raise ValidationError(
                     _("Employee already has a leave request for this date range.")
@@ -1140,12 +1349,18 @@ class LeaveRequest(HorillaModel):
         carryforward_max = available_leave.leave_type_id.carryforward_max or 0
         carryforward_type = available_leave.leave_type_id.carryforward_type
 
-        if carryforward_type in ["carryforward", "carryforward expire"]:
+        if available_leave.uses_monthly_accrual:
+            total_leave_days = available_leave.effective_available_days(
+                reference_date=timezone.localdate(),
+                include_pending=True,
+                exclude_request_id=self.pk,
+            ) + available_leave.usable_carryforward_days()
+        elif carryforward_type in ["carryforward", "carryforward expire"]:
             carryforward_days = min(carryforward_days, carryforward_max)
-        elif carryforward_type == "no carryforward":
-            carryforward_days = 0
-
-        total_leave_days = available_days + carryforward_days + forcated_days
+        else:
+            if carryforward_type == "no carryforward":
+                carryforward_days = 0
+            total_leave_days = available_days + carryforward_days + forcated_days
 
         if not effective_requested_days <= total_leave_days:
             raise ValidationError(
@@ -1318,7 +1533,7 @@ class LeaveRequest(HorillaModel):
         Update the leave clashes count for all leave requests.
         """
         leave_requests_to_update = LeaveRequest.objects.exclude(
-            Q(id=self.id) | Q(status="cancelled") | Q(status="rejected")
+            Q(id=self.id) | Q(status="cancelled") | Q(status="rejected") | Q(status="not_approved")
         )
 
         for leave_request in leave_requests_to_update:
@@ -1335,7 +1550,7 @@ class LeaveRequest(HorillaModel):
         with other employees' requested dates.
         """
         work_info = EmployeeWorkInformation.objects.filter(employee_id=self.employee_id)
-        if work_info.exists() and self.status not in ["cancelled", "rejected"]:
+        if work_info.exists() and self.status not in ["cancelled", "rejected", "not_approved"]:
             overlapping_requests = (
                 LeaveRequest.objects.exclude(id=self.id)
                 .filter(
@@ -1353,7 +1568,7 @@ class LeaveRequest(HorillaModel):
                     start_date__lte=self.end_date,
                     end_date__gte=self.start_date,
                 )
-                .exclude(Q(status="cancelled") | Q(status="rejected"))
+                .exclude(Q(status="cancelled") | Q(status="rejected") | Q(status="not_approved"))
             )
 
             return overlapping_requests.count()

@@ -112,6 +112,19 @@ class Employee(models.Model):
     suspended_at = models.DateTimeField(null=True, blank=True)
     # Indicates whether the employee is currently serving their notice period
     notice_period = models.BooleanField(default=False)
+    employment_status = models.CharField(
+        max_length=20,
+        choices=[
+            ("active", trans("Active")),
+            ("probation", trans("Probation")),
+            ("permanent", trans("Permanent")),
+            ("notice_period", trans("Notice Period")),
+            ("suspended", trans("Suspended")),
+            ("inactive", trans("Inactive")),
+        ],
+        default="active",
+        verbose_name=trans("Employment Status"),
+    )
     additional_info = models.JSONField(null=True, blank=True)
     is_from_onboarding = models.BooleanField(
         default=False, null=True, blank=True, editable=False

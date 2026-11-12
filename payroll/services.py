@@ -325,6 +325,7 @@ def calculate_employee_payroll(employee, start_date=None, end_date=None):
         "basic_salary": money(salary),
         "basic_salary_display": display_money(salary),
         "paid_days": len(paid_dates | (attendance_dates & working_set)),
+        "present_dates": sorted(attendance_dates & working_set),
         "unpaid_days": len(unpaid_dates),
         "paid_leave_days": len(paid_dates),
         "unpaid_leave_days": len(unpaid_dates - absence_only_dates),
@@ -360,6 +361,7 @@ def create_current_payslip(employee):
         {
             **detail,
             "amount": float(detail["amount"]),
+            "date": detail["date"].isoformat() if detail.get("date") else None,
             "affected_dates": [day.isoformat() for day in detail["affected_dates"]],
             "dates": [day.isoformat() for day in detail["dates"]],
         }

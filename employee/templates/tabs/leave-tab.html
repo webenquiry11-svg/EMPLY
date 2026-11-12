@@ -345,7 +345,7 @@
                             <ul class="lt-type-list">
                                 <li class="lt-type-row">
                                     <span class="lt-label">{% trans "Available Leave Days" %}</span>
-                                    <span class="lt-value">{% if user_leave.leave_type_id.limit_leave %}{{user_leave.available_days}}{% else %}{% trans "No Limit" %}{% endif %}</span>
+                                    <span class="lt-value">{% if user_leave.leave_type_id.limit_leave %}{{user_leave.effective_available_days}}{% else %}{% trans "No Limit" %}{% endif %}</span>
                                 </li>
                                 <li class="lt-type-row">
                                     <span class="lt-label">{% trans "Carryforward Leave Days" %}</span>
@@ -353,7 +353,7 @@
                                 </li>
                                 <li class="lt-type-row">
                                     <span class="lt-label">{% trans "Total Leave Days" %}</span>
-                                    <span class="lt-value">{% if user_leave.leave_type_id.limit_leave %}{{user_leave.total_leave_days}}{% else %}{% trans "No Limit" %}{% endif %}</span>
+                                    <span class="lt-value">{% if user_leave.leave_type_id.limit_leave %}{{user_leave.effective_total_leave_days}}{% else %}{% trans "No Limit" %}{% endif %}</span>
                                 </li>
                                 <li class="lt-type-row">
                                     <span class="lt-label">{% trans "Total Leave taken" %}</span>
@@ -404,7 +404,7 @@
                             <ul class="lt-type-list">
                                 <li class="lt-type-row">
                                     <span class="lt-label">{% trans "Available Leave Days" %}</span>
-                                    <span class="lt-value">{% if employee_leave.leave_type_id.limit_leave %}{{employee_leave.available_days}}{% else %}{% trans "No Limit" %}{% endif %}</span>
+                                    <span class="lt-value">{% if employee_leave.leave_type_id.limit_leave %}{{employee_leave.effective_available_days}}{% else %}{% trans "No Limit" %}{% endif %}</span>
                                 </li>
                                 <li class="lt-type-row">
                                     <span class="lt-label">{% trans "Carryforward Leave Days" %}</span>
@@ -412,7 +412,7 @@
                                 </li>
                                 <li class="lt-type-row">
                                     <span class="lt-label">{% trans "Total Leave Days" %}</span>
-                                    <span class="lt-value">{% if employee_leave.leave_type_id.limit_leave %}{{employee_leave.total_leave_days}}{% else %}{% trans "No Limit" %}{% endif %}</span>
+                                    <span class="lt-value">{% if employee_leave.leave_type_id.limit_leave %}{{employee_leave.effective_total_leave_days}}{% else %}{% trans "No Limit" %}{% endif %}</span>
                                 </li>
                                 <li class="lt-type-row">
                                     <span class="lt-label">{% trans "Total Leave taken" %}</span>

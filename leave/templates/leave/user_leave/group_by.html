@@ -83,7 +83,7 @@
                                 <div class="oh-sticky-table__tr" data-toggle="oh-modal-toggle" data-target="#objectDetailsModalW25"
                                 hx-get="{% url 'user-request-one' leave_request.id %}?instances_ids={{request_ids}}" hx-target="#objectDetailsModalW25Target">
                                     <div class="oh-sticky-table__sd {% if leave_request.status == "requested" %}row-status--orange {% elif leave_request.status == "cancelled" %} row-status--gray
-                                        {% elif leave_request.status == "approved" %} row-status--yellow {% elif leave_request.status == "rejected" %} row-status--red{% endif %}" onclick="event.stopPropagation()">
+                                        {% elif leave_request.status == "approved" %} row-status--yellow {% elif leave_request.status == "rejected" or leave_request.status == "not_approved" %} row-status--red{% endif %}" onclick="event.stopPropagation()">
                                         <div class="centered-div">
                                             <input
                                             type="checkbox"
@@ -98,7 +98,7 @@
                                                 <img src="{{leave_request.leave_type_id.get_avatar}}" class="oh-profile__image"
                                                     alt="{% trans 'Leave Type Icon' %}" />
                                             </div>
-                                            <span class="oh-profile__name oh-text--dark">{{leave_request.leave_type_id|truncatechars:12}}</span>
+                                            <span class="oh-profile__name oh-text--dark">{% if leave_request.notice_period_request %}{{ leave_request.leave_type_id }} — {% trans "Notice Period Leave" %}{% else %}{{leave_request.leave_type_id|truncatechars:12}}{% endif %}</span>
                                             {% if leave_request in leave_requests_with_interview %}
                                                 <span class="tooltip">
                                                     <span class="material-symbols-outlined" style="flex-direction: row-reverse;color:#ff9146;">
@@ -111,10 +111,10 @@
                                             {% endif %}
                                         </div>
                                     </div>
-                                    <div class="oh-sticky-table__td {% if leave_request.status == 'rejected' %} diff-cell{% endif %} dateformat_changer"> {{leave_request.start_date}}</div>
-                                    <div class="oh-sticky-table__td {% if leave_request.status == 'rejected' %} diff-cell{% endif %} dateformat_changer">{{leave_request.end_date}}</div>
-                                    <div class="oh-sticky-table__td {% if leave_request.status == 'rejected' %} diff-cell{% endif %}">{{leave_request.requested_days}}</div>
-                                    <div class="oh-sticky-table__td {% if leave_request.status == 'rejected' %} diff-cell{% endif %}">
+                                    <div class="oh-sticky-table__td {% if leave_request.status == 'rejected' or leave_request.status == 'not_approved' %} diff-cell{% endif %} dateformat_changer"> {{leave_request.start_date}}</div>
+                                    <div class="oh-sticky-table__td {% if leave_request.status == 'rejected' or leave_request.status == 'not_approved' %} diff-cell{% endif %} dateformat_changer">{{leave_request.end_date}}</div>
+                                    <div class="oh-sticky-table__td {% if leave_request.status == 'rejected' or leave_request.status == 'not_approved' %} diff-cell{% endif %}">{{leave_request.requested_days}}</div>
+                                    <div class="oh-sticky-table__td {% if leave_request.status == 'rejected' or leave_request.status == 'not_approved' %} diff-cell{% endif %}">
                                         {% if leave_request.multiple_approvals and leave_request.status == "requested" %}
                                             <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary" title="{% for manager in leave_request.multiple_approvals.managers %}{{ manager }}{% if not forloop.last %} , {% endif %}{% endfor %}">
                                             {{leave_request.multiple_approvals.approved|length}} / {{leave_request.multiple_approvals.managers|length}} {% trans "Approved" %}
@@ -132,7 +132,7 @@
 
                                     </div>
 
-                                    <div class="oh-sticky-table__td {% if leave_request.status == 'rejected' %} diff-cell{% endif %}" onclick="event.stopPropagation()">
+                                    <div class="oh-sticky-table__td {% if leave_request.status == 'rejected' or leave_request.status == 'not_approved' %} diff-cell{% endif %}" onclick="event.stopPropagation()">
                                         {% if leave_request.status == 'approved' and leave_request.end_date >= current_date %}
                                             <a type="submit" data-toggle="oh-modal-toggle"
                                                 data-target="#rejectModal"
@@ -147,7 +147,7 @@
                                             </button>
                                         {% endif %}
                                     </div>
-                                    <div class="oh-sticky-table__td {% if leave_request.status == 'rejected' %} diff-cell{% endif %}" onclick="event.stopPropagation()">
+                                    <div class="oh-sticky-table__td {% if leave_request.status == 'rejected' or leave_request.status == 'not_approved' %} diff-cell{% endif %}" onclick="event.stopPropagation()">
                                         {% if leave_request.status == 'requested'%}
                                             <div class="oh-btn-group" >
                                                 <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"

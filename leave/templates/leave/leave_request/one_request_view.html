@@ -69,7 +69,7 @@
             <div class="leave-request-detail__summary">
                 <div class="leave-request-detail__summary-item">
                     <span>{% trans "Leave Type" %}</span>
-                    <strong>{{ leave_request.leave_type_id }}</strong>
+                    <strong>{% if leave_request.notice_period_request %}{{ leave_request.leave_type_id }} — {% trans "Notice Period Leave" %}{% else %}{{ leave_request.leave_type_id }}{% endif %}</strong>
                 </div>
                 <div class="leave-request-detail__summary-item leave-request-detail__summary-item--days">
                     <span>{% trans "Requested Days" %}</span>
@@ -115,7 +115,7 @@
                             {% if approval.is_approved %}
                                 <span class="leave-request-detail__approval-status leave-request-detail__approval-status--approved">{% trans "Approved" %}</span>
                             {% elif approval.is_rejected %}
-                                <span class="leave-request-detail__approval-status leave-request-detail__approval-status--rejected">{% trans "Rejected" %}</span>
+                                <span class="leave-request-detail__approval-status leave-request-detail__approval-status--rejected">                                {% trans "Not Approved" %}</span>
                             {% else %}
                                 <span class="leave-request-detail__approval-status">{% trans "Not Marked" %}</span>
                             {% endif %}
@@ -136,9 +136,9 @@
                     <h3>{% trans "Reason for Cancellation" %}</h3>
                     <p>{{ leave_request.reject_reason }}</p>
                 </section>
-            {% elif leave_request.status == "rejected" %}
+            {% elif leave_request.status == "rejected" or leave_request.status == "not_approved" or leave_request.status == "not_approved" %}
                 <section class="leave-request-detail__notice leave-request-detail__notice--rejected">
-                    <h3>{% trans "Reason for Rejection" %}</h3>
+                    <h3>{% trans "Reason for Not Approval" %}</h3>
                     <p>{{ leave_request.reject_reason }}</p>
                 </section>
             {% endif %}

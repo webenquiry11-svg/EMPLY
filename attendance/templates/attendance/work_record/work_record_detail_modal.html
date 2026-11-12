@@ -1,0 +1,107 @@
+{% load i18n %}
+<div id="workRecordDetailModal" class="oh-modal__dialog" style="max-width:680px;margin:auto;padding:0;background:#fff;border-radius:16px;overflow:hidden">
+  <style>
+    #workRecordDetailModal .work-record-modal-header {
+      position: relative;
+      display: flex;
+      align-items: center;
+      min-height: 76px;
+      padding: 18px 72px 18px 24px;
+      background: #176f80;
+      color: #fff;
+    }
+    #workRecordDetailModal .work-record-modal-heading { min-width: 0; }
+    #workRecordDetailModal .work-record-modal-heading h4 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+    #workRecordDetailModal .work-record-modal-heading > div {
+      margin-top: 4px;
+      font-size: .85rem;
+      opacity: .92;
+    }
+    #workRecordDetailModal .oh-modal__close {
+      position: absolute;
+      top: 50%;
+      right: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      margin: 0;
+      padding: 0;
+      border: 1px solid rgba(255, 255, 255, .58);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .12);
+      color: #fff;
+      opacity: 1;
+      transform: translateY(-50%);
+      cursor: pointer;
+      transition: background-color .15s ease, border-color .15s ease, transform .15s ease;
+    }
+    #workRecordDetailModal .oh-modal__close:hover,
+    #workRecordDetailModal .oh-modal__close:focus-visible {
+      border-color: rgba(255, 255, 255, .85);
+      background: rgba(255, 255, 255, .26);
+      outline: 2px solid rgba(255, 255, 255, .72);
+      outline-offset: 2px;
+    }
+    #workRecordDetailModal .oh-modal__close ion-icon {
+      display: block;
+      width: 20px;
+      height: 20px;
+      color: #fff;
+      font-size: 20px;
+      pointer-events: none;
+    }
+  </style>
+  <div class="work-record-modal-header">
+    <div class="work-record-modal-heading">
+      <h4>{% trans "Work Record Details" %}</h4>
+      <div>{{ employee }} · {{ selected_date }}</div>
+    </div>
+    <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label="{% trans 'Close' %}" title="{% trans 'Close' %}">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+  </div>
+  <div style="padding:22px 24px;color:#315b69">
+    {% if leave_request %}
+      <div style="margin-bottom:18px;padding:12px 14px;border-radius:10px;background:#f3f9fa;border-left:4px solid #176f80">
+        <strong style="color:#173f50">{% trans "Leave Status" %}: </strong>
+        <span>{{ leave_request.get_status_display }}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:18px">
+        <div><div style="font-size:.78rem;color:#66818a;font-weight:700">{% trans "Leave Type" %}</div><div style="font-weight:800;color:#173f50">{{ leave_request.leave_type_id }}</div></div>
+        <div><div style="font-size:.78rem;color:#66818a;font-weight:700">{% trans "Request Type" %}</div><div style="font-weight:800;color:#173f50">{% if leave_request.notice_period_request %}{% trans "Notice Period Leave" %}{% else %}{% trans "Regular Leave" %}{% endif %}</div></div>
+        <div><div style="font-size:.78rem;color:#66818a;font-weight:700">{% trans "Leave Dates" %}</div><div>{{ leave_request.start_date }} — {{ leave_request.end_date }}</div></div>
+        <div><div style="font-size:.78rem;color:#66818a;font-weight:700">{% trans "Requested Days" %}</div><div>{{ leave_request.requested_days }}</div></div>
+      </div>
+      <div style="margin-bottom:16px">
+        <div style="font-size:.78rem;color:#66818a;font-weight:700;margin-bottom:5px">{% trans "Description" %}</div>
+        <div style="white-space:pre-wrap;padding:12px;border:1px solid #d1e5e9;border-radius:10px;background:#fff">{{ leave_request.description|default:_('No description provided') }}</div>
+      </div>
+      {% if leave_request.attachment %}
+        <a href="{{ leave_request.attachment.url }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:7px;padding:9px 12px;border-radius:9px;border:1px solid #176f80;color:#176f80;text-decoration:none;font-weight:700">
+          <ion-icon name="document-text-outline"></ion-icon>{% trans "View Attachment" %}
+        </a>
+      {% else %}
+        <div style="color:#66818a">{% trans "No attachment was provided." %}</div>
+      {% endif %}
+    {% elif work_record %}
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px">
+        <div><div style="font-size:.78rem;color:#66818a;font-weight:700">{% trans "Work Status" %}</div><div style="font-weight:800;color:#173f50">{{ work_record.get_work_record_type_display|default:work_record.work_record_type }}</div></div>
+        <div><div style="font-size:.78rem;color:#66818a;font-weight:700">{% trans "Leave Record" %}</div><div>{% if work_record.is_leave_record %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</div></div>
+        <div><div style="font-size:.78rem;color:#66818a;font-weight:700">{% trans "Attendance" %}</div><div>{% if work_record.attendance_id %}{% trans "Available" %}{% else %}{% trans "Not Available" %}{% endif %}</div></div>
+        <div><div style="font-size:.78rem;color:#66818a;font-weight:700">{% trans "Shift" %}</div><div>{{ work_record.shift_id|default:_('Not assigned') }}</div></div>
+        <div><div style="font-size:.78rem;color:#66818a;font-weight:700">{% trans "Day Percentage" %}</div><div>{{ work_record.day_percentage }}</div></div>
+        <div><div style="font-size:.78rem;color:#66818a;font-weight:700">{% trans "Message" %}</div><div>{{ work_record.message|default:_('No message') }}</div></div>
+      </div>
+    {% else %}
+      <div style="padding:18px;text-align:center;border-radius:10px;background:#f3f9fa;border:1px solid #d1e5e9">
+        <strong style="color:#173f50">{% trans "No Work Record" %}</strong><div style="margin-top:5px;color:#66818a">{% trans "No attendance or leave record is available for this date." %}</div>
+      </div>
+    {% endif %}
+  </div>
+</div>

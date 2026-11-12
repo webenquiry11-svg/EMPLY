@@ -441,6 +441,11 @@ urlpatterns = [
     path("work-records/", views.work_records, name="work-records"),
     path("work-record-export/", views.work_record_export, name="work-record-export"),
     path(
+        "work-record-detail/<int:employee_id>/<str:date_value>/",
+        views.work_record_detail,
+        name="work-record-detail",
+    ),
+    path(
         "work-records-change-month",
         views.work_records_change_month,
         name="work-records-change-month",

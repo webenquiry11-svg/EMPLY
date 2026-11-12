@@ -82,13 +82,16 @@ hidden-submenus for flyouts{% endcomment %}
                 <ul id="employee-mobile-submenu-{{ forloop.counter }}" class="employee-mobile-nav-submenu">
                     {% for submenu in menues.submenu %}
                     {% if submenu.redirect %}
-                    <li>
-                        <a href="{{ submenu.redirect }}"
-                            class="{% if submenu.redirect == request.path or submenu.redirect == request.get_full_path %}active{% endif %}">
-                            <span class="employee-mobile-nav-icon material-symbols-outlined">chevron_right</span>
-                            <span>{{ submenu.menu }}</span>
-                        </a>
-                    </li>
+                        {% if menues.menu == 'Leave' and submenu.menu == 'Dashboard' %}
+                        {% else %}
+                        <li>
+                            <a href="{{ submenu.redirect }}"
+                                class="{% if submenu.redirect == request.path or submenu.redirect == request.get_full_path %}active{% endif %}">
+                                <span class="employee-mobile-nav-icon material-symbols-outlined">chevron_right</span>
+                                <span>{{ submenu.menu }}</span>
+                            </a>
+                        </li>
+                        {% endif %}
                     {% endif %}
                     {% endfor %}
                 </ul>

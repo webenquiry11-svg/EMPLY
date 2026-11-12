@@ -1,0 +1,111 @@
+{% load i18n %}
+<style>
+  #noticePeriodLeaveForm {
+    width: 100%;
+  }
+  #noticePeriodLeaveForm .oh-modal__dialog-body {
+    background: #fff;
+    padding: 22px 24px 8px;
+  }
+  #noticePeriodLeaveForm .notice-period-intro {
+    margin-bottom: 18px;
+    padding: 12px 14px;
+    border-left: 4px solid #278da0;
+    border-radius: 8px;
+    background: #eef7f8;
+    color: #557b84;
+    line-height: 1.5;
+  }
+  #noticePeriodLeaveForm .oh-input,
+  #noticePeriodLeaveForm textarea {
+    width: 100%;
+    border: 1px solid #d6e2e4;
+    border-radius: 10px;
+    background: #fff !important;
+    color: #213c43;
+  }
+  #noticePeriodLeaveForm .oh-input:focus,
+  #noticePeriodLeaveForm textarea:focus {
+    border-color: #278da0;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(39,141,160,.12);
+    background: #fff !important;
+  }
+  #noticePeriodLeaveForm .required-mark {
+    color: #c62828;
+  }
+  #noticePeriodLeaveForm .oh-modal__dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 12px 24px 22px;
+    border-top: 1px solid #edf2f3;
+    background: #fff;
+  }
+  #noticePeriodLeaveForm .notice-period-submit {
+    min-width: 190px;
+    border: 0;
+    border-radius: 9px;
+    background: linear-gradient(110deg,#176f80,#278da0) !important;
+    color: #fff !important;
+    box-shadow: 0 5px 14px rgba(39,141,160,.18);
+  }
+</style>
+
+<div class="oh-modal__dialog-header">
+  <span class="oh-modal__dialog-title" id="noticePeriodModalLabel">{% trans "Notice Period Leave Request" %}</span>
+  <button type="button" class="oh-modal__close" aria-label="{% trans 'Close' %}">
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+<form id="noticePeriodLeaveForm" method="post" action="{% url 'notice-period-request' %}" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div class="oh-modal__dialog-body">
+    <div class="notice-period-intro">
+      {% trans "Add the reason for your leave request, supporting document, and requested leave dates." %}
+    </div>
+
+    <div class="mb-3">
+      <label class="oh-label" for="noticePeriodDescription">{% trans "Description" %} <span class="required-mark">*</span></label>
+      <textarea id="noticePeriodDescription" name="description" class="oh-input w-100" rows="4" required placeholder="{% trans 'Explain your leave request...' %}"></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="oh-label" for="noticePeriodAttachment">{% trans "Attachment" %} <span class="required-mark">*</span></label>
+      <input id="noticePeriodAttachment" name="attachment" type="file" class="oh-input w-100" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" required>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3 mb-md-0">
+        <label class="oh-label" for="noticePeriodStartDate">{% trans "Start Date" %} <span class="required-mark">*</span></label>
+        <input id="noticePeriodStartDate" name="start_date" type="date" class="oh-input w-100" required>
+      </div>
+      <div class="col-md-6 mb-3 mb-md-0">
+        <label class="oh-label" for="noticePeriodEndDate">{% trans "End Date" %} <span class="required-mark">*</span></label>
+        <input id="noticePeriodEndDate" name="end_date" type="date" class="oh-input w-100" required>
+      </div>
+    </div>
+  </div>
+  <div class="oh-modal__dialog-footer">
+    <button type="button" class="oh-btn oh-btn--light" onclick="$('.oh-modal--show .oh-modal__close').first().click()">{% trans "Cancel" %}</button>
+    <button type="submit" class="oh-btn notice-period-submit">
+      <ion-icon name="paper-plane-outline" class="me-1"></ion-icon>
+      {% trans "Submit Leave Request" %}
+    </button>
+  </div>
+</form>
+<script>
+  (function () {
+    const startInput = document.getElementById('noticePeriodStartDate');
+    const endInput = document.getElementById('noticePeriodEndDate');
+    if (!startInput || !endInput) return;
+    const today = new Date();
+    const localToday = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().split('T')[0];
+    startInput.min = localToday;
+    endInput.min = localToday;
+    startInput.addEventListener('change', function () {
+      endInput.min = startInput.value || localToday;
+      if (endInput.value && endInput.value < endInput.min) endInput.value = endInput.min;
+    });
+  })();
+</script>

@@ -19,7 +19,7 @@
             </div>
         </div>
         <div class="oh-timeoff-modal__profile-info">
-            <span class="oh-timeoff-modal__user fw-bold">{{ leave_request.leave_type_id }}</span>
+            <span class="oh-timeoff-modal__user fw-bold">{% if leave_request.notice_period_request %}{{ leave_request.leave_type_id }} — {% trans "Notice Period Leave" %}{% else %}{{ leave_request.leave_type_id }}{% endif %}</span>
         </div>
     </div>
 

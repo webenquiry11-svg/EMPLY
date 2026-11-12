@@ -46,6 +46,7 @@
                                 {% if submenu.menu == "My Attendances" or submenu.redirect == "/attendance/view-my-attendance" or submenu.redirect == "/attendance/view-my-attendance/" %}
                                     <li><a href="{{submenu.redirect}}">{% trans "My Attendances" %}</a></li>
                                 {% endif %}
+                            {% elif menues.menu == "Leave" and submenu.menu == "Dashboard" %}
                             {% else %}
                                 <li><a href="{{submenu.redirect}}">{{submenu.menu}}</a></li>
                             {% endif %}

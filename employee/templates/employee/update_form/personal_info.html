@@ -30,6 +30,54 @@
                     </div>
                 </div>
                 {{ form.as_p }}
+                <style>
+                    .employment-status-select {
+                        width: 100%;
+                        height: 48px;
+                        padding: 10px 42px 10px 14px;
+                        border: 1px solid #dce4ec;
+                        border-radius: 10px;
+                        background-color: #ffffff;
+                        color: #1f2937;
+                        box-shadow: none;
+                        appearance: auto;
+                    }
+                    .employment-status-select:focus,
+                    .employment-status-select:focus-visible {
+                        border-color: #5b7cfa;
+                        outline: none;
+                        box-shadow: 0 0 0 3px rgba(91, 124, 250, 0.12);
+                    }
+                    .employment-status-dropdown {
+                        border: 1px solid #176f80;
+                        border-radius: 8px;
+                        overflow: hidden;
+                    }
+                    .employment-status-dropdown .select2-results__option {
+                        padding: 9px 14px;
+                        color: #173f50;
+                    }
+                    .employment-status-dropdown .select2-results__option--highlighted[aria-selected],
+                    .employment-status-dropdown .select2-results__option[aria-selected="true"] {
+                        background-color: #176f80 !important;
+                        color: #ffffff !important;
+                    }
+                </style>
+                <script>
+                    $(document).ready(function () {
+                        const employmentStatus = $("#id_employment_status");
+                        if (employmentStatus.length) {
+                            if (employmentStatus.hasClass("select2-hidden-accessible")) {
+                                employmentStatus.select2("destroy");
+                            }
+                            employmentStatus.select2({
+                                width: "100%",
+                                dropdownCssClass: "employment-status-dropdown",
+                                minimumResultsForSearch: Infinity
+                            });
+                        }
+                    });
+                </script>
                 <hr class="mt-5 mb-3">
                 <div class="w-100 d-flex align-items-center justify-content-end">
                     <button type="submit" class="oh-btn oh-btn--secondary oh-btn--w-100-resp">

@@ -37,6 +37,7 @@ from leave.models import (
     LeaverequestFile,
     LeaveType,
     RestrictLeave,
+    prorated_leave_days,
 )
 
 CHOICES = [("yes", _("Yes")), ("no", _("No"))]
@@ -54,6 +55,11 @@ def _policy_leave_validation(cleaned_data, instance=None):
 
     name = str(leave_type.name).strip().lower()
     work_info = getattr(employee, "employee_work_info", None)
+    if getattr(leave_type, "leave_unit", None) == "minute":
+        if getattr(employee, "employment_status", "active") != "permanent":
+            raise ValidationError(
+                _("Short Leave is available only for employees with Permanent status.")
+            )
     category = str(
         getattr(getattr(work_info, "employee_type_id", None), "employee_type", "")
     ).lower()
@@ -127,7 +133,7 @@ def _policy_leave_validation(cleaned_data, instance=None):
     )
     if instance is not None:
         existing = existing.exclude(pk=instance.pk)
-    if existing.exclude(status__in=["cancelled", "rejected"]).exists():
+    if existing.exclude(status__in=["cancelled", "rejected", "not_approved"]).exists():
         raise ValidationError(_("Leave types cannot overlap or be combined for the same dates."))
 
 
@@ -153,7 +159,9 @@ def get_employee_leave_type_queryset(employee):
     minute_leave_type_ids = set(
         LeaveType.objects.filter(leave_unit="minute").values_list("id", flat=True)
     )
-    combined_ids = assigned_leave_type_ids | minute_leave_type_ids
+    combined_ids = assigned_leave_type_ids
+    if getattr(employee, "employment_status", "active") == "permanent":
+        combined_ids |= minute_leave_type_ids
     return LeaveType.objects.filter(id__in=combined_ids).distinct()
 
 
@@ -274,7 +282,7 @@ class LeaveTypeForm(ConditionForm):
                 AvailableLeave(
                     leave_type_id=leave_type,
                     employee_id=employee,
-                    available_days=leave_type.total_days,
+                    available_days=prorated_leave_days(employee, leave_type),
                 ).save()
 
     def __init__(self, *args, **kwargs):
@@ -398,8 +406,10 @@ class LeaveRequestUpdationForm(PolicyLeaveRequestMixin, BaseModelForm):
 
         if employee:
             employee_leave_types = get_employee_leave_type_queryset(employee)
-            if leave_type and leave_type.id not in employee_leave_types.values_list(
-                "id", flat=True
+            if (
+                leave_type
+                and leave_type.leave_unit != "minute"
+                and leave_type.id not in employee_leave_types.values_list("id", flat=True)
             ):
                 employee_leave_types |= LeaveType.objects.filter(id=leave_type.id)
 
@@ -1101,7 +1111,7 @@ if apps.is_installed("attendance"):
                     CompensatoryLeaveRequest.objects.filter(
                         employee_id=employee, attendance_id=attendance
                     )
-                    .exclude(Q(id=instance_id) | Q(status="rejected"))
+                    .exclude(Q(id=instance_id) | Q(status="rejected") | Q(status="not_approved"))
                     .exists()
                 ):
                     attendance_repeat = True

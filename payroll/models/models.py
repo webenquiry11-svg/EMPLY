@@ -1418,6 +1418,51 @@ class Deduction(HorillaModel):
         super().save()
 
 
+class PayslipViewRequest(models.Model):
+    """A time-limited approval request for an employee to view a payslip."""
+
+    ACCESS_DURATION = timedelta(minutes=30)
+    STATUS_REQUESTED = "requested"
+    STATUS_REVIEW = "review"
+    STATUS_APPROVED = "approved"
+    STATUS_NOT_APPROVED = "not_approved"
+    STATUS_EXPIRED = "expired"
+
+    STATUS_CHOICES = (
+        (STATUS_REQUESTED, "Requested"),
+        (STATUS_REVIEW, "Review"),
+        (STATUS_APPROVED, "Approved"),
+        (STATUS_NOT_APPROVED, "Not Approved"),
+        (STATUS_EXPIRED, "Expired"),
+    )
+
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name="payslip_view_requests")
+    payslip = models.ForeignKey("Payslip", on_delete=models.CASCADE, related_name="view_requests")
+    reason = models.TextField(verbose_name="Reason for viewing")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_REQUESTED)
+    requested_at = models.DateTimeField(auto_now_add=True)
+    approved_at = models.DateTimeField(null=True, blank=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    approved_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name="approved_payslip_view_requests")
+
+    class Meta:
+        ordering = ("-requested_at",)
+
+    @property
+    def access_expires_at(self):
+        if self.approved_at is None or self.expires_at is None:
+            return None
+        return min(
+            self.expires_at,
+            self.approved_at + self.ACCESS_DURATION,
+        )
+
+    def has_active_access(self):
+        if self.status != self.STATUS_APPROVED or self.access_expires_at is None:
+            return False
+        return timezone.now() < self.access_expires_at
+
+
 class Payslip(HorillaModel):
     """
     Payslip model

@@ -1,3 +1,5 @@
+import json
+from contextlib import nullcontext
 from datetime import date
 from decimal import Decimal
 from types import SimpleNamespace
@@ -118,6 +120,42 @@ class PayrollPolicyTests(TestCase):
         self.assertFalse(
             any(event["date"] == date(2026, 1, 5) for event in result["deduction_details"])
         )
+
+    def test_present_dates_include_validated_attendance_on_working_days(self):
+        self.employee.leaverequest_set = self.Query([])
+        present_day = date(2026, 1, 5)
+        weekend_attendance = date(2026, 1, 3)
+        attendance_queryset = SimpleNamespace(
+            values_list=lambda *_args, **_kwargs: [present_day, weekend_attendance]
+        )
+        attendance_model = SimpleNamespace(
+            objects=SimpleNamespace(
+                filter=lambda **_kwargs: attendance_queryset
+            )
+        )
+        with patch.object(
+            services,
+            "_working_dates",
+            lambda start, end: [
+                day
+                for day in services._dates(start, end)
+                if day.weekday() < 5
+            ],
+        ), patch.object(
+            services.timezone, "localdate", lambda: date(2026, 1, 31)
+        ), patch.object(
+            services.apps, "is_installed", lambda name: name == "attendance"
+        ), patch.object(
+            services.apps,
+            "get_model",
+            lambda app, model: attendance_model,
+        ):
+            result = services.calculate_employee_payroll(
+                self.employee, date(2026, 1, 1), date(2026, 1, 31)
+            )
+
+        self.assertEqual(result["present_dates"], [present_day])
+        self.assertEqual(result["paid_days"], 1)
 
     def test_partial_october_absence_uses_31_calendar_day_daily_rate(self):
         result = self.calculate(
@@ -336,7 +374,14 @@ class PayrollPolicyTests(TestCase):
             "basic_salary": 3100,
             "net_pay": 2800,
             "total_deductions": 300,
-            "deduction_details": [],
+            "deduction_details": [
+                {
+                    "date": date(2026, 1, 5),
+                    "amount": Decimal("300.00"),
+                    "affected_dates": [date(2026, 1, 5)],
+                    "dates": [date(2026, 1, 5)],
+                }
+            ],
             "paid_days": 20,
             "unpaid_days": 2,
             "absence_days": 1,
@@ -345,14 +390,20 @@ class PayrollPolicyTests(TestCase):
             "sandwich_days": 0,
         }
         payslip_manager = SimpleNamespace(get_or_create=Mock(return_value=(SimpleNamespace(), True)))
-        with patch.object(services, "calculate_employee_payroll", return_value=result), patch.object(
-            services.Payslip, "objects", payslip_manager
-        ) as manager:
+        with (
+            patch.object(services, "calculate_employee_payroll", return_value=result),
+            patch.object(services.Payslip, "objects", payslip_manager) as manager,
+            patch.object(services.transaction, "atomic", return_value=nullcontext()),
+        ):
             services.create_current_payslip(self.employee)
         defaults = manager.get_or_create.call_args.kwargs["defaults"]
         self.assertEqual(defaults["deduction"], result["total_deductions"])
         self.assertEqual(defaults["net_pay"], result["net_pay"])
         self.assertEqual(defaults["pay_head_data"]["lwp_days"], result["lwp_days"])
+        snapshot_detail = defaults["pay_head_data"]["deduction_details"][0]
+        self.assertEqual(snapshot_detail["date"], "2026-01-05")
+        self.assertEqual(snapshot_detail["affected_dates"], ["2026-01-05"])
+        json.dumps(defaults["pay_head_data"])
 
     def test_minute_short_leave_creates_no_deduction(self):
         short_leave = SimpleNamespace(

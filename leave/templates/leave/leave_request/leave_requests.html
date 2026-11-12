@@ -19,11 +19,11 @@
     <div class="d-flex flex-row-reverse mb-2 leave-request-status-legend">
         <span
             class="me-3 review_ongoing"
-            onclick="$('[name=status]').val('rejected');$('[name=status]').first().change();$('.filterButton').click()"
+            onclick="$('[name=status]').val('not_approved');$('[name=status]').first().change();$('.filterButton').click()"
             style="cursor: pointer"
         >
             <span class="oh-dot oh-dot--small me-1" style="background-color: red"></span>
-            {% trans "Rejected" %}
+            {% trans "Not Approved" %}
         </span>
         <span
             class="me-3 review_ongoing"
@@ -155,7 +155,7 @@
                                     oh-sticky-table__sd {% if leave_request.status == "requested" %}row-status--orange
                                     {% elif leave_request.status == "approved" %}row-status--yellow
                                     {% elif leave_request.status == "cancelled" %}row-status--gray
-                                    {% elif leave_request.status == "rejected" %}row-status--red
+                                    {% elif leave_request.status == "not_approved" %}row-status--red
                                     {% endif %}
                                 '
                                 onclick="event.stopPropagation()"
@@ -196,7 +196,7 @@
                                 {% endif %}
                             </div>
                         </div>
-                        <div class="oh-sticky-table__td">{{ leave_request.leave_type_id }}</div>
+                        <div class="oh-sticky-table__td">{% if leave_request.notice_period_request %}{{ leave_request.leave_type_id }} — {% trans "Notice Period Leave" %}{% else %}{{ leave_request.leave_type_id }}{% endif %}</div>
                         <div class="oh-sticky-table__td dateformat_changer">{{ leave_request.start_date }}</div>
                         <div class="oh-sticky-table__td dateformat_changer">{{ leave_request.end_date }}</div>
                         <div class="oh-sticky-table__td">{{ leave_request.requested_days }}</div>
@@ -226,9 +226,20 @@
                                     {{ leave_request.multiple_approvals.managers|length }} {% trans "Approved" %}
                                 </div>
                             {% else %}
-                                <span class="leave-request-status leave-request-status--{{ leave_request.status }}">
-                                    {{ leave_request.get_status_display }}
-                                </span>
+                                {% if leave_request.notice_period_request and request.user|is_reportingmanager or leave_request.notice_period_request and perms.leave.change_leaverequest or leave_request.notice_period_request and request.user|is_leave_approval_manager %}
+                                    <form method="post" action="{% url 'notice-period-request-status' leave_request.id %}" class="m-0" onchange="this.submit()">
+                                        {% csrf_token %}
+                                        <select name="status" class="oh-select" style="min-width:150px;background:#fff!important">
+                                            <option value="in_review" {% if leave_request.status == 'in_review' or leave_request.status == 'requested' %}selected{% endif %}>{% trans "In Review" %}</option>
+                                            <option value="approved" {% if leave_request.status == 'approved' %}selected{% endif %}>{% trans "Approved" %}</option>
+                                            <option value="not_approved" {% if leave_request.status == 'not_approved' %}selected{% endif %}>{% trans "Not Approved" %}</option>
+                                        </select>
+                                    </form>
+                                {% else %}
+                                    <span class="leave-request-status leave-request-status--{{ leave_request.status }}">
+                                        {{ leave_request.get_status_display }}
+                                    </span>
+                                {% endif %}
                             {% endif %}
                         </div>
                         {% if not dashboard %}
@@ -373,7 +384,7 @@
                                                 <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
                                             </a>
                                         {% endif %}
-                                        {% if leave_request.status != 'rejected' and leave_request.end_date >= current_date %}
+                                        {% if leave_request.status != 'not_approved' and leave_request.status != 'rejected' and leave_request.end_date >= current_date %}
                                             <a
                                                 type="submit"
                                                 data-toggle="oh-modal-toggle"

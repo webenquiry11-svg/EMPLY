@@ -142,7 +142,7 @@ def block_notice_period(view_func):
     """
 
     message = _(
-        "You are currently on notice period. Leave access is restricted during your notice period."
+        "You are currently in the notice period, so standard leave cannot be applied. Use the Notice Period Leave Request button in My Leave Requests instead."
     )
 
     def _wrapped_view(request, *args, **kwargs):

@@ -13,7 +13,13 @@ from notifications.signals import notify
 from base.models import Company
 from employee.models import Employee, EmployeeWorkInformation
 from horilla import horilla_middlewares
-from payroll.models.models import Contract, Payslip, PayrollApprovalEvent, PayrollRun
+from payroll.models.models import (
+    Contract,
+    Payslip,
+    PayslipViewRequest,
+    PayrollApprovalEvent,
+    PayrollRun,
+)
 from payroll.notifications import send_payroll_notification
 
 
@@ -262,6 +268,133 @@ class PayrollRunIntegrationTests(TestCase):
         ):
             response = employee_client.get(reverse(route_name, args=[argument]))
             self.assertEqual(response.status_code, 302)
+
+    def test_employee_payslip_view_requires_approval_and_expires_after_30_minutes(self):
+        pay_head_data = {
+            "start_date": self.period_start.isoformat(),
+            "end_date": self.period_end.isoformat(),
+            "allowances": [],
+            "basic_pay_deductions": [],
+            "gross_pay_deductions": [],
+            "pretax_deductions": [],
+            "post_tax_deductions": [],
+            "tax_deductions": [],
+            "net_deductions": [],
+            "basic_pay": 1000,
+            "gross_pay": 1000,
+            "total_deductions": 0,
+            "net_pay": 1000,
+            "federal_tax": 0,
+            "paid_days": 22,
+            "unpaid_days": 0,
+            "loss_of_pay": 0,
+        }
+        payslip = Payslip.objects.create(
+            employee_id=self.employee,
+            start_date=self.period_start,
+            end_date=self.period_end,
+            pay_head_data=pay_head_data,
+        )
+        employee_user = self.employee.employee_user_id
+        employee_user.is_new_employee = False
+        employee_user.save(update_fields=["is_new_employee"])
+        employee_client = Client()
+        employee_client.force_login(employee_user)
+
+        request_response = employee_client.post(
+            reverse("request-payslip-view", args=[payslip.pk]),
+            {"reason": "I need to review my pay details."},
+        )
+        self.assertEqual(request_response.status_code, 200)
+        self.assertEqual(request_response.json()["status"], "requested")
+        access_request = PayslipViewRequest.objects.get(payslip=payslip)
+        view_url = reverse("view-payslip-pdf", args=[payslip.pk])
+        self.assertEqual(employee_client.get(view_url).status_code, 302)
+
+        employee_work_info = self.employee.employee_work_info
+        employee_work_info.basic_salary = 1000
+        employee_work_info.save(update_fields=["basic_salary"])
+        self.client.post(reverse("approve-payslip-view", args=[access_request.pk]))
+        access_request.refresh_from_db()
+        self.assertEqual(access_request.status, PayslipViewRequest.STATUS_APPROVED)
+        self.client.post(reverse("reject-payslip-view", args=[access_request.pk]))
+        self.client.post(reverse("review-payslip-view", args=[access_request.pk]))
+        access_request.refresh_from_db()
+        self.assertEqual(access_request.status, PayslipViewRequest.STATUS_APPROVED)
+        access_requests_page = self.client.get(
+            reverse("payroll-management-dashboard"),
+            {"section": "access-requests"},
+        )
+        self.assertNotContains(
+            access_requests_page,
+            reverse("approve-payslip-view", args=[access_request.pk]),
+        )
+        self.assertNotContains(
+            access_requests_page,
+            reverse("reject-payslip-view", args=[access_request.pk]),
+        )
+        self.assertEqual(
+            access_request.expires_at - access_request.approved_at,
+            PayslipViewRequest.ACCESS_DURATION,
+        )
+        self.assertTrue(access_request.has_active_access())
+        dashboard_response = employee_client.get(reverse("payroll-dashboard"))
+        self.assertContains(dashboard_response, 'class="approved-payslip-dialog"')
+        self.assertContains(dashboard_response, "View Payslip")
+        self.assertRegex(
+            dashboard_response.content.decode(),
+            r'data-expires-at="\d+"',
+        )
+        self.assertNotContains(dashboard_response, "Download")
+        response = employee_client.get(view_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Cache-Control"], "no-store, private, max-age=0")
+        self.assertContains(response, 'class="payslip-protected"')
+        self.assertContains(response, "data-access-expires-at")
+        self.assertNotContains(response, "Print payslip")
+
+        pdf_response = employee_client.get(
+            reverse("payslip-pdf", args=[payslip.pk])
+        )
+        self.assertEqual(pdf_response.status_code, 403)
+
+        with patch(
+            "payroll.models.models.timezone.now",
+            return_value=access_request.access_expires_at,
+        ):
+            self.assertFalse(access_request.has_active_access())
+            expired_dashboard_response = employee_client.get(
+                reverse("payroll-dashboard")
+            )
+        self.assertNotContains(
+            expired_dashboard_response, 'class="approved-payslip-dialog"'
+        )
+        access_request.refresh_from_db()
+        self.assertEqual(access_request.status, PayslipViewRequest.STATUS_APPROVED)
+        rejected_request = PayslipViewRequest.objects.create(
+            employee=self.employee,
+            payslip=payslip,
+            reason="Please do not approve this request.",
+        )
+        self.client.post(reverse("reject-payslip-view", args=[rejected_request.pk]))
+        self.client.post(reverse("approve-payslip-view", args=[rejected_request.pk]))
+        self.client.post(reverse("review-payslip-view", args=[rejected_request.pk]))
+        rejected_request.refresh_from_db()
+        self.assertEqual(
+            rejected_request.status, PayslipViewRequest.STATUS_NOT_APPROVED
+        )
+        access_requests_page = self.client.get(
+            reverse("payroll-management-dashboard"),
+            {"section": "access-requests"},
+        )
+        self.assertNotContains(
+            access_requests_page,
+            reverse("approve-payslip-view", args=[rejected_request.pk]),
+        )
+        self.assertNotContains(
+            access_requests_page,
+            reverse("reject-payslip-view", args=[rejected_request.pk]),
+        )
 
     def test_employee_dashboard_finds_finalized_snapshot_beyond_recent_history(self):
         period_start = date(2025, 1, 1)

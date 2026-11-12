@@ -36,7 +36,7 @@
         </div>
         <div class="oh-timeoff-modal__stat">
             <span class="oh-timeoff-modal__stat-title">{% trans "Leave Type" %}</span>
-            <span class="oh-timeoff-modal__stat-count">{{leave_request.leave_type_id}}</span>
+            <span class="oh-timeoff-modal__stat-count">{% if leave_request.notice_period_request %}{{ leave_request.leave_type_id }} — {% trans "Notice Period Leave" %}{% else %}{{leave_request.leave_type_id}}{% endif %}</span>
         </div>
     </div>
     <div class="oh-timeoff-modal__stats-container mt-3">

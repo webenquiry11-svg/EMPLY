@@ -113,7 +113,7 @@
                 {% for work_record in work_records %}
                     {% with day=current_month_dates_list|get_item:forloop.counter0 %}
                         <td
-                            class="days
+                            class="days work-record-detail-cell
                                 {% if work_record and work_record.date in leave_dates or work_record is None and day in leave_dates %}holiday{% endif %}
                                 {% if work_record %}
                                     {% if work_record.work_record_type == 'CONF' %}work-record-cell--conflict
@@ -125,6 +125,12 @@
                                     {% elif work_record.work_record_type == 'DFT' and work_record.shift_id and not work_record.date in leave_dates %}work-record-cell--absent
                                     {% endif %}
                                 {% endif %}"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#objectDetailsModalW25"
+                            hx-get="{% url 'work-record-detail' employee.id day|date:'Y-m-d' %}"
+                            hx-target="#objectDetailsModalW25Target"
+                            role="button"
+                            tabindex="0"
                         >
                             {% if work_record %}
                                 <div
@@ -132,16 +138,6 @@
                                         title="{{work_record.title_message}}"
                                     {% endif %}
                                     class="work-record-cell-value fw-bold"
-                                    onclick="{% if work_record.work_record_type == 'ABS' %}
-                                        window.location.href = `{% url 'request-view' %}?employee_id={{work_record.employee_id.id}}&from_date={{work_record.date|date:'Y-m-d'}}&to_date={{work_record.date|date:'Y-m-d'}}`;
-                                    {% elif work_record.work_record_type != 'DFT' %}
-                                        {% if work_record.work_record_type == 'CONF' %}
-                                            localStorage.setItem('activeTabAttendance', '#tab_1');
-                                        {% else %}
-                                            localStorage.setItem('activeTabAttendance', '#tab_2');
-                                        {% endif %}
-                                        window.location.href = `{% url 'attendance-view' %}?employee_id={{work_record.employee_id.id}}&attendance_date={{work_record.date|date:'Y-m-d'}}`;
-                                    {% endif %}"
                                 >
                                     <a class="text-decoration-none" role="button">
                                         {% if work_record.work_record_type == 'CONF' %}
@@ -157,6 +153,8 @@
                                         {% endif %}
                                     </a>
                                 </div>
+                            {% else %}
+                                <div class="work-record-cell-value fw-bold" title="{% trans 'No work record' %}">—</div>
                             {% endif %}
                         </td>
                     {% endwith %}
@@ -230,6 +228,13 @@
 
 <script>
     $(document).ready(function () {
+        $(document).on("keydown", "td.work-record-detail-cell", function (event) {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                this.click();
+            }
+        });
+
         $(document).on("htmx:afterSettle", function () {
             var hxVals = $("[data-hx-vals]").data("hx-vals");
             var queryParams = {};

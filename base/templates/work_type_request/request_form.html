@@ -44,7 +44,8 @@
         min-width: 0;
     }
 
-    .work-type-request-heading__icon {
+    html body #objectCreateModal:has(#workTypeRequestForm) .oh-modal__dialog-header .work-type-request-heading__icon,
+    html body #objectUpdateModal:has(#workTypeRequestForm) .oh-modal__dialog-header .work-type-request-heading__icon {
         display: inline-flex;
         flex: 0 0 38px;
         align-items: center;
@@ -54,30 +55,38 @@
         border: 1px solid rgba(255, 255, 255, 0.22);
         border-radius: 12px;
         background: rgba(255, 255, 255, 0.14);
-        color: #fff;
+        color: #fff !important;
+        -webkit-text-fill-color: #fff;
         font-size: 21px;
+        opacity: 1 !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
     }
 
     .work-type-request-heading__copy { min-width: 0; }
 
-    #objectCreateModal:has(#workTypeRequestForm) .oh-modal__dialog-title,
-    #objectUpdateModal:has(#workTypeRequestForm) .oh-modal__dialog-title {
+    html body #objectCreateModal:has(#workTypeRequestForm) .oh-modal__dialog-header .oh-modal__dialog-title,
+    html body #objectUpdateModal:has(#workTypeRequestForm) .oh-modal__dialog-header .oh-modal__dialog-title {
         margin: 0;
         color: #fff !important;
-        font-size: 1.1rem;
+        -webkit-text-fill-color: #fff;
+        font-size: 1.15rem !important;
         font-weight: 800;
+        line-height: 1.25;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
     }
 
-    #objectCreateModal:has(#workTypeRequestForm) .work-type-request-subtitle,
-    #objectUpdateModal:has(#workTypeRequestForm) .work-type-request-subtitle {
+    html body #objectCreateModal:has(#workTypeRequestForm) .oh-modal__dialog-header .work-type-request-subtitle,
+    html body #objectUpdateModal:has(#workTypeRequestForm) .oh-modal__dialog-header .work-type-request-subtitle {
         display: block !important;
         margin: 0.12rem 0 0;
-        color: #d9f4f7 !important;
-        font-size: 0.76rem !important;
-        font-weight: 500 !important;
+        color: #f0fcff !important;
+        -webkit-text-fill-color: #f0fcff;
+        font-size: 0.84rem !important;
+        font-weight: 600 !important;
         line-height: 1.4 !important;
         opacity: 1 !important;
         visibility: visible !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
     }
 
     #objectCreateModal:has(#workTypeRequestForm) .oh-modal__close,

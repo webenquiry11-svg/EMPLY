@@ -32,6 +32,23 @@
             .payslip-actions { display: flex; justify-content: center; margin: 0 auto 28px; }
             .print-button { min-height: 42px; padding: 10px 20px; border: 1px solid #087e70; border-radius: 8px; color: #fff; background: #087e70; font: inherit; font-size: 14px; font-weight: 650; cursor: pointer; }
             .print-button:hover { background: #056758; }
+            body.payslip-protected { -webkit-user-select: none; user-select: none; }
+            body.payslip-protected::after {
+                position: fixed;
+                z-index: 10;
+                inset: 0;
+                display: grid;
+                place-items: center;
+                color: rgba(15, 67, 82, .11);
+                content: attr(data-payslip-watermark);
+                font-size: clamp(24px, 5vw, 48px);
+                font-weight: 800;
+                letter-spacing: .08em;
+                text-align: center;
+                transform: rotate(-24deg);
+                pointer-events: none;
+            }
+            body.payslip-protected .slip-sheet { -webkit-user-select: none; user-select: none; }
             @media (max-width: 600px) {
                 body { padding: 7px; }
                 .slip-sheet { margin: 5px auto 12px; padding: 16px 12px; }
@@ -51,10 +68,17 @@
                 }
                 .payslip-actions { display: none !important; }
                 .signature-row { break-inside: avoid; }
+                body.payslip-protected .slip-sheet { visibility: hidden !important; }
+                body.payslip-protected::after {
+                    color: #172b49;
+                    content: "Payslip viewing only - printing is disabled";
+                    font-size: 16px;
+                    transform: none;
+                }
             }
         </style>
     </head>
-    <body>
+    <body{% if is_employee_view %} class="payslip-protected" data-payslip-watermark="CONFIDENTIAL · {{ employee.employee_first_name }} {{ employee.employee_last_name }}" data-access-expires-at="{{ payslip_access_expires_at|date:'c' }}"{% endif %}>
         <main class="slip-sheet">
             <header class="company-header">
                 {% if employee.employee_work_info.company_id %}
@@ -143,8 +167,39 @@
             </div>
             <p class="slip-note">{% trans "This is a computer-generated payslip." %}</p>
         </main>
-        <div class="payslip-actions">
-            <button type="button" class="print-button" onclick="window.print()">{% trans "Print payslip" %}</button>
-        </div>
+        {% if not is_employee_view %}
+            <div class="payslip-actions">
+                <button type="button" class="print-button" onclick="window.print()">{% trans "Print payslip" %}</button>
+            </div>
+        {% endif %}
+        {% if is_employee_view %}
+            <script>
+                (() => {
+                    const expiresAt = new Date(document.body.dataset.accessExpiresAt).getTime();
+                    const revokeAccess = () => {
+                        if (Date.now() < expiresAt) return;
+                        document.body.classList.remove("payslip-protected");
+                        document.body.replaceChildren();
+                        const message = document.createElement("p");
+                        message.textContent = "Payslip viewing access has expired. Returning to Payroll.";
+                        message.style.cssText = "margin:3rem auto;max-width:32rem;text-align:center;font:600 1rem Inter,Arial,sans-serif;color:#172b49";
+                        document.body.append(message);
+                        window.setTimeout(() => window.location.replace("{% url 'payroll-dashboard' %}"), 1500);
+                    };
+                    document.addEventListener("contextmenu", event => event.preventDefault());
+                    document.addEventListener("copy", event => event.preventDefault());
+                    document.addEventListener("cut", event => event.preventDefault());
+                    document.addEventListener("keydown", event => {
+                        if ((event.ctrlKey || event.metaKey) && ["p", "s"].includes(event.key.toLowerCase())) {
+                            event.preventDefault();
+                        }
+                    });
+                    document.addEventListener("visibilitychange", revokeAccess);
+                    window.addEventListener("pageshow", revokeAccess);
+                    window.setTimeout(revokeAccess, Math.max(0, expiresAt - Date.now()));
+                    window.print = () => {};
+                })();
+            </script>
+        {% endif %}
     </body>
 </html>

@@ -39,6 +39,18 @@
             color: #557d16;
         }
 
+        .oh-wrapper-main:has(#userRequest) .employee-leave-status--in_review {
+            background: #fff4d6;
+            border-color: #e6c66f;
+            color: #806000;
+        }
+
+        .oh-wrapper-main:has(#userRequest) .employee-leave-status--not_approved {
+            background: #fde7e7;
+            border-color: #efb2b2;
+            color: #b42323;
+        }
+
         .oh-wrapper-main:has(#userRequest) .employee-leave-status--cancelled {
             background: #eef0f1;
             border-color: #c9ced1;
@@ -321,15 +333,16 @@
         }
 
         body:has(#userRequest) .oh-scrollable-container .oh-layout--grid-3 {
-            display: flex !important;
+            display: grid !important;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+            align-items: stretch;
             gap: 16px;
             width: 100%;
             margin: 0 !important;
         }
 
         body:has(#userRequest) .oh-scrollable-container .oh-kanban-card {
-            flex: 1 1 0;
-            width: auto !important;
+            width: 100% !important;
             min-width: 0;
             min-height: 164px;
             margin: 0 !important;
@@ -979,6 +992,100 @@
                 padding: 28px 16px;
             }
         }
+
+        @media (min-width: 769px) and (max-width: 1100px) {
+            body:has(#userRequest) .oh-main__topbar {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            body:has(#userRequest) .oh-main__titlebar--left,
+            body:has(#userRequest) .oh-main__titlebar--right {
+                width: 100%;
+            }
+
+            body:has(#userRequest) .oh-main__titlebar--right {
+                justify-content: flex-start;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            body:has(#userRequest) .oh-scrollable-container {
+                overflow-x: visible;
+            }
+
+            body:has(#userRequest) .oh-scrollable-container .oh-layout--grid-3 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            body:has(#userRequest) .oh-main__titlebar--left,
+            body:has(#userRequest) .oh-main__titlebar--right {
+                width: 100%;
+            }
+
+            body:has(#userRequest) .oh-main__titlebar--left {
+                justify-content: space-between;
+            }
+
+            body:has(#userRequest) .oh-main__titlebar-title {
+                font-size: clamp(1.2rem, 5vw, 1.55rem) !important;
+                line-height: 1.2;
+            }
+
+            body:has(#userRequest) .oh-main__titlebar--right {
+                justify-content: flex-start;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            body:has(#userRequest) .oh-main__titlebar-button-container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                width: 100%;
+            }
+
+            body:has(#userRequest) .oh-main__titlebar-button-container .oh-btn,
+            body:has(#userRequest) .oh-main__titlebar--right > .oh-btn {
+                margin: 0 !important;
+            }
+
+            body:has(#userRequest) .oh-scrollable-container {
+                overflow-x: visible;
+            }
+
+            body:has(#userRequest) .oh-scrollable-container .oh-layout--grid-3 {
+                grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+            }
+
+            body:has(#userRequest) #userRequest .oh-sticky-table {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body:has(#userRequest) .oh-main__topbar {
+                padding-left: 52px !important;
+            }
+
+            body:has(#userRequest) .oh-scrollable-container .oh-layout--grid-3 {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            body:has(#userRequest) .oh-scrollable-container .oh-kanban-card {
+                min-height: 0;
+                padding: 15px !important;
+            }
+
+            body:has(#userRequest) #userRequest .oh-sticky-table__th,
+            body:has(#userRequest) #userRequest .oh-sticky-table__td {
+                padding-right: 9px !important;
+                padding-left: 9px !important;
+            }
+        }
     </style>
 
     <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
@@ -1186,22 +1293,39 @@
                     </div>
                 </div>
             {% endif %}
-            <button
-                id="requestCreateButton"
-                class="oh-btn oh-btn--secondary oh-btn--shadow"
-                data-toggle="oh-modal-toggle"
-                data-target="#objectCreateModal"
-                hx-get="{% url 'leave-request-create' %}?confirm={{confirm}}"
-                hx-target="#objectCreateModalTarget"
-            >
-                <ion-icon
-                    name="add-outline"
-                    class="me-1 md hydrated"
-                    role="img"
-                    aria-label="{% trans 'add outline' %}"
-                ></ion-icon>
-                {% trans "Create" %}
-            </button>
+            {% if request.user.employee_get.notice_period %}
+                <button
+                    type="button"
+                    class="oh-btn oh-btn--secondary oh-btn--shadow"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#objectCreateModal"
+                    hx-get="{% url 'notice-period-request' %}"
+                    hx-target="#objectCreateModalTarget"
+                >
+                    <ion-icon name="document-text-outline" class="me-1"></ion-icon>
+                    {% trans "Notice Period Leave Request" %}
+                </button>
+                <button
+                    type="button"
+                    class="oh-btn oh-btn--secondary oh-btn--shadow"
+                    onclick="alert('{% trans "You cannot apply for standard leave during notice period. Use Notice Period Leave Request instead." %}')"
+                >
+                    <ion-icon name="add-outline" class="me-1"></ion-icon>
+                    {% trans "Standard Leave Disabled" %}
+                </button>
+            {% else %}
+                <button
+                    id="requestCreateButton"
+                    class="oh-btn oh-btn--secondary oh-btn--shadow"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#objectCreateModal"
+                    hx-get="{% url 'leave-request-create' %}?confirm={{confirm}}"
+                    hx-target="#objectCreateModalTarget"
+                >
+                    <ion-icon name="add-outline" class="me-1 md hydrated" role="img" aria-label="{% trans 'add outline' %}"></ion-icon>
+                    {% trans "Create" %}
+                </button>
+            {% endif %}
         </div>
     </section>
 

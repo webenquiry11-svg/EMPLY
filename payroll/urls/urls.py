@@ -108,6 +108,11 @@ urlpatterns = [
         views.mark_payroll_notification_read,
         name="payroll-notification-read",
     ),
+    path("payslip-access/request/<int:payslip_id>/", views.request_payslip_view, name="request-payslip-view"),
+    path("payslip-access/approve/<int:request_id>/", views.approve_payslip_view, name="approve-payslip-view"),
+    path("payslip-access/review/<int:request_id>/", views.review_payslip_view, name="review-payslip-view"),
+    path("payslip-access/reject/<int:request_id>/", views.reject_payslip_view, name="reject-payslip-view"),
+    path("payslip-access/requests/", views.payslip_access_requests, name="payslip-access-requests"),
     path(
         "dashboard/generate-payslip/",
         views.generate_employee_payslip,

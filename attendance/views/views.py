@@ -37,7 +37,7 @@ from django.db import close_old_connections, transaction
 from django.db.models import ProtectedError, Q
 from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone as django_timezone
@@ -3283,6 +3283,58 @@ def delete_comment_file(request):
 
 
 @login_required
+def work_record_detail(request, employee_id, date_value):
+    """Return the complete work/leave information for one employee and date."""
+    employee = get_object_or_404(Employee, id=employee_id)
+    current_employee = getattr(request.user, "employee_get", None)
+    allowed = (
+        request.user.is_superuser
+        or request.user.has_perm("attendance.view_workrecords")
+        or current_employee == employee
+    )
+    try:
+        reporting_manager = employee.employee_work_info.reporting_manager_id
+        allowed = allowed or current_employee == reporting_manager
+    except Exception:
+        pass
+    if not allowed:
+        return HttpResponse(_("You do not have permission to view this work record."), status=403)
+
+    try:
+        selected_date = datetime.strptime(date_value, "%Y-%m-%d").date()
+    except ValueError:
+        return HttpResponseBadRequest("Invalid date.")
+
+    work_record = WorkRecords.objects.select_related(
+        "attendance_id",
+        "shift_id",
+        "leave_request_id__leave_type_id",
+    ).filter(employee_id=employee, date=selected_date).first()
+    leave_request = work_record.leave_request_id if work_record else None
+    if leave_request is None:
+        try:
+            from leave.models import LeaveRequest
+
+            leave_request = LeaveRequest.objects.select_related("leave_type_id").filter(
+                employee_id=employee,
+                start_date__lte=selected_date,
+                end_date__gte=selected_date,
+            ).exclude(status__in=["cancelled", "rejected"]).order_by("-id").first()
+        except Exception:
+            leave_request = None
+    return render(
+        request,
+        "attendance/work_record/work_record_detail_modal.html",
+        {
+            "employee": employee,
+            "selected_date": selected_date,
+            "work_record": work_record,
+            "leave_request": leave_request,
+        },
+    )
+
+
+@login_required
 def work_records(request):
     today = date.today()
     previous_data = request.GET.urlencode()
@@ -3322,7 +3374,12 @@ def work_records_change_month(request):
 
     work_records = WorkRecords.objects.filter(
         date__in=month_dates, employee_id__in=employees
-    ).select_related("employee_id", "shift_id", "attendance_id")
+    ).select_related(
+        "employee_id",
+        "shift_id",
+        "attendance_id",
+        "leave_request_id__leave_type_id",
+    )
 
     work_records_dict = {(wr.employee_id.id, wr.date): wr for wr in work_records}
 

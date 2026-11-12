@@ -9623,6 +9623,18 @@
         line-height: 1 !important;
     }
 
+    html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon > #showallnotificationbtn.oh-navbar__notification-tray {
+        position: fixed !important;
+        top: 78px !important;
+        right: 12px !important;
+        bottom: auto !important;
+        left: auto !important;
+        width: min(410px, calc(100vw - 24px)) !important;
+        max-height: calc(100vh - 96px) !important;
+        margin: 0 !important;
+        z-index: 2200 !important;
+    }
+
     html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #notificationIcon .oh-navbar__notification-beacon {
         top: 7px !important;
         right: 7px !important;
@@ -10103,6 +10115,38 @@
         html body .oh-wrapper-main.employee-panel-theme.employee-bottom-nav-active #attendance-activity-container .employee-attendance-action {
             height: 36px !important;
             min-height: 36px !important;
+        }
+    }
+
+    @media (min-width: 851px) {
+        html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .oh-navbar__wrapper,
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar__wrapper {
+            justify-content: flex-start !important;
+            gap: clamp(16px, 2vw, 30px) !important;
+            padding-right: clamp(24px, 2.5vw, 48px) !important;
+            padding-left: clamp(24px, 2.5vw, 48px) !important;
+        }
+
+        html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .employee-navbar-greeting,
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .employee-navbar-greeting {
+            flex: 0 1 clamp(360px, 34vw, 650px) !important;
+            min-width: 280px !important;
+            margin: 0 !important;
+        }
+
+        html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .oh-navbar__search,
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar__search {
+            flex: 1 1 420px !important;
+            width: auto !important;
+            min-width: 260px !important;
+            max-width: min(760px, 42vw) !important;
+            margin: 0 !important;
+        }
+
+        html body .oh-wrapper-main.admin-panel-theme.employee-bottom-nav-active .oh-navbar__systray,
+        html body .oh-wrapper-main.super-admin-panel-theme.employee-bottom-nav-active .oh-navbar__systray {
+            flex: 0 0 auto !important;
+            margin-left: auto !important;
         }
     }
 </style>

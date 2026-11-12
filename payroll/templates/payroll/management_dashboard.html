@@ -235,6 +235,9 @@
         .content-grid[data-section="reimbursements"] [data-view="reimbursements"],
         .content-grid[data-section="employees"] [data-view="employees"],
         .content-grid[data-section="reports"] [data-view="reports"],
+        .content-grid[data-section="settings"] [data-view="settings"],
+        .content-grid[data-section="access-requests"] [data-view="access-requests"] { display: block; }
+        .content-grid[data-section="reports"] [data-view="reports"],
         .content-grid[data-section="settings"] [data-view="settings"] { display: block; }
         .section-heading-panel { margin-bottom: 14px; }
         .section-heading-panel .section-heading { padding: 18px 20px; }
@@ -314,6 +317,7 @@
         <nav class="side-nav">
             <a class="side-link {% if section == 'dashboard' %}active{% endif %}" data-section-link="dashboard" href="{% url 'payroll-management-dashboard' %}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9M9 20v-7h6v7"/></svg></span>{% trans "Dashboard" %}</a>
             <a class="side-link {% if section == 'payslips' %}active{% endif %}" data-section-link="payslips" href="?section=payslips&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h7"/></svg></span>{% trans "Employee payslips" %}</a>
+            <a class="side-link {% if section == 'access-requests' %}active{% endif %}" data-section-link="access-requests" href="?section=access-requests&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg></span>{% trans "Payslip access requests" %}</a>
             <a class="side-link {% if section == 'runs' %}active{% endif %}" data-section-link="runs" href="?section=runs&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11a8 8 0 1 1 1 6"/><path d="M4 5v6h6M12 7v5l3 2"/></svg></span>{% trans "Payroll runs" %}</a>
             <div class="side-heading">{% trans "Management" %}</div>
             {% if perms.payroll.view_contract or is_superuser %}<a class="side-link side-sub {% if section == 'contracts' %}active{% endif %}" data-section-link="contracts" href="?section=contracts&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h5"/></svg></span>{% trans "Contracts" %}</a>{% endif %}
@@ -429,6 +433,22 @@
                     {% for item in chart_statuses %}<tr><td><strong>{{ item.label }}</strong></td><td>{{ item.count }}</td><td>{{ selected_month }}</td></tr>{% endfor %}
                     <tr><td><strong>{% trans "Payroll runs" %}</strong></td><td>{{ run_count }}</td><td>{{ selected_month }}</td></tr>
                 </tbody></table></section>
+            </main>
+            <main class="section-page" data-view="access-requests">
+                <section class="panel section-heading-panel"><header class="section-heading"><div><h1>{% trans "Payslip access requests" %}</h1><p>{% trans "Review employee requests to view protected payslip documents." %}</p></div></header></section>
+                <section class="panel">
+                    <div class="section-table-wrap"><table class="section-table"><thead><tr><th>{% trans "Employee" %}</th><th>{% trans "Payslip" %}</th><th>{% trans "Reason" %}</th><th>{% trans "Requested" %}</th><th>{% trans "Status" %}</th><th>{% trans "Actions" %}</th></tr></thead><tbody>
+                    {% for access_request in payslip_access_requests %}
+                        <tr><td><strong>{{ access_request.employee.employee_first_name }} {{ access_request.employee.employee_last_name }}</strong></td><td>{{ access_request.payslip.start_date|date:"F Y" }}</td><td>{{ access_request.reason }}</td><td>{{ access_request.requested_at|date:"d M Y, H:i" }}</td><td><span class="status">{{ access_request.get_status_display }}</span></td><td>
+                            {% if access_request.status == 'requested' or access_request.status == 'review' %}
+                            <form method="post" action="{% url 'review-payslip-view' access_request.id %}" style="display:inline">{% csrf_token %}<button class="section-action" type="submit" {% if access_request.status == 'review' %}disabled{% endif %}>{% trans "Review" %}</button></form>
+                            <form method="post" action="{% url 'approve-payslip-view' access_request.id %}" style="display:inline;margin-left:4px">{% csrf_token %}<button class="section-action" type="submit">{% trans "Approved" %}</button></form>
+                            <form method="post" action="{% url 'reject-payslip-view' access_request.id %}" style="display:inline;margin-left:4px">{% csrf_token %}<button class="section-action" type="submit" style="background:#8b9bb3">{% trans "Not Approved" %}</button></form>
+                            {% else %}—{% endif %}
+                        </td></tr>
+                    {% empty %}<tr><td colspan="6"><div class="empty">{% trans "No payslip access requests yet." %}</div></td></tr>{% endfor %}
+                    </tbody></table></div>
+                </section>
             </main>
             <main class="section-page" data-view="settings">
                 <section class="panel section-heading-panel"><header class="section-heading"><div><h1>{% trans "Payroll settings" %}</h1><p>{% trans "Open the configuration controls available to your account." %}</p></div></header></section>
@@ -559,7 +579,7 @@
     (() => {
         const allowedSections = new Set([
             "dashboard", "payslips", "runs", "contracts", "allowances",
-            "deductions", "reimbursements", "employees", "reports", "settings",
+            "deductions", "reimbursements", "employees", "reports", "settings", "access-requests",
         ]);
         const requestedSection = new URLSearchParams(window.location.search).get("section");
         const section = allowedSections.has(requestedSection) ? requestedSection : "dashboard";

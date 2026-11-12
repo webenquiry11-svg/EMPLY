@@ -40,6 +40,11 @@ SUBMENUS = [
         "redirect": reverse("view-payslip"),
     },
     {
+        "menu": trans("Payslip Access Requests"),
+        "redirect": reverse("payslip-access-requests"),
+        "accessibility": "payroll.sidebar.dasbhoard_accessibility",
+    },
+    {
         "menu": trans("Loan / Advanced Salary"),
         "redirect": reverse("view-loan"),
         "accessibility": "payroll.sidebar.loan_accessibility",

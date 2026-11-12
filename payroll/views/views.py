@@ -87,6 +87,7 @@ from payroll.models.models import (
     FilingStatus,
     PayrollGeneralSetting,
     Payslip,
+    PayslipViewRequest,
     PayslipAutoGenerate,
     PayrollRun,
     Reimbursement,
@@ -767,6 +768,120 @@ def bulk_update_payslip_status(request):
 
 
 @django_login_required
+def request_payslip_view(request, payslip_id):
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    payslip = get_object_or_404(Payslip, id=payslip_id)
+    employee = getattr(request.user, "employee_get", None)
+    if employee is None or payslip.employee_id_id != employee.id:
+        return HttpResponseForbidden("You may only request access to your own payslip.")
+
+    reason = request.POST.get("reason", "").strip()
+    if not reason:
+        return JsonResponse({"type": "error", "message": _("Please enter a reason for viewing this payslip.")}, status=400)
+
+    latest = PayslipViewRequest.objects.filter(employee=employee, payslip=payslip).order_by("-requested_at").first()
+    if latest is not None:
+        if latest.status == PayslipViewRequest.STATUS_APPROVED and latest.has_active_access():
+            return JsonResponse({"type": "success", "status": "approved", "message": _("Payslip viewing access is active.")})
+        if latest.status in (PayslipViewRequest.STATUS_REQUESTED, PayslipViewRequest.STATUS_REVIEW):
+            status_label = _("under review") if latest.status == PayslipViewRequest.STATUS_REVIEW else _("pending approval")
+            return JsonResponse({"type": "warning", "status": latest.status, "message": _(f"Your request is already {status_label}.")})
+
+    access_request = PayslipViewRequest.objects.create(employee=employee, payslip=payslip, reason=reason, status=PayslipViewRequest.STATUS_REQUESTED)
+    work_info = EmployeeWorkInformation.objects.filter(employee_id=employee).first()
+    company = work_info.company_id if work_info else None
+    notify_payroll_admins(request.user, company, f"{employee} requested to view payslip {payslip.start_date:%B %Y}. Reason: {reason}", redirect=reverse("payslip-access-requests"), icon="document-text-outline")
+    return JsonResponse({"type": "success", "status": "requested", "message": _("Payslip view request submitted.")})
+
+
+@django_login_required
+def approve_payslip_view(request, request_id):
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    if not request.user.has_perm("payroll.view_contract") and not request.user.is_superuser:
+        return HttpResponseForbidden("You are not authorized to approve payslip access requests.")
+    access_request = get_object_or_404(PayslipViewRequest, id=request_id)
+    if access_request.status not in (
+        PayslipViewRequest.STATUS_REQUESTED,
+        PayslipViewRequest.STATUS_REVIEW,
+    ):
+        return redirect(f'{reverse("payroll-management-dashboard")}?section=access-requests')
+    now = timezone.now()
+    access_request.status = PayslipViewRequest.STATUS_APPROVED
+    access_request.approved_at = now
+    access_request.expires_at = now + PayslipViewRequest.ACCESS_DURATION
+    access_request.approved_by = request.user
+    access_request.save(update_fields=["status", "approved_at", "expires_at", "approved_by"])
+    employee_user = access_request.employee.employee_user_id
+    if employee_user is not None:
+        dashboard_url = (
+            f"{reverse('payroll-dashboard')}?"
+            f"period={access_request.payslip.start_date:%Y-%m}"
+        )
+        send_payroll_notification(request.user, employee_user, f"Your payslip view request for {access_request.payslip.start_date:%B %Y} was approved. Viewing access is valid for 30 minutes.", redirect=dashboard_url, icon="document-text-outline")
+    return redirect(f'{reverse("payroll-management-dashboard")}?section=access-requests')
+
+
+@django_login_required
+def review_payslip_view(request, request_id):
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    if not request.user.has_perm("payroll.view_contract") and not request.user.is_superuser:
+        return HttpResponseForbidden("You are not authorized to review payslip access requests.")
+    access_request = get_object_or_404(PayslipViewRequest, id=request_id)
+    if access_request.status != PayslipViewRequest.STATUS_REQUESTED:
+        return redirect(f'{reverse("payroll-management-dashboard")}?section=access-requests')
+    access_request.status = PayslipViewRequest.STATUS_REVIEW
+    access_request.approved_at = None
+    access_request.expires_at = None
+    access_request.approved_by = request.user
+    access_request.save(update_fields=["status", "approved_by", "approved_at", "expires_at"])
+    return redirect(f'{reverse("payroll-management-dashboard")}?section=access-requests')
+
+
+@django_login_required
+def reject_payslip_view(request, request_id):
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    if not request.user.has_perm("payroll.view_contract") and not request.user.is_superuser:
+        return HttpResponseForbidden("You are not authorized to update payslip access requests.")
+    access_request = get_object_or_404(PayslipViewRequest, id=request_id)
+    if access_request.status not in (
+        PayslipViewRequest.STATUS_REQUESTED,
+        PayslipViewRequest.STATUS_REVIEW,
+    ):
+        return redirect(f'{reverse("payroll-management-dashboard")}?section=access-requests')
+    access_request.status = PayslipViewRequest.STATUS_NOT_APPROVED
+    access_request.approved_by = request.user
+    access_request.approved_at = timezone.now()
+    access_request.expires_at = None
+    access_request.save(update_fields=["status", "approved_by", "approved_at", "expires_at"])
+    return redirect(f'{reverse("payroll-management-dashboard")}?section=access-requests')
+
+@django_login_required
+def payslip_access_requests(request):
+    if not request.user.has_perm("payroll.view_contract") and not request.user.is_superuser:
+        return HttpResponseForbidden("You are not authorized to view payslip access requests.")
+    requests_qs = PayslipViewRequest.objects.select_related("employee", "payslip", "approved_by").order_by("-requested_at")
+    return render(request, "payroll/payslip/payslip_access_requests.html", {"access_requests": requests_qs})
+
+
+def _employee_has_payslip_access(request, payslip):
+    if request.user.has_perm("payroll.view_payslip") or request.user.is_superuser:
+        return True
+    employee = getattr(request.user, "employee_get", None)
+    if employee is None or payslip.employee_id_id != employee.id:
+        return False
+    access_request = PayslipViewRequest.objects.filter(
+        employee=employee, payslip=payslip
+    ).order_by("-requested_at").first()
+    if access_request is not None and access_request.has_active_access():
+        return True
+    return False
+
+
+@django_login_required
 def view_payslip_pdf(request, payslip_id):
 
     from .component_views import filter_payslip
@@ -776,7 +891,7 @@ def view_payslip_pdf(request, payslip_id):
         company = Company.objects.filter(hq=True).first()
         is_owner = payslip.employee_id.employee_user_id == request.user
         is_payroll_staff = request.user.has_perm("payroll.view_payslip")
-        if is_owner or is_payroll_staff:
+        if (is_owner and _employee_has_payslip_access(request, payslip)) or is_payroll_staff:
             user = request.user
             employee = getattr(user, "employee_get", None) or payslip.employee_id
 
@@ -863,7 +978,22 @@ def view_payslip_pdf(request, payslip_id):
             data["protocol"] = "https" if request.is_secure() else "http"
             data["company"] = company
 
-            return render(request, "payroll/payslip/employee_payslip.html", context=data)
+            data["is_employee_view"] = is_owner and not is_payroll_staff
+            active_request = PayslipViewRequest.objects.filter(
+                employee=payslip.employee_id,
+                payslip=payslip,
+                status=PayslipViewRequest.STATUS_APPROVED,
+            ).order_by("-requested_at").first()
+            data["payslip_access_expires_at"] = (
+                active_request.access_expires_at
+                if data["is_employee_view"] and active_request and active_request.has_active_access()
+                else None
+            )
+            response = render(request, "payroll/payslip/employee_payslip.html", context=data)
+            response["Cache-Control"] = "no-store, private, max-age=0"
+            response["Pragma"] = "no-cache"
+            response["X-Content-Type-Options"] = "nosniff"
+            return response
         return redirect(filter_payslip)
     return render(request, "405.html")
 
@@ -875,10 +1005,16 @@ def view_created_payslip(request, payslip_id, **kwargs):
     This method is used to view the saved payslips
     """
     payslip = Payslip.objects.filter(id=payslip_id).first()
+    is_owner = payslip is not None and payslip.employee_id.employee_user_id == request.user
+    is_payroll_staff = request.user.has_perm("payroll.view_payslip") or request.user.is_superuser
     if payslip is not None and (
-        request.user.has_perm("payroll.view_payslip")
-        or payslip.employee_id.employee_user_id == request.user
+        is_payroll_staff
+        or (is_owner and _employee_has_payslip_access(request, payslip))
     ):
+        if is_owner and not is_payroll_staff:
+            response = redirect("view-payslip-pdf", payslip_id=payslip.id)
+            response["Cache-Control"] = "no-store, private, max-age=0"
+            return response
         # the data must be dictionary in the payslip model for the json field
         data = payslip.pay_head_data
         data["employee"] = payslip.employee_id
@@ -887,7 +1023,11 @@ def view_created_payslip(request, payslip_id, **kwargs):
         data["json_data"]["employee"] = payslip.employee_id.id
         data["json_data"]["payslip"] = payslip.id
         data["instance"] = payslip
-        return render(request, "payroll/payslip/individual_payslip.html", data)
+        response = render(request, "payroll/payslip/individual_payslip.html", data)
+        response["Cache-Control"] = "no-store, private, max-age=0"
+        response["Pragma"] = "no-cache"
+        response["X-Content-Type-Options"] = "nosniff"
+        return response
     return render(request, "404.html")
 
 
@@ -1019,6 +1159,68 @@ def employee_payroll_dashboard(request):
         if selected_period != current_period
         else None
     )
+    detail_start_date = (
+        selected_payslip.start_date if selected_payslip else payroll["start_date"]
+    )
+    detail_end_date = (
+        selected_payslip.end_date if selected_payslip else payroll["end_date"]
+    )
+    if not selected_payslip:
+        detail_payroll = payroll
+    elif (
+        selected_payslip.start_date == payroll["start_date"]
+        and selected_payslip.end_date == payroll["end_date"]
+    ):
+        detail_payroll = payroll.copy()
+    else:
+        detail_payroll = calculate_employee_payroll(
+            employee,
+            start_date=detail_start_date,
+            end_date=detail_end_date,
+        )
+    leave_requests = list(
+        employee.leaverequest_set.select_related("leave_type_id")
+        .filter(
+            start_date__lte=detail_end_date,
+            end_date__gte=detail_start_date,
+        )
+        .order_by("start_date", "id")
+    )
+    leave_requests_by_date = defaultdict(list)
+    leave_request_details = []
+    for leave in leave_requests:
+        leave_detail = {
+            "start_date": leave.start_date,
+            "end_date": leave.end_date,
+            "leave_type": str(leave.display_leave_type_name()),
+            "status": leave.get_status_display(),
+            "description": leave.description,
+            "requested_days": leave.requested_days,
+            "requested_minutes": leave.requested_minutes,
+            "approved_minutes": leave.approved_minutes,
+            "notice_period": leave.notice_period_request,
+            "reject_reason": leave.reject_reason,
+        }
+        leave_request_details.append(leave_detail)
+        day = max(leave.start_date, detail_start_date)
+        final_day = min(leave.end_date, detail_end_date)
+        while day <= final_day:
+            leave_requests_by_date[day].append(leave_detail)
+            day += timedelta(days=1)
+    deduction_day_details = []
+    for detail in detail_payroll.get("deduction_details", []):
+        deduction_day_details.append(
+            {
+                **detail,
+                "leave_requests": leave_requests_by_date.get(detail.get("date"), []),
+            }
+        )
+    present_dates = detail_payroll.get("present_dates", [])
+    deductible_dates = {
+        detail.get("date")
+        for detail in deduction_day_details
+        if detail.get("date") is not None
+    }
     selected_month = (
         selected_payslip.start_date.strftime("%B %Y")
         if selected_payslip
@@ -1179,6 +1381,44 @@ def employee_payroll_dashboard(request):
         max(0, round(float(payroll["net_pay"] / salary_denominator * 100), 2)),
     )
 
+    salary_contract = (
+        Contract.objects.filter(
+            employee_id=employee,
+            contract_status="active",
+            contract_start_date__lte=payroll["end_date"],
+        )
+        .filter(
+            Q(contract_end_date__isnull=True)
+            | Q(contract_end_date__gte=payroll["start_date"])
+        )
+        .order_by("-contract_start_date")
+        .first()
+    )
+    salary_type_display = (
+        salary_contract.get_wage_type_display()
+        if salary_contract
+        else _("Monthly")
+    )
+
+    payslip_access_requests = {}
+    active_payslip_access_request = None
+    for access_request in PayslipViewRequest.objects.filter(
+        employee=employee
+    ).select_related("payslip").order_by("-requested_at"):
+        if (
+            active_payslip_access_request is None
+            and access_request.status == PayslipViewRequest.STATUS_APPROVED
+            and access_request.has_active_access()
+        ):
+            active_payslip_access_request = access_request
+        payslip_access_requests.setdefault(access_request.payslip_id, access_request)
+    for payslip_item in payslips:
+        payslip_item.payslip_access_request = payslip_access_requests.get(payslip_item.id)
+    salary_slip = finalized_payslip or payslip_by_period.get(selected_period)
+    salary_slip_access_request = (
+        payslip_access_requests.get(salary_slip.id) if salary_slip else None
+    )
+
     context = {
         "employee": employee,
         "employee_id": getattr(employee, "badge_id", ""),
@@ -1188,6 +1428,7 @@ def employee_payroll_dashboard(request):
         and f"{employee.employee_first_name} {employee.employee_last_name}".strip(),
         "salary_configured": salary_configured,
         "salary_value": salary_value,
+        "salary_type_display": salary_type_display,
         "current_period": selected_period,
         "current_month": selected_month,
         "period_options": period_options,
@@ -1197,13 +1438,23 @@ def employee_payroll_dashboard(request):
         "payroll_has_snapshot": payroll_has_snapshot,
         "finalized_payslip": finalized_payslip,
         "selected_payslip": selected_payslip,
+        "salary_slip": salary_slip,
+        "salary_slip_access_request": salary_slip_access_request,
+        "active_payslip_access_request": active_payslip_access_request,
         "payslips": payslips,
         "selected_month_payslips": selected_month_payslips,
+        "detail_payroll": detail_payroll,
+        "detail_payroll_is_snapshot": selected_payslip is not None,
+        "present_dates": present_dates,
+        "deduction_day_details": deduction_day_details,
+        "deductible_date_count": len(deductible_dates),
+        "leave_request_details": leave_request_details,
         "selected_is_current_period": selected_period == current_period,
         "employee_avatar": employee.get_avatar(),
         "deduction_ratio": deduction_ratio,
         "net_pay_ratio": net_pay_ratio,
         "payroll_trends": payroll_trends,
+        "payslip_access_requests": payslip_access_requests,
     }
     return render(request, "payroll/employee_dashboard.html", context=context)
 
@@ -1223,6 +1474,7 @@ def payroll_management_dashboard(request):
         "deductions",
         "reimbursements",
         "settings",
+        "access-requests",
     }
     section = request.GET.get("section", "dashboard")
     if section not in valid_sections:
@@ -1341,6 +1593,7 @@ def payroll_management_dashboard(request):
     reimbursement_filter = ""
     reimbursement_search = ""
     employees = []
+    payslip_access_requests = []
     deduction_employees = []
     selected_deduction_employee = None
     selected_deduction_payroll = None
@@ -1348,6 +1601,10 @@ def payroll_management_dashboard(request):
         contracts = Contract.objects.select_related("employee_id").order_by(
             "-contract_start_date"
         )[:100]
+    elif section == "access-requests":
+        payslip_access_requests = PayslipViewRequest.objects.select_related(
+            "employee", "payslip", "approved_by"
+        ).order_by("-requested_at")[:200]
     elif section == "employees":
         employee_queryset = (
             Employee._base_manager
@@ -1432,6 +1689,7 @@ def payroll_management_dashboard(request):
         "all_runs": month_runs[:100],
         "run_count": month_runs.count(),
         "employees": employees,
+        "payslip_access_requests": payslip_access_requests,
         "contracts": contracts,
         "allowances": allowances,
         "deductions": deductions,
@@ -2306,10 +2564,7 @@ def payslip_pdf(request, id):
     if Payslip.objects.filter(id=id).exists():
         payslip = Payslip.objects.get(id=id)
         company = Company.objects.filter(hq=True).first()
-        if (
-            request.user.has_perm("payroll.view_payslip")
-            or payslip.employee_id.employee_user_id == request.user
-        ):
+        if request.user.has_perm("payroll.view_payslip") or request.user.is_superuser:
             user = request.user
             employee = getattr(user, "employee_get", None) or payslip.employee_id
 
@@ -2381,7 +2636,14 @@ def payslip_pdf(request, id):
             data["zipped_data"] = zip(data["allowances"], data["all_deductions"])
             template_path = "payroll/payslip/payslip_pdf.html"
 
-            return generate_payslip_pdf(template_path, context=data, html=False)
+            response = generate_payslip_pdf(template_path, context=data, html=False)
+            response["Cache-Control"] = "no-store, private, max-age=0"
+            response["Pragma"] = "no-cache"
+            return response
+        if payslip.employee_id.employee_user_id == request.user:
+            return HttpResponseForbidden(
+                _("Payslip downloads are not available to employees. Request viewing access from Payroll.")
+            )
         return redirect(filter_payslip)
     return render(request, "405.html")
 

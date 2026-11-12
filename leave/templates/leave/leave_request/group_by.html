@@ -91,7 +91,7 @@
                                 hx-get="{% url 'one-request-view' leave_request.id %}?instances_ids={{requests_ids}}" hx-target="#objectDetailsModalW25Target">
                                     <div class="oh-sticky-table__sd {% if leave_request.status == "requested" %} row-status--blue {% elif leave_request.status == "cancelled_and_rejected" %} row-status--black
                                         {% elif leave_request.status == "approved" %} row-status--yellow {% elif leave_request.status == "cancelled" %} row-status--gray
-                                        {% elif leave_request.status == "rejected" %}row-status--red{% endif %}" onclick="event.stopPropagation()">
+                                        {% elif leave_request.status == "rejected" or leave_request.status == "not_approved" or leave_request.status == "not_approved" %}row-status--red{% endif %}" onclick="event.stopPropagation()">
                                         <div class="centered-div">
                                             <input
                                             type="checkbox"
@@ -119,7 +119,7 @@
                                             {% endif %}
                                         </div>
                                     </div>
-                                    <div class="oh-sticky-table__td {% if leave_request.status == 'cancelled' %} diff-cell{% endif %}">{{leave_request.leave_type_id}}</div>
+                                    <div class="oh-sticky-table__td {% if leave_request.status == 'cancelled' %} diff-cell{% endif %}">{% if leave_request.notice_period_request %}{{ leave_request.leave_type_id }} — {% trans "Notice Period Leave" %}{% else %}{{leave_request.leave_type_id}}{% endif %}</div>
                                     <div class="oh-sticky-table__td {% if leave_request.status == 'cancelled' %} diff-cell{% endif %} dateformat_changer">{{leave_request.start_date}}</div>
                                     <div class="oh-sticky-table__td {% if leave_request.status == 'cancelled' %} diff-cell{% endif %} dateformat_changer">{{leave_request.end_date}}</div>
                                     <div class="oh-sticky-table__td {% if leave_request.status == 'cancelled' %} diff-cell{% endif %}">{{leave_request.requested_days}}</div>

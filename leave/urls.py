@@ -26,6 +26,16 @@ urlpatterns = [
     path("type-filter", views.leave_type_filter, name="type-filter"),
     path("request-creation", views.leave_request_creation, name="request-creation"),
     path(
+        "notice-period-request",
+        views.notice_period_leave_request,
+        name="notice-period-request",
+    ),
+    path(
+        "notice-period-request-status/<int:id>",
+        views.notice_period_leave_status,
+        name="notice-period-request-status",
+    ),
+    path(
         "get-employee-leave-types",
         views.get_employee_leave_types,
         name="get-employee-leave-types",

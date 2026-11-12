@@ -249,6 +249,26 @@
         color: #fff !important;
     }
 
+    .work-record-page #workRecordTable tbody td.work-record-detail-cell {
+        cursor: pointer;
+        transition: filter 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .work-record-page #workRecordTable tbody td.work-record-detail-cell:hover,
+    .work-record-page #workRecordTable tbody td.work-record-detail-cell:focus {
+        filter: brightness(1.04);
+        box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.72);
+        outline: 0;
+    }
+
+    .work-record-page .work-record-cell-value {
+        width: 100%;
+        min-height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
     .work-record-page #workRecordTable .oh-sticky-table {
         max-width: 100%;
         overflow: auto;

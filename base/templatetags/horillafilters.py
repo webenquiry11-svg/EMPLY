@@ -307,11 +307,19 @@ def is_check_in_enabled(request):
 
     # from base.models import Company  # Assuming Company is the correct model for `selected_company`
     selected_company = request.session.get("selected_company")
-    if not selected_company:
-        return False  # Safeguard if session key is missing
 
-    # Fetch the settings based on the selected company
-    if selected_company == "all":
+    # Fetch the settings based on the selected company. Employees without a
+    # selected-company session should use their own company setting.
+    if not selected_company or selected_company == "none":
+        employee = getattr(request.user, "employee_get", None)
+        employee_work_info = getattr(employee, "employee_work_info", None)
+        company = getattr(employee_work_info, "company_id", None)
+        attendance_settings = (
+            AttendanceGeneralSetting.objects.filter(company_id=company).first()
+            if company
+            else AttendanceGeneralSetting.objects.filter(company_id=None).first()
+        )
+    elif selected_company == "all":
         attendance_settings = AttendanceGeneralSetting.objects.filter(
             company_id=None
         ).first()

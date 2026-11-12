@@ -218,6 +218,9 @@ class EmployeeForm(ModelForm):
             "is_from_onboarding",
             "is_directly_converted",
             "is_active",
+            "is_suspended",
+            "suspended_at",
+            "notice_period",
         )
 
     def __init__(self, *args, **kwargs):
@@ -225,6 +228,10 @@ class EmployeeForm(ModelForm):
         self.fields["email"].widget.attrs["autocomplete"] = "email"
         self.fields["phone"].widget.attrs["autocomplete"] = "phone"
         self.fields["address"].widget.attrs["autocomplete"] = "address"
+        if "employment_status" in self.fields:
+            self.fields["employment_status"].widget.attrs.update({
+                "class": "employment-status-select oh-select-2 form-control",
+            })
         if instance := kwargs.get("instance"):
             # ----
             # django forms not showing value inside the date, time html element.
@@ -236,6 +243,36 @@ class EmployeeForm(ModelForm):
             kwargs["initial"] = initial
         else:
             self.initial = {"badge_id": self.get_next_badge_id()}
+
+    def save(self, commit=True):
+        employee = super().save(commit=False)
+        status = self.cleaned_data.get("employment_status", employee.employment_status)
+        employee.employment_status = status
+
+        if status == "notice_period":
+            employee.notice_period = True
+            employee.is_active = True
+            employee.is_suspended = False
+            employee.suspended_at = None
+        elif status == "suspended":
+            employee.notice_period = False
+            employee.is_active = False
+            employee.is_suspended = True
+        elif status == "inactive":
+            employee.notice_period = False
+            employee.is_active = False
+            employee.is_suspended = False
+            employee.suspended_at = None
+        else:
+            employee.notice_period = False
+            employee.is_active = True
+            employee.is_suspended = False
+            employee.suspended_at = None
+
+        if commit:
+            employee.save()
+            self.save_m2m()
+        return employee
 
     def as_p(self, *args, **kwargs):
         context = {"form": self}
