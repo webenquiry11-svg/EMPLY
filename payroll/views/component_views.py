@@ -17,6 +17,7 @@ from urllib.parse import parse_qs
 import pandas as pd
 from django.apps import apps
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required as django_login_required
 from django.db import transaction
 from django.db import transaction
 from django.db.models import Sum
@@ -44,6 +45,7 @@ from base.methods import (
 from base.models import Company
 from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import (
+    check_manager,
     handle_no_permission,
     hx_request_required,
     login_required,
@@ -1889,14 +1891,30 @@ def delete_reimbursements(request):
     return redirect(view_reimbursement)
 
 
-@login_required
-@owner_can_enter("payroll.view_reimbursement", Reimbursement, True)
+@django_login_required
 def reimbursement_individual_view(request, instance_id):
     """
     This method is used to render the individual view of reimbursement object
     """
     reimbursement = Reimbursement.objects.get(id=instance_id)
+    try:
+        employee = request.user.employee_get
+    except Employee.DoesNotExist:
+        employee = None
+    can_view = (
+        request.user.is_superuser
+        or request.user.has_perm("payroll.view_reimbursement")
+        or employee == reimbursement.employee_id
+        or check_manager(employee, reimbursement.employee_id)
+        or EmployeeWorkInformation.objects.filter(
+            reporting_manager_id__employee_user_id=request.user
+        ).exists()
+    )
+    if not can_view:
+        return handle_no_permission(request)
+
     requests_ids_json = request.GET.get("instances_ids")
+    previous_id = next_id = None
     if requests_ids_json:
         requests_ids = json.loads(requests_ids_json)
         previous_id, next_id = closest_numbers(requests_ids, instance_id)

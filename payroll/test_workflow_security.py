@@ -116,23 +116,48 @@ class PayrollRoleAccessTests(TestCase):
             def set_expiry(self, value):
                 self.expiry = value
 
-        for user, expected_route in (
+        for user, login_mode, expected_route in (
             (
                 SimpleNamespace(
                     is_active=True,
                     is_superuser=True,
+                    is_staff=True,
                     has_perm=lambda permission: False,
                 ),
-                "super-admin-dashboard",
+                "payroll",
+                "home-page",
+            ),
+            (
+                SimpleNamespace(
+                    is_active=True,
+                    is_superuser=True,
+                    is_staff=True,
+                    has_perm=lambda permission: False,
+                ),
+                "emply",
+                "home-page",
             ),
             (
                 SimpleNamespace(
                     is_active=True,
                     is_superuser=False,
+                    is_staff=True,
                     has_perm=lambda permission: permission
                     == "payroll.view_contract",
                 ),
-                "view-payroll-dashboard",
+                "emply",
+                "home-page",
+            ),
+            (
+                SimpleNamespace(
+                    is_active=True,
+                    is_superuser=False,
+                    is_staff=True,
+                    has_perm=lambda permission: permission
+                    == "payroll.view_contract",
+                ),
+                "payroll",
+                "payroll-management-dashboard",
             ),
         ):
             request = self.factory.post(
@@ -140,7 +165,7 @@ class PayrollRoleAccessTests(TestCase):
                 {
                     "username": "admin",
                     "password": "existing-password",
-                    "login_mode": "payroll",
+                    "login_mode": login_mode,
                 },
             )
             request.session = Session()

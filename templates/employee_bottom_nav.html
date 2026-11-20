@@ -37,12 +37,14 @@
                     <span>{% trans "Encashment & Reimbursement" %}</span>
                 </a>
             </li>
+            {% if not request.user.is_superuser %}
             <li class="employee-mobile-nav-item simple">
                 <button type="button" class="employee-mobile-nav-link employee-payroll-login-trigger" aria-haspopup="dialog" aria-controls="employeePayrollLoginModal">
                     <span class="employee-mobile-nav-icon material-symbols-outlined">payments</span>
                     <span>{% trans "Payroll" %}</span>
                 </button>
             </li>
+            {% endif %}
             {% if request.user.is_superuser or request.user.is_staff and perms.base.add_announcement %}
                 <li class="employee-mobile-nav-item simple">
                     <button
@@ -139,6 +141,7 @@
                 <span class="oh-bottom-nav__tooltip">{% trans "Encashment & Reimbursement" %}</span>
             </a>
         </li>
+        {% if not request.user.is_superuser %}
         <li role="none" class="oh-bottom-nav__item">
             <button type="button" class="oh-bottom-nav__link employee-payroll-login-trigger" aria-label="{% trans 'Payroll' %}" aria-haspopup="dialog" aria-controls="employeePayrollLoginModal">
                 <span class="oh-bottom-nav__icon material-symbols-outlined">payments</span>
@@ -146,6 +149,7 @@
                 <span class="oh-bottom-nav__tooltip">{% trans "Payroll" %}</span>
             </button>
         </li>
+        {% endif %}
         {% if request.user.is_superuser or request.user.is_staff and perms.base.add_announcement %}
             <li role="none" class="oh-bottom-nav__item">
                 <button
@@ -219,6 +223,7 @@
     </ul>
 </nav>
 
+{% if not request.user.is_superuser %}
 <div id="employeePayrollLoginModal" class="employee-payroll-login-modal" role="dialog" aria-modal="true" aria-labelledby="employeePayrollLoginTitle" hidden>
     <div class="employee-payroll-login-backdrop" data-payroll-login-close></div>
     <div class="employee-payroll-login-dialog">
@@ -237,6 +242,7 @@
         </form>
     </div>
 </div>
+{% endif %}
 
 <div id="oh-sidebar-tooltip" class="oh-sidebar-tooltip" hidden aria-hidden="true"></div>
 <div id="oh-sidebar-flyout" class="oh-sidebar-flyout" role="menu" aria-hidden="true"></div>

@@ -12,7 +12,19 @@
 </div>
 {% endif %}
 {% include 'filter_tags.html' %}
-<div class="employee-leave-status-legend" aria-label="{% trans 'Filter requests by status' %}">
+{% if leave_requests %}
+<section class="leave-request-board" aria-labelledby="leaveRequestBoardTitle">
+    <div class="leave-request-board__toolbar">
+        <div class="leave-request-board__intro">
+            <span class="material-symbols-outlined leave-request-board__icon" aria-hidden="true">event_available</span>
+            <div>
+                <h2 id="leaveRequestBoardTitle">{% trans "Request activity" %}</h2>
+                <p>{% trans "Review your leave dates, approval status, and request actions." %}</p>
+            </div>
+        </div>
+        <div class="leave-request-board__filters">
+            <span class="leave-request-board__label">{% trans "Filter by status" %}</span>
+            <div class="employee-leave-status-legend" aria-label="{% trans 'Filter requests by status' %}">
     <span role="button" tabindex="0" aria-label="{% trans 'Show not approved requests' %}"
         onkeydown="if(event.key === 'Enter' || event.key === ' '){event.preventDefault();this.click()}"
         onclick="$('[name=status]').val('not_approved');$('[name=status]').first().change();$('.filterButton').click()">
@@ -37,27 +49,38 @@
         <span class="employee-leave-status-legend__dot employee-leave-status-legend__dot--requested"></span>
         {% trans "Requested" %}
     </span>
-</div>
-<!-- start of selection buttons -->
-<div
-    class="oh-checkpoint-badge text-success mb-2"
-    id="selectAllUserrequests"
-    style="cursor: pointer"
-    >
-    {% trans "Select All Requests" %}
-</div>
-<div
-    class="oh-checkpoint-badge text-secondary mb-2"
-    id="unselectAllUserrequests"
-    style="cursor: pointer;display: none;"
-    >
-    {% trans "Unselect All Requests" %}
-</div>
-<div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowUserrequests" style="display: none"></div>
-<!-- end of selection buttons -->
+            </div>
+        </div>
+    </div>
+    <div class="leave-request-board__selection">
+        <div class="leave-request-board__selection-hint">
+            <span class="material-symbols-outlined" aria-hidden="true">checklist</span>
+            {% trans "Manage requests" %}
+        </div>
+        <div class="leave-request-board__selection-actions">
+            <div
+                class="oh-checkpoint-badge text-success mb-2"
+                id="selectAllUserrequests"
+                role="button"
+                tabindex="0"
+                onkeydown="if(event.key === 'Enter' || event.key === ' '){event.preventDefault();this.click()}"
+                >
+                {% trans "Select All Requests" %}
+            </div>
+            <div
+                class="oh-checkpoint-badge text-secondary mb-2"
+                id="unselectAllUserrequests"
+                role="button"
+                tabindex="0"
+                onkeydown="if(event.key === 'Enter' || event.key === ' '){event.preventDefault();this.click()}"
+                style="display: none;"
+                >
+                {% trans "Unselect All Requests" %}
+            </div>
+            <div class="oh-checkpoint-badge text-danger mb-2" id="selectedShowUserrequests" style="display: none"></div>
+        </div>
+    </div>
 
-
-{% if leave_requests %}
     <div class="oh-sticky-table">
         <div class="oh-sticky-table__table oh-table--sortable">
             <div class="oh-sticky-table__thead">
@@ -195,10 +218,10 @@
                                 <button
                                     class="oh-btn oh-btn--light-bkg w-50" disabled>
                                     <ion-icon name="create-outline" ></ion-icon>
-                                </button></td>
+                                </button>
                                 <button class="oh-btn oh-btn--light-bkg w-50" disabled>
                                     <ion-icon name="trash-outline"></ion-icon>
-                                </button></td>
+                                </button>
                             </div>
                         {% endif %}
                     </div>
@@ -247,6 +270,7 @@
         </ul>
     </nav>
   </div>
+</section>
 {% else %}
     <div>
         <div style="height: 310px; display:flex;align-items: center;justify-content: center;" >

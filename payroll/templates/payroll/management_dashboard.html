@@ -103,6 +103,39 @@
         .top-user strong { font-size: 10px; }
         .top-user small { color: var(--muted); font-size: 9px; }
         .topbar .mini-avatar { width: 30px; height: 30px; }
+        .profile-menu { position: relative; }
+        .profile-menu__trigger {
+            display: flex; align-items: center; gap: 8px; padding: 3px 8px 3px 10px;
+            border: 1px solid transparent; border-radius: 999px; color: var(--ink);
+            background: transparent; cursor: pointer; list-style: none;
+        }
+        .profile-menu__trigger::-webkit-details-marker { display: none; }
+        .profile-menu__trigger:hover, .profile-menu[open] .profile-menu__trigger,
+        .profile-menu__trigger:focus-visible {
+            border-color: #dce6f4; background: #f5f8ff; outline: none;
+        }
+        .profile-menu__chevron {
+            display: grid; width: 20px; height: 20px; flex: 0 0 20px; place-items: center;
+            border: 1px solid #e4ebf6; border-radius: 50%; color: #647a9d;
+            background: #f7f9fd; transition: transform .18s ease, color .18s ease, background .18s ease;
+        }
+        .profile-menu__chevron svg { display: block; width: 12px; height: 12px; }
+        .profile-menu[open] .profile-menu__chevron { transform: rotate(180deg); }
+        .profile-menu__trigger:hover .profile-menu__chevron,
+        .profile-menu[open] .profile-menu__chevron { color: #2854d9; background: #eaf0ff; }
+        .profile-menu__dropdown {
+            position: absolute; top: calc(100% + 9px); right: 0; z-index: 25;
+            min-width: 180px; padding: 6px; border: 1px solid #dce6f4; border-radius: 10px;
+            background: #fff; box-shadow: 0 14px 34px rgba(16,36,73,.16);
+        }
+        .profile-menu__logout {
+            display: flex; min-height: 38px; align-items: center; gap: 9px; padding: 0 10px;
+            border-radius: 7px; color: #b93649; font-size: 11px; font-weight: 700;
+        }
+        .profile-menu__logout:hover, .profile-menu__logout:focus-visible {
+            color: #a42b3d; background: #fff0f2; outline: none;
+        }
+        .profile-menu__logout svg { width: 15px; height: 15px; }
         .content-grid { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 16px; max-width: 1900px; margin: 0 auto; padding: 16px 15px 24px; }
         .main-column, .right-column { min-width: 0; }
         .hero {
@@ -264,7 +297,7 @@
         .workspace-modal[hidden] { display: none; }
         .workspace-modal { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 24px; zoom: .8; background: rgba(9, 24, 48, .68); }
         .workspace-modal__dialog { display: flex; width: min(1200px, calc(100vw - 48px)); height: min(820px, calc(100vh - 48px)); max-height: calc(100dvh - 48px); flex-direction: column; overflow: hidden; border: 1px solid #dce6f4; border-radius: 14px; background: #f5f8fd; box-shadow: 0 24px 70px rgba(5, 18, 42, .3); }
-        .workspace-modal__header { display: flex; min-height: 56px; align-items: center; justify-content: space-between; padding: 0 18px; color: #fff; background: #102449; }
+        .workspace-modal__header { display: flex; min-height: 56px; align-items: center; justify-content: space-between; padding: 0 18px; color: #fff; background: linear-gradient(105deg, var(--blue), var(--blue-bright)); }
         .workspace-modal__header h2 { margin: 0; font-size: 15px; }
         .workspace-modal__close { width: 34px; height: 34px; border: 1px solid rgba(255,255,255,.25); border-radius: 8px; color: #fff; background: rgba(255,255,255,.1); font-size: 22px; cursor: pointer; }
         .workspace-modal__frame { width: 100%; min-height: 0; flex: 1; border: 0; background: #f5f8fd; }
@@ -315,18 +348,10 @@
             <span class="brand-copy"><strong>EMPLY</strong><small>{% trans "Payroll Management" %}</small></span>
         </a>
         <nav class="side-nav">
-            <a class="side-link {% if section == 'dashboard' %}active{% endif %}" data-section-link="dashboard" href="{% url 'payroll-management-dashboard' %}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9M9 20v-7h6v7"/></svg></span>{% trans "Dashboard" %}</a>
-            <a class="side-link {% if section == 'payslips' %}active{% endif %}" data-section-link="payslips" href="?section=payslips&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h7"/></svg></span>{% trans "Employee payslips" %}</a>
-            <a class="side-link {% if section == 'access-requests' %}active{% endif %}" data-section-link="access-requests" href="?section=access-requests&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg></span>{% trans "Payslip access requests" %}</a>
-            <a class="side-link {% if section == 'runs' %}active{% endif %}" data-section-link="runs" href="?section=runs&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11a8 8 0 1 1 1 6"/><path d="M4 5v6h6M12 7v5l3 2"/></svg></span>{% trans "Payroll runs" %}</a>
-            <div class="side-heading">{% trans "Management" %}</div>
-            {% if perms.payroll.view_contract or is_superuser %}<a class="side-link side-sub {% if section == 'contracts' %}active{% endif %}" data-section-link="contracts" href="?section=contracts&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h5"/></svg></span>{% trans "Contracts" %}</a>{% endif %}
-            {% if is_superuser or perms.employee.view_employee %}<a class="side-link side-sub {% if section == 'employees' %}active{% endif %}" data-section-link="employees" href="?section=employees&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20v-1a6 6 0 0 1 12 0v1zM16 5a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3 5v1h-3"/></svg></span>{% trans "Employees" %}</a>{% endif %}
-            {% if perms.payroll.view_payslip or is_superuser %}<a class="side-link {% if section == 'reports' %}active{% endif %}" data-section-link="reports" href="?section=reports&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V12h4v8zM10 20V7h4v13zM16 20V3h4v17z"/></svg></span>{% trans "Reports" %}</a>{% endif %}
-            {% if perms.payroll.view_allowance or is_superuser %}<a class="side-link side-sub {% if section == 'allowances' %}active{% endif %}" data-section-link="allowances" href="?section=allowances&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v10M7 12h10"/></svg></span>{% trans "Allowances" %}</a>{% endif %}
-            {% if perms.payroll.view_deduction or is_superuser %}<a class="side-link side-sub {% if section == 'deductions' %}active{% endif %}" data-section-link="deductions" href="?section=deductions&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M7 12h10"/></svg></span>{% trans "Deductions" %}</a>{% endif %}
-            {% if perms.payroll.view_reimbursement or is_superuser %}<a class="side-link side-sub {% if section == 'reimbursements' %}active{% endif %}" data-section-link="reimbursements" href="?section=reimbursements&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 10 10-10 10L2 12z"/><path d="M8.5 12h7M12 8.5v7"/></svg></span>{% trans "Reimbursements" %}</a>{% endif %}
-            {% if is_superuser or perms.payroll.view_payrollsettings %}<a class="side-link {% if section == 'settings' %}active{% endif %}" data-section-link="settings" href="?section=settings&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.4 1.1-1.5 2.6-1.7-.6a8 8 0 0 1-1.7 1l-.3 1.8h-3l-.3-1.8a8 8 0 0 1-1.7-1l-1.7.6-1.5-2.6 1.4-1.1a7 7 0 0 1 0-2l-1.4-1.1 1.5-2.6 1.7.6a8 8 0 0 1 1.7-1l.3-1.8h3l.3 1.8a8 8 0 0 1 1.7 1l1.7-.6 1.5 2.6-1.4 1.1a7 7 0 0 1 0 1.9z" transform="translate(-1 -1)"/></svg></span>{% trans "Settings" %}</a>{% endif %}
+            <a class="side-link {% if section == 'dashboard' %}active{% endif %}" data-section-link="dashboard" href="?section=dashboard&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9M9 20v-7h6v7"/></svg></span>{% trans "Salary Overview" %}</a>
+            <a class="side-link {% if section == 'reimbursements' %}active{% endif %}" data-section-link="reimbursements" href="?section=reimbursements&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 10 10-10 10L2 12z"/><path d="M8.5 12h7M12 8.5v7"/></svg></span>{% trans "Reimbursement Sheets" %}</a>
+            <a class="side-link {% if section == 'payslips' %}active{% endif %}" data-section-link="payslips" href="?section=payslips&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h7"/></svg></span>{% trans "Salary Slips" %}</a>
+            <a class="side-link {% if section == 'access-requests' %}active{% endif %}" data-section-link="access-requests" href="?section=access-requests&amp;period={{ selected_period }}"><span class="side-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg></span>{% trans "Requests" %}</a>
         </nav>
         <div class="sidebar-bottom">
             <span class="mini-avatar">{{ user_name|slice:":1"|upper }}</span>
@@ -351,9 +376,19 @@
                         <ul class="payroll-notification-list" data-payroll-notification-list aria-live="polite"></ul>
                     </section>
                 </div>
-                <div class="top-user"><strong>{{ user_name }}</strong><small>{% trans "Administrator" %}</small></div>
-                <span class="mini-avatar">{{ user_name|slice:":1"|upper }}</span>
-                <a class="quick-action" href="{% url 'home-page' %}">{% trans "Exit workspace" %}</a>
+                <details class="profile-menu">
+                    <summary class="profile-menu__trigger" aria-label="{% trans 'Open profile menu' %}">
+                        <span class="top-user"><strong>{{ user_name }}</strong><small>{% trans "Administrator" %}</small></span>
+                        <span class="mini-avatar">{{ user_name|slice:":1"|upper }}</span>
+                        <span class="profile-menu__chevron" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none"><path d="m5.5 7.5 4.5 4.5 4.5-4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    </summary>
+                    <div class="profile-menu__dropdown">
+                        <a class="profile-menu__logout" href="{% url 'logout' %}">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3"/><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/></svg>
+                            {% trans "Logout" %}
+                        </a>
+                    </div>
+                </details>
             </div>
         </header>
         <div class="content-grid" id="dashboard" data-section="{{ section }}">
@@ -412,12 +447,12 @@
                 {% endif %}
             </main>
             <main class="section-page" data-view="reimbursements">
-                <section class="panel section-heading-panel"><header class="section-heading"><div><h1>{% trans "Reimbursements" %}</h1><p>{% trans "Review reimbursement and encashment requests without leaving the payroll workspace." %}</p></div><a class="section-action" href="{% url 'view-reimbursement' %}">{% trans "Full management" %}</a></header>
+                <section class="panel section-heading-panel"><header class="section-heading"><div><h1>{% trans "Reimbursements" %}</h1><p>{% trans "Review reimbursement and encashment requests without leaving the payroll workspace." %}</p></div><a class="section-action" href="{% url 'view-reimbursement' %}" data-workspace-modal-url="{% url 'view-reimbursement' %}" data-workspace-modal-title="{% trans 'Reimbursement management' %}">{% trans "Full management" %}</a></header>
                     <form class="section-toolbar" method="get"><input type="hidden" name="section" value="reimbursements"><input type="hidden" name="period" value="{{ selected_period }}"><input type="search" name="search" value="{{ reimbursement_search }}" placeholder="{% trans 'Search request titles' %}" aria-label="{% trans 'Search reimbursements' %}"><select name="status" aria-label="{% trans 'Filter by status' %}"><option value="">{% trans "All statuses" %}</option>{% for value,label in reimbursement_statuses %}<option value="{{ value }}" {% if reimbursement_filter == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select><button type="submit">{% trans "Filter" %}</button></form>
                 </section>
                 <section class="section-stats"><article class="section-stat"><small>{% trans "Requested" %}</small><strong>{{ reimbursement_counts.requested|default:0 }}</strong></article><article class="section-stat"><small>{% trans "Approved" %}</small><strong>{{ reimbursement_counts.approved|default:0 }}</strong></article><article class="section-stat"><small>{% trans "Rejected" %}</small><strong>{{ reimbursement_counts.rejected|default:0 }}</strong></article></section>
                 <section class="panel section-table-wrap"><table class="section-table"><thead><tr><th>{% trans "Employee" %}</th><th>{% trans "Request" %}</th><th>{% trans "Type" %}</th><th>{% trans "Date" %}</th><th>{% trans "Amount" %}</th><th>{% trans "Status" %}</th><th></th></tr></thead><tbody>
-                    {% for reimbursement in reimbursements %}<tr><td><strong>{{ reimbursement.employee_id }}</strong></td><td>{{ reimbursement.title }}</td><td>{{ reimbursement.get_type_display }}</td><td>{{ reimbursement.allowance_on|date:"d M Y" }}</td><td>₹{{ reimbursement.amount|default:0|floatformat:2 }}</td><td><span class="status-label {{ reimbursement.status }}">{{ reimbursement.get_status_display }}</span></td><td><a class="section-action" href="{% url 'reimbursement-individual-view' reimbursement.pk %}">{% trans "Review" %}</a></td></tr>{% empty %}<tr><td class="section-empty" colspan="7">{% trans "No reimbursement requests match this filter." %}</td></tr>{% endfor %}
+                    {% for reimbursement in reimbursements %}<tr><td><strong>{{ reimbursement.employee_id }}</strong></td><td>{{ reimbursement.title }}</td><td>{{ reimbursement.get_type_display }}</td><td>{{ reimbursement.allowance_on|date:"d M Y" }}</td><td>₹{{ reimbursement.amount|default:0|floatformat:2 }}</td><td><span class="status-label {{ reimbursement.status }}">{{ reimbursement.get_status_display }}</span></td><td><a class="section-action" href="{% url 'reimbursement-individual-view' reimbursement.pk %}" data-workspace-modal-url="{% url 'reimbursement-individual-view' reimbursement.pk %}" data-workspace-modal-title="{% trans 'Reimbursement details' %}">{% trans "Review" %}</a></td></tr>{% empty %}<tr><td class="section-empty" colspan="7">{% trans "No reimbursement requests match this filter." %}</td></tr>{% endfor %}
                 </tbody></table></section>
             </main>
             <main class="section-page" data-view="employees">
@@ -988,6 +1023,803 @@
                 }
             `;
             frameDocument.head.appendChild(style);
+            if (frameDocument.getElementById("reimbursementContainer")) {
+                frameDocument.getElementById("reimbursementContainer").classList.add(
+                    "payroll-dashboard-reimbursement-theme",
+                );
+                frameDocument.getElementById("payroll-reimbursement-theme")?.remove();
+                const reimbursementTheme = frameDocument.createElement("style");
+                reimbursementTheme.id = "payroll-reimbursement-theme";
+                reimbursementTheme.textContent = `
+                    html:has(.oh-wrapper-main.admin-panel-theme #reimbursementContainer),
+                    html:has(.oh-wrapper-main.super-admin-panel-theme #reimbursementContainer),
+                    body:has(.oh-wrapper-main.admin-panel-theme #reimbursementContainer),
+                    body:has(.oh-wrapper-main.super-admin-panel-theme #reimbursementContainer),
+                    .oh-wrapper-main.admin-panel-theme:has(#reimbursementContainer),
+                    .oh-wrapper-main.super-admin-panel-theme:has(#reimbursementContainer),
+                    .oh-wrapper-main.admin-panel-theme:has(#reimbursementContainer) > #main,
+                    .oh-wrapper-main.super-admin-panel-theme:has(#reimbursementContainer) > #main {
+                        background: #f4f8fe !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer {
+                        --admin-reimb-deep: #2854d9;
+                        --admin-reimb-teal: #315fe5;
+                        --admin-reimb-accent: #3179f6;
+                        --admin-reimb-line: #d7e2f5;
+                        --admin-reimb-ink: #102b5c;
+                        --admin-reimb-muted: #7385a6;
+                        color: #102b5c !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-nav {
+                        border-color: #d7e2f5 !important;
+                        background: linear-gradient(110deg, #fff 0%, #fff 72%, #f1f5ff 100%) !important;
+                        box-shadow: 0 8px 24px rgba(40, 84, 217, .08) !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__search-wrap:focus-within,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-nav__search-wrap:focus-within {
+                        border-color: #3179f6 !important;
+                        box-shadow: 0 0 0 3px rgba(49, 121, 246, .13) !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__view-toggle,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-nav__view-toggle {
+                        background: #edf3ff !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__filter-btn:hover,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__create-btn:hover,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-nav__filter-btn:hover,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-nav__create-btn:hover {
+                        border-color: #2445b7 !important;
+                        background: #2445b7 !important;
+                        box-shadow: 0 6px 14px rgba(40, 84, 217, .2) !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-tabs,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-tabs,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .oh-tabs {
+                        border-color: #d7e2f5 !important;
+                        box-shadow: 0 12px 30px rgba(40, 84, 217, .08) !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__nav,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-tabs__nav,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__nav,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs__nav,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-tabs__tablist,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .oh-tabs__tablist {
+                        border-color: #d7e2f5 !important;
+                        background: #edf3ff !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__tab:hover,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-tabs__tab:hover,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__tab:hover,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs__tab:hover,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-tabs__tab:hover,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .oh-tabs__tab:hover {
+                        color: #2854d9 !important;
+                        background: #edf3ff !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-card {
+                        border-color: #d7e2f5 !important;
+                        box-shadow: 0 4px 14px rgba(40, 84, 217, .05) !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card:hover,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-card:hover {
+                        border-color: #9ab4f5 !important;
+                        box-shadow: 0 12px 26px rgba(40, 84, 217, .12) !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__footer,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-card__footer,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__nav,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-tabs__nav {
+                        border-color: #e1eaf7 !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__approval,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-card__approval {
+                        border-color: #d7e2f5 !important;
+                        background: #f4f8fe !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__tbody .oh-sticky-table__tr:hover,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__tbody .oh-sticky-table__tr:hover {
+                        background: #f4f8fe !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__tr,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__tr {
+                        border-color: #e1eaf7 !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__td,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__td,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__sd,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__sd {
+                        color: #405a7e !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-pagination__link,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .oh-pagination__link {
+                        border-color: #d7e2f5 !important;
+                        color: #315fe5 !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-pagination__item--current .oh-pagination__link,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .oh-pagination__item--current .oh-pagination__link {
+                        border-color: #2854d9 !important;
+                        background: linear-gradient(135deg, #2854d9, #3179f6) !important;
+                        box-shadow: 0 4px 10px rgba(40, 84, 217, .18) !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-pagination__link:hover,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .oh-pagination__link:hover {
+                        border-color: #2854d9 !important;
+                        color: #fff !important;
+                        background: #2854d9 !important;
+                    }
+                `;
+                reimbursementTheme.textContent += `
+                    html:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme),
+                    body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme),
+                    .oh-wrapper-main:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme),
+                    .oh-wrapper-main:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) > #main,
+                    .oh-wrapper-main:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #main-section {
+                        background: #f4f8fe !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme {
+                        color: #102b5c !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav::before,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav::before,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-tabs::before,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-tabs::before {
+                        background: linear-gradient(90deg, #2854d9, #3179f6, #a9c5ff) !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__icon-wrap,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__icon-wrap {
+                        border-color: #d7e2f5 !important;
+                        color: #315fe5 !important;
+                        background: linear-gradient(135deg, #edf3ff, #dce7ff) !important;
+                        box-shadow: 0 4px 10px rgba(40,84,217,.10) !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__icon-wrap ion-icon,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__icon-wrap ion-icon,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__search-wrap ion-icon,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__search-wrap ion-icon {
+                        color: #315fe5 !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__title,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__title,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__emp-name,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__emp-name,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__title,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__title {
+                        color: #102b5c !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__subtitle,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__subtitle,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__emp-meta,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__emp-meta,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__desc,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__desc,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__footer,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__footer {
+                        color: #7385a6 !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__search-wrap,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__search-wrap,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__search,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__search {
+                        border-color: #d7e2f5 !important;
+                        color: #102b5c !important;
+                        background: #f8faff !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__search::placeholder,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__search::placeholder {
+                        color: #8a9ab6 !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__search-wrap:focus-within,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__search-wrap:focus-within {
+                        border-color: #3179f6 !important;
+                        background: #fff !important;
+                        box-shadow: 0 0 0 3px rgba(49,121,246,.13) !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__view-toggle,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__view-toggle {
+                        border-color: #d7e2f5 !important;
+                        background: #edf3ff !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__view-btn ion-icon,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__view-btn ion-icon,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__filter-btn,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__filter-btn,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__filter-btn ion-icon,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__filter-btn ion-icon {
+                        color: #315fe5 !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__view-btn--active,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__view-btn--active,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__view-btn--active ion-icon,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__view-btn--active ion-icon,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__filter-btn:hover,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__filter-btn:hover {
+                        color: #fff !important;
+                        background: #2854d9 !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__create-btn,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__create-btn,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__filter-btn,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__filter-btn,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__btn-approve,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__btn-approve {
+                        border: 1px solid #2854d9 !important;
+                        color: #fff !important;
+                        background: linear-gradient(135deg, #3568ea, #294fce) !important;
+                        box-shadow: 0 4px 10px rgba(45,89,216,.16) !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__create-btn ion-icon,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-nav__create-btn ion-icon,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__btn-approve ion-icon,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__btn-approve ion-icon {
+                        color: #fff !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-status-bar,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-status-bar,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-status-bar,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-status-bar {
+                        background: transparent !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-tabs,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-tabs,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-tabs {
+                        border-color: #d7e2f5 !important;
+                        background: #fff !important;
+                        box-shadow: 0 12px 30px rgba(40,84,217,.08) !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-tabs__nav,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-tabs__nav,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs__nav,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs__nav,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-tabs__tablist,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-tabs__tablist {
+                        border-color: #d7e2f5 !important;
+                        background: #edf3ff !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-tabs__tab,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-tabs__tab,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs__tab,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs__tab,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-tabs__tab {
+                        color: #526b91 !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-tabs__tab:hover,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-tabs__tab:hover,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs__tab:hover,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs__tab:hover,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-tabs__tab:hover {
+                        color: #2854d9 !important;
+                        background: #e5edff !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-tabs__tab.active,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-tabs__tab.active,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-tabs__tab.oh-tabs__tab--active,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-tabs__tab.oh-tabs__tab--active,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs__tab.oh-tabs__tab--active,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs__tab.oh-tabs__tab--active,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-tabs__tab--active,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-tabs__tab--active {
+                        border-color: #2854d9 !important;
+                        color: #fff !important;
+                        background: linear-gradient(120deg, #2854d9, #3179f6) !important;
+                        box-shadow: 0 4px 11px rgba(40,84,217,.18) !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-tabs__tab.active *,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-tabs__tab.active *,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs__tab.oh-tabs__tab--active *,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs__tab.oh-tabs__tab--active *,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-tabs__tab--active *,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-tabs__tab--active * {
+                        color: #fff !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-tabs__content,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-tabs__content,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs__content,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs__content,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-tabs__content {
+                        background: #fff !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card {
+                        border-color: #d7e2f5 !important;
+                        background: #fff !important;
+                        box-shadow: 0 4px 14px rgba(40,84,217,.06) !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__header,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__header {
+                        border-color: #d7e2f5 !important;
+                        background: #edf3ff !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__type-badge,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__type-badge {
+                        border-color: #c9d9fb !important;
+                        color: #315fe5 !important;
+                        background: #fff !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__action-btn,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__action-btn {
+                        border-color: #d7e2f5 !important;
+                        color: #315fe5 !important;
+                        background: #fff !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__action-btn:hover,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__action-btn:hover {
+                        border-color: #9ab4f5 !important;
+                        background: #edf3ff !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__footer,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__footer {
+                        border-color: #e1eaf7 !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__link,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__approval-detail ion-icon {
+                        color: #315fe5 !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__approval,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__approval {
+                        border-color: #d7e2f5 !important;
+                        background: #f4f8fe !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__amount-input,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__amount-input {
+                        border-color: #d7e2f5 !important;
+                        color: #102b5c !important;
+                        background: #fff !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__amount-input:focus,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .reimb-card__amount-input:focus {
+                        border-color: #3179f6 !important;
+                        box-shadow: 0 0 0 3px rgba(49,121,246,.13) !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs .oh-sticky-table,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs .oh-sticky-table {
+                        border-color: #d7e2f5 !important;
+                        background: #fff !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs .oh-sticky-table__thead,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs .oh-sticky-table__thead,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs .oh-sticky-table__th,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs .oh-sticky-table__th,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs .oh-sticky-table__right,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs .oh-sticky-table__right {
+                        border-color: #d7e2f5 !important;
+                        color: #fff !important;
+                        background: linear-gradient(110deg, #2854d9, #3179f6) !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs .oh-sticky-table__td,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs .oh-sticky-table__td,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs .oh-sticky-table__sd,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs .oh-sticky-table__sd {
+                        border-color: #e1eaf7 !important;
+                        color: #405a7e !important;
+                        background: #fff !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs .oh-sticky-table__tbody .oh-sticky-table__tr:hover,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rl-tabs .oh-sticky-table__tbody .oh-sticky-table__tr:hover {
+                        background: #f4f8fe !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-pagination__link,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-pagination__link {
+                        border-color: #d7e2f5 !important;
+                        color: #315fe5 !important;
+                        background: #fff !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-pagination__item--current .oh-pagination__link,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-pagination__item--current .oh-pagination__link {
+                        border-color: #2854d9 !important;
+                        color: #fff !important;
+                        background: linear-gradient(135deg, #2854d9, #3179f6) !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-title,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-title,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .ri-modal-title,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .ri-modal-title {
+                        color: #102b5c !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-title ion-icon,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-title ion-icon,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .ri-modal-title ion-icon,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .ri-modal-title ion-icon {
+                        color: #315fe5 !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-header,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-header {
+                        border-color: #e1eaf7 !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-body form label,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-body form label {
+                        color: #526b91 !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-body form input,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-body form input,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-body form textarea,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-body form textarea,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-body form select,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-body form select {
+                        border-color: #d7e2f5 !important;
+                        color: #102b5c !important;
+                        background: #f8faff !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-body form input:focus,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-body form input:focus,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-body form textarea:focus,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-body form textarea:focus,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-body form select:focus,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-body form select:focus {
+                        border-color: #3179f6 !important;
+                        box-shadow: 0 0 0 3px rgba(49,121,246,.13) !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-body form input[type="submit"],
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-body form input[type="submit"] {
+                        border-color: #2854d9 !important;
+                        color: #fff !important;
+                        background: linear-gradient(135deg, #3568ea, #294fce) !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-leave-table,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-leave-table {
+                        border-color: #d7e2f5 !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-leave-table thead tr,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .rf-leave-table thead tr {
+                        color: #315fe5 !important;
+                        background: #edf3ff !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-modal__dialog-header,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-modal__dialog-header {
+                        color: #fff !important;
+                        background: linear-gradient(105deg, #2854d9, #3179f6) !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-modal__dialog-header .oh-modal__dialog-title,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-modal__dialog-header .oh-modal__dialog-title {
+                        color: #fff !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-modal__close,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-modal__close {
+                        border-color: rgba(255,255,255,.35) !important;
+                        color: #fff !important;
+                        background: rgba(255,255,255,.12) !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-dropdown__menu,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-dropdown__menu {
+                        border-color: #d7e2f5 !important;
+                        background: #fff !important;
+                        box-shadow: 0 12px 32px rgba(16,36,73,.16) !important;
+                    }
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-dropdown__menu .oh-btn,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-dropdown__menu .oh-btn,
+                    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-dropdown__menu button,
+                    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer.payroll-dashboard-reimbursement-theme .oh-dropdown__menu button {
+                        border-color: #2854d9 !important;
+                        color: #fff !important;
+                        background: linear-gradient(135deg, #3568ea, #294fce) !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .oh-modal__dialog {
+                        border-color: #d7e2f5 !important;
+                        background: #f4f8fe !important;
+                        box-shadow: 0 18px 48px rgba(16,36,73,.2) !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .oh-modal__dialog-header,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .oh-modal__dialog-header.pb-0 {
+                        border-color: #d7e2f5 !important;
+                        color: #fff !important;
+                        background: linear-gradient(105deg, #2854d9, #3179f6) !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .oh-modal__dialog-header .oh-modal__dialog-title,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .oh-modal__dialog-header .rf-title,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .oh-modal__dialog-header .ri-modal-title {
+                        color: #fff !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .oh-modal__dialog-header .oh-modal__close,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .oh-modal__dialog-header .oh-modal__close-custom {
+                        border-color: rgba(255,255,255,.35) !important;
+                        color: #fff !important;
+                        background: rgba(255,255,255,.12) !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModalTarget:has(.rf-body),
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectUpdateModalTarget:has(.rf-body) {
+                        border-color: #d7e2f5 !important;
+                        background: #fff !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .rf-header {
+                        border-color: #e1eaf7 !important;
+                        background: #fff !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .rf-title,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .ri-modal-title,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .ri-title {
+                        color: #102b5c !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .rf-title ion-icon,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .ri-modal-title ion-icon {
+                        color: #315fe5 !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .rf-body,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .ri-body,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .oh-modal__dialog-body {
+                        color: #405a7e !important;
+                        background: #fff !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .rf-body form label {
+                        color: #526b91 !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .rf-body form input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]),
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .rf-body form textarea,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .rf-body form select,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .rf-body form .select2-selection {
+                        border-color: #d7e2f5 !important;
+                        color: #102b5c !important;
+                        background: #f8faff !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .rf-body form input:focus,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .rf-body form textarea:focus,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .rf-body form select:focus,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .rf-body form .select2-selection:focus {
+                        border-color: #3179f6 !important;
+                        outline: 3px solid rgba(49,121,246,.13) !important;
+                        background: #fff !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .rf-body form input[type="file"] {
+                        border-color: #b9cafa !important;
+                        color: #526b91 !important;
+                        background: #f8faff !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .rf-body form button[type="submit"],
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .rf-body form input[type="submit"],
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementAttachementModalBody .oh-btn {
+                        border-color: #2854d9 !important;
+                        color: #fff !important;
+                        background: linear-gradient(135deg, #3568ea, #294fce) !important;
+                        box-shadow: 0 4px 10px rgba(45,89,216,.16) !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .rf-leave-table,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .ri-stat,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .ri-emp {
+                        border-color: #d7e2f5 !important;
+                        background: #f4f8fe !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .rf-leave-table thead tr {
+                        color: #315fe5 !important;
+                        background: #edf3ff !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .ri-modal-title ion-icon,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .ri-stat__label ion-icon,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .ri-attachment-link {
+                        color: #315fe5 !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .ri-attachment-link {
+                        border-color: #d7e2f5 !important;
+                        background: #edf3ff !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #activitySidebar {
+                        border-color: #d7e2f5 !important;
+                        background: #fff !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModal #objectCreateModalTarget:has(.rf-body) {
+                        border-color: #d7e2f5 !important;
+                        background: #f4f8fe !important;
+                        box-shadow: 0 24px 60px rgba(40,84,217,.2) !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModal #objectCreateModalTarget .rf-header {
+                        border-color: rgba(255,255,255,.2) !important;
+                        color: #fff !important;
+                        background: linear-gradient(105deg, #2854d9, #3179f6) !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModal #objectCreateModalTarget .rf-title,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModal #objectCreateModalTarget .rf-title ion-icon,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModal #objectCreateModalTarget .rf-header .oh-modal__close,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModal #objectCreateModalTarget .rf-header .oh-modal__close ion-icon {
+                        border-color: rgba(255,255,255,.35) !important;
+                        color: #fff !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModal #objectCreateModalTarget .rf-header .oh-modal__close {
+                        background: rgba(255,255,255,.12) !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModal #objectCreateModalTarget .rf-body {
+                        color: #405a7e !important;
+                        background: #fff !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModal #objectCreateModalTarget .rf-body form label {
+                        color: #526b91 !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModal #objectCreateModalTarget .rf-body form input:not([type="checkbox"]):not([type="radio"]),
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModal #objectCreateModalTarget .rf-body form textarea,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModal #objectCreateModalTarget .rf-body form select,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModal #objectCreateModalTarget .rf-body form .select2-selection {
+                        border-color: #d7e2f5 !important;
+                        color: #102b5c !important;
+                        background: #f8faff !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModal #objectCreateModalTarget .rf-body form input:focus,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModal #objectCreateModalTarget .rf-body form textarea:focus,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModal #objectCreateModalTarget .rf-body form select:focus,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModal #objectCreateModalTarget .rf-body form .select2-selection:focus {
+                        border-color: #3179f6 !important;
+                        box-shadow: 0 0 0 3px rgba(49,121,246,.13) !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModal #objectCreateModalTarget .rf-body form input[type="file"] {
+                        border-color: #b9cafa !important;
+                        color: #526b91 !important;
+                        background: #f8faff !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModal #objectCreateModalTarget .rf-body form input[type="file"]::file-selector-button {
+                        border-color: #c9d9fb !important;
+                        color: #315fe5 !important;
+                        background: #edf3ff !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModal #objectCreateModalTarget .rf-body form button[type="submit"],
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModal #objectCreateModalTarget .rf-body form input[type="submit"] {
+                        border-color: #2854d9 !important;
+                        color: #fff !important;
+                        background: linear-gradient(135deg, #3568ea, #294fce) !important;
+                        box-shadow: 0 5px 12px rgba(40,84,217,.2) !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-nav__view-btn,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-nav__filter-btn,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-nav__create-btn,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-status-pill,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .rl-pill,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-tabs__tab,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .rl-tabs__tab,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .oh-tabs__tab,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-card__action-btn,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-card__link,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-card__btn-approve,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-card__btn-reject,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModalTarget button[type="submit"],
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModalTarget input[type="submit"],
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .oh-dropdown__menu .oh-btn,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .oh-dropdown__menu button {
+                        transition: color .16s ease, background-color .16s ease, border-color .16s ease, box-shadow .16s ease, transform .16s ease !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-nav__filter-btn ion-icon,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-nav__create-btn ion-icon,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-nav__view-btn--active ion-icon,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-card__btn-approve ion-icon,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .oh-dropdown__menu .oh-btn ion-icon,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .oh-dropdown__menu button ion-icon {
+                        color: #fff !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-nav__filter-btn:hover,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-nav__filter-btn:focus-visible,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-nav__create-btn:hover,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-nav__create-btn:focus-visible,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-card__btn-approve:hover,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-card__btn-approve:focus-visible,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModalTarget button[type="submit"]:hover,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModalTarget input[type="submit"]:hover,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .oh-dropdown__menu .oh-btn:hover,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .oh-dropdown__menu button:hover {
+                        transform: translateY(-1px);
+                        border-color: #2445b7 !important;
+                        color: #fff !important;
+                        background: linear-gradient(135deg, #2b58da, #2044b8) !important;
+                        box-shadow: 0 6px 14px rgba(40,84,217,.22) !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-nav__filter-btn:hover ion-icon,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-nav__create-btn:hover ion-icon,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-card__btn-approve:hover ion-icon,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .oh-dropdown__menu .oh-btn:hover ion-icon,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .oh-dropdown__menu button:hover ion-icon {
+                        color: #fff !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-nav__view-btn:not(.reimb-nav__view-btn--active):hover,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-nav__view-btn:not(.reimb-nav__view-btn--active):focus-visible,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-card__action-btn:hover,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-card__action-btn:focus-visible,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-card__link:hover,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-card__link:focus-visible {
+                        transform: translateY(-1px);
+                        border-color: #2854d9 !important;
+                        color: #fff !important;
+                        background: #2854d9 !important;
+                        box-shadow: 0 4px 10px rgba(40,84,217,.18) !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-nav__view-btn:not(.reimb-nav__view-btn--active):hover ion-icon,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-card__action-btn:hover ion-icon,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-card__link:hover ion-icon {
+                        color: #fff !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-card__btn-reject:hover,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-card__btn-reject:focus-visible {
+                        transform: translateY(-1px);
+                        border-color: #a92f3b !important;
+                        color: #fff !important;
+                        background: linear-gradient(135deg, #bd3545, #a92f3b) !important;
+                        box-shadow: 0 6px 14px rgba(169,47,59,.2) !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-status-pill:hover,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .rl-pill:hover {
+                        transform: translateY(-1px);
+                        border-color: #2854d9 !important;
+                        color: #fff !important;
+                        background: #2854d9 !important;
+                        box-shadow: 0 5px 12px rgba(40,84,217,.18) !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-status-pill:hover .reimb-status-pill__dot,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .rl-pill:hover .rl-pill__dot {
+                        background: #fff !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .reimb-tabs__tab:not(.active):not(.oh-tabs__tab--active):hover,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .rl-tabs__tab:not(.active):not(.oh-tabs__tab--active):hover,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .oh-tabs__tab:not(.active):not(.oh-tabs__tab--active):hover {
+                        color: #2854d9 !important;
+                        background: #e5edff !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #reimbursementContainer .oh-pagination__link:hover {
+                        transform: translateY(-1px);
+                        border-color: #2854d9 !important;
+                        color: #fff !important;
+                        background: #2854d9 !important;
+                        box-shadow: 0 4px 10px rgba(40,84,217,.18) !important;
+                    }
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModalTarget .rf-header .oh-modal__close:hover,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) #objectCreateModalTarget .rf-header .oh-modal__close:focus-visible,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .oh-modal__dialog-header .oh-modal__close:hover,
+                    html body:has(#reimbursementContainer.payroll-dashboard-reimbursement-theme) .oh-modal__dialog-header .oh-modal__close:focus-visible {
+                        transform: translateY(-1px);
+                        border-color: #fff !important;
+                        color: #fff !important;
+                        background: rgba(255,255,255,.24) !important;
+                        box-shadow: 0 4px 10px rgba(16,36,73,.18) !important;
+                    }
+                `;
+                frameDocument.body.appendChild(reimbursementTheme);
+            }
+            if (frameDocument.querySelector(".ri-body")) {
+                frameDocument.getElementById("payroll-reimbursement-detail-theme")?.remove();
+                const reimbursementDetailTheme = frameDocument.createElement("style");
+                reimbursementDetailTheme.id = "payroll-reimbursement-detail-theme";
+                reimbursementDetailTheme.textContent = `
+                    html, body { background: #f4f8fe !important; color: #102b5c !important; }
+                    .ri-modal-header {
+                        padding: 16px 22px 12px !important;
+                        border-bottom: 1px solid #d7e2f5 !important;
+                        background: linear-gradient(110deg, #fff, #f1f5ff) !important;
+                    }
+                    .ri-modal-title, .ri-title, .ri-emp__name, .ri-stat__value {
+                        color: #102b5c !important;
+                    }
+                    .ri-modal-title ion-icon, .ri-stat__label ion-icon, .ri-nav-btn ion-icon {
+                        color: #315fe5 !important;
+                    }
+                    .ri-body { background: #f4f8fe !important; }
+                    .ri-emp, .ri-stat {
+                        border-color: #d7e2f5 !important;
+                        background: #fff !important;
+                        box-shadow: 0 4px 12px rgba(40,84,217,.06) !important;
+                    }
+                    .ri-emp:hover { background: #edf3ff !important; }
+                    .ri-emp__meta, .ri-stat__label { color: #7385a6 !important; }
+                    .ri-stat--amount .ri-stat__value { color: #2854d9 !important; }
+                    .ri-attachment-link {
+                        border-color: #d7e2f5 !important;
+                        color: #2854d9 !important;
+                        background: #edf3ff !important;
+                    }
+                    .ri-attachment-link:hover { background: #dce7ff !important; }
+                    .ri-actions { border-color: #d7e2f5 !important; }
+                    .ri-btn--edit { background: linear-gradient(135deg,#2854d9,#3179f6) !important; color: #fff !important; }
+                    .ri-btn--delete { background: linear-gradient(135deg,#c0392b,#e05050) !important; color: #fff !important; }
+                    .ri-btn--edit ion-icon, .ri-btn--delete ion-icon { color: #fff !important; }
+                    .ri-btn:hover, .ri-nav-btn:hover {
+                        transform: translateY(-1px);
+                        box-shadow: 0 5px 12px rgba(40,84,217,.18) !important;
+                    }
+                    .ri-nav-btn {
+                        border-color: #d7e2f5 !important;
+                        background: #edf3ff !important;
+                    }
+                `;
+                frameDocument.body.appendChild(reimbursementDetailTheme);
+            }
             if (frameDocument.location.pathname.endsWith("/generate-payslip")) {
                 const form = frameDocument.querySelector(".oh-onboarding-card");
                 if (form && form.querySelector('[name="group_name"]')) {

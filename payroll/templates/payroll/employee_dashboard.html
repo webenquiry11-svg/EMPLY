@@ -2166,6 +2166,37 @@
         .salary-detail-empty { padding: 22px; border: 1px dashed #c4dcde; border-radius: 11px; color: #607d80; text-align: center; font-size: 13px; }
         .salary-detail-subheading { margin: 22px 0 10px; color: #173a3e; font-size: 14px; }
         .salary-detail-note { margin: 0 0 14px; padding: 11px 13px; border-radius: 9px; color: #49696d; background: #eff7f8; font-size: 12px; line-height: 1.5; }
+        .payroll-profile-dropdown { position: relative; }
+        .payroll-profile-trigger { cursor: pointer; list-style: none; }
+        .payroll-profile-trigger::-webkit-details-marker { display: none; }
+        .payroll-profile-trigger:focus-visible { outline: 2px solid #68aaff; outline-offset: 2px; }
+        .payroll-profile-chevron {
+            display: grid; width: 20px; height: 20px; flex: 0 0 20px; place-items: center;
+            border: 1px solid #dce9f7; border-radius: 50%; color: #58739f;
+            background: #f5f9ff; transition: transform .18s ease, color .18s ease, background .18s ease;
+        }
+        .payroll-profile-chevron svg { display: block; width: 12px; height: 12px; }
+        .payroll-profile-dropdown[open] .payroll-profile-chevron { transform: rotate(180deg); }
+        .payroll-profile-trigger:hover .payroll-profile-chevron,
+        .payroll-profile-dropdown[open] .payroll-profile-chevron { color: #1676e8; background: #eaf3ff; }
+        .payroll-profile-menu {
+            position: absolute; top: calc(100% + 9px); right: 0; z-index: 40;
+            min-width: 170px; padding: 6px; border: 1px solid #dce9f7; border-radius: 11px;
+            background: #fff; box-shadow: 0 14px 34px rgba(27, 72, 123, .16);
+        }
+        .payroll-profile-logout {
+            display: flex; min-height: 40px; align-items: center; gap: 9px; padding: 0 10px;
+            border-radius: 7px; color: #b93649; font-size: 12px; font-weight: 750;
+            text-decoration: none;
+        }
+        .payroll-profile-logout:hover, .payroll-profile-logout:focus-visible {
+            color: #a42b3d; background: #fff0f2; outline: none;
+        }
+        .payroll-profile-logout svg { width: 15px; height: 15px; }
+        @media (max-width: 540px) {
+            .payroll-profile-trigger { gap: 5px; padding: 3px; border: 0; background: transparent; }
+            .payroll-profile-menu { top: calc(100% + 7px); }
+        }
         @media (max-width: 570px) {
             .content { padding: 20px 14px 34px; }
             .salary-detail-panel { padding: 17px 14px; }
@@ -2197,23 +2228,28 @@
                         <ul class="payroll-notification-list" data-payroll-notification-list aria-live="polite"></ul>
                     </section>
                 </div>
-                <div class="user-profile">
-                    <div class="avatar">
-                        {% if employee_avatar %}
-                            <img src="{{ employee_avatar }}" alt="{{ employee_name|default:'Employee' }}">
-                        {% else %}
-                            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0z"></path></svg>
-                        {% endif %}
+                <details class="payroll-profile-dropdown">
+                    <summary class="user-profile payroll-profile-trigger" aria-label="Open profile menu">
+                        <div class="avatar">
+                            {% if employee_avatar %}
+                                <img src="{{ employee_avatar }}" alt="{{ employee_name|default:'Employee' }}">
+                            {% else %}
+                                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0z"></path></svg>
+                            {% endif %}
+                        </div>
+                        <div class="user-details">
+                            <strong>{{ employee_name|default:"Employee" }}</strong>
+                            <span>Employee</span>
+                        </div>
+                        <span class="payroll-profile-chevron" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none"><path d="m5.5 7.5 4.5 4.5 4.5-4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    </summary>
+                    <div class="payroll-profile-menu">
+                        <a class="payroll-profile-logout" href="{% url 'logout' %}">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3"></path><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"></path></svg>
+                            {% trans "Logout" %}
+                        </a>
                     </div>
-                    <div class="user-details">
-                        <strong>{{ employee_name|default:"Employee" }}</strong>
-                        <span>Employee</span>
-                    </div>
-                </div>
-                <a class="logout" href="{% url 'home-page' %}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3"></path><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"></path></svg>
-                    Logout
-                </a>
+                </details>
             </div>
         </header>
 

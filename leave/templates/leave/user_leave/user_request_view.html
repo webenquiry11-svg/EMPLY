@@ -3,14 +3,12 @@
     {% load static %}
     {% load i18n %}
     <style>
-        html:has(#userRequest),
-        body:has(#userRequest),
-        .oh-wrapper-main:has(#userRequest) {
-            background: #f5f7f3 !important;
-        }
-
-        .oh-wrapper-main:has(#userRequest) > #main {
-            background: #f5f7f3 !important;
+        html:has(body #userRequest),
+        html body:has(#userRequest),
+        html body:has(#userRequest) .oh-wrapper-main,
+        html body:has(#userRequest) .oh-wrapper-main > #main,
+        html body:has(#userRequest) #main-section {
+            background: #f4fbfc !important;
         }
 
         .oh-wrapper-main:has(#userRequest) .employee-leave-status {
@@ -1086,13 +1084,1058 @@
                 padding-left: 9px !important;
             }
         }
+
+        body:has(#userRequest) .oh-main__topbar {
+            width: min(1480px, calc(100% - 40px));
+            min-height: 100px;
+            border: 1px solid #c9e5e9 !important;
+            border-radius: 22px !important;
+            background:
+                radial-gradient(circle at 8% 15%, rgba(39, 141, 160, .11), transparent 28%),
+                linear-gradient(115deg, #ffffff 0%, #f8fcfd 68%, #edf8fa 100%) !important;
+            box-shadow: 0 12px 30px rgba(10, 77, 96, .08) !important;
+        }
+
+        body:has(#userRequest) .oh-main__topbar::before {
+            inset: 14px auto 14px 0 !important;
+            width: 4px;
+            height: auto;
+            margin: 0;
+            border-radius: 0 6px 6px 0;
+            background: linear-gradient(180deg, #0a4d60, #39a5b4) !important;
+        }
+
+        body:has(#userRequest) .oh-main__titlebar--left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        body:has(#userRequest) .my-leave-heading__icon {
+            display: grid;
+            flex: 0 0 48px;
+            width: 48px;
+            height: 48px;
+            place-items: center;
+            border: 1px solid #c6e4e9;
+            border-radius: 16px;
+            background: linear-gradient(145deg, #e8f6f8, #d7eef2);
+            color: #0e7184;
+            font-size: 25px;
+            box-shadow: inset 0 1px 0 #ffffff;
+        }
+
+        body:has(#userRequest) .my-leave-heading__copy {
+            flex: 1;
+            min-width: 0;
+        }
+
+        body:has(#userRequest) .oh-main__titlebar-title {
+            color: #0a4d60 !important;
+            font-size: clamp(1.3rem, 2vw, 1.65rem) !important;
+            font-weight: 800 !important;
+            letter-spacing: -.025em;
+        }
+
+        body:has(#userRequest) .my-leave-heading__subtitle {
+            margin: 5px 0 0;
+            color: #64838c;
+            font-size: .82rem;
+            line-height: 1.4;
+        }
+
+        body:has(#userRequest) .oh-main__titlebar--right {
+            gap: 10px;
+        }
+
+        body:has(#userRequest) .oh-main__titlebar-button-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        body:has(#userRequest) .oh-main__titlebar-button-container .oh-btn,
+        body:has(#userRequest) .oh-main__titlebar--right > .oh-btn {
+            min-height: 42px;
+            margin: 0 !important;
+            padding: 0 16px !important;
+            border: 1px solid #167589 !important;
+            border-radius: 13px !important;
+            background: linear-gradient(120deg, #0a596b, #21899a) !important;
+            box-shadow: 0 5px 13px rgba(10, 77, 96, .12) !important;
+        }
+
+        body:has(#userRequest) .oh-main__titlebar-button-container .oh-btn:hover,
+        body:has(#userRequest) .oh-main__titlebar--right > .oh-btn:hover {
+            background: linear-gradient(120deg, #084958, #176f80) !important;
+            box-shadow: 0 7px 16px rgba(10, 77, 96, .18) !important;
+            transform: translateY(-1px);
+        }
+
+        body:has(#userRequest) .oh-input__search-group,
+        body:has(#userRequest) .oh-input__search-group .oh-input {
+            min-height: 42px;
+            border-color: #c8e2e7 !important;
+            border-radius: 13px !important;
+            background: #ffffff !important;
+            box-shadow: 0 3px 9px rgba(10, 77, 96, .04);
+        }
+
+        body:has(#userRequest) .user-leave-balance {
+            margin-top: 18px !important;
+            padding: 14px !important;
+            border: 1px solid #cfe7eb !important;
+            border-radius: 22px !important;
+            background: linear-gradient(135deg, #f8fcfd, #eef8fa) !important;
+            box-shadow: 0 10px 24px rgba(10, 77, 96, .06) !important;
+        }
+
+        body:has(#userRequest) .user-leave-balance__grid {
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+            gap: 12px;
+        }
+
+        body:has(#userRequest) .user-leave-balance__card {
+            min-height: 172px;
+            padding: 17px !important;
+            border: 1px solid #d6e9ed !important;
+            border-top: 3px solid #278da0 !important;
+            border-radius: 18px !important;
+            background: linear-gradient(145deg, #ffffff 35%, #f8fcfd) !important;
+            box-shadow: 0 6px 16px rgba(10, 77, 96, .055) !important;
+        }
+
+        body:has(#userRequest) .user-leave-balance__card:hover,
+        body:has(#userRequest) .user-leave-balance__card:focus-within {
+            border-color: #a9d2da !important;
+            box-shadow: 0 11px 22px rgba(10, 77, 96, .11) !important;
+            transform: translateY(-2px);
+        }
+
+        body:has(#userRequest) .user-leave-balance__card .oh-kanban-card__profile-container {
+            width: 42px;
+            height: 42px;
+            border-radius: 13px !important;
+        }
+
+        body:has(#userRequest) .user-leave-balance__card .oh-kanban-card__title {
+            margin-bottom: 7px;
+            font-size: .88rem;
+        }
+
+        body:has(#userRequest) .user-leave-balance__card .oh-kanban-card__subtitle {
+            font-size: .76rem;
+            line-height: 1.5 !important;
+        }
+
+        body:has(#userRequest) #userRequest > .employee-leave-status-legend {
+            justify-content: flex-start;
+            margin-bottom: 12px !important;
+        }
+
+        body:has(#userRequest) .employee-leave-status-legend > span {
+            min-height: 36px;
+            padding: 0 14px;
+            font-size: .74rem;
+            box-shadow: 0 3px 8px rgba(10, 77, 96, .055);
+        }
+
+        body:has(#userRequest) #userRequest > .oh-checkpoint-badge {
+            margin-bottom: 12px !important;
+            box-shadow: 0 3px 9px rgba(10, 77, 96, .045);
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table {
+            border-color: #cfe4e9 !important;
+            border-radius: 18px !important;
+            box-shadow: 0 10px 26px rgba(10, 77, 96, .075) !important;
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table__thead,
+        body:has(#userRequest) #userRequest .oh-sticky-table__thead .oh-sticky-table__tr,
+        body:has(#userRequest) #userRequest .oh-sticky-table__th {
+            background: linear-gradient(105deg, #0a4d60, #176f80) !important;
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table__th {
+            padding-top: 14px !important;
+            padding-bottom: 14px !important;
+            font-size: .7rem;
+            letter-spacing: .045em;
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table__tbody .oh-sticky-table__tr {
+            min-height: 68px;
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table__tbody .oh-sticky-table__tr:hover {
+            background: #f0fafb !important;
+            box-shadow: inset 3px 0 0 #4aa9b6;
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table__td {
+            padding-top: 12px !important;
+            padding-bottom: 12px !important;
+        }
+
+        @media (max-width: 768px) {
+            body:has(#userRequest) .oh-main__topbar {
+                width: calc(100% - 24px);
+                min-height: 0;
+                gap: 14px;
+                border-radius: 18px !important;
+            }
+
+            body:has(#userRequest) .my-leave-heading {
+                gap: 10px;
+            }
+
+            body:has(#userRequest) .my-leave-heading__icon {
+                flex-basis: 42px;
+                width: 42px;
+                height: 42px;
+                border-radius: 14px;
+                font-size: 22px;
+            }
+
+            body:has(#userRequest) .my-leave-heading__subtitle {
+                max-width: 36ch;
+                font-size: .76rem;
+            }
+
+            body:has(#userRequest) .oh-main__titlebar--left {
+                justify-content: flex-start;
+            }
+
+            body:has(#userRequest) .oh-main__titlebar-search-toggle {
+                margin-left: auto;
+            }
+
+            body:has(#userRequest) .oh-main__titlebar--right {
+                width: 100%;
+                justify-content: flex-start;
+                margin-left: 0;
+            }
+
+            body:has(#userRequest) .oh-main__titlebar-button-container {
+                flex-wrap: wrap;
+            }
+
+            body:has(#userRequest) .user-leave-balance__grid {
+                grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+            }
+
+            body:has(#userRequest) #userRequest > .employee-leave-status-legend {
+                width: calc(100% - 24px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            body:has(#userRequest) .oh-main__topbar {
+                padding: 14px !important;
+            }
+
+            body:has(#userRequest) .oh-main__titlebar-button-container .oh-btn,
+            body:has(#userRequest) .oh-main__titlebar--right > .oh-btn {
+                min-height: 38px;
+                padding: 0 12px !important;
+                font-size: .76rem;
+            }
+
+            body:has(#userRequest) .user-leave-balance__grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            body:has(#userRequest) .user-leave-balance__card {
+                min-height: 0;
+            }
+        }
+
+        html:has(#userRequest),
+        body:has(#userRequest),
+        .oh-wrapper-main:has(#userRequest),
+        .oh-wrapper-main:has(#userRequest) > #main {
+            background: #e8f5f7 !important;
+        }
+
+        body:has(#userRequest) .oh-main__topbar {
+            min-height: 112px;
+            border: 1px solid #c7e5eb !important;
+            border-radius: 20px !important;
+            background: linear-gradient(115deg, #ffffff 0%, #f8fcfd 68%, #e8f5f7 100%) !important;
+            box-shadow: 0 10px 26px rgba(10, 77, 96, .08) !important;
+        }
+
+        body:has(#userRequest) .oh-main__topbar::before {
+            inset: 14px auto 14px 0 !important;
+            width: 4px;
+            height: auto;
+            margin: 0;
+            border-radius: 0 6px 6px 0;
+            background: linear-gradient(180deg, #0a4d60, #278da0) !important;
+        }
+
+        body:has(#userRequest) .oh-main__titlebar-title {
+            color: #0a4d60 !important;
+            letter-spacing: -.03em;
+        }
+
+        body:has(#userRequest) .my-leave-heading__icon {
+            border-color: #c7e5eb;
+            background: #e8f5f7;
+            color: #176f80;
+            box-shadow: inset 0 1px 0 #ffffff;
+        }
+
+        body:has(#userRequest) .my-leave-heading__subtitle {
+            color: #557b84;
+        }
+
+        body:has(#userRequest) .oh-main__titlebar--right {
+            padding: 7px;
+            border: 1px solid #c7e5eb;
+            border-radius: 16px;
+            background: #eef8f8;
+        }
+
+        body:has(#userRequest) .oh-main__titlebar-button-container .oh-btn,
+        body:has(#userRequest) .oh-main__titlebar--right > .oh-btn {
+            min-height: 40px;
+            border: 1px solid #176f80 !important;
+            border-radius: 11px !important;
+            background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+            box-shadow: none !important;
+            color: #ffffff !important;
+        }
+
+        body:has(#userRequest) .oh-main__titlebar--right > #requestCreateButton {
+            border-color: #176f80 !important;
+            background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+            color: #ffffff !important;
+            font-weight: 800 !important;
+        }
+
+        body:has(#userRequest) .oh-main__titlebar-button-container .oh-btn:hover,
+        body:has(#userRequest) .oh-main__titlebar--right > .oh-btn:hover {
+            border-color: #176f80 !important;
+            background: #176f80 !important;
+            transform: translateY(-1px);
+        }
+
+        body:has(#userRequest) .oh-main__titlebar--right > .oh-dropdown > .oh-btn {
+            border: 1px solid #176f80 !important;
+            background: linear-gradient(110deg, #0a4d60, #278da0) !important;
+            color: #ffffff !important;
+        }
+
+        body:has(#userRequest) .oh-main__titlebar--right > #requestCreateButton:hover {
+            background: #176f80 !important;
+            color: #ffffff !important;
+        }
+
+        body:has(#userRequest) .oh-input__search-group,
+        body:has(#userRequest) .oh-input__search-group .oh-input {
+            min-height: 40px;
+            border-color: #c7e5eb !important;
+            border-radius: 11px !important;
+            background: #ffffff !important;
+            box-shadow: none !important;
+        }
+
+        body:has(#userRequest) .user-leave-balance {
+            width: min(1480px, calc(100% - 40px)) !important;
+            margin: 24px auto 20px !important;
+            padding: 0 !important;
+            overflow: visible !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            white-space: normal;
+        }
+
+        body:has(#userRequest) .user-leave-balance__intro {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 16px;
+            margin: 0 0 13px;
+        }
+
+        body:has(#userRequest) .user-leave-balance__eyebrow {
+            color: #176f80;
+            font-size: .67rem;
+            font-weight: 800;
+            letter-spacing: .14em;
+        }
+
+        body:has(#userRequest) .user-leave-balance__intro h2 {
+            margin: 3px 0 0;
+            color: #173f50;
+            font-size: 1.18rem;
+            font-weight: 800;
+            letter-spacing: -.02em;
+        }
+
+        body:has(#userRequest) .user-leave-balance__intro p {
+            margin: 3px 0 0;
+            color: #557b84;
+            font-size: .79rem;
+        }
+
+        body:has(#userRequest) .user-leave-balance__hint {
+            padding: 8px 12px;
+            border: 1px solid #c7e5eb;
+            border-radius: 999px;
+            background: #ffffff;
+            color: #285d6b;
+            font-size: .72rem;
+            font-weight: 650;
+            white-space: nowrap;
+        }
+
+        body:has(#userRequest) .user-leave-balance__grid {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 255px), 1fr));
+            gap: 13px;
+            width: 100%;
+            margin: 0 !important;
+        }
+
+        body:has(#userRequest) .user-leave-balance__card {
+            position: relative;
+            display: flex !important;
+            flex-direction: column;
+            width: auto !important;
+            min-width: 0;
+            min-height: 0;
+            margin: 0 !important;
+            padding: 17px 17px 15px 20px !important;
+            overflow: hidden;
+            border: 1px solid #d4e8ec !important;
+            border-radius: 16px !important;
+            background: #ffffff !important;
+            box-shadow: 0 4px 14px rgba(10, 77, 96, .05) !important;
+            transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+        }
+
+        body:has(#userRequest) .user-leave-balance__card::before {
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 4px;
+            border-radius: 16px 0 0 16px;
+            background: #278da0;
+            content: "";
+        }
+
+        body:has(#userRequest) .user-leave-balance__card:nth-child(3n + 2)::before {
+            background: #176f80;
+        }
+
+        body:has(#userRequest) .user-leave-balance__card:nth-child(3n)::before {
+            background: #45a5b5;
+        }
+
+        body:has(#userRequest) .user-leave-balance__card:hover,
+        body:has(#userRequest) .user-leave-balance__card:focus-within {
+            border-color: #a9d2da !important;
+            box-shadow: 0 10px 24px rgba(10, 77, 96, .11) !important;
+            transform: translateY(-2px);
+        }
+
+        body:has(#userRequest) .user-leave-balance__card-heading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        body:has(#userRequest) .user-leave-balance__card .oh-kanban-card__avatar {
+            flex: 0 0 36px;
+            width: 36px;
+            height: 36px;
+            margin: 0;
+        }
+
+        body:has(#userRequest) .user-leave-balance__card .oh-kanban-card__profile-container {
+            width: 36px;
+            height: 36px;
+            border: 1px solid #c7e5eb !important;
+            border-radius: 11px !important;
+            background: #e8f5f7 !important;
+        }
+
+        body:has(#userRequest) .user-leave-balance__card .oh-kanban-card__profile-image {
+            border-radius: 9px;
+        }
+
+        body:has(#userRequest) .user-leave-balance__card .oh-kanban-card__title {
+            margin: 0;
+            color: #173f50 !important;
+            font-size: .88rem;
+            font-weight: 800 !important;
+        }
+
+        body:has(#userRequest) .user-leave-balance__card .oh-kanban-card__details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 13px !important;
+            white-space: normal;
+        }
+
+        body:has(#userRequest) .user-leave-balance__amount {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e4f0f2;
+        }
+
+        body:has(#userRequest) .user-leave-balance__amount > span,
+        body:has(#userRequest) .user-leave-balance__stats > div > span {
+            color: #64838c;
+            font-size: .7rem;
+            font-weight: 600;
+        }
+
+        body:has(#userRequest) .user-leave-balance__amount > strong {
+            color: #0a4d60;
+            font-size: 1.48rem;
+            font-weight: 850;
+            letter-spacing: -.04em;
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        body:has(#userRequest) .user-leave-balance__stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        body:has(#userRequest) .user-leave-balance__stats > div {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        body:has(#userRequest) .user-leave-balance__stats > div > span {
+            font-size: .63rem;
+            line-height: 1.2;
+        }
+
+        body:has(#userRequest) .user-leave-balance__stats > div > strong {
+            overflow: hidden;
+            color: #285d6b;
+            font-size: .79rem;
+            font-weight: 800;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        body:has(#userRequest) #userRequest > .employee-leave-status-legend {
+            justify-content: flex-start;
+            margin-bottom: 12px !important;
+        }
+
+        body:has(#userRequest) .employee-leave-status-legend > span {
+            box-shadow: none;
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table {
+            border: 1px solid #d4e8ec !important;
+            border-radius: 16px !important;
+            box-shadow: 0 6px 20px rgba(10, 77, 96, .06) !important;
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table__thead,
+        body:has(#userRequest) #userRequest .oh-sticky-table__thead .oh-sticky-table__tr,
+        body:has(#userRequest) #userRequest .oh-sticky-table__th {
+            background: #0a4d60 !important;
+        }
+
+        body:has(#userRequest) #userRequest .oh-sticky-table__tbody .oh-sticky-table__tr:hover {
+            background: #f1fafb !important;
+            box-shadow: inset 3px 0 0 #45a5b5;
+        }
+
+        body:has(#userRequest) .leave-request-board {
+            width: 100%;
+            overflow: hidden;
+            border: 1px solid #cfe4e9;
+            border-radius: 20px;
+            background: #ffffff;
+            box-shadow: 0 10px 28px rgba(10, 77, 96, .07);
+        }
+
+        body:has(#userRequest) .leave-request-board__toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 18px 20px;
+            border-bottom: 1px solid #dcecef;
+            background: linear-gradient(110deg, #f8fcfd, #eef8f8);
+        }
+
+        body:has(#userRequest) .leave-request-board__intro {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 220px;
+        }
+
+        body:has(#userRequest) .leave-request-board__icon {
+            display: grid;
+            flex: 0 0 42px;
+            width: 42px;
+            height: 42px;
+            place-items: center;
+            border: 1px solid #c7e5eb;
+            border-radius: 13px;
+            background: #e4f3f5;
+            color: #176f80;
+            font-size: 22px;
+        }
+
+        body:has(#userRequest) .leave-request-board__intro h2 {
+            margin: 0;
+            color: #0a4d60;
+            font-size: 1rem;
+            font-weight: 800;
+            letter-spacing: -.015em;
+        }
+
+        body:has(#userRequest) .leave-request-board__intro p {
+            margin: 4px 0 0;
+            color: #64838c;
+            font-size: .75rem;
+            line-height: 1.4;
+        }
+
+        body:has(#userRequest) .leave-request-board__filters {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        body:has(#userRequest) .leave-request-board__label {
+            color: #557b84;
+            font-size: .72rem;
+            font-weight: 750;
+            white-space: nowrap;
+        }
+
+        body:has(#userRequest) .leave-request-board .employee-leave-status-legend {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 7px;
+            flex-wrap: wrap;
+            margin: 0 !important;
+            padding: 0;
+        }
+
+        body:has(#userRequest) .leave-request-board .employee-leave-status-legend > span {
+            min-height: 34px;
+            padding: 0 11px;
+            font-size: .69rem;
+            box-shadow: none;
+        }
+
+        body:has(#userRequest) .leave-request-board__selection {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            min-height: 52px;
+            padding: 8px 18px;
+            border-bottom: 1px solid #e3eff1;
+            background: #ffffff;
+        }
+
+        body:has(#userRequest) .leave-request-board__selection-hint {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            color: #557b84;
+            font-size: .75rem;
+            font-weight: 700;
+        }
+
+        body:has(#userRequest) .leave-request-board__selection-hint .material-symbols-outlined {
+            color: #278da0;
+            font-size: 19px;
+        }
+
+        body:has(#userRequest) .leave-request-board__selection-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        body:has(#userRequest) .leave-request-board__selection-actions > .oh-checkpoint-badge {
+            display: inline-flex;
+            min-height: 32px;
+            align-items: center;
+            margin: 0 !important;
+            padding: 0 12px;
+            border: 1px solid #c7e5eb;
+            border-radius: 999px;
+            background: #f3fafb;
+            color: #176f80 !important;
+            font-size: .7rem;
+            font-weight: 750;
+            cursor: pointer;
+            transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
+        }
+
+        body:has(#userRequest) .leave-request-board__selection-actions > .oh-checkpoint-badge:hover,
+        body:has(#userRequest) .leave-request-board__selection-actions > .oh-checkpoint-badge:focus-visible {
+            border-color: #9dcbd4;
+            background: #e5f4f6;
+            outline: 2px solid rgba(39, 141, 160, .16);
+            outline-offset: 2px;
+            transform: translateY(-1px);
+        }
+
+        body:has(#userRequest) .leave-request-board__selection-actions > #selectedShowUserrequests {
+            border-color: #c7e5eb;
+            background: #eef8f8;
+            color: #285d6b !important;
+            cursor: default;
+        }
+
+        body:has(#userRequest) .leave-request-board .oh-sticky-table {
+            margin: 0 !important;
+            height: auto !important;
+            max-height: none !important;
+            overflow-x: auto !important;
+            overflow-y: visible !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        body:has(#userRequest) .leave-request-board .oh-sticky-table__table {
+            min-width: 1040px;
+        }
+
+        body:has(#userRequest) .leave-request-board .oh-sticky-table__thead,
+        body:has(#userRequest) .leave-request-board .oh-sticky-table__thead .oh-sticky-table__tr,
+        body:has(#userRequest) .leave-request-board .oh-sticky-table__th {
+            background: linear-gradient(105deg, #0a4d60, #176f80) !important;
+        }
+
+        body:has(#userRequest) .leave-request-board .oh-sticky-table__th {
+            padding: 13px 12px !important;
+            border-color: rgba(199, 229, 235, .24) !important;
+            color: #ffffff !important;
+            font-size: .68rem;
+            font-weight: 800 !important;
+            letter-spacing: .035em;
+        }
+
+        body:has(#userRequest) .leave-request-board .oh-sticky-table__tbody .oh-sticky-table__tr {
+            min-height: 62px;
+            border-bottom: 1px solid #e8f1f3 !important;
+            background: #ffffff !important;
+            transition: background-color 140ms ease, box-shadow 140ms ease;
+        }
+
+        body:has(#userRequest) .leave-request-board .oh-sticky-table__tbody .oh-sticky-table__tr:nth-child(even) {
+            background: #fbfdfe !important;
+        }
+
+        body:has(#userRequest) .leave-request-board .oh-sticky-table__tbody .oh-sticky-table__tr:hover {
+            background: #eff9fa !important;
+            box-shadow: inset 3px 0 0 #45a5b5;
+        }
+
+        body:has(#userRequest) .leave-request-board .oh-sticky-table__td,
+        body:has(#userRequest) .leave-request-board .oh-sticky-table__sd {
+            padding: 11px 12px !important;
+            border-color: #e8f1f3 !important;
+            color: #285d6b !important;
+            font-size: .76rem;
+            vertical-align: middle;
+        }
+
+        body:has(#userRequest) .leave-request-board .oh-profile__name {
+            color: #173f50 !important;
+            font-weight: 750;
+        }
+
+        body:has(#userRequest) .leave-request-board .oh-profile__image {
+            border: 2px solid #d6ebef !important;
+            box-shadow: 0 2px 6px rgba(10, 77, 96, .08);
+        }
+
+        body:has(#userRequest) .leave-request-board .oh-sticky-table__td .oh-btn {
+            min-height: 36px;
+            border-radius: 10px !important;
+            font-size: .73rem;
+        }
+
+        body:has(#userRequest) .leave-request-board .oh-sticky-table__td .oh-btn--primary {
+            border-color: #b6d6d1 !important;
+            background: #94aaa7 !important;
+            box-shadow: none !important;
+        }
+
+        body:has(#userRequest) .leave-request-board .oh-sticky-table__td .oh-btn--light,
+        body:has(#userRequest) .leave-request-board .oh-sticky-table__td .oh-btn--light-bkg {
+            border-color: #c8e3e7 !important;
+            background: #eef8f8 !important;
+            color: #176f80 !important;
+        }
+
+        body:has(#userRequest) .leave-request-board .oh-pagination {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            min-height: 52px;
+            margin: 0 !important;
+            padding: 8px 18px;
+            border-top: 1px solid #e3eff1;
+            background: #f8fcfd;
+            color: #557b84;
+            font-size: .75rem;
+        }
+
+        body:has(#userRequest) .leave-request-board .oh-pagination__input {
+            border-color: #c7e5eb !important;
+            border-radius: 8px !important;
+            color: #285d6b !important;
+        }
+
+        body:has(#userRequest) .leave-request-board .oh-pagination__link {
+            border-color: #c7e5eb !important;
+            border-radius: 8px !important;
+            color: #176f80 !important;
+        }
+
+        body:has(#userRequest) .leave-request-board .oh-pagination__link:hover {
+            background: #e8f5f7 !important;
+        }
+
+        @media (max-width: 900px) {
+            body:has(#userRequest) .leave-request-board__toolbar {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 14px;
+            }
+
+            body:has(#userRequest) .leave-request-board__filters {
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
+
+            body:has(#userRequest) .leave-request-board .employee-leave-status-legend {
+                justify-content: flex-start;
+            }
+        }
+
+        @media (max-width: 540px) {
+            body:has(#userRequest) .leave-request-board {
+                border-radius: 16px;
+            }
+
+            body:has(#userRequest) .leave-request-board__toolbar {
+                padding: 14px;
+            }
+
+            body:has(#userRequest) .leave-request-board__filters {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            body:has(#userRequest) .leave-request-board__selection {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 7px;
+                padding: 10px 14px;
+            }
+
+            body:has(#userRequest) .leave-request-board__selection-actions {
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
+
+            body:has(#userRequest) .leave-request-board .oh-pagination {
+                align-items: flex-start;
+                flex-direction: column;
+                padding: 10px 14px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body:has(#userRequest) .oh-main__topbar {
+                width: calc(100% - 24px);
+                min-height: 0;
+                border-radius: 17px !important;
+            }
+
+            body:has(#userRequest) .oh-main__titlebar--right {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                width: 100%;
+                justify-content: stretch;
+                gap: 8px;
+                margin-left: 0;
+                padding: 8px;
+                border: 0;
+                background: transparent;
+            }
+
+            body:has(#userRequest) .oh-main__titlebar--right #filterForm {
+                display: grid !important;
+                grid-column: 1 / -1;
+                grid-template-columns: minmax(0, 1fr);
+                gap: 8px;
+                width: 100%;
+            }
+
+            body:has(#userRequest) .oh-main__titlebar--right .oh-input__search-group,
+            body:has(#userRequest) .oh-main__titlebar--right .oh-input__search-group--show {
+                display: block !important;
+                position: relative !important;
+                inset: auto !important;
+                width: 100%;
+                height: 42px;
+                min-width: 0;
+                padding: 0 !important;
+                border: 1px solid #c7e5eb !important;
+                border-radius: 11px !important;
+                background: #ffffff !important;
+                box-sizing: border-box;
+                grid-column: 1 / -1;
+            }
+
+            body:has(#userRequest) .oh-main__titlebar--right .oh-input__search-group .oh-input {
+                width: 100%;
+                min-width: 0;
+                height: 42px;
+                box-sizing: border-box;
+                padding-left: 40px !important;
+            }
+
+            body:has(#userRequest) .oh-main__titlebar--right .oh-input__search-group .oh-input-group__icon--left {
+                position: absolute;
+                top: 50%;
+                left: 15px;
+                z-index: 1;
+                margin: 0;
+                transform: translateY(-50%);
+            }
+
+            body:has(#userRequest) .oh-main__titlebar--right .oh-main__titlebar-button-container {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                grid-column: 1 / -1;
+                width: 100%;
+            }
+
+            body:has(#userRequest) .oh-main__titlebar-button-container .oh-dropdown,
+            body:has(#userRequest) .oh-main__titlebar--right > .oh-dropdown {
+                width: 100%;
+                margin: 0 !important;
+            }
+
+            body:has(#userRequest) .oh-main__titlebar-button-container .oh-btn,
+            body:has(#userRequest) .oh-main__titlebar--right > .oh-dropdown > .oh-btn,
+            body:has(#userRequest) .oh-main__titlebar--right > #requestCreateButton {
+                width: 100%;
+                justify-content: center;
+                margin: 0 !important;
+            }
+
+            body:has(#userRequest) .oh-main__titlebar-search-toggle {
+                display: none !important;
+            }
+
+            body:has(#userRequest) .user-leave-balance {
+                width: calc(100% - 24px) !important;
+                margin-top: 18px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body:has(#userRequest) .oh-main__topbar {
+                padding-left: 56px !important;
+            }
+
+            body:has(#userRequest) .my-leave-heading__icon {
+                display: none;
+            }
+
+            body:has(#userRequest) .user-leave-balance__intro {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 9px;
+            }
+
+            body:has(#userRequest) .user-leave-balance__hint {
+                white-space: normal;
+            }
+
+            body:has(#userRequest) .user-leave-balance__grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+        }
+
+        body:has(#userRequest) .oh-main__topbar .oh-main__titlebar--right {
+            border: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+
+        body:has(#userRequest) .oh-main__topbar .oh-input__search-group .oh-input {
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+
+        body:has(#userRequest) .oh-main__topbar .oh-input__search-group .oh-input:focus,
+        body:has(#userRequest) .oh-main__topbar .oh-input__search-group .oh-input:focus-visible {
+            outline: none !important;
+            border: 0 !important;
+            box-shadow: none !important;
+        }
+
+        body:has(#userRequest) .oh-main__topbar .oh-input__search-group {
+            border: 1px solid #c7e5eb !important;
+            border-radius: 11px !important;
+            background: #ffffff !important;
+            box-sizing: border-box;
+        }
+
+        body:has(#userRequest) .oh-main__topbar .oh-input__search-group:focus-within {
+            outline: none !important;
+            box-shadow: none !important;
+        }
     </style>
 
     <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
         <div class="oh-main__titlebar oh-main__titlebar--left">
-            <h1 class="oh-main__titlebar-title fw-bold">
-                {% trans "My Leave Requests" %}
-            </h1>
+            <span class="material-symbols-outlined my-leave-heading__icon" aria-hidden="true">event_note</span>
+            <div class="my-leave-heading__copy">
+                <h1 class="oh-main__titlebar-title fw-bold">
+                    {% trans "My Leave Requests" %}
+                </h1>
+                <p class="my-leave-heading__subtitle">{% trans "Track your requests, approval progress, and available leave." %}</p>
+            </div>
             <a
                 class="oh-main__titlebar-search-toggle"
                 role="button"
@@ -1340,7 +2383,7 @@
     </div>
 
     {% if user_leaves %}
-        {% include 'leave/user_leave/user_leave.html' %}
+        {% include 'leave/user_leave/user_leave.html' with redesign_requests_page=True %}
     {% endif %}
 
     <div class="oh-wrapper" id="userRequest">

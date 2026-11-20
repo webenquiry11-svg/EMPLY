@@ -11,6 +11,19 @@ body:has(#reimbursementContainer),
     background: #f2f6f3 !important;
 }
 
+html:has(.oh-wrapper-main.admin-panel-theme #reimbursementContainer),
+html:has(.oh-wrapper-main.super-admin-panel-theme #reimbursementContainer),
+body:has(.oh-wrapper-main.admin-panel-theme #reimbursementContainer),
+body:has(.oh-wrapper-main.super-admin-panel-theme #reimbursementContainer),
+.oh-wrapper-main.admin-panel-theme:has(#reimbursementContainer),
+.oh-wrapper-main.super-admin-panel-theme:has(#reimbursementContainer),
+.oh-wrapper-main.admin-panel-theme:has(#reimbursementContainer) > #main,
+.oh-wrapper-main.super-admin-panel-theme:has(#reimbursementContainer) > #main,
+.oh-wrapper-main.admin-panel-theme:has(#reimbursementContainer) #main-section,
+.oh-wrapper-main.super-admin-panel-theme:has(#reimbursementContainer) #main-section {
+    background: #e8f5f7 !important;
+}
+
 /* ─── Container ─────────────────────────────────────────────── */
 #reimbursementContainer {
     margin: 0 38px;
@@ -494,6 +507,1517 @@ html body .oh-wrapper-main.employee-panel-theme #reimbursementContainer .oh-wrap
     {% endif %}
     </div>
 </div>
+
+<style>
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer {
+    --admin-reimb-deep: #0a4d60;
+    --admin-reimb-teal: #176f80;
+    --admin-reimb-accent: #278da0;
+    --admin-reimb-line: #c7e5eb;
+    --admin-reimb-ink: #173f50;
+    --admin-reimb-muted: #557b84;
+    width: 100%;
+    max-width: 1640px;
+    box-sizing: border-box;
+    margin: 0 auto;
+    padding: 24px clamp(16px, 3vw, 42px) 112px;
+    color: var(--admin-reimb-ink);
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-nav {
+    min-height: 82px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: none;
+    margin: 0 0 12px !important;
+    padding: 16px 22px;
+    border: 1px solid var(--admin-reimb-line);
+    border-radius: 18px;
+    background: linear-gradient(110deg, #ffffff 0%, #ffffff 72%, #f1fafb 100%);
+    box-shadow: 0 8px 24px rgba(10, 77, 96, .08);
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__icon-wrap,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-nav__icon-wrap {
+    color: #ffffff !important;
+    background: linear-gradient(145deg, var(--admin-reimb-deep), var(--admin-reimb-accent)) !important;
+    box-shadow: 0 5px 12px rgba(10, 77, 96, .2);
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__icon-wrap ion-icon,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-nav__icon-wrap ion-icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__title,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-nav__title {
+    color: var(--admin-reimb-deep) !important;
+    font-weight: 800;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__subtitle,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-nav__subtitle {
+    color: var(--admin-reimb-muted) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__controls,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-nav__controls {
+    flex: 0 1 650px;
+    gap: 9px;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__search-wrap,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-nav__search-wrap {
+    flex: 1 1 240px;
+    min-width: 200px;
+    border-color: var(--admin-reimb-line) !important;
+    border-radius: 11px !important;
+    background: #f8fcfd !important;
+    box-shadow: none !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__search-wrap:focus-within,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-nav__search-wrap:focus-within {
+    border-color: var(--admin-reimb-accent) !important;
+    box-shadow: 0 0 0 3px rgba(39, 141, 160, .13) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__search-wrap ion-icon,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-nav__search-wrap ion-icon {
+    color: var(--admin-reimb-teal) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__search,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-nav__search {
+    color: var(--admin-reimb-ink) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__view-toggle,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-nav__view-toggle {
+    border-color: var(--admin-reimb-line) !important;
+    background: #f4fafb !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__view-btn--active,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-nav__view-btn--active {
+    color: #ffffff !important;
+    background: var(--admin-reimb-deep) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__filter-btn,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-nav__filter-btn,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__create-btn,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-nav__create-btn {
+    border-radius: 10px !important;
+    background: linear-gradient(135deg, var(--admin-reimb-deep), var(--admin-reimb-teal)) !important;
+    box-shadow: 0 4px 10px rgba(10, 77, 96, .15);
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-status-bar,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-status-bar,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-status-bar,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-status-bar {
+    width: 100% !important;
+    max-width: none;
+    box-sizing: border-box;
+    margin: 14px 0 18px !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-status-pill,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-status-pill,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-pill,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-pill {
+    min-height: 36px;
+    padding: 0 14px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(10, 77, 96, .06);
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-tabs,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs {
+    width: 100%;
+    max-width: none;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    overflow: hidden;
+    border: 1px solid var(--admin-reimb-line) !important;
+    border-radius: 18px !important;
+    background: #ffffff !important;
+    box-shadow: 0 12px 30px rgba(10, 77, 96, .08) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs::before,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-tabs::before,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs::before,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs::before,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-tabs::before,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .oh-tabs::before {
+    background: linear-gradient(90deg, var(--admin-reimb-deep), var(--admin-reimb-accent), #b8dfe6) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__nav,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-tabs__nav,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__nav,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs__nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    padding: 12px;
+    border-bottom: 1px solid var(--admin-reimb-line);
+    background: #f3fafb !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__tab,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-tabs__tab,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__tab,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs__tab {
+    min-width: 0;
+    min-height: 44px;
+    padding: 9px 14px;
+    border-radius: 11px;
+    color: var(--admin-reimb-muted) !important;
+    font-weight: 750;
+    transition: color .16s, background .16s, box-shadow .16s;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__tab:hover,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-tabs__tab:hover,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__tab:hover,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs__tab:hover {
+    color: var(--admin-reimb-deep) !important;
+    background: #e8f5f7 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__tab.oh-tabs__tab--active,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-tabs__tab.oh-tabs__tab--active,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__tab.active,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-tabs__tab.active,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__tab.oh-tabs__tab--active,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs__tab.oh-tabs__tab--active {
+    color: #ffffff !important;
+    background: linear-gradient(120deg, var(--admin-reimb-deep), var(--admin-reimb-teal)) !important;
+    box-shadow: 0 4px 11px rgba(10, 77, 96, .18) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__tab.oh-tabs__tab--active *,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-tabs__tab.oh-tabs__tab--active *,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__tab.active *,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-tabs__tab.active *,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__tab.oh-tabs__tab--active *,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs__tab.oh-tabs__tab--active * {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__content,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-tabs__content,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__content,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs__content {
+    padding: 20px;
+    background: #ffffff;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-card {
+    border-color: #cfe7eb !important;
+    border-radius: 15px;
+    box-shadow: 0 4px 14px rgba(10, 77, 96, .045);
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card:hover,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-card:hover {
+    border-color: #9dcfd8 !important;
+    box-shadow: 0 12px 26px rgba(10, 77, 96, .12);
+    transform: translateY(-2px);
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__emp-name,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-card__emp-name,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__title,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-card__title {
+    color: var(--admin-reimb-ink) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__emp-meta,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-card__emp-meta,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__desc,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-card__desc,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__footer,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-card__footer {
+    color: var(--admin-reimb-muted) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__footer,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-card__footer {
+    border-color: #e2eff1 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__link,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-card__link,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__approval-detail ion-icon,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-card__approval-detail ion-icon {
+    color: var(--admin-reimb-teal) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__approval,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-card__approval {
+    border-color: #cfe7eb !important;
+    background: #f4fafb !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__btn-approve,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-card__btn-approve {
+    background: linear-gradient(135deg, var(--admin-reimb-deep), var(--admin-reimb-accent)) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__thead,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__thead,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__th,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__th,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__right,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__right {
+    background: var(--admin-reimb-deep) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__th,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__th {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__tbody .oh-sticky-table__tr:hover,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__tbody .oh-sticky-table__tr:hover {
+    background: #f0f8fa !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__tr,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__tr {
+    border-color: #e1eef0 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__td,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__td,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__sd,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__sd {
+    color: #285d6b !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-pagination,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .oh-pagination {
+    border-color: #e1eef0 !important;
+    color: var(--admin-reimb-muted) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-pagination__link,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .oh-pagination__link {
+    color: var(--admin-reimb-teal) !important;
+    border-color: var(--admin-reimb-line) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-pagination__item--current .oh-pagination__link,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .oh-pagination__item--current .oh-pagination__link {
+    color: #ffffff !important;
+    border-color: var(--admin-reimb-deep) !important;
+    background: linear-gradient(135deg, var(--admin-reimb-deep), var(--admin-reimb-accent)) !important;
+}
+
+@media (max-width: 980px) {
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav,
+    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-nav {
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__spacer,
+    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-nav__spacer {
+        display: none;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__controls,
+    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-nav__controls {
+        flex: 1 1 100%;
+        max-width: none;
+    }
+}
+
+@media (max-width: 640px) {
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer,
+    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer {
+        padding: 50px 12px 96px;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav,
+    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-nav {
+        padding: 14px;
+        border-radius: 15px;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__controls,
+    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-nav__controls {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        gap: 8px;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__search-wrap,
+    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-nav__search-wrap {
+        grid-column: 1 / -1;
+        min-width: 0;
+        width: 100%;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__nav,
+    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-tabs__nav,
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__nav,
+    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs__nav {
+        gap: 5px;
+        padding: 8px;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__tab,
+    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-tabs__tab,
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__tab,
+    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs__tab {
+        min-height: 42px;
+        padding: 7px 5px;
+        font-size: .72rem;
+        white-space: normal;
+        line-height: 1.2;
+        text-align: center;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__content,
+    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-tabs__content,
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__content,
+    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .rl-tabs__content {
+        padding: 12px;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-cards,
+    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-cards {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card,
+    html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .reimb-card {
+        padding: 15px;
+    }
+}
+</style>
+
+<style>
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 14px 20px;
+    padding: 18px 22px;
+    border: 0;
+    border-radius: 20px;
+    background: linear-gradient(118deg, #083f50 0%, #0a4d60 58%, #176f80 100%) !important;
+    box-shadow: 0 14px 30px rgba(8, 63, 80, .2);
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav::before {
+    display: none;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__title-block {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__icon-wrap {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, .14) !important;
+    border: 1px solid rgba(255, 255, 255, .3);
+    box-shadow: none;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__icon-wrap ion-icon,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__title,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__subtitle {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__spacer {
+    display: none;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__controls {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    display: grid;
+    grid-template-columns: minmax(180px, 1fr) auto auto auto;
+    gap: 9px;
+    width: 100%;
+    max-width: none;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__search-wrap {
+    min-width: 0;
+    border: 1px solid rgba(255, 255, 255, .45) !important;
+    border-radius: 10px !important;
+    background: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__search-wrap ion-icon {
+    left: 9px;
+    padding: 5px;
+    border-radius: 6px;
+    color: #ffffff !important;
+    background: #0a4d60;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__search {
+    width: 100%;
+    padding-left: 42px;
+    border: 0 !important;
+    background: transparent !important;
+    color: #173f50 !important;
+    box-shadow: none !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__view-toggle {
+    border: 1px solid rgba(255, 255, 255, .48) !important;
+    background: rgba(255, 255, 255, .12) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__view-btn,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__view-btn ion-icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__view-btn--active {
+    background: #278da0 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__view-divider {
+    background: rgba(255, 255, 255, .35) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__filter-btn,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__create-btn {
+    min-height: 38px;
+    border: 1px solid rgba(255, 255, 255, .4) !important;
+    color: #ffffff !important;
+    background: #176f80 !important;
+    box-shadow: none;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__filter-btn ion-icon,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__create-btn ion-icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__create-btn {
+    background: #278da0 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-status-bar,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-status-bar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin: 14px 0 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-status-pill,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-pill {
+    min-height: 34px;
+    border: 1px solid #176f80 !important;
+    border-radius: 9px;
+    color: #ffffff !important;
+    background: #0a4d60 !important;
+    box-shadow: none;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-status-pill__dot,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-pill__dot {
+    background: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs {
+    border: 0 !important;
+    border-radius: 18px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: visible;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs::before,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs::before,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-tabs::before {
+    display: none;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__nav,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    padding: 0 0 12px;
+    border: 0;
+    background: transparent !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__tab,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__tab {
+    justify-content: center;
+    min-width: 0;
+    min-height: 48px;
+    padding: 10px 12px;
+    border: 1px solid #176f80;
+    border-radius: 11px;
+    color: #ffffff !important;
+    background: #176f80 !important;
+    box-shadow: 0 4px 10px rgba(10, 77, 96, .12);
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__tab:hover,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__tab:hover {
+    background: #0a4d60 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__tab.oh-tabs__tab--active,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__tab.active,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__tab.oh-tabs__tab--active {
+    border-color: #083f50 !important;
+    color: #ffffff !important;
+    background: #083f50 !important;
+    box-shadow: inset 0 -3px 0 #72d0dc, 0 6px 14px rgba(10, 77, 96, .2) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__tab *,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__tab * {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__content,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__content {
+    padding: 18px;
+    border: 1px solid #c7e5eb;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 10px 26px rgba(10, 77, 96, .07);
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card {
+    gap: 13px;
+    padding: 0 18px 16px;
+    border: 1px solid #c7e5eb !important;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 8px 20px rgba(10, 77, 96, .07);
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card::before {
+    display: none;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__header {
+    align-items: center;
+    margin: 0 -18px;
+    padding: 10px 14px;
+    background: #0a4d60;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__type-badge {
+    border-color: rgba(255, 255, 255, .38);
+    color: #ffffff !important;
+    background: #176f80 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__type-badge ion-icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__action-btn {
+    border-color: rgba(255, 255, 255, .3);
+    background: rgba(255, 255, 255, .13);
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__action-btn ion-icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__action-btn:hover,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__action-btn--danger:hover {
+    background: #278da0 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__emp-name,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__title {
+    color: #173f50 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__emp-meta,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__desc,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__footer {
+    color: #557b84 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__link {
+    gap: 5px;
+    padding: 6px 9px;
+    border-radius: 7px;
+    color: #ffffff !important;
+    background: #176f80;
+    text-decoration: none;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__link ion-icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__approval {
+    border-color: #0a4d60 !important;
+    background: #f1f8fa !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__approval-detail {
+    padding: 7px 9px;
+    border-radius: 7px;
+    color: #ffffff !important;
+    background: #0a4d60;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__approval-detail ion-icon,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__approval-detail strong {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__btn-approve,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__btn-reject {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__btn-approve ion-icon,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__btn-reject ion-icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__thead,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__th,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__right,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-dropdown_btn {
+    color: #ffffff !important;
+    background: #0a4d60 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__th *,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-dropdown_btn ion-icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__td .rl-btn-approve,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__td .rl-btn-reject,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__td .rl-btn-edit,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__td .rl-btn-delete,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__td .rl-btn-comment {
+    border-color: #176f80 !important;
+    color: #ffffff !important;
+    background: #176f80 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__td .rl-btn-approve ion-icon,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__td .rl-btn-reject ion-icon,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__td .rl-btn-edit ion-icon,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__td .rl-btn-delete ion-icon,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__td .rl-btn-comment ion-icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-pagination__link {
+    color: #ffffff !important;
+    border-color: #176f80 !important;
+    background: #176f80 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-pagination__link ion-icon,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-pagination__item--current .oh-pagination__link {
+    color: #ffffff !important;
+}
+
+@media (max-width: 700px) {
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav {
+        grid-template-columns: minmax(0, 1fr);
+        padding: 16px;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__controls {
+        grid-template-columns: minmax(0, 1fr) auto auto;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__search-wrap {
+        grid-column: 1 / -1;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-status-bar,
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-status-bar {
+        justify-content: flex-start;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__content,
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__content {
+        padding: 10px;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__nav,
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__nav {
+        gap: 5px;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__tab,
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__tab {
+        min-height: 44px;
+        padding: 7px 4px;
+        font-size: .68rem;
+        white-space: normal;
+        text-align: center;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card {
+        padding: 0 13px 14px;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__header {
+        margin: 0 -13px;
+        padding: 9px 11px;
+    }
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModal .oh-modal__dialog {
+    box-sizing: border-box;
+    width: min(900px, calc(100vw - 32px));
+    max-width: 900px;
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+    padding: 24px;
+    border: 1px solid #c7e5eb;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow: 0 24px 70px rgba(8, 63, 80, .24);
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModal .oh-modal__dialog-header {
+    min-height: 36px;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModal .oh-modal__close {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid #c7e5eb;
+    border-radius: 10px;
+    color: #0a4d60 !important;
+    background: #f1f8fa !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModal .oh-modal__close ion-icon {
+    color: #0a4d60 !important;
+    font-size: 20px;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModal .oh-modal__dialog-body {
+    padding: 0;
+    color: #173f50;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModal .oh-faq-card__title {
+    margin: 0;
+    color: #173f50 !important;
+    font-size: 1.15rem;
+    font-weight: 800;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModal .oh-card__footer--border-top {
+    border-color: #dcecef !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModalBody .oh-btn-group {
+    display: flex;
+    width: auto !important;
+    gap: 8px;
+    margin: 12px 0 10px;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModalBody .oh-btn-group > .oh-btn {
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 42px;
+    width: 42px;
+    min-width: 42px;
+    height: 40px;
+    min-height: 40px;
+    padding: 0 !important;
+    border: 1px solid #176f80 !important;
+    border-radius: 10px !important;
+    color: #ffffff !important;
+    background: #176f80 !important;
+    box-shadow: 0 3px 8px rgba(10, 77, 96, .14);
+    text-decoration: none;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModalBody .oh-btn-group > .oh-btn:hover,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModalBody .oh-btn-group > .oh-btn:focus-visible {
+    border-color: #0a4d60 !important;
+    color: #ffffff !important;
+    background: #0a4d60 !important;
+    outline: 3px solid rgba(39, 141, 160, .24);
+    outline-offset: 2px;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModalBody .oh-btn-group > .oh-btn ion-icon {
+    color: #ffffff !important;
+    font-size: 19px;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModalBody iframe {
+    display: block;
+    width: 100% !important;
+    height: min(56vh, 480px) !important;
+    border: 1px solid #c7e5eb;
+    border-radius: 12px;
+    background: #f3fafb;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModalBody .d-flex.flex-row-reverse {
+    margin-top: 14px;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModalBody .d-flex.flex-row-reverse > .oh-btn {
+    min-width: 96px;
+    min-height: 42px;
+    padding: 0 18px !important;
+    border: 1px solid #0a4d60 !important;
+    border-radius: 10px !important;
+    color: #ffffff !important;
+    background: #0a4d60 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModalBody .d-flex.flex-row-reverse > .oh-btn:hover,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModalBody .d-flex.flex-row-reverse > .oh-btn:focus-visible {
+    border-color: #278da0 !important;
+    color: #ffffff !important;
+    background: #176f80 !important;
+    outline: 3px solid rgba(39, 141, 160, .2);
+    outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModal .oh-modal__dialog {
+        width: calc(100vw - 24px);
+        max-height: calc(100vh - 24px);
+        padding: 16px;
+        border-radius: 16px;
+    }
+
+    html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModalBody iframe {
+        height: 45vh !important;
+    }
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav {
+    border: 1px solid #c7e5eb;
+    background: #ffffff !important;
+    box-shadow: 0 8px 24px rgba(10, 77, 96, .08);
+    transition: border-color .18s ease, box-shadow .18s ease;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav:hover {
+    border-color: #9dcfd8;
+    box-shadow: 0 12px 28px rgba(10, 77, 96, .12);
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__icon-wrap {
+    border-color: #c7e5eb;
+    color: #0a4d60 !important;
+    background: #e8f5f7 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__icon-wrap ion-icon,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__title {
+    color: #0a4d60 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__subtitle {
+    color: #557b84 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__search-wrap {
+    border-color: #c7e5eb !important;
+    background: #f8fcfd !important;
+    transition: border-color .18s ease, box-shadow .18s ease;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__search-wrap:focus-within {
+    border-color: #278da0 !important;
+    background: #ffffff !important;
+    box-shadow: 0 0 0 3px rgba(39, 141, 160, .14) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__search-wrap ion-icon {
+    color: #0a4d60 !important;
+    background: transparent;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__view-toggle {
+    border-color: #c7e5eb !important;
+    background: #f1f8fa !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__view-btn,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__view-btn ion-icon {
+    color: #176f80 !important;
+    transition: color .18s ease, background-color .18s ease;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__view-btn:hover {
+    color: #ffffff !important;
+    background: #278da0 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__view-btn:hover ion-icon,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__view-btn--active,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__view-btn--active ion-icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__view-btn--active {
+    background: #0a4d60 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__view-divider {
+    background: #c7e5eb !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__filter-btn,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__create-btn {
+    box-sizing: border-box;
+    height: 40px;
+    min-height: 40px;
+    justify-content: center;
+    padding: 0 16px;
+    border: 1px solid #0a4d60 !important;
+    border-radius: 10px !important;
+    color: #ffffff !important;
+    background: #0a4d60 !important;
+    font-size: .82rem !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    box-shadow: 0 3px 8px rgba(10, 77, 96, .12);
+    transition: background-color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__filter-btn ion-icon,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__create-btn ion-icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__filter-btn:hover,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__create-btn:hover,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__filter-btn:focus-visible,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__create-btn:focus-visible {
+    transform: translateY(-1px);
+    border-color: #083f50 !important;
+    color: #ffffff !important;
+    background: #083f50 !important;
+    box-shadow: 0 6px 14px rgba(10, 77, 96, .2);
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__filter-btn:hover ion-icon,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-nav__create-btn:hover ion-icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-wrapper.w-100:has(> .oh-pagination),
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .oh-wrapper.w-100:has(> .oh-pagination) {
+    background: transparent !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-pagination,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .oh-pagination {
+    display: flex;
+    justify-content: center !important;
+    margin: 18px 0 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-pagination__nav,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .oh-pagination__nav {
+    justify-content: center;
+    background: transparent !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-pagination__items,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .oh-pagination__items {
+    gap: 8px;
+    padding: 0;
+    background: transparent !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-pagination__item,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .oh-pagination__item {
+    display: grid;
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+    padding: 0;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: transparent !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-pagination__link,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .oh-pagination__link {
+    display: grid;
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+    min-height: 38px;
+    padding: 0;
+    place-items: center;
+    border: 1px solid #c7e5eb !important;
+    border-radius: 50% !important;
+    color: #176f80 !important;
+    background: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(10, 77, 96, .06) !important;
+    font-size: .82rem;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    transition: color .18s ease, background-color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-pagination__link ion-icon,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .oh-pagination__link ion-icon {
+    color: #176f80 !important;
+    font-size: 17px;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-pagination__item--current .oh-pagination__link,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .oh-pagination__item--current .oh-pagination__link {
+    border-color: #0a4d60 !important;
+    color: #ffffff !important;
+    background: #0a4d60 !important;
+    box-shadow: 0 4px 10px rgba(10, 77, 96, .18) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-pagination__item--current .oh-pagination__link ion-icon,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .oh-pagination__item--current .oh-pagination__link ion-icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-pagination__item--disabled .oh-pagination__link,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .oh-pagination__item--disabled .oh-pagination__link {
+    border-color: #dcecef !important;
+    color: #91aeb5 !important;
+    background: #f4f9fa !important;
+    box-shadow: none !important;
+    pointer-events: none;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-pagination__item--disabled .oh-pagination__link ion-icon,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .oh-pagination__item--disabled .oh-pagination__link ion-icon {
+    color: #91aeb5 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-pagination__item:not(.oh-pagination__item--current):not(.oh-pagination__item--disabled) .oh-pagination__link:hover,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .oh-pagination__item:not(.oh-pagination__item--current):not(.oh-pagination__item--disabled) .oh-pagination__link:hover {
+    transform: translateY(-1px);
+    border-color: #176f80 !important;
+    color: #ffffff !important;
+    background: #176f80 !important;
+    box-shadow: 0 4px 9px rgba(10, 77, 96, .16) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .oh-pagination__item:not(.oh-pagination__item--current):not(.oh-pagination__item--disabled) .oh-pagination__link:hover ion-icon,
+html body .oh-wrapper-main.super-admin-panel-theme #reimbursementContainer .oh-pagination__item:not(.oh-pagination__item--current):not(.oh-pagination__item--disabled) .oh-pagination__link:hover ion-icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-status-pill,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-pill {
+    border-color: #c7e5eb !important;
+    color: #176f80 !important;
+    background: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(10, 77, 96, .06);
+    transition: color .18s ease, background-color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-status-pill__dot,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-pill__dot {
+    background: currentColor !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-status-pill--requested,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-pill--requested {
+    border-color: #efcfaa !important;
+    color: #955319 !important;
+    background: #fff8f0 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-status-pill--approved,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-pill--approved {
+    border-color: #b9ddc3 !important;
+    color: #267348 !important;
+    background: #f0f8f2 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-status-pill--rejected,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-pill--rejected {
+    border-color: #ecc2c2 !important;
+    color: #a43e3e !important;
+    background: #fff4f4 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-status-pill:hover,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-pill:hover {
+    transform: translateY(-1px);
+    border-color: #176f80 !important;
+    color: #ffffff !important;
+    background: #176f80 !important;
+    box-shadow: 0 5px 12px rgba(10, 77, 96, .16);
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-status-pill--requested:hover,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-pill--requested:hover {
+    border-color: #b96820 !important;
+    background: #b96820 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-status-pill--approved:hover,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-pill--approved:hover {
+    border-color: #267348 !important;
+    background: #267348 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-status-pill--rejected:hover,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-pill--rejected:hover {
+    border-color: #a43e3e !important;
+    background: #a43e3e !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-status-pill:hover .reimb-status-pill__dot,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-pill:hover .rl-pill__dot {
+    background: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__tab,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__tab {
+    border-color: #c7e5eb;
+    color: #176f80 !important;
+    background: #ffffff !important;
+    box-shadow: 0 3px 10px rgba(10, 77, 96, .06);
+    transition: color .18s ease, background-color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__tab *,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__tab * {
+    color: #176f80 !important;
+    transition: color .18s ease;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__tab:hover,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__tab:hover {
+    transform: translateY(-1px);
+    border-color: #278da0 !important;
+    color: #ffffff !important;
+    background: #278da0 !important;
+    box-shadow: 0 6px 14px rgba(10, 77, 96, .15);
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__tab:hover *,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__tab:hover * {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__tab.oh-tabs__tab--active,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__tab.active,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__tab.oh-tabs__tab--active {
+    border-color: #0a4d60 !important;
+    color: #ffffff !important;
+    background: #0a4d60 !important;
+    box-shadow: inset 0 -3px 0 #72d0dc, 0 5px 12px rgba(10, 77, 96, .14) !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__tab.oh-tabs__tab--active *,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__tab.active *,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__tab.oh-tabs__tab--active * {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-tabs__content,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs__content {
+    border-color: #d7e9ed;
+    background: #ffffff;
+    box-shadow: 0 8px 22px rgba(10, 77, 96, .055);
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card {
+    border-color: #d7e9ed !important;
+    box-shadow: 0 4px 14px rgba(10, 77, 96, .055);
+    transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card:hover {
+    transform: translateY(-3px);
+    border-color: #8fc8d1 !important;
+    box-shadow: 0 12px 24px rgba(10, 77, 96, .13);
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__header {
+    border-bottom: 1px solid #d5e9ed;
+    background: #e8f5f7;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__type-badge {
+    border-color: #b8dfe6;
+    color: #0a4d60 !important;
+    background: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__type-badge ion-icon {
+    color: #176f80 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__action-btn {
+    border-color: #c7e5eb;
+    color: #176f80 !important;
+    background: #ffffff;
+    transition: color .18s ease, background-color .18s ease, border-color .18s ease, transform .18s ease;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__action-btn ion-icon {
+    color: #176f80 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__action-btn:hover,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__action-btn--danger:hover {
+    transform: translateY(-1px);
+    border-color: #176f80 !important;
+    color: #ffffff !important;
+    background: #176f80 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__action-btn:hover ion-icon,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__action-btn--danger:hover ion-icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__link {
+    border: 1px solid #b8dfe6;
+    color: #176f80 !important;
+    background: #f3fafb;
+    transition: color .18s ease, background-color .18s ease, border-color .18s ease, transform .18s ease;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__link ion-icon {
+    color: #176f80 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__link:hover {
+    transform: translateY(-1px);
+    border-color: #176f80;
+    color: #ffffff !important;
+    background: #176f80;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__link:hover ion-icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__approval {
+    border-color: #d1e6ea !important;
+    background: #f6fbfc !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__approval-detail {
+    color: #285d6b !important;
+    background: #e8f5f7;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__approval-detail ion-icon,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__approval-detail strong {
+    color: #0a4d60 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__btn-approve,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__btn-reject {
+    transition: background-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__btn-approve {
+    color: #ffffff !important;
+    background: #176f80 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__btn-reject {
+    color: #ffffff !important;
+    background: #b93838 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__btn-approve ion-icon,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__btn-reject ion-icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__btn-approve:hover,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__btn-reject:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 12px rgba(10, 77, 96, .17);
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__btn-approve:disabled,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__btn-reject:disabled {
+    transform: none;
+    color: #728b92 !important;
+    background: #e5edef !important;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__btn-approve:disabled ion-icon,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .reimb-card__btn-reject:disabled ion-icon {
+    color: #728b92 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__thead,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__th,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__right {
+    color: #0a4d60 !important;
+    background: #e8f5f7 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__th *,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-table__right * {
+    color: #0a4d60 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-dropdown_btn {
+    border-color: #b8dfe6 !important;
+    color: #176f80 !important;
+    background: #ffffff !important;
+    box-shadow: none;
+    transition: color .18s ease, background-color .18s ease, border-color .18s ease;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-dropdown_btn ion-icon {
+    color: #176f80 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-dropdown_btn:hover {
+    border-color: #176f80 !important;
+    color: #ffffff !important;
+    background: #176f80 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .oh-sticky-dropdown_btn:hover ion-icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .rl-btn-approve,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .rl-btn-reject,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .rl-btn-edit,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .rl-btn-delete,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .rl-btn-comment {
+    transition: color .18s ease, background-color .18s ease, border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .rl-btn-approve:hover,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .rl-btn-comment:hover,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .rl-btn-edit:hover {
+    transform: translateY(-1px);
+    border-color: #0a4d60 !important;
+    color: #ffffff !important;
+    background: #0a4d60 !important;
+    box-shadow: 0 4px 9px rgba(10, 77, 96, .18);
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .rl-btn-delete:hover,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .rl-btn-reject:hover {
+    transform: translateY(-1px);
+    border-color: #a43e3e !important;
+    color: #ffffff !important;
+    background: #a43e3e !important;
+    box-shadow: 0 4px 9px rgba(164, 62, 62, .18);
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .rl-btn-approve:hover ion-icon,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .rl-btn-comment:hover ion-icon,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .rl-btn-edit:hover ion-icon,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .rl-btn-delete:hover ion-icon,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementContainer .rl-tabs .rl-btn-reject:hover ion-icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModal .oh-modal__close {
+    transition: color .18s ease, background-color .18s ease, border-color .18s ease, transform .18s ease;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModal .oh-modal__close:hover {
+    transform: translateY(-1px);
+    border-color: #176f80 !important;
+    color: #ffffff !important;
+    background: #176f80 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModal .oh-modal__close:hover ion-icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModalBody .oh-btn-group > .oh-btn {
+    border-color: #b8dfe6 !important;
+    color: #176f80 !important;
+    background: #f3fafb !important;
+    box-shadow: none;
+    transition: color .18s ease, background-color .18s ease, border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModalBody .oh-btn-group > .oh-btn ion-icon {
+    color: #176f80 !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModalBody .oh-btn-group > .oh-btn:hover,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModalBody .oh-btn-group > .oh-btn:focus-visible {
+    transform: translateY(-1px);
+    border-color: #0a4d60 !important;
+    color: #ffffff !important;
+    background: #0a4d60 !important;
+    box-shadow: 0 4px 10px rgba(10, 77, 96, .18);
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModalBody .oh-btn-group > .oh-btn:hover ion-icon,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModalBody .oh-btn-group > .oh-btn:focus-visible ion-icon {
+    color: #ffffff !important;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModalBody .d-flex.flex-row-reverse > .oh-btn {
+    border-color: #176f80 !important;
+    color: #176f80 !important;
+    background: #ffffff !important;
+    transition: color .18s ease, background-color .18s ease, border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModalBody .d-flex.flex-row-reverse > .oh-btn:hover,
+html body .oh-wrapper-main.admin-panel-theme #reimbursementAttachementModalBody .d-flex.flex-row-reverse > .oh-btn:focus-visible {
+    transform: translateY(-1px);
+    border-color: #0a4d60 !important;
+    color: #ffffff !important;
+    background: #0a4d60 !important;
+    box-shadow: 0 4px 10px rgba(10, 77, 96, .18);
+}
+</style>
 
 <!-- Reimbursement detail modal -->
 <div class="oh-modal" id="reimbursementModal" role="dialog" aria-hidden="true">

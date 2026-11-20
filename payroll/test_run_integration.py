@@ -19,6 +19,7 @@ from payroll.models.models import (
     PayslipViewRequest,
     PayrollApprovalEvent,
     PayrollRun,
+    Reimbursement,
 )
 from payroll.notifications import send_payroll_notification
 
@@ -340,6 +341,8 @@ class PayrollRunIntegrationTests(TestCase):
         self.assertTrue(access_request.has_active_access())
         dashboard_response = employee_client.get(reverse("payroll-dashboard"))
         self.assertContains(dashboard_response, 'class="approved-payslip-dialog"')
+        self.assertContains(dashboard_response, 'class="payroll-profile-dropdown"')
+        self.assertContains(dashboard_response, f'href="{reverse("logout")}"')
         self.assertContains(dashboard_response, "View Payslip")
         self.assertRegex(
             dashboard_response.content.decode(),
@@ -574,7 +577,13 @@ class PayrollDashboardRoleRoutingTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "payroll/management_dashboard.html")
         self.assertContains(response, "Good Morning,")
-        self.assertContains(response, "Dashboard")
+        self.assertContains(response, "Salary Overview")
+        self.assertContains(
+            response,
+            f'data-workspace-modal-url="{reverse("view-reimbursement")}"',
+        )
+        self.assertContains(response, 'class="profile-menu"')
+        self.assertContains(response, f'href="{reverse("logout")}"')
         self.assertNotContains(response, '>Overview</a>')
         self.assertContains(response, "data-payroll-notification-widget")
         self.assertContains(response, 'aria-label="Payroll notifications"')
@@ -676,6 +685,38 @@ class PayrollDashboardRoleRoutingTests(TestCase):
 
         self.assertNotContains(response, ">Loans</a>")
 
+    def test_reimbursement_review_renders_details_without_navigation_ids(self):
+        employee = Employee.objects.create(
+            employee_first_name="Reimbursement",
+            employee_last_name="Employee",
+            email="reimbursement-employee@example.test",
+            phone="5550456",
+        )
+        reimbursement = Reimbursement.objects.create(
+            title="Travel reimbursement",
+            employee_id=employee,
+            allowance_on=date.today(),
+            amount=125,
+        )
+        client = Client()
+        client.force_login(self.superuser)
+
+        dashboard_response = client.get(
+            reverse("payroll-management-dashboard"),
+            {"section": "reimbursements"},
+        )
+        self.assertContains(
+            dashboard_response,
+            f'data-workspace-modal-url="{reverse("reimbursement-individual-view", args=[reimbursement.pk])}"',
+        )
+
+        response = client.get(
+            reverse("reimbursement-individual-view", args=[reimbursement.pk])
+        )
+
+        self.assertEqual(response.status_code, 200, response.content[:2000])
+        self.assertContains(response, "Travel reimbursement")
+
     def test_deduction_section_selects_employee_and_monthly_policy_details(self):
         employee = Employee.objects.create(
             employee_first_name="Policy",
@@ -753,20 +794,33 @@ class PayrollDashboardRoleRoutingTests(TestCase):
 
     def test_payroll_login_mode_opens_dedicated_management_dashboard(self):
         password = "Test-password-239!"
-        for user in (self.superuser, self.payroll_admin):
-            response = Client().post(
-                reverse("login"),
-                {
-                    "username": user.username,
-                    "password": password,
-                    "login_mode": "payroll",
-                },
-            )
-            self.assertRedirects(
-                response,
-                reverse("payroll-management-dashboard"),
-                fetch_redirect_response=False,
-            )
+        response = Client().post(
+            reverse("login"),
+            {
+                "username": self.superuser.username,
+                "password": password,
+                "login_mode": "payroll",
+            },
+        )
+        self.assertRedirects(
+            response,
+            reverse("home-page"),
+            fetch_redirect_response=False,
+        )
+
+        response = Client().post(
+            reverse("login"),
+            {
+                "username": self.payroll_admin.username,
+                "password": password,
+                "login_mode": "payroll",
+            },
+        )
+        self.assertRedirects(
+            response,
+            reverse("payroll-management-dashboard"),
+            fetch_redirect_response=False,
+        )
 
 
 class SuperAdminManagementIntegrationTests(TestCase):

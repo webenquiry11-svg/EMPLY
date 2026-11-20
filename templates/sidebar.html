@@ -230,9 +230,14 @@
                                             <li><a href="{{submenu.redirect}}">{{submenu.menu}}</a></li>
                                         {% endif %}
                                     {% elif menues.menu == "Payroll" %}
-                                        {% if submenu.menu == "Dashboard" or submenu.menu == "Federal Tax" %}
-                                        {% else %}
-                                            <li><a href="{{submenu.redirect}}">{{submenu.menu}}</a></li>
+                                        {% if submenu.menu == "Dashboard" %}
+                                            <li><a href="{{submenu.redirect}}">{% trans "Salary Overview" %}</a></li>
+                                        {% elif submenu.menu == "Encashments & Reimbursements" %}
+                                            <li><a href="{{submenu.redirect}}">{% trans "Reimbursement Sheets" %}</a></li>
+                                        {% elif submenu.menu == "Payslips" %}
+                                            <li><a href="{{submenu.redirect}}">{% trans "Salary Slips" %}</a></li>
+                                        {% elif submenu.menu == "Payslip Access Requests" %}
+                                            <li><a href="{{submenu.redirect}}">{% trans "Requests" %}</a></li>
                                         {% endif %}
                                     {% elif menues.menu == "Help Desk" %}
                                         {% if submenu.menu == "FAQs" or submenu.menu == "FAQs Categories" %}
